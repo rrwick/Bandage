@@ -1,0 +1,500 @@
+//Copyright 2015 Ryan Wick
+
+//This file is part of Bandage
+
+//Bandage is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//Bandage is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
+
+
+#include "graphicsitemnode.h"
+#include "debruijnnode.h"
+#include "ogdfnode.h"
+#include <QPainterPathStroker>
+#include "../program/globals.h"
+#include "../program/settings.h"
+#include <QPainter>
+#include <QPen>
+#include <QMessageBox>
+#include "debruijnedge.h"
+#include "graphicsitemedge.h"
+#include <ogdf/basic/GraphAttributes.h>
+#include <math.h>
+#include <QFontMetrics>
+#include <QSize>
+#include <stdlib.h>
+#include <QGraphicsScene>
+#include "../ui/mygraphicsscene.h"
+#include <set>
+#include "../ui/mygraphicsview.h"
+#include <QTransform>
+
+GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
+                                   ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
+    QGraphicsPathItem(parent), m_deBruijnNode(deBruijnNode),
+    m_hasArrow(g_settings->doubleMode)
+
+{
+    setWidth();
+
+    OgdfNode * pathOgdfNode = deBruijnNode->m_ogdfNode;
+    if (pathOgdfNode != 0)
+    {
+        for (size_t i = 0; i < pathOgdfNode->m_ogdfNodes.size(); ++i)
+        {
+            ogdf::node ogdfNode = pathOgdfNode->m_ogdfNodes[i];
+            QPointF point(graphAttributes->x(ogdfNode), graphAttributes->y(ogdfNode));
+            m_linePoints.push_back(point);
+        }
+    }
+    else
+    {
+        pathOgdfNode = deBruijnNode->m_reverseComplement->m_ogdfNode;
+        for (int i = int(pathOgdfNode->m_ogdfNodes.size()) - 1; i >= 0; --i)
+        {
+            ogdf::node ogdfNode = pathOgdfNode->m_ogdfNodes[i];
+            QPointF point(graphAttributes->x(ogdfNode), graphAttributes->y(ogdfNode));
+            m_linePoints.push_back(point);
+        }
+    }
+
+    remakePath();
+}
+
+
+void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
+    double widthScale = g_settings->widthScale(g_absoluteZoom);
+
+    QColor outlineColour = Qt::black;
+    double outlineThickness = g_settings->outlineThickness;
+    if (isSelected())
+    {
+        outlineColour = g_settings->highlightColour;
+        outlineThickness = g_settings->highlightThickness;
+    }
+    QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
+
+    painter->setPen(outlinePen);
+    QPainterPath outlinePath = shape();
+    painter->drawPath(outlinePath);
+
+    QBrush brush(m_colour);
+    painter->fillPath(outlinePath, brush);
+
+    //Draw text if there is any to display.
+    if (g_settings->anyNodeDisplayText())
+    {
+        //The text should always be displayed upright, so
+        //counter the view's rotation here.
+
+        painter->setRenderHint(QPainter::TextAntialiasing, true);
+        painter->setFont(g_settings->displayFont);
+        QString displayText = getNodeText();
+        QSize textSize = getNodeTextSize(displayText);
+
+        double textWidth = textSize.width();
+        double textHeight = textSize.height();
+
+        //The text outline is made by drawing the text first in white at a slight offset
+        //at many angles.  The larger the text outline, the more angles are needed to
+        //make the outline look nice.
+        if (g_settings->textOutline)
+        {
+            int offsetSteps = 8;
+            if (g_settings->textOutlineThickness > 0.5)
+                offsetSteps = 16;
+            if (g_settings->textOutlineThickness > 1.0)
+                offsetSteps = 32;
+
+            double offsetDistance = g_settings->textOutlineThickness;
+
+            painter->translate(getCentre());
+            painter->rotate(-g_graphicsView->m_rotation);
+
+            for (int i = 0; i < offsetSteps; ++i)
+            {
+                double offsetAngle = 6.2832 * (double(i) / offsetSteps);
+                double xOffset = offsetDistance * cos(offsetAngle);
+                double yOffset = offsetDistance * sin(offsetAngle);
+                QRectF shadowTextRectangle(-textWidth / 2.0 + xOffset,
+                                           -textHeight / 2.0 + yOffset,
+                                           textWidth, textHeight);
+                painter->setPen(Qt::white);
+                painter->drawText(shadowTextRectangle, Qt::AlignCenter, displayText);
+            }
+
+            painter->rotate(g_graphicsView->m_rotation);
+            painter->translate(-1.0 * getCentre());
+        }
+
+        QRectF textRectangle(-textWidth / 2.0, -textHeight / 2.0,
+                             textWidth, textHeight);
+        painter->setPen(Qt::black);
+
+
+        painter->translate(getCentre());
+        painter->rotate(-g_graphicsView->m_rotation);
+        painter->drawText(textRectangle, Qt::AlignCenter, displayText);
+        painter->rotate(g_graphicsView->m_rotation);
+        painter->translate(-1.0 * getCentre());
+    }
+}
+
+
+
+void GraphicsItemNode::setNodeColour()
+{
+    switch (g_settings->nodeColourScheme)
+    {
+    case ONE_COLOUR:
+        if (m_deBruijnNode->m_startingNode)
+            m_colour = g_settings->startingColour;
+        else if (usePositiveNodeColour())
+            m_colour = g_settings->positiveNodeColour;
+        else
+            m_colour = g_settings->negativeNodeColour;
+        break;
+
+    case RANDOM_COLOURS:
+    {
+        //Make a colour with a pseudo-random hue.  The absolute
+        //value of the node number is used so positive/negative
+        //pairs have the same hue.
+        long long randomNumberFromNodeNumber = g_randomColourFactor * abs(m_deBruijnNode->m_number);
+        long long randomHue = abs(randomNumberFromNodeNumber) % 360;
+
+        int hue = randomHue;
+        int saturation;
+        int value;
+        if (usePositiveNodeColour())
+        {
+            saturation = 200;
+            value = 190;
+        }
+        else
+        {
+            saturation = 130;
+            value = 150;
+        }
+        m_colour.setHsv(hue, saturation, value);
+        break;
+    }
+
+    case COVERAGE_COLOUR:
+    {
+        m_colour = getCoverageColour();
+        break;
+    }
+
+    case CUSTOM_COLOURS:
+    {
+        m_colour = m_deBruijnNode->m_customColour;
+        break;
+    }
+
+    default: //CONTIGUITY COLOUR
+    {
+        //For single nodes, display the colour of whichever of the
+        //twin nodes has the greatest contiguity status.
+        ContiguityStatus contiguityStatus = m_deBruijnNode->m_contiguityStatus;
+        if (!m_hasArrow)
+        {
+            ContiguityStatus twinContiguityStatus = m_deBruijnNode->m_reverseComplement->m_contiguityStatus;
+            if (twinContiguityStatus < contiguityStatus)
+                contiguityStatus = twinContiguityStatus;
+        }
+
+        switch (contiguityStatus)
+        {
+        case STARTING:
+            m_colour = g_settings->startingColour;
+            break;
+        case CONTIGUOUS:
+            m_colour = g_settings->contiguousColour;
+            break;
+        case CONTIGUOUS_UNTIL_BRANCHING:
+            m_colour = g_settings->contiguousColour;
+            break;
+        case MAYBE_CONTIGUOUS:
+            m_colour = g_settings->maybeContiguousColour;
+            break;
+        default: //NOT_CONTIGUOUS
+            m_colour = g_settings->notContiguousColour;
+            break;
+        }
+    }
+    }
+}
+
+
+QPainterPath GraphicsItemNode::shape() const
+{
+    double drawnWidth = getDrawnWidth();
+
+    //If there is only one segment and it is shorter than half its
+    //width, then the arrow head will not be made with 45 degree
+    //angles, but rather whatever angle is made by going from the
+    //end to the back corners (the final node will be a triangle).
+    if (m_hasArrow
+            && m_linePoints.size() == 2
+            && distance(getLast(), getSecondLast()) < drawnWidth / 2.0)
+    {
+        QLineF backline = QLineF(getSecondLast(), getLast()).normalVector();
+        backline.setLength(drawnWidth / 2.0);
+        QPointF backVector = backline.p2() - backline.p1();
+        QPainterPath trianglePath;
+        trianglePath.moveTo(getLast());
+        trianglePath.lineTo(getSecondLast() + backVector);
+        trianglePath.lineTo(getSecondLast() - backVector);
+        trianglePath.lineTo(getLast());
+        return trianglePath;
+    }
+
+    //Create a path that outlines the main node shape.
+    QPainterPathStroker stroker;
+    stroker.setWidth(drawnWidth);
+    stroker.setCapStyle(Qt::FlatCap);
+    stroker.setJoinStyle(Qt::RoundJoin);
+    QPainterPath mainNodePath = stroker.createStroke(path());
+
+    if (!m_hasArrow)
+        return mainNodePath;
+
+    //If the node has an arrow head, subtract the part of its
+    //final segment to give it a pointy end.
+    //NOTE: THIS APPROACH CAN LEAD TO WEIRD EFFECTS WHEN THE NODE'S
+    //POINTY END OVERLAPS WITH ANOTHER PART OF THE NODE.  PERHAPS THERE
+    //IS A BETTER WAY TO MAKE ARROWHEADS?
+    QLineF frontline = QLineF(getLast(), getSecondLast()).normalVector();
+    frontline.setLength(drawnWidth / 2.0);
+    QPointF frontVector = frontline.p2() - frontline.p1();
+    QLineF arrowheadLine(getLast(), getSecondLast());
+    arrowheadLine.setLength(1.42 * (drawnWidth / 2.0));
+    arrowheadLine.setAngle(arrowheadLine.angle() + 45.0);
+    QPointF arrow1 = arrowheadLine.p2();
+    arrowheadLine.setAngle(arrowheadLine.angle() - 90.0);
+    QPointF arrow2 = arrowheadLine.p2();
+    QLineF lastSegmentLine(getSecondLast(), getLast());
+    lastSegmentLine.setLength(0.01);
+    QPointF additionalForwardBit = lastSegmentLine.p2() - lastSegmentLine.p1();
+    QPainterPath subtractionPath;
+    subtractionPath.moveTo(getLast());
+    subtractionPath.lineTo(arrow1);
+    subtractionPath.lineTo(getLast() + frontVector + additionalForwardBit);
+    subtractionPath.lineTo(getLast() - frontVector + additionalForwardBit);
+    subtractionPath.lineTo(arrow2);
+    subtractionPath.lineTo(getLast());
+    return mainNodePath.subtracted(subtractionPath);
+}
+
+
+void GraphicsItemNode::mousePressEvent(QGraphicsSceneMouseEvent * event)
+{
+    m_grabIndex = 0;
+    QPointF grabPoint = event->pos();
+
+    double closestPointDistance = distance(grabPoint, m_linePoints[0]);
+    for (size_t i = 1; i < m_linePoints.size(); ++i)
+    {
+        double pointDistance = distance(grabPoint, m_linePoints[i]);
+        if (pointDistance < closestPointDistance)
+        {
+            closestPointDistance = pointDistance;
+            m_grabIndex = i;
+        }
+    }
+}
+
+
+//When this node graphics item is moved, each of the connected edge
+//graphics items will need to be adjusted accordingly.
+void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
+{
+    QPointF difference = event->pos() - event->lastPos();
+
+    //If this node is selected, then move all of the other selected nodes too.
+    //If it is not selected, then only move this node.
+    std::vector<GraphicsItemNode *> nodesToMove;
+    if (isSelected())
+    {
+        MyGraphicsScene * graphicsScene = dynamic_cast<MyGraphicsScene *>(scene());
+        nodesToMove = graphicsScene->getSelectedGraphicsItemNodes();
+    }
+    else
+        nodesToMove.push_back(this);
+
+    for (size_t i = 0; i < nodesToMove.size(); ++i)
+    {
+        nodesToMove[i]->shiftPoints(difference);
+        nodesToMove[i]->remakePath();
+    }
+
+    //It is now necessary to remake the paths for each edge that is connected
+    //to a moved node.
+    std::set<DeBruijnEdge *> edgesToFix;
+    for (size_t i = 0; i < nodesToMove.size(); ++i)
+    {
+        DeBruijnNode * node = nodesToMove[i]->m_deBruijnNode;
+        for (size_t j = 0; j < node->m_edges.size(); ++j)
+            edgesToFix.insert(node->m_edges[j]);
+    }
+
+    for (std::set<DeBruijnEdge *>::iterator i = edgesToFix.begin(); i != edgesToFix.end(); ++i)
+    {
+        DeBruijnEdge * deBruijnEdge = *i;
+        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->m_graphicsItemEdge;
+
+        //If this edge has a graphics item, adjust it now.
+        if (graphicsItemEdge != 0)
+            graphicsItemEdge->calculateAndSetPath();
+
+        //If this edge does not have a graphics item, then perhaps its
+        //reverse complment does.  Only do this check if the graph was drawn
+        //on single mode
+        else if (!g_settings->doubleMode)
+        {
+            graphicsItemEdge = deBruijnEdge->m_reverseComplement->m_graphicsItemEdge;
+            if (graphicsItemEdge != 0)
+                graphicsItemEdge->calculateAndSetPath();
+        }
+    }
+}
+
+
+void GraphicsItemNode::shiftPoints(QPointF difference)
+{
+    if (isSelected()) //Move all pieces for selected nodes
+    {
+        for (size_t i = 0; i < m_linePoints.size(); ++i)
+            m_linePoints[i] += difference;
+    }
+    else if (g_settings->nodeDragging == ONE_PIECE)
+        m_linePoints[m_grabIndex] += difference;
+
+    else if (g_settings->nodeDragging == NEARBY_PIECES)
+    {
+        for (size_t i = 0; i < m_linePoints.size(); ++i)
+        {
+            int indexDistance = abs(int(i) - int(m_grabIndex));
+            double dragStrength = pow(2.0, -1.0 * pow(double(indexDistance), 1.8) / g_settings->dragStrength); //constants chosen for dropoff of drag strength
+            m_linePoints[i] += difference * dragStrength;
+        }
+    }
+}
+
+void GraphicsItemNode::remakePath()
+{
+    QPainterPath path;
+
+    path.moveTo(m_linePoints[0]);
+    for (size_t i = 1; i < m_linePoints.size(); ++i)
+        path.lineTo(m_linePoints[i]);
+
+    setPath(path);
+}
+
+
+double GraphicsItemNode::distance(QPointF p1, QPointF p2) const
+{
+    double xDiff = p1.x() - p2.x();
+    double yDiff = p1.y() - p2.y();
+    return sqrt(xDiff * xDiff + yDiff * yDiff);
+}
+
+
+
+double GraphicsItemNode::getDrawnWidth() const
+{
+    return g_settings->widthScale(g_absoluteZoom) * m_width;
+}
+
+
+bool GraphicsItemNode::usePositiveNodeColour()
+{
+    return !m_hasArrow || m_deBruijnNode->m_number > 0;
+}
+
+
+
+QPointF GraphicsItemNode::getCentre() const
+{
+    //If there are an odd number of points, return the
+    //centre one.
+    if (m_linePoints.size() % 2 == 1)
+        return m_linePoints[(m_linePoints.size() - 1) / 2];
+
+    //If there are an even number of points, return the
+    //mean location of the centre two.
+    else
+    {
+        QPointF centre1 = m_linePoints[m_linePoints.size() / 2 - 1];
+        QPointF centre2 = m_linePoints[m_linePoints.size() / 2];
+
+        return QPointF((centre1.x() + centre2.x()) / 2.0,
+                       (centre1.y() + centre2.y()) / 2.0);
+    }
+}
+
+
+
+QString GraphicsItemNode::getNodeText()
+{
+    QString nodeText;
+
+    if (g_settings->displayNodeCustomLabels && m_deBruijnNode->m_customLabel.length() > 0)
+        nodeText += m_deBruijnNode->m_customLabel + "\n";
+    if (g_settings->displayNodeNumbers)
+        nodeText += formatIntForDisplay(m_deBruijnNode->m_number) + "\n";
+    if (g_settings->displayNodeLengths)
+        nodeText += formatIntForDisplay(m_deBruijnNode->m_length) + " bp\n";
+    if (g_settings->displayNodeCoverages)
+        nodeText += formatDoubleForDisplay(m_deBruijnNode->m_coverage, 1) + "x\n";
+
+    //Remove last newline before returning
+    return nodeText.left(nodeText.size()-1);
+}
+
+
+
+QSize GraphicsItemNode::getNodeTextSize(QString text)
+{
+    QFontMetrics fontMetrics(g_settings->displayFont);
+    return fontMetrics.size(0, text);
+}
+
+
+QColor GraphicsItemNode::getCoverageColour()
+{
+    double fraction = 1.0 - (1.0 / pow(2.0, m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage));  //Asymptotically approaches 1 as the coverage goes up
+
+    int redDifference = g_settings->maxCoverageColour.red() - g_settings->minCoverageColour.red();
+    int greenDifference = g_settings->maxCoverageColour.green() - g_settings->minCoverageColour.green();
+    int blueDifference = g_settings->maxCoverageColour.blue() - g_settings->minCoverageColour.blue();
+
+    int red = int(g_settings->minCoverageColour.red() + (fraction * redDifference) + 0.5);
+    int green = int(g_settings->minCoverageColour.green() + (fraction * greenDifference) + 0.5);
+    int blue = int(g_settings->minCoverageColour.blue() + (fraction * blueDifference) + 0.5);
+
+    return QColor(red, green, blue);
+}
+
+
+
+void GraphicsItemNode::setWidth()
+{
+    m_width = g_settings->coverageContigWidth * m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage +
+            g_settings->minimumContigWidth;
+    if (m_width > g_settings->maxContigWidth)
+        m_width = g_settings->maxContigWidth;
+}
+
