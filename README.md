@@ -1,8 +1,8 @@
-# Clewview
+# Bandage
 
-Clewview is a GUI program that allows users to interact with the assembly graphs made by *de novo* assemblers Velvet and SPAdes.
+Bandage is a GUI program that allows users to interact with the assembly graphs made by *de novo* assemblers Velvet and SPAdes.
 
-*De novo* assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Clewview visualises assembly graphs, with connections, using graph layout algorithms.  Nodes in the drawn graph, which represent contigs, can be automatically labelled with their ID, length or depth.  Users can interact with the graph by moving, labelling and colouring nodes.  Sequence information can also be extracted directly from the graph viewer.  By displaying connections between contigs, Clewview opens up new possibilities for analysing *de novo* assemblies that are not possible by looking at contigs alone.
+*De novo* assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Bandage visualises assembly graphs, with connections, using graph layout algorithms.  Nodes in the drawn graph, which represent contigs, can be automatically labelled with their ID, length or depth.  Users can interact with the graph by moving, labelling and colouring nodes.  Sequence information can also be extracted directly from the graph viewer.  By displaying connections between contigs, Bandage opens up new possibilities for analysing *de novo* assemblies that are not possible by looking at contigs alone.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Compiled binaries are available in the GitHub 'Releases' section for Linx, OS X 
 
 ### Linux
 
-The following instructions successfully build Clewview on a fresh installation of Ubuntu 14.04:
+The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04:
 
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
 2. Install the prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev`
@@ -19,19 +19,19 @@ The following instructions successfully build Clewview on a fresh installation o
   2. Open a terminal in the OGDF directory.
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
-4. Download the Clewview code from GitHub: `git clone https://github.com/rrwick/Clewview`
-5. Ensure that the Clewview directory and the OGDF directory are stored in the same parent directory
-6. Open a terminal in the Clewview directory.
+4. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
+5. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory
+6. Open a terminal in the Bandage directory.
 7. Set the environment variable to specify that you will be using Qt 5, not Qt 4: `export QT_SELECT=5`
 8. Run qmake to generate a Makefile: `qmake`
 9. Build the program: `make`
-10. `Clewview` should now be an executable file.
+10. `Bandage` should now be an executable file.
 11. Optionally, copy the program into /usr/local/bin: `sudo make install`
 12. Optionally, delete the built OGDF library.
 
 ### Mac
 
-The following instructions successfully build Clewview on OS X 10.9 Mavericks:
+The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 
 1. Install Xcode, along with the Xcode Command Line Tools.
 2. Install Homebrew: [http://brew.sh/](http://brew.sh/)
@@ -42,20 +42,20 @@ The following instructions successfully build Clewview on OS X 10.9 Mavericks:
   2. Open a terminal in the OGDF directory
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
-5. Download the Clewview code from GitHub: `git clone https://github.com/rrwick/Clewview`
-6. Ensure that the Clewview directory and the OGDF directory are stored in the same parent directory
-7. Open a terminal in the Clewview directory
+5. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
+6. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory
+7. Open a terminal in the Bandage directory
 8. Run qmake to generate a Makefile: `/usr/local/opt/qt5/bin/qmake`
   * Depending on how Qt was installed, qmake may be located elsewhere.
 9. Build the program: `make`
-  * On earlier versions of OS X, the build may fail.  If so, remove this line from the Clewview.pro file, `CONFIG += C++11`, run qmake again and then make again.
-10. `Clewview` should now be an application bundle.
+  * On earlier versions of OS X, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
+10. `Bandage` should now be an application bundle.
 11. Optionally, copy the program into the 'Applications' folder.
 12. Optionally, delete the built OGDF library.
 
 ### Windows
 
-Building Clewview in Windows is more challenging than in Linux or OS X, but it can be done.  If you would like to, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
+Building Bandage in Windows is more challenging than in Linux or OS X, but it can be done.  If you would like to, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
 
 ## Usage
 
@@ -63,7 +63,7 @@ Building Clewview in Windows is more challenging than in Linux or OS X, but it c
 
 ##### Usage
 
-1. Open a Clewview window.
+1. Open a Bandage window.
 2. Load a graph file using the 'File' menu, either a LastGraph file from Velvet or a FASTG file from SPAdes.  For large graph files, this may take a few seconds or more.
 3. Click the 'Draw graph' button now to visualise the entire graph.
 
@@ -149,7 +149,7 @@ The structure of the graph is highly dependant on the k-mer size used for assemb
 
 If your graph consists of many separate disconnected subgraphs (i.e. there are many small groups of contigs that have no connections to the rest of the graph), then your k-mer size may be too large.  Alternatively, if your graph is connected (i.e. all contigs are tied together in a single graph structure) but is very dense and tangled, then your k-mer size may be too small.
 
-When assembling 100 bp reads in Velvet, a k-mer of 51 would be a good starting point, and then adjust up or down as needed.  SPAdes conveniently conducts assembly multiple times using different k-mers, so you can look at the FASTG files for each assembly (in folders named like K21, K33, etc.) to find the best graph for viewing in Clewview.
+When assembling 100 bp reads in Velvet, a k-mer of 51 would be a good starting point, and then adjust up or down as needed.  SPAdes conveniently conducts assembly multiple times using different k-mers, so you can look at the FASTG files for each assembly (in folders named like K21, K33, etc.) to find the best graph for viewing in Bandage.
 
 ## Contributing
 
