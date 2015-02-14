@@ -18,37 +18,160 @@
 
   <body>
     <header>
-      <div class="inner">
+	<div class="inner">
+      <p style="float: left;">
+	    <img src="images/logo.png" class="logo">
+      </p>
+      <div>
         <h1>Bandage</h1>
-        <h2>a Bioinformatics Application for Navigating De novo Assembly Graphs Easily</h2>
-        <a href="https://github.com/rrwick/Bandage" class="button"><small>View project on</small> GitHub</a>
+        <h2>a <u>B</u>ioinformatics <u>A</u>pplication for <u>N</u>avigating <i><u>D</u>e novo</i> <u>A</u>ssembly <u>G</u>raphs <u>E</u>asily
       </div>
+    </div>
+      
     </header>
 
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h1>
-<a id="bandage" class="anchor" href="#bandage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bandage</h1>
+		
+		
+	
+		  
+<p><em>De novo</em> assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Bandage is a program for visualising assembly graphs using graph layout algorithms.  By displaying connections between contigs, Bandage opens up new possibilities for analysing <em>de novo</em> assemblies that are not possible by looking at contigs alone.</p>
+
+
+
+
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul class="list-a">
+  <li>A layout algorithm is used to automatically position graph nodes.</li>
+  <li>Manually reposition and reshape nodes.</li>
+  <li>Zoom, pan and rotate the view using either mouse or keyboard controls.</li>
+  <li>View the entire assembly graph or only the region around nodes of interest.</li>
+  <li>Copy node sequences to the clipboard or save them to file.</li>
+  <li>Nodes are coloured using built-in colour schemes or user-defined colours.</li>
+  <li>Nodes are labelled using node number, length, coverage or a user-defined label.</li>
+
+  <li>Find nodes quickly in a large graph using their node numbers.</li>
+  <li>Specify the thickness of nodes and allow thickness to reflect the node's coverage.</li>
+  <li>Define the relationship between the length of a node and the length of its sequence.</li>
+  <li>Two possible styles for handling reverse complement nodes:
+    <ul class="list-a">
+      <li>Single: nodes and their reverse complements are drawn as one object with no direction.</li>
+      <li>Double: nodes are drawn using arrow heads to indicate direction and reverse complement nodes are drawn separately with arrow heads pointing the opposite direction.</li>
+    </ul>
+  </li>
+</ul>
+
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Uses</h2>
+
+<ul class="list-a">
+  <li>Assess and compare the quality of assemblies quickly and visually.</li>
+  <li>Identify problematic regions of an assembly.</li>
+  <li>Resolve ambiguities in the graph to improve or complete <i>de novo</i> assemblies.</li>
+  <li>Determine which other nodes have sequences that are contiguous with a node of interest.</li>
+  <li>Annotate graph images to illustrate assembly features.</li>
+  <li>Extract candidate sequences that extend through multiple nodes.</li>
+</ul>
+
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Bandage works equally well on Windows, OS X and Linux.  Users are encouraged to download binary executables using the links on this page or from the GitHub page:
+<a href="https://github.com/rrwick/Bandage/releases/">github.com/rrwick/Bandage/releases</a>.  No installation is necessary – just unzip and run.  Windows and Mac binaries come packaged with all necessary libraries.  The Linux binary has a couple of dependencies, specified in the zip file.</p>
+
+<p>Alternatively, you can download the source code from GitHub and build Bandage yourself.</p>
+
+
+
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<p>To construct an easy to understand case, let's construct a hypothetical bacterial genome that contains a single repeated element.  We then simulate 100 bp reads from this sequence and assemlble using Velvet.</p>
+
+<div style="text-align: center;">
+<div class="diagram" style="max-width:100%; margin-bottom: 20px;">
+<img src="images/simple1.png" class="diagram"><br>
+</div>
+</div>
+
+<p>Due to fact that the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig.  Rather, three contigs are produced: one for the repeated element (even though it occurs twice) and one for each sequence between the repeated elements.</p>
+
+<p>Given only the contigs, the relationship between these sequences is not clear.  However, the assembly graph contains additional information, and when visualised in Bandage, the relationship between the contigs is made apparent.</p>
+
+<div style="text-align: center;">
+
+<div class="diagram" style="max-width:40%; margin-right: 5%; margin-left: %; margin-bottom: 20px;">
+<img src="images/simple2.png" class="diagram"><br>
+<small-green>The assembly graph, as it appears in Bandage</small-green>
+</div>
+
+<div class="diagram" style="max-width:40%; margin-right: 5%; margin-left: 5%; margin-bottom: 20px;">
+<img src="images/simple3.png" class="diagram"><br>
+<small-green>Possible underlying sequences compatible with the assembly graph</small-green>
+</div>
+
+</div>
+
+
+<p>There are two possible underlying sequences compatible with that graph.  It could come from two separate circular sequences that share a region in common, or from a single larger circular sequence with an element that occurs twice.  Additional information, such as previous knowledge on the approimate size of the genome, can help the user to rule out the first alternative.  In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
+
+
+
+
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
+
+
+
+
+<p></p>
+
+
+
         </section>
 
         <aside id="sidebar">
-          <a href="https://github.com/rrwick/Bandage/zipball/master" class="button">
+          <a href="https://github.com/rrwick/Bandage/releases/download/v1.0.1/Bandage_Linux_v1.0.1.zip" class="button_linux">
             <small>Download</small>
-            .zip file
+            Linux
           </a>
-          <a href="https://github.com/rrwick/Bandage/tarball/master" class="button">
+          <a href="https://github.com/rrwick/Bandage/releases/download/v1.0.1/Bandage_Mac_v1.0.1.zip" class="button_mac">
             <small>Download</small>
-            .tar.gz file
+            Mac
           </a>
+          <a href="https://github.com/rrwick/Bandage/releases/download/v1.0.1/Bandage_Windows_v1.0.1.zip" class="button_windows">
+            <small>Download</small>
+            Windows
+          </a>
+		  <a href="https://github.com/rrwick/Bandage" class="button_github">
+		    <small>View project on</small>
+			GitHub
+	      </a>
 
-          <p class="repo-owner"><a href="https://github.com/rrwick/Bandage"></a> is maintained by <a href="https://github.com/rrwick">rrwick</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+          <p class="repo-owner"><a href="https://github.com/rrwick/Bandage"></a>Bandage is made by <a href="https://github.com/rrwick">Ryan Wick</a>.</p>
         </aside>
       </div>
     </div>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-59453959-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
