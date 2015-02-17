@@ -36,7 +36,7 @@ The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 1. Install Xcode, along with the Xcode Command Line Tools.
 2. Install Homebrew: [http://brew.sh/](http://brew.sh/)
 3. Install the Qt 5 package: `brew install qt5`
-  * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: [http://www.qt.io/download-open-source/](http://www.qt.io/download-open-source/).  The disk space require can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+  * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: [http://www.qt.io/download-open-source/](http://www.qt.io/download-open-source/).  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 4. Prepare the OGDF library:
   1. Download the OGDF code from www.ogdf.net
   2. Open a terminal in the OGDF directory
