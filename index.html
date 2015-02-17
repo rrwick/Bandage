@@ -84,7 +84,7 @@
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Bandage works equally well on Windows, OS X and Linux.  Users are encouraged to download binary executables using the links on this page or from the GitHub page:
-<a href="https://github.com/rrwick/Bandage/releases/">github.com/rrwick/Bandage/releases</a>.  No installation is necessary – just unzip and run.  Windows and Mac binaries come packaged with all necessary libraries.  The Linux binary has a couple of dependencies, specified in the zip file.</p>
+<a href="https://github.com/rrwick/Bandage/releases/" target="_blank">github.com/rrwick/Bandage/releases</a>.  No installation is necessary – just unzip and run.  Windows and Mac binaries come packaged with all necessary libraries.  The Linux binary has a couple of dependencies, specified in the zip file.</p>
 
 <p>Alternatively, you can download the source code from GitHub and build Bandage yourself.</p>
 
@@ -94,7 +94,7 @@
 <h2>
 <a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
 
-<p>To construct an easy to understand case, let's construct a hypothetical bacterial genome that contains a single repeated element.  We then simulate 100 bp reads from this sequence and assemlble using Velvet.</p>
+<p>For an easy to understand case, let's use a hypothetical bacterial genome that contains a single repeated element (though for the moment, this genome is unknown to the user).  We then simulate 100 bp reads from this sequence and assemble using Velvet.</p>
 
 <div style="text-align: center;">
 <div class="diagram" style="max-width:100%; margin-bottom: 20px;">
@@ -102,18 +102,18 @@
 </div>
 </div>
 
-<p>Due to fact that the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig.  Rather, three contigs are produced: one for the repeated element (even though it occurs twice) and one for each sequence between the repeated elements.</p>
+<p>Because the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig.  Rather, three contigs are produced: one for the repeated element (even though it occurs twice) and one for each sequence between the repeated elements.</p>
 
-<p>Given only the contigs, the relationship between these sequences is not clear.  However, the assembly graph contains additional information, and when visualised in Bandage, the relationship between the contigs is made apparent.</p>
+<p>Given only the contigs, the relationship between these sequences is not clear.  However, the assembly graph contains additional information, and when visualised in Bandage, it is made apparent.</p>
 
 <div style="text-align: center;">
 
-<div class="diagram" style="max-width:40%; margin-right: 5%; margin-left: %; margin-bottom: 20px;">
+<div class="diagram" style="max-width:25%; margin-right: 5%; margin-left: %; margin-bottom: 20px;">
 <img src="images/simple2.png" class="diagram"><br>
 <small-green>The assembly graph, as it appears in Bandage</small-green>
 </div>
 
-<div class="diagram" style="max-width:40%; margin-right: 5%; margin-left: 5%; margin-bottom: 20px;">
+<div class="diagram" style="max-width:55%; margin-right: 5%; margin-left: 5%; margin-bottom: 20px;">
 <img src="images/simple3.png" class="diagram"><br>
 <small-green>Possible underlying sequences compatible with the assembly graph</small-green>
 </div>
@@ -121,15 +121,81 @@
 </div>
 
 
-<p>There are two possible underlying sequences compatible with that graph.  It could come from two separate circular sequences that share a region in common, or from a single larger circular sequence with an element that occurs twice.  Additional information, such as previous knowledge on the approimate size of the genome, can help the user to rule out the first alternative.  In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
-
-
-
+<p style="margin: 0">There are two possible underlying sequences compatible with this graph:</p>
+<ul class="list-a" style="margin: 5px">
+  <li>Two separate circular sequences that share a region in common</li>
+  <li>A single larger circular sequence with an element that occurs twice</li>
+</ul>
+<p>Additional information, such as prior knowledge on the approximate size of the genome, can help the user to rule out the first alternative.  In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
 
 
 <h2>
 <a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
 
+<p>These graphs are the same bacterial isolate assembled in SPAdes using three different k-mer values:</p>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot01.png" target="_blank">
+<img src="images/screenshots/screenshot01_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>K-mer of 27.  This value is too small, resulting in short contigs and many connections, giving a dense tangled graph.</small-green>
+</div>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot02.png" target="_blank">
+<img src="images/screenshots/screenshot02_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>K-mer of 77.  This is a good balance, giving long contigs that are well connected.</small-green>
+</div>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot03.png" target="_blank">
+<img src="images/screenshots/screenshot03_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>K-mer of 127.  This value is too large, resulting in the graph breaking into many discontinuous pieces.</small-green>
+</div>
+
+<p></p>
+<p>The following two images illustrate the difference between single and double nodes:</p>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot04.png" target="_blank">
+<img src="images/screenshots/screenshot04_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>Single nodes, each holding both forward and reverse sequences.</small-green>
+</div>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot05.png" target="_blank">
+<img src="images/screenshots/screenshot05_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>Double nodes, where forward and reverse nodes are drawn separately.</small-green>
+</div>
+
+<p></p>
+<p>Examples of custom colouring and labelling of nodes in Bandage:</p>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot06.png" target="_blank">
+<img src="images/screenshots/screenshot06_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>A bacterial transposon that shares a gene with the cloning vector.</small-green>
+</div>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot07.png" target="_blank">
+<img src="images/screenshots/screenshot07_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>Assembly graph from metagenomic reads that align to particular 16S genes.</small-green>
+</div>
+
+<p></p>
+<p>A very large graph from a metagenome assembly, displayed in Bandage:</p>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot08.png" target="_blank">
+<img src="images/screenshots/screenshot08_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>Zoomed out view, showing large-scale structure.</small-green>
+</div>
+
+<div class="screenshot_thumbnail" style="width: 210px;">
+<a href="images/screenshots/screenshot09.png" target="_blank">
+<img src="images/screenshots/screenshot09_thumb.png" class="screenshot_thumbnail"></a><br>
+<small-green>Zoomed in view of smaller subgraphs.</small-green>
+</div>
 
 
 

@@ -1,4 +1,4 @@
-/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
+h/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 
 /**
  * 1. Set default font family to sans-serif.
@@ -12,7 +12,7 @@ html {
   -ms-text-size-adjust: 100%; /* 2 */
 }
 
-ul.list-a {list-style-type: disc;}
+ul.list-a {list-style-type: disc; margin-top: 0px;}
 
 img.logo {
     max-height: 115px;
@@ -51,7 +51,7 @@ div.screenshot_thumbnail {
 }
 
 img.screenshot_thumbnail {
-  max-height: 100px;
+  max-height: 150px;
   border-top: 1px solid #417378;
   border-right: 1px solid #417378;
   border-bottom: 1px solid #417378;
