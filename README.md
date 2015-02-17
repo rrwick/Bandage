@@ -17,7 +17,7 @@ The following instructions successfully build Bandage on a fresh installation of
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
 2. Install the prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev`
 3. Prepare the OGDF library:
-  1. Download the OGDF code:  [http://www.ogdf.net/](http://www.ogdf.net/)
+  1. Download the OGDF code: <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a>
   2. Open a terminal in the OGDF directory.
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
@@ -36,11 +36,11 @@ The following instructions successfully build Bandage on a fresh installation of
 The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 
 1. Install Xcode, along with the Xcode Command Line Tools.
-2. Install Homebrew: [http://brew.sh/](http://brew.sh/)
+2. Install Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>
 3. Install the Qt 5 package: `brew install qt5`
-  * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: [http://www.qt.io/download-open-source/](http://www.qt.io/download-open-source/).  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+  * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 4. Prepare the OGDF library:
-  1. Download the OGDF code from www.ogdf.net
+  1. Download the OGDF code from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a>
   2. Open a terminal in the OGDF directory
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
