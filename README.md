@@ -1,4 +1,4 @@
-# Bandage
+# ![alt text](http://rrwick.github.io/Bandage/images/logo-small.png "Bandage") Bandage
 
 Bandage is a GUI program that allows users to interact with the assembly graphs made by *de novo* assemblers Velvet and SPAdes.
 
