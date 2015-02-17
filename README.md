@@ -42,8 +42,9 @@ The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 4. Prepare the OGDF library:
   1. Download the OGDF code from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a>
   2. Open a terminal in the OGDF directory
-  3. Create the Makefile: `./makeMakefile.sh`
-  4. Compile the library: `make`
+  4. Create the Makefile: `./makeMakefile.sh`
+    * If this step gives you segmentation fault errors (may occur on OS X 10.10 Yosemite), set this environment variable and try again: `export MACOSX_DEPLOYMENT_TARGET=10.9`
+  5. Compile the library: `make`
 5. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
 6. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory
 7. Open a terminal in the Bandage directory
