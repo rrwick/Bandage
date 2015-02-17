@@ -8,7 +8,7 @@ More information and screenshots are on the Bandage website: <a href="http://rrw
 
 ## Installation
 
-Compiled 64-bit binaries for Linux, OS X and Windows are available in the GitHub 'Releases' section and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
+Compiled 64-bit binaries for Linux, OS X and Windows are available in the GitHub <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">'Releases' section</a> and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
 
 ### Linux
 
