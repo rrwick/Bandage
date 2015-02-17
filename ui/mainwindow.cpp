@@ -577,8 +577,6 @@ void MainWindow::selectionChanged()
         else
             ui->selectedContigNumberLabel->setText("Node numbers: " + selectedNodeListText);
         ui->selectedContigLengthLabel2->setText(selectedNodeLengthText);
-
-        ui->startingNodesLineEdit->setText(selectedNodeListText);
     }
 
 
@@ -688,6 +686,18 @@ void MainWindow::graphScopeChanged()
 
 void MainWindow::drawGraph()
 {
+    if (g_settings->graphScope == AROUND_NODE)
+    {
+        std::vector<DeBruijnNode *> startingNodes = getNodeNumbersFromLineEdit(ui->startingNodesLineEdit);
+
+        if (startingNodes.size() == 0)
+        {
+            QMessageBox::information(this, "No starting nodes",
+                                     "Please enter at least one starting node when drawing the graph using the 'Around node(s)' scope.");
+            return;
+        }
+    }
+
     g_settings->doubleMode = ui->doubleNodesRadioButton->isChecked();
     resetScene();
     setRandomColourFactor();
