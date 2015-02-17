@@ -4,11 +4,11 @@ Bandage is a GUI program that allows users to interact with the assembly graphs 
 
 *De novo* assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Bandage visualises assembly graphs, with connections, using graph layout algorithms.  Nodes in the drawn graph, which represent contigs, can be automatically labelled with their ID, length or depth.  Users can interact with the graph by moving, labelling and colouring nodes.  Sequence information can also be extracted directly from the graph viewer.  By displaying connections between contigs, Bandage opens up new possibilities for analysing *de novo* assemblies that are not possible by looking at contigs alone.
 
-More information and screenshots are on the Bandage website: [http://rrwick.github.io/Bandage/](http://rrwick.github.io/Bandage/).
+More information and screenshots are on the Bandage website: <a href="http://rrwick.github.io/Bandage/" target="_blank">rrwick.github.io/Bandage</a>
 
 ## Installation
 
-Compiled binaries for Linux, OS X and Windows are available in the GitHub 'Releases' section and from the [Bandage website](http://rrwick.github.io/Bandage/).
+Compiled binaries for Linux, OS X and Windows are available in the GitHub 'Releases' section and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
 
 ### Linux
 
