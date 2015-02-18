@@ -38,7 +38,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 1. Install Xcode, along with the Xcode Command Line Tools.
 2. Install Qt 5
   * On recent versions of OS X (10.8 and later), this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>.  Install the Qt 5 package with this command: `brew install qt5`
-  * For OS X 10.7, it may be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+  * For OS X 10.7, it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 3. Prepare the OGDF library:
   1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
   2. Open a terminal in the OGDF directory.
