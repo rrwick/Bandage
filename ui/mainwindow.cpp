@@ -46,6 +46,7 @@
 #include <QInputDialog>
 #include <QShortcut>
 #include "aboutdialog.h"
+#include <QMainWindow>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -203,6 +204,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
             if (reply == QMessageBox::No)
                 return;
         }
+
         resetScene();
         cleanUp();
 
@@ -223,6 +225,8 @@ void MainWindow::loadGraphFile(QString graphFileType)
         //Disable UI elements that aren't applicable until the graph is drawn
         ui->graphDisplayGroupBox->setEnabled(false);
         ui->nodeLabelsGroupBox->setEnabled(false);
+
+        setWindowTitle("Bandage - " + fullFileName);
     }
 }
 
