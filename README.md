@@ -40,14 +40,13 @@ The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 3. Install the Qt 5 package: `brew install qt5`
   * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 4. Prepare the OGDF library:
-  1. Download the OGDF code from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a>
-  2. Open a terminal in the OGDF directory
+  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
+  2. Open a terminal in the OGDF directory.
   4. Create the Makefile: `./makeMakefile.sh`
-    * If this step gives you segmentation fault errors (may occur on OS X 10.10 Yosemite), set this environment variable and try again: `export MACOSX_DEPLOYMENT_TARGET=10.9`
   5. Compile the library: `make`
 5. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
-6. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory
-7. Open a terminal in the Bandage directory
+6. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory.
+7. Open a terminal in the Bandage directory.
 8. Run qmake to generate a Makefile: `/usr/local/opt/qt5/bin/qmake`
   * Depending on how Qt was installed, qmake may be located elsewhere.
 9. Build the program: `make`
