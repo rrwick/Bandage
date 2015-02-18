@@ -37,8 +37,8 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 
 1. Install Xcode, along with the Xcode Command Line Tools.
 2. Install Qt 5
-  * On recent versions of OS X (10.8 and later), this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>.  Install the Qt 5 package with this command: `brew install qt5`
-  * For OS X 10.7, it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+  * For OS X 10.8 and later this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>.  Install the Qt 5 package with this command: `brew install qt5`
+  * For OS X 10.7 (or if the Homebrew install fails), it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 3. Prepare the OGDF library:
   1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
   2. Open a terminal in the OGDF directory.
@@ -51,7 +51,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
   * If Qt was install with Homebrew, this command will work: `/usr/local/opt/qt5/bin/qmake`
   * If Qt was installed using the Qt installer, qmake will be located here: `QT_INSTALL_DIRECTORY/QT_VERSION/clang_64/bin/qmake`
 8. Build the program: `make`
-  * On OS X 10.7, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
+  * On OS X 10.7 and 10.8, it is first necessary to remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
 9. `Bandage` should now be an application bundle.
 10. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
 11. Optionally, delete the OGDF directory.
