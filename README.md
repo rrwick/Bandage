@@ -52,7 +52,7 @@ The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 9. Build the program: `make`
   * On earlier versions of OS X, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
 10. `Bandage` should now be an application bundle.
-11. Optionally, copy the program into the 'Applications' folder.
+11. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build folder.
 12. Optionally, delete the built OGDF library.
 
 ### Windows
