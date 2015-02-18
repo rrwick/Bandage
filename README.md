@@ -29,31 +29,32 @@ The following instructions successfully build Bandage on a fresh installation of
 9. Build the program: `make`
 10. `Bandage` should now be an executable file.
 11. Optionally, copy the program into /usr/local/bin: `sudo make install`.  The Bandage build directory can then be deleted.
-12. Optionally, delete the built OGDF library.
+12. Optionally, delete the OGDF directory.
 
 ### Mac
 
-The following instructions successfully build Bandage on OS X 10.9 Mavericks:
+The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 (Mountain Lion) 10.9 (Mavericks) and 10.10 (Yosemite):
 
 1. Install Xcode, along with the Xcode Command Line Tools.
-2. Install Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>
-3. Install the Qt 5 package: `brew install qt5`
-  * If this fails (may happen on older versions of OS X), it may be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
-4. Prepare the OGDF library:
+2. Install Qt 5
+  * On recent versions of OS X (10.8 and later), this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>.  Install the Qt 5 package with this command: `brew install qt5`
+  * For OS X 10.7, it may be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+3. Prepare the OGDF library:
   1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
   2. Open a terminal in the OGDF directory.
   4. Create the Makefile: `./makeMakefile.sh`
   5. Compile the library: `make`
-5. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
-6. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory.
-7. Open a terminal in the Bandage directory.
-8. Run qmake to generate a Makefile: `/usr/local/opt/qt5/bin/qmake`
-  * Depending on how Qt was installed, qmake may be located elsewhere.
-9. Build the program: `make`
-  * On earlier versions of OS X, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
-10. `Bandage` should now be an application bundle.
-11. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
-12. Optionally, delete the built OGDF library.
+4. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
+5. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory.
+6. Open a terminal in the Bandage directory.
+7. Run qmake to generate a Makefile:
+  * If Qt was install with Homebrew, this command will work: `/usr/local/opt/qt5/bin/qmake`
+  * If Qt was installed using the Qt installer, qmake will be located here: `QT_INSTALL_DIRECTORY/QT_VERSION/clang_64/bin/qmake`
+8. Build the program: `make`
+  * On OS X 10.7, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
+9. `Bandage` should now be an application bundle.
+10. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
+11. Optionally, delete the OGDF directory.
 
 ### Windows
 
