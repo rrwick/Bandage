@@ -28,7 +28,7 @@ The following instructions successfully build Bandage on a fresh installation of
 8. Run qmake to generate a Makefile: `qmake`
 9. Build the program: `make`
 10. `Bandage` should now be an executable file.
-11. Optionally, copy the program into /usr/local/bin: `sudo make install`
+11. Optionally, copy the program into /usr/local/bin: `sudo make install`.  The Bandage build directory can then be deleted.
 12. Optionally, delete the built OGDF library.
 
 ### Mac
@@ -52,7 +52,7 @@ The following instructions successfully build Bandage on OS X 10.9 Mavericks:
 9. Build the program: `make`
   * On earlier versions of OS X, the build may fail.  If so, remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
 10. `Bandage` should now be an application bundle.
-11. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build folder.
+11. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
 12. Optionally, delete the built OGDF library.
 
 ### Windows
