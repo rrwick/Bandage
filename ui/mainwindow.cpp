@@ -870,7 +870,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
 }
 
 
-std::vector<DeBruijnNode *> MainWindow::getNodeNumbersFromLineEdit(QLineEdit * lineEdit)
+std::vector<DeBruijnNode *> MainWindow::getNodeNumbersFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -882,6 +882,8 @@ std::vector<DeBruijnNode *> MainWindow::getNodeNumbersFromLineEdit(QLineEdit * l
         int nodeNumber = nodesList.at(i).toInt();
         if (m_deBruijnGraphNodes.contains(nodeNumber))
             returnVector.push_back(m_deBruijnGraphNodes[nodeNumber]);
+        else if (nodesNotInGraph != 0)
+            nodesNotInGraph->push_back(nodesList.at(i).trimmed());
     }
 
     return returnVector;
@@ -1462,17 +1464,19 @@ void MainWindow::selectUserSpecifiedNodes()
 {
     if (ui->selectionSearchNodesLineEdit->text().length() == 0)
     {
-        QMessageBox::information(this, "No nodes", "Please enter the numbers of the nodes to find, separated by commas.");
+        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
         return;
     }
 
     m_scene->clearSelection();
-    std::vector<DeBruijnNode *> nodesToSelect = getNodeNumbersFromLineEdit(ui->selectionSearchNodesLineEdit);
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect = getNodeNumbersFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
 
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
     QRectF boundingBox;
+    std::vector<int> nodesNotFound;
     int foundNodes = 0;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
@@ -1490,16 +1494,42 @@ void MainWindow::selectUserSpecifiedNodes()
             boundingBox = boundingBox | thisNodeBoundingBox;
             ++foundNodes;
         }
+        else
+            nodesNotFound.push_back(nodesToSelect[i]->m_number);
     }
 
+    if (foundNodes > 0)
+        zoomToFitRect(boundingBox);
 
-    if (foundNodes == 0)
+    if (nodesNotInGraph.size() > 0 || nodesNotFound.size() > 0)
     {
-        QMessageBox::information(this, "Nodes not found", "The nodes searched for were not found in the displayed graph.");
-        return;
+        QString errorMessage;
+        if (nodesNotInGraph.size() > 0)
+        {
+            errorMessage += "The following nodes are not in the graph:\n";
+            for (size_t i = 0; i < nodesNotInGraph.size(); ++i)
+            {
+                errorMessage += nodesNotInGraph[i];
+                if (i != nodesNotInGraph.size() - 1)
+                    errorMessage += ", ";
+            }
+            errorMessage += "\n";
+        }
+        if (nodesNotFound.size() > 0)
+        {
+            if (errorMessage.length() > 0)
+                errorMessage += "\n";
+            errorMessage += "The following nodes are in the graph but not currently displayed:\n";
+            for (size_t i = 0; i < nodesNotFound.size(); ++i)
+            {
+                errorMessage += QString::number(nodesNotFound[i]);
+                if (i != nodesNotFound.size() - 1)
+                    errorMessage += ", ";
+            }
+            errorMessage += "\nRedraw the graph with an increased scope to see these nodes.\n";
+        }
+        QMessageBox::information(this, "Nodes not found", errorMessage);
     }
-
-    zoomToFitRect(boundingBox);
 }
 
 
