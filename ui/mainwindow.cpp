@@ -1460,16 +1460,20 @@ void MainWindow::openSettingsDialog()
 
 void MainWindow::selectUserSpecifiedNodes()
 {
+    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
+    {
+        QMessageBox::information(this, "No nodes", "Please enter the numbers of the nodes to find, separated by commas.");
+        return;
+    }
+
     m_scene->clearSelection();
     std::vector<DeBruijnNode *> nodesToSelect = getNodeNumbersFromLineEdit(ui->selectionSearchNodesLineEdit);
-
-    if (nodesToSelect.size() == 0)
-        return;
 
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
     QRectF boundingBox;
+    int foundNodes = 0;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
         GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->m_graphicsItemNode;
@@ -1484,7 +1488,15 @@ void MainWindow::selectUserSpecifiedNodes()
             graphicsItemNode->setSelected(true);
             QRectF thisNodeBoundingBox = graphicsItemNode->boundingRect();
             boundingBox = boundingBox | thisNodeBoundingBox;
+            ++foundNodes;
         }
+    }
+
+
+    if (foundNodes == 0)
+    {
+        QMessageBox::information(this, "Nodes not found", "The nodes searched for were not found in the displayed graph.");
+        return;
     }
 
     zoomToFitRect(boundingBox);
