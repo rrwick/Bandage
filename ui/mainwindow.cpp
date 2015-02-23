@@ -554,7 +554,6 @@ void MainWindow::selectionChanged()
         if (selectedNodes.size() == 1)
         {
             ui->selectedNodesGroupBox->setTitle("Currently selected node");
-            ui->selectedContigLengthLabel1->setText("Length:");
             ui->nodeSequenceToClipboardButton->setText("Copy sequence to clipboard");
             ui->nodeSequenceToFileButton->setText("Save sequence to FASTA file");
             ui->removeNodeButton->setText("Remove node");
@@ -562,7 +561,6 @@ void MainWindow::selectionChanged()
         else
         {
             ui->selectedNodesGroupBox->setTitle("Currently selected nodes");
-            ui->selectedContigLengthLabel1->setText("Total length:");
             ui->nodeSequenceToClipboardButton->setText("Copy sequences to clipboard");
             ui->nodeSequenceToFileButton->setText("Save sequences to FASTA file");
             ui->removeNodeButton->setText("Remove nodes");
@@ -575,12 +573,16 @@ void MainWindow::selectionChanged()
 
         getSelectedNodeInfo(selectedNodeCount, selectedNodeCountText, selectedNodeListText, selectedNodeLengthText);
 
-        ui->selectedContigCountLabel2->setText(selectedNodeCountText);
         if (selectedNodeCount == 1)
-            ui->selectedContigNumberLabel->setText("Node number: " + selectedNodeListText);
+        {
+            ui->selectedContigNumberLabel->setText("<b>Selected node:</b> " + selectedNodeListText);
+            ui->selectedContigLengthLabel->setText("<b>Length:</b> " + selectedNodeLengthText);
+        }
         else
-            ui->selectedContigNumberLabel->setText("Node numbers: " + selectedNodeListText);
-        ui->selectedContigLengthLabel2->setText(selectedNodeLengthText);
+        {
+            ui->selectedContigNumberLabel->setText("<b>Selected nodes (" + selectedNodeCountText + "):</b> " + selectedNodeListText);
+            ui->selectedContigLengthLabel->setText("<b>Total length:</b> " + selectedNodeLengthText);
+        }
     }
 
 
