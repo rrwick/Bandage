@@ -114,6 +114,7 @@ private slots:
     void openAboutDialog();
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
+    void openLoadBlastResultsDialog();
 };
 
 #endif // MAINWINDOW_H

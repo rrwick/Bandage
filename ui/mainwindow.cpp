@@ -47,6 +47,7 @@
 #include <QShortcut>
 #include "aboutdialog.h"
 #include <QMainWindow>
+#include "loadblastresultsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -125,6 +126,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
+    connect(ui->setBlastResultsButton, SIGNAL(clicked()), this, SLOT(openLoadBlastResultsDialog()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1566,4 +1568,15 @@ void MainWindow::openAboutDialog()
 {
     AboutDialog aboutDialog(this);
     aboutDialog.exec();
+}
+
+
+void MainWindow::openLoadBlastResultsDialog()
+{
+    LoadBlastResultsDialog loadBlastResultsDialog(&m_deBruijnGraphNodes, this);
+
+    if (loadBlastResultsDialog.exec()) //The user clicked OK
+    {
+
+    }
 }
