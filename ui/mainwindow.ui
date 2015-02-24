@@ -14,7 +14,7 @@
    <string>Bandage</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../images/images.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -681,9 +681,9 @@ from selected node</string>
          </spacer>
         </item>
         <item>
-         <widget class="QGroupBox" name="nodeLabelsGroupBox_2">
+         <widget class="QGroupBox" name="blastResultsGroupBox">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -722,9 +722,9 @@ from selected node</string>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QPushButton" name="loadBlastResultsButton">
+            <widget class="QPushButton" name="setBlastResultsButton">
              <property name="text">
-              <string>Load BLAST results</string>
+              <string>Set BLAST results</string>
              </property>
             </widget>
            </item>
@@ -1231,6 +1231,8 @@ from selected node</string>
   <tabstop>nodeSequenceToClipboardButton</tabstop>
   <tabstop>nodeSequenceToFileButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../images/images.qrc"/>
+ </resources>
  <connections/>
 </ui>

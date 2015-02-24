@@ -76,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
+    //Blast search results is a null pointer until the user loads some
+    g_blastSearchResults = 0;
+
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
                                                   ogdf::GraphAttributes::edgeGraphics);
@@ -221,6 +224,9 @@ void MainWindow::loadGraphFile(QString graphFileType)
                 cleanUp();
             }
         }
+        //Enable UI elements that are now applicable that a graph is loaded
+        ui->graphDrawingGroupBox->setEnabled(true);
+        ui->blastResultsGroupBox->setEnabled(true);
 
         //Disable UI elements that aren't applicable until the graph is drawn
         ui->graphDisplayGroupBox->setEnabled(false);
@@ -317,7 +323,6 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
     }
 
     displayGraphDetails(nodeCount, edgeCount, totalLength, getMeanDeBruijnGraphCoverage());
-    ui->graphDrawingGroupBox->setEnabled(true);
 }
 
 
@@ -465,7 +470,6 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     }
 
     displayGraphDetails(nodeCount, edgeCount/2, totalLength, getMeanDeBruijnGraphCoverage());
-    ui->graphDrawingGroupBox->setEnabled(true);
 
     return true;
 }

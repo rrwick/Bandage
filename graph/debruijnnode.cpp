@@ -23,13 +23,14 @@
 #include "../program/settings.h"
 #include "graphicsitemnode.h"
 #include <math.h>
+#include "../blast/blastresult.h"
 
 DeBruijnNode::DeBruijnNode(int number, int length, double coverage, QByteArray sequence) :
     m_number(number), m_length(length), m_coverage(coverage),
     m_coverageRelativeToMeanDrawnCoverage(1.0), m_sequence(sequence),
     m_contiguityStatus(NOT_CONTIGUOUS), m_reverseComplement(0), m_ogdfNode(0),
     m_graphicsItemNode(0), m_startingNode(false), m_drawn(false), m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190))
+    m_customColour(QColor(190, 190, 190)), m_blastResult(0)
 {
 }
 

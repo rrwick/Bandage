@@ -23,6 +23,7 @@ Settings * g_settings;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
 int g_randomColourFactor;
+BlastSearchResults * g_blastSearchResults;
 
 
 QString formatIntForDisplay(int num)
