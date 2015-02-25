@@ -45,6 +45,7 @@ private:
 
     int getNodeNumberFromString(QString nodeString);
     BlastTarget * getTargetFromString(QString targetName);
+    void quitBlastHitLoading(QString error);
 
 private slots:
     void loadBlastTargets();

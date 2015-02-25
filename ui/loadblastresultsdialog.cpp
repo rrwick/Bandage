@@ -28,6 +28,7 @@
 #include <QStandardItemModel>
 #include "../program/globals.h"
 #include "../graph/debruijnnode.h"
+#include <QMessageBox>
 
 LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBruijnGraphNodes,
                                                QWidget *parent) :
@@ -74,9 +75,20 @@ void LoadBlastResultsDialog::loadBlastTargets()
             QString targetName = "";
 
             QTextStream in(&inputFile);
+            bool firstLine = true;
             while (!in.atEnd())
             {
                 QString line = in.readLine();
+
+                //If the first character in the file is not '>',
+                //then quit because this probably isn't a FASTA file.
+                if (firstLine && line.at(0) != '>')
+                {
+                    QMessageBox::warning(this, "Problem loading BLAST database", "This file does not appear to be a BLAST database.\nLoading failed.");
+                    delete g_blastSearchResults;
+                    g_blastSearchResults = 0;
+                    return;
+                }
 
                 if (line.length() > 0 && line.at(0) == '>')
                 {
@@ -91,6 +103,8 @@ void LoadBlastResultsDialog::loadBlastTargets()
 
                 else //It's a sequence line
                     sequenceLength += line.simplified().length();
+
+                firstLine = false;
             }
 
             //Add the last target to the results now.
@@ -123,6 +137,13 @@ void LoadBlastResultsDialog::loadBlastHits()
                 QString line = in.readLine();
                 QStringList alignmentParts = line.split('\t');
 
+                if (alignmentParts.size() != 12)
+                {
+                    quitBlastHitLoading("The file does not appear to be a correctly formmatted "
+                                        "BLAST output.\n\nLoading failed.");
+                    return;
+                }
+
                 QString nodeLabel = alignmentParts[0];
                 QString targetName = alignmentParts[1];
                 int nodeStart = alignmentParts[6].toInt();
@@ -135,9 +156,21 @@ void LoadBlastResultsDialog::loadBlastHits()
                 if (m_deBruijnGraphNodes->contains(nodeNumber))
                     node = (*m_deBruijnGraphNodes)[nodeNumber];
                 else
-                    continue;
+                {
+                    quitBlastHitLoading("This BLAST output contains nodes that are not in "
+                                        "the loaded graph.  Ensure that the BLAST output was generated "
+                                        "using the loaded graph.\n\nLoading failed.");
+                    return;
+                }
 
                 BlastTarget * target = getTargetFromString(targetName);
+                if (target == 0)
+                {
+                    quitBlastHitLoading("This BLAST output contains a target that is not in "
+                                        "the database.  Ensure that the BLAST output was generated "
+                                        "using the specified database.\n\nLoading failed.");
+                    return;
+                }
 
                 g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
                                                                 target, targetStart, targetEnd));
@@ -150,6 +183,14 @@ void LoadBlastResultsDialog::loadBlastHits()
         fillTargetsTable();
         fillHitsTable();
     }
+}
+
+void LoadBlastResultsDialog::quitBlastHitLoading(QString error)
+{
+    QMessageBox::warning(this, "Problem loading BLAST output", error);
+    g_blastSearchResults->m_hits.clear();
+    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
+        g_blastSearchResults->m_targets[i].m_hits = 0;
 }
 
 
