@@ -35,6 +35,9 @@ Settings::Settings()
     arrowheadSize = 0.01;
     textOutlineThickness = 0.5;
 
+    blastDotsPerTarget = 1000;
+    blastDotSize = 2.0;
+
     graphScope = WHOLE_GRAPH;
 
     minZoom = 0.01;
@@ -66,6 +69,7 @@ Settings::Settings()
     notContiguousColour = QColor(190, 190, 190);
     minCoverageColour = QColor(0, 0, 0);
     maxCoverageColour = QColor(255, 20, 20);
+    noBlastHitsColour = QColor(240, 240, 240);
 }
 
 

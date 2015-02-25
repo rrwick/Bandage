@@ -24,6 +24,7 @@
 #include <ogdf/basic/Graph.h>
 #include "../program/globals.h"
 #include <QColor>
+#include "../blast/blastdot.h"
 
 class OgdfNode;
 class DeBruijnEdge;
@@ -51,7 +52,7 @@ public:
     int m_highestDistanceInNeighbourSearch;
     QColor m_customColour;
     QString m_customLabel;
-    BlastResult * m_blastResult;
+    std::vector<BlastResult *> m_blastHits;
 
     void addEdge(DeBruijnEdge * edge);
     void resetNode();
@@ -72,6 +73,11 @@ public:
     {return !isOnlyPathInItsDirection(connectedNode, incomingNodes, outgoingNodes);}
     QByteArray getFasta();
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
+
+    bool thisNodeHasBlastHits() {return m_blastHits.size() > 0;}
+    bool thisNodeOrReverseComplementHasBlastHits() {return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;}
+    std::vector<BlastDot> getBlastDotsForThisNode();
+    std::vector<BlastDot> getBlastDotsForThisNodeOrReverseComplement();
 };
 
 #endif // DEBRUIJNNODE_H

@@ -491,6 +491,11 @@ from selected node</string>
                 </item>
                 <item>
                  <property name="text">
+                  <string>BLAST hits</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>Custom</string>
                  </property>
                 </item>

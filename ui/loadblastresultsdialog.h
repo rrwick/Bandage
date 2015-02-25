@@ -21,8 +21,6 @@ public:
                                     QWidget *parent = 0);
     ~LoadBlastResultsDialog();
 
-    BlastSearchResults * m_blastSearchResults;
-
 private:
     Ui::LoadBlastResultsDialog *ui;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;

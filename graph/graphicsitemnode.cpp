@@ -37,6 +37,7 @@
 #include <set>
 #include "../ui/mygraphicsview.h"
 #include <QTransform>
+#include "../blast/blastdot.h"
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -73,8 +74,9 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    double widthScale = g_settings->widthScale(g_absoluteZoom);
+    QPainterPath outlinePath = shape();
 
+    //Draw the node outline
     QColor outlineColour = Qt::black;
     double outlineThickness = g_settings->outlineThickness;
     if (isSelected())
@@ -82,14 +84,44 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         outlineColour = g_settings->highlightColour;
         outlineThickness = g_settings->highlightThickness;
     }
+    double widthScale = g_settings->widthScale(g_absoluteZoom);
     QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
-
     painter->setPen(outlinePen);
-    QPainterPath outlinePath = shape();
     painter->drawPath(outlinePath);
 
+    //Fill the node's colour
     QBrush brush(m_colour);
     painter->fillPath(outlinePath, brush);
+
+    //If the node contains a BLAST hit, draw that using dots.
+    if (g_settings->nodeColourScheme == BLAST_HITS_COLOUR)
+    {
+        std::vector<BlastDot> dots;
+
+        if (g_settings->doubleMode)
+        {
+            if (m_deBruijnNode->thisNodeHasBlastHits())
+                dots = m_deBruijnNode->getBlastDotsForThisNode();
+        }
+        else //single mode
+        {
+            if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
+                dots = m_deBruijnNode->getBlastDotsForThisNodeOrReverseComplement();
+        }
+
+        if (dots.size() > 0)
+        {
+            painter->setPen(Qt::NoPen);
+            QPainterPath nodePath = path();
+            for (size_t i = 0; i < dots.size(); ++i)
+            {
+                painter->setBrush(dots[i].m_colour);
+                QPointF dotCentre = nodePath.pointAtPercent(dots[i].m_nodeFraction);
+                painter->drawEllipse(dotCentre, g_settings->blastDotSize, g_settings->blastDotSize);
+            }
+        }
+    }
+
 
     //Draw text if there is any to display.
     if (g_settings->anyNodeDisplayText())
@@ -193,6 +225,12 @@ void GraphicsItemNode::setNodeColour()
     case COVERAGE_COLOUR:
     {
         m_colour = getCoverageColour();
+        break;
+    }
+
+    case BLAST_HITS_COLOUR:
+    {
+        m_colour = g_settings->noBlastHitsColour;
         break;
     }
 

@@ -127,6 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->setBlastResultsButton, SIGNAL(clicked()), this, SLOT(openLoadBlastResultsDialog()));
+    connect(ui->blastTargetComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1219,11 +1220,17 @@ void MainWindow::switchColourScheme()
         ui->contiguityButton->setVisible(false);
         break;
     case 3:
+        setRandomColourFactor();
+        g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
+        ui->setNodeColourButton->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        break;
+    case 4:
         g_settings->nodeColourScheme = CUSTOM_COLOURS;
         ui->setNodeColourButton->setVisible(false);
         ui->contiguityButton->setVisible(false);
         break;
-    case 4:  //CONTIGUITY - THIS OPTION IS TEMPORARILY DISABLED!
+    case 5:  //CONTIGUITY - THIS OPTION IS TEMPORARILY DISABLED!
         resetNodeContiguityStatus();
         g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
         ui->setNodeColourButton->setVisible(false);
@@ -1580,18 +1587,42 @@ void MainWindow::openAboutDialog()
 void MainWindow::openLoadBlastResultsDialog()
 {
     LoadBlastResultsDialog loadBlastResultsDialog(&m_deBruijnGraphNodes, this);
+    loadBlastResultsDialog.exec();
 
-    if (loadBlastResultsDialog.exec()) //The user clicked OK
+    //POSSIBLE EFFICIENCY IMPROVEMENT: ONLY CONTINUE IF SOMETHING WAS CHANGED
+
+    //Fill in the blast results combo box
+    ui->blastTargetComboBox->clear();
+    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
+        ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
+
+    //Point each node to its corresponding result
+    blastTargetChanged(); //IS THIS NECESSARY? DOES FILLING THE COMBOBOX CALL THIS VIA SIGNAL-SLOT?
+
+}
+
+
+void MainWindow::blastTargetChanged()
+{
+    //Clear the blast hit pointer from all nodes
+    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
     {
-        //Set the blast results global to the one just made by the dialog.
-        g_blastSearchResults = loadBlastResultsDialog.m_blastSearchResults;
+        i.next();
+        DeBruijnNode * node = i.value();
+        node->m_blastHits.clear();
+    }
 
-        //Point each node to its corresponding result
+    if (g_blastSearchResults == 0)
+        return;
 
-
-        //Fill in the blast results combo box
-        ui->blastTargetComboBox->clear();
-        for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
+    //Add the blast hit pointers to nodes that have a hit for
+    //the selected target.
+    BlastTarget * currentTarget = &(g_blastSearchResults->m_targets[ui->blastTargetComboBox->currentIndex()]);
+    for (size_t i = 0; i < g_blastSearchResults->m_results.size(); ++i)
+    {
+        BlastResult * hit = &(g_blastSearchResults->m_results[i]);
+        if (hit->m_target == currentTarget)
+            hit->m_node->m_blastHits.push_back(hit);
     }
 }

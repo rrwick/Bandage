@@ -43,6 +43,9 @@ public:
     double arrowheadSize;
     double textOutlineThickness;
 
+    int blastDotsPerTarget;
+    double blastDotSize;
+
     GraphScope graphScope;
 
     double minZoom;
@@ -74,6 +77,8 @@ public:
     QColor notAssignedColour;
     QColor minCoverageColour;
     QColor maxCoverageColour;
+    QColor noBlastHitsColour;
+
 
     double widthScale(double zoom);
     void setNegativeNodeColour();

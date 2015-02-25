@@ -30,7 +30,7 @@ DeBruijnNode::DeBruijnNode(int number, int length, double coverage, QByteArray s
     m_coverageRelativeToMeanDrawnCoverage(1.0), m_sequence(sequence),
     m_contiguityStatus(NOT_CONTIGUOUS), m_reverseComplement(0), m_ogdfNode(0),
     m_graphicsItemNode(0), m_startingNode(false), m_drawn(false), m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190)), m_blastResult(0)
+    m_customColour(QColor(190, 190, 190))
 {
 }
 
@@ -269,4 +269,37 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
         }
         otherNode->labelNeighbouringNodesAsDrawn(nodeDistance-1, this);
     }
+}
+
+
+std::vector<BlastDot> DeBruijnNode::getBlastDotsForThisNode()
+{
+    std::vector<BlastDot> returnVector;
+
+    for (size_t i = 0; i < m_blastHits.size(); ++i)
+    {
+        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(false);
+        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
+    }
+
+    return returnVector;
+}
+
+
+std::vector<BlastDot> DeBruijnNode::getBlastDotsForThisNodeOrReverseComplement()
+{
+    std::vector<BlastDot> returnVector;
+
+    for (size_t i = 0; i < m_blastHits.size(); ++i)
+    {
+        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(false);
+        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
+    }
+    for (size_t i = 0; i < m_blastHits.size(); ++i)
+    {
+        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(true);
+        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
+    }
+
+    return returnVector;
 }

@@ -4,20 +4,22 @@
 class DeBruijnNode;
 class BlastTarget;
 
+#include <QString>
+#include "blastdot.h"
+
 class BlastResult
 {
 public:
-    BlastResult(DeBruijnNode * node, BlastTarget * target,
-                int nodeStart, int nodeEnd,
-                int targetStart, int targetEnd);
+    BlastResult(DeBruijnNode * node, int nodeStart, int nodeEnd,
+                BlastTarget * target, int targetStart, int targetEnd);
     BlastResult();
     ~BlastResult();
 
     DeBruijnNode * m_node;
-    BlastTarget * m_target;
-
     int m_nodeStart;
     int m_nodeEnd;
+
+    BlastTarget * m_target;
     int m_targetStart;
     int m_targetEnd;
 
@@ -25,6 +27,8 @@ public:
     double m_nodeEndFraction;
     double m_targetStartFraction;
     double m_targetEndFraction;
+
+    std::vector<BlastDot> getBlastDots(bool reverse);
 };
 
 #endif // BLASTRESULT_H
