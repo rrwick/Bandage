@@ -101,12 +101,6 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
             parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
 
-        //TEST CODE
-        if (m_deBruijnNode->m_number == 262)
-        {
-            int test = 4;
-        }
-
         if (parts.size() > 0)
         {
             QPen partPen;
