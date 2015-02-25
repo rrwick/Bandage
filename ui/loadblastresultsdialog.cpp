@@ -37,6 +37,16 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
 {
     ui->setupUi(this);
 
+    if (g_blastSearchResults != 0)
+    {
+        fillTargetsTable();
+        fillHitsTable();
+
+        ui->blastTargetsTableView->setEnabled(true);
+        ui->loadBlastOutputButton->setEnabled(true);
+        ui->blastHitsTableView->setEnabled(true);
+    }
+
     connect(ui->loadBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(loadBlastDatabase()));
     connect(ui->loadBlastOutputButton, SIGNAL(clicked()), this, SLOT(loadBlastOutput()));
 }
