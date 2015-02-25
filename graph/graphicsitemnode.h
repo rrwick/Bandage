@@ -64,6 +64,7 @@ public:
     QSize getNodeTextSize(QString text);
     QColor getCoverageColour();
     void setWidth();
+    QPainterPath makePartialPath(double startFraction, double endFraction);
 };
 
 #endif // GRAPHICSITEMNODE_H

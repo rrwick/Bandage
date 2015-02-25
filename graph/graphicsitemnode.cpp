@@ -98,16 +98,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     {
         std::vector<BlastDot> dots;
 
-        if (g_settings->doubleMode)
-        {
-            if (m_deBruijnNode->thisNodeHasBlastHits())
-                dots = m_deBruijnNode->getBlastDotsForThisNode();
-        }
-        else //single mode
-        {
-            if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
-                dots = m_deBruijnNode->getBlastDotsForThisNodeOrReverseComplement();
-        }
+        if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
+            dots = m_deBruijnNode->getBlastDotsForThisNodeOrReverseComplement();
 
         if (dots.size() > 0)
         {
@@ -442,6 +434,64 @@ void GraphicsItemNode::remakePath()
     setPath(path);
 }
 
+
+QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endFraction)
+{
+    double totalLength = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QLineF line(m_linePoints[i], m_linePoints[i + 1]);
+        totalLength += line.length();
+    }
+
+    QPainterPath path;
+    bool pathStarted = false;
+    double lengthSoFar = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QPointF point1 = m_linePoints[i];
+        QPointF point2 = m_linePoints[i + 1];
+        QLineF line(point1, point2);
+
+        double point1Fraction = lengthSoFar / totalLength;
+        lengthSoFar += line.length();
+        double point2Fraction = lengthSoFar / totalLength;
+
+        //If the path hasn't yet begun and this segment is before
+        //the starting fraction, do nothing.
+        if (!pathStarted && point2Fraction < startFraction)
+            continue;
+
+        //If the path hasn't yet begun but this segment covers the starting
+        //fraction, start the path now.
+        if (!pathStarted && point2Fraction >= startFraction)
+        {
+            pathStarted = true;
+            QPointF difference = point2 - point1;
+            double lineFraction = (startFraction - point1Fraction) / (point2Fraction - point1Fraction);
+            QPointF startPoint = difference * lineFraction + point1;
+            path.moveTo(startPoint);
+            path.lineTo(point2);
+        }
+
+        //If the path is in progress and this segment hasn't yet reached the end,
+        //just continue the path.
+        if (pathStarted && point1Fraction < endFraction)
+            path.lineTo(point2);
+
+        //If the path is in progress and this segment passes the end, finish the line.
+        if (pathStarted && point1Fraction >= endFraction)
+        {
+            QPointF difference = point2 - point1;
+            double lineFraction = (startFraction - point1Fraction) / (point2Fraction - point1Fraction);
+            QPointF endPoint = difference * lineFraction + point1;
+            path.lineTo(endPoint);
+            return path;
+        }
+    }
+
+    return path;
+}
 
 double GraphicsItemNode::distance(QPointF p1, QPointF p2) const
 {
