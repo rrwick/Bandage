@@ -93,7 +93,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     QBrush brush(m_colour);
     painter->fillPath(outlinePath, brush);
 
-    //If the node contains a BLAST hit, draw that using dots.
+    //If the node contains a BLAST hit, draw that on top.
     if (g_settings->nodeColourScheme == BLAST_HITS_COLOUR)
     {
         std::vector<BlastHitPart> parts;
@@ -105,6 +105,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         {
             QPen partPen;
             partPen.setWidthF(getDrawnWidth());
+            partPen.setCapStyle(Qt::FlatCap);
+            partPen.setJoinStyle(Qt::RoundJoin);
 
             for (size_t i = 0; i < parts.size(); ++i)
             {

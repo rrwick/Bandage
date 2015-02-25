@@ -25,13 +25,6 @@ BlastResult::~BlastResult()
 
 std::vector<BlastHitPart> BlastResult::getBlastHitParts(bool reverse)
 {
-    //TEST CODE
-    if (m_node->m_number == 346)
-    {
-        int test = 5;
-    }
-
-
     std::vector<BlastHitPart> returnVector;
 
     int partCount = ceil(g_settings->blastPartsPerTarget * fabs(m_targetStartFraction - m_targetEndFraction));
@@ -44,7 +37,7 @@ std::vector<BlastHitPart> BlastResult::getBlastHitParts(bool reverse)
     for (int i = 0; i < partCount; ++i)
     {
         QColor dotColour;
-        dotColour.setHsvF(targetFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too clsoe to red, as that could confuse the end with the start
+        dotColour.setHsvF(targetFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too close to red, as that could confuse the end with the start
 
         double nextFraction = nodeFraction + nodeSpacing;
 
