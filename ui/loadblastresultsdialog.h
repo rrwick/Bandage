@@ -49,6 +49,8 @@ private:
 private slots:
     void loadBlastDatabase();
     void loadBlastOutput();
+    void fillTargetsTable();
+    void fillHitsTable();
 };
 
 #endif // LOADBLASTRESULTSDIALOG_H
