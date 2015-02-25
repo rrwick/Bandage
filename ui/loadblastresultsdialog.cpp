@@ -129,15 +129,14 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
         //Fill in the hits table
         size_t hitCount = g_blastSearchResults->m_results.size();
-        QStandardItemModel * model = new QStandardItemModel(hitCount, 8, this); //8 Columns
+        QStandardItemModel * model = new QStandardItemModel(hitCount, 7, this); //7 Columns
         model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
         model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
         model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
         model->setHorizontalHeaderItem(3, new QStandardItem("Node end"));
         model->setHorizontalHeaderItem(4, new QStandardItem("Target name"));
-        model->setHorizontalHeaderItem(5, new QStandardItem("Target length"));
-        model->setHorizontalHeaderItem(6, new QStandardItem("Target start"));
-        model->setHorizontalHeaderItem(7, new QStandardItem("Target end"));
+        model->setHorizontalHeaderItem(5, new QStandardItem("Target start"));
+        model->setHorizontalHeaderItem(6, new QStandardItem("Target end"));
         for (size_t i = 0; i < hitCount; ++i)
         {
             model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_node->m_number)));
@@ -145,9 +144,8 @@ void LoadBlastResultsDialog::loadBlastOutput()
             model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_nodeStart)));
             model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_nodeEnd)));
             model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_results[i].m_target->m_name));
-            model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_target->m_length)));
-            model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetStart)));
-            model->setItem(i, 7, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetEnd)));
+            model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetStart)));
+            model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetEnd)));
         }
         ui->blastHitsTableView->setModel(model);
         ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
