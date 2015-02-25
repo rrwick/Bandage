@@ -295,9 +295,9 @@ std::vector<BlastDot> DeBruijnNode::getBlastDotsForThisNodeOrReverseComplement()
         std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(false);
         returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
     }
-    for (size_t i = 0; i < m_blastHits.size(); ++i)
+    for (size_t i = 0; i < m_reverseComplement->m_blastHits.size(); ++i)
     {
-        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(true);
+        std::vector<BlastDot> hitDots = m_reverseComplement->m_blastHits[i]->getBlastDots(true);
         returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
     }
 

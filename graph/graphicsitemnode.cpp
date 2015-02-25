@@ -113,11 +113,12 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         {
             painter->setPen(Qt::NoPen);
             QPainterPath nodePath = path();
+            double dotRadius = getDrawnWidth() / 2.0;
             for (size_t i = 0; i < dots.size(); ++i)
             {
                 painter->setBrush(dots[i].m_colour);
                 QPointF dotCentre = nodePath.pointAtPercent(dots[i].m_nodeFraction);
-                painter->drawEllipse(dotCentre, g_settings->blastDotSize, g_settings->blastDotSize);
+                painter->drawEllipse(dotCentre, dotRadius, dotRadius);
             }
         }
     }

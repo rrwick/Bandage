@@ -44,7 +44,6 @@ public:
     double textOutlineThickness;
 
     int blastDotsPerTarget;
-    double blastDotSize;
 
     GraphScope graphScope;
 

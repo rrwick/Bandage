@@ -36,7 +36,6 @@ Settings::Settings()
     textOutlineThickness = 0.5;
 
     blastDotsPerTarget = 1000;
-    blastDotSize = 2.0;
 
     graphScope = WHOLE_GRAPH;
 
