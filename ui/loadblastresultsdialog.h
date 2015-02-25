@@ -47,8 +47,8 @@ private:
     BlastTarget * getTargetFromString(QString targetName);
 
 private slots:
-    void loadBlastDatabase();
-    void loadBlastOutput();
+    void loadBlastTargets();
+    void loadBlastHits();
     void fillTargetsTable();
     void fillHitsTable();
 };

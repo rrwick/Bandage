@@ -47,6 +47,7 @@ public:
     double m_targetEndFraction;
 
     std::vector<BlastHitPart> getBlastHitParts(bool reverse);
+    bool onForwardStrand() {return m_targetStart < m_targetEnd;}
 };
 
 #endif // BLASTHIT_H

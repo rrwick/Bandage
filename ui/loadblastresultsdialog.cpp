@@ -47,8 +47,8 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
         ui->blastHitsTableView->setEnabled(true);
     }
 
-    connect(ui->loadBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(loadBlastDatabase()));
-    connect(ui->loadBlastOutputButton, SIGNAL(clicked()), this, SLOT(loadBlastOutput()));
+    connect(ui->loadBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(loadBlastTargets()));
+    connect(ui->loadBlastOutputButton, SIGNAL(clicked()), this, SLOT(loadBlastHits()));
 }
 
 LoadBlastResultsDialog::~LoadBlastResultsDialog()
@@ -56,7 +56,7 @@ LoadBlastResultsDialog::~LoadBlastResultsDialog()
     delete ui;
 }
 
-void LoadBlastResultsDialog::loadBlastDatabase()
+void LoadBlastResultsDialog::loadBlastTargets()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Load BLAST database");
 
@@ -105,7 +105,7 @@ void LoadBlastResultsDialog::loadBlastDatabase()
     }
 }
 
-void LoadBlastResultsDialog::loadBlastOutput()
+void LoadBlastResultsDialog::loadBlastHits()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Load BLAST output");
 
@@ -129,10 +129,7 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
                 int nodeNumber = getNodeNumberFromString(nodeLabel);
                 DeBruijnNode * node;
-
-                //Only save BLAST results for positive nodes, as results for
-                //negative nodes should be redundant.
-                if (m_deBruijnGraphNodes->contains(nodeNumber) && nodeNumber > 0)
+                if (m_deBruijnGraphNodes->contains(nodeNumber))
                     node = (*m_deBruijnGraphNodes)[nodeNumber];
                 else
                     continue;
@@ -141,7 +138,9 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
                 g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
                                                                 target, targetStart, targetEnd));
-                ++(target->m_hits);
+
+                if (targetStart < targetEnd)
+                    ++(target->m_hits);
             }
         }
 
@@ -214,8 +213,14 @@ void LoadBlastResultsDialog::fillTargetsTable()
 
 void LoadBlastResultsDialog::fillHitsTable()
 {
-    size_t hitCount = g_blastSearchResults->m_hits.size();
-    QStandardItemModel * model = new QStandardItemModel(hitCount, 7, this); //7 Columns
+    int hitsOnForwardStrand = 0;
+    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    {
+        if (g_blastSearchResults->m_hits[i].onForwardStrand())
+            ++hitsOnForwardStrand;
+    }
+
+    QStandardItemModel * model = new QStandardItemModel(hitsOnForwardStrand, 7, this); //7 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
     model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
@@ -223,15 +228,22 @@ void LoadBlastResultsDialog::fillHitsTable()
     model->setHorizontalHeaderItem(4, new QStandardItem("Target name"));
     model->setHorizontalHeaderItem(5, new QStandardItem("Target start"));
     model->setHorizontalHeaderItem(6, new QStandardItem("Target end"));
-    for (size_t i = 0; i < hitCount; ++i)
+
+    int row = 0;
+    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
-        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
-        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
-        model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
-        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
-        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
+        if (g_blastSearchResults->m_hits[i].onForwardStrand())
+        {
+            model->setItem(row, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
+            model->setItem(row, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
+            model->setItem(row, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
+            model->setItem(row, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
+            model->setItem(row, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
+            model->setItem(row, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
+            model->setItem(row, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
+
+            ++row;
+        }
     }
     ui->blastHitsTableView->setModel(model);
 //    ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);

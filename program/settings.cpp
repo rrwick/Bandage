@@ -30,7 +30,7 @@ Settings::Settings()
     coverageContigWidth = 4.0;
     maxContigWidth = 30.0;
     edgeWidth = 2.0;
-    outlineThickness = 1.0;
+    outlineThickness = 0.5;
     highlightThickness = 2.0;
     arrowheadSize = 0.01;
     textOutlineThickness = 0.5;
