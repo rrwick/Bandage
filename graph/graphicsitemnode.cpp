@@ -98,8 +98,16 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     {
         std::vector<BlastHitPart> parts;
 
-        if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
-            parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
+        if (g_settings->doubleMode)
+        {
+            if (m_deBruijnNode->thisNodeHasForwardStrandBlastHits())
+                parts = m_deBruijnNode->getBlastHitPartsForThisNode();
+        }
+        else
+        {
+            if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
+                parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
+        }
 
         if (parts.size() > 0)
         {

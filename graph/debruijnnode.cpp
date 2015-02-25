@@ -272,7 +272,24 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
 }
 
 
-std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement()
+bool DeBruijnNode::thisNodeHasForwardStrandBlastHits()
+{
+    if (m_blastHits.size() == 0)
+        return false;
+
+    for (size_t i = 0; i < m_blastHits.size(); ++i)
+    {
+        if (m_blastHits[i]->onForwardStrand())
+            return true;
+    }
+    return false;
+}
+bool DeBruijnNode::thisNodeOrReverseComplementHasBlastHits()
+{
+    return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;
+}
+
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode()
 {
     std::vector<BlastHitPart> returnVector;
 
@@ -281,10 +298,32 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
         std::vector<BlastHitPart> hitParts = m_blastHits[i]->getBlastHitParts(false);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
-    for (size_t i = 0; i < m_reverseComplement->m_blastHits.size(); ++i)
+
+    return returnVector;
+}
+
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement()
+{
+    DeBruijnNode * positiveNode = this;
+    DeBruijnNode * negativeNode = m_reverseComplement;
+    if (m_number < 0)
+        std::swap(positiveNode, negativeNode);
+
+    //Look for blast hit parts on the positive node first.  If none are found,
+    //then try the negative node.
+    std::vector<BlastHitPart> returnVector;
+    for (size_t i = 0; i < positiveNode->m_blastHits.size(); ++i)
     {
-        std::vector<BlastHitPart> hitParts = m_reverseComplement->m_blastHits[i]->getBlastHitParts(true);
+        std::vector<BlastHitPart> hitParts = positiveNode->m_blastHits[i]->getBlastHitParts(false);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
+    }
+    if (returnVector.size() == 0)
+    {
+        for (size_t i = 0; i < negativeNode->m_blastHits.size(); ++i)
+        {
+            std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true);
+            returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
+        }
     }
 
     return returnVector;
