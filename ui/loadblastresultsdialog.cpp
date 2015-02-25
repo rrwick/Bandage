@@ -112,7 +112,10 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
                 int nodeNumber = getNodeNumberFromString(nodeLabel);
                 DeBruijnNode * node;
-                if (m_deBruijnGraphNodes->contains(nodeNumber))
+
+                //Only save BLAST results for positive nodes, as results for
+                //negative nodes should be redundant.
+                if (m_deBruijnGraphNodes->contains(nodeNumber) && nodeNumber > 0)
                     node = (*m_deBruijnGraphNodes)[nodeNumber];
                 else
                     continue;

@@ -169,6 +169,8 @@ void MainWindow::cleanUp()
         delete g_blastSearchResults;
         g_blastSearchResults = 0;
     }
+    ui->blastTargetComboBox->clear();
+
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
@@ -1581,6 +1583,15 @@ void MainWindow::openLoadBlastResultsDialog()
 
     if (loadBlastResultsDialog.exec()) //The user clicked OK
     {
+        //Set the blast results global to the one just made by the dialog.
+        g_blastSearchResults = loadBlastResultsDialog.m_blastSearchResults;
 
+        //Point each node to its corresponding result
+
+
+        //Fill in the blast results combo box
+        ui->blastTargetComboBox->clear();
+        for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
+            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
     }
 }

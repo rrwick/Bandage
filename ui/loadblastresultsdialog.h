@@ -21,9 +21,10 @@ public:
                                     QWidget *parent = 0);
     ~LoadBlastResultsDialog();
 
+    BlastSearchResults * m_blastSearchResults;
+
 private:
     Ui::LoadBlastResultsDialog *ui;
-    BlastSearchResults * m_blastSearchResults;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
 
     int getNodeNumberFromString(QString nodeString);
