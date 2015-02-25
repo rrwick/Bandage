@@ -446,6 +446,9 @@ void GraphicsItemNode::remakePath()
 
 QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endFraction)
 {
+    if (endFraction < startFraction)
+        std::swap(startFraction, endFraction);
+
     double totalLength = 0.0;
     for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
     {
