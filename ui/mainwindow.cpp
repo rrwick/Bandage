@@ -163,8 +163,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::cleanUp()
 {
-    //    clearOgdfGraph();
-
+    //Delete the blast search results, if any exist.
+    if (g_blastSearchResults != 0)
+    {
+        delete g_blastSearchResults;
+        g_blastSearchResults = 0;
+    }
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {

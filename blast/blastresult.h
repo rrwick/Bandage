@@ -7,19 +7,24 @@ class BlastTarget;
 class BlastResult
 {
 public:
-    BlastResult(DeBruijnNode * node, BlastTarget * blastTarget,
-                double nodeStart, double nodeEnd,
-                double targetStart, double targetEnd);
+    BlastResult(DeBruijnNode * node, BlastTarget * target,
+                int nodeStart, int nodeEnd,
+                int targetStart, int targetEnd);
     BlastResult();
     ~BlastResult();
 
     DeBruijnNode * m_node;
-    BlastTarget * m_blastTarget;
+    BlastTarget * m_target;
 
-    double m_nodeStart;
-    double m_nodeEnd;
-    double m_targetStart;
-    double m_targetEnd;
+    int m_nodeStart;
+    int m_nodeEnd;
+    int m_targetStart;
+    int m_targetEnd;
+
+    double m_nodeStartFraction;
+    double m_nodeEndFraction;
+    double m_targetStartFraction;
+    double m_targetEndFraction;
 };
 
 #endif // BLASTRESULT_H
