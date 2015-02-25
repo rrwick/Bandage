@@ -284,6 +284,7 @@ bool DeBruijnNode::thisNodeHasForwardStrandBlastHits()
     }
     return false;
 }
+
 bool DeBruijnNode::thisNodeOrReverseComplementHasBlastHits()
 {
     return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;

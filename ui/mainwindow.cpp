@@ -1594,11 +1594,10 @@ void MainWindow::openLoadBlastResultsDialog()
     //Fill in the blast results combo box
     ui->blastTargetComboBox->clear();
     for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-        ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
-
-    //Point each node to its corresponding result
-    blastTargetChanged(); //IS THIS NECESSARY? DOES FILLING THE COMBOBOX CALL THIS VIA SIGNAL-SLOT?
-
+    {
+        if (g_blastSearchResults->m_targets[i].m_hits > 0)
+            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
+    }
 }
 
 

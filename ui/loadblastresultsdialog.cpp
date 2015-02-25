@@ -102,6 +102,9 @@ void LoadBlastResultsDialog::loadBlastTargets()
 
         ui->blastTargetsTableView->setEnabled(true);
         ui->loadBlastOutputButton->setEnabled(true);
+
+        g_blastSearchResults->m_hits.clear();
+        ui->blastHitsTableView->setModel(0);
     }
 }
 
