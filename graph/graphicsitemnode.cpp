@@ -101,6 +101,12 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
             parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
 
+        //TEST CODE
+        if (m_deBruijnNode->m_number == 262)
+        {
+            int test = 4;
+        }
+
         if (parts.size() > 0)
         {
             QPen partPen;
@@ -470,11 +476,7 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
         if (!pathStarted && point2Fraction >= startFraction)
         {
             pathStarted = true;
-            QPointF difference = point2 - point1;
-            double lineFraction = (startFraction - point1Fraction) / (point2Fraction - point1Fraction);
-            QPointF startPoint = difference * lineFraction + point1;
-            path.moveTo(startPoint);
-            path.lineTo(point2);
+            path.moveTo(findIntermediatePoint(point1, point2, point1Fraction, point2Fraction, startFraction));
         }
 
         //If the path is in progress and this segment hasn't yet reached the end,
@@ -485,15 +487,19 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
         //If the path is in progress and this segment passes the end, finish the line.
         if (pathStarted && point2Fraction >= endFraction)
         {
-            QPointF difference = point2 - point1;
-            double lineFraction = (endFraction - point1Fraction) / (point2Fraction - point1Fraction);
-            QPointF endPoint = difference * lineFraction + point1;
-            path.lineTo(endPoint);
+            path.lineTo(findIntermediatePoint(point1, point2, point1Fraction, point2Fraction, endFraction));
             return path;
         }
     }
 
     return path;
+}
+
+QPointF GraphicsItemNode::findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue)
+{
+    QPointF difference = p2 - p1;
+    double fraction = (targetValue - p1Value) / (p2Value - p1Value);
+    return difference * fraction + p1;
 }
 
 double GraphicsItemNode::distance(QPointF p1, QPointF p2) const

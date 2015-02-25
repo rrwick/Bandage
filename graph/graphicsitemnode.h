@@ -65,6 +65,7 @@ public:
     QColor getCoverageColour();
     void setWidth();
     QPainterPath makePartialPath(double startFraction, double endFraction);
+    QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue);
 };
 
 #endif // GRAPHICSITEMNODE_H
