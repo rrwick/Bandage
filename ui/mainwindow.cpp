@@ -1619,9 +1619,9 @@ void MainWindow::blastTargetChanged()
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target.
     BlastTarget * currentTarget = &(g_blastSearchResults->m_targets[ui->blastTargetComboBox->currentIndex()]);
-    for (size_t i = 0; i < g_blastSearchResults->m_results.size(); ++i)
+    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
-        BlastResult * hit = &(g_blastSearchResults->m_results[i]);
+        BlastHit * hit = &(g_blastSearchResults->m_hits[i]);
         if (hit->m_target == currentTarget)
             hit->m_node->m_blastHits.push_back(hit);
     }

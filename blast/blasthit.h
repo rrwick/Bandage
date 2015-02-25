@@ -16,22 +16,37 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef BLASTHITPART_H
-#define BLASTHITPART_H
+#ifndef BLASTHIT_H
+#define BLASTHIT_H
 
-#include <QColor>
+class DeBruijnNode;
+class BlastTarget;
 
-class BlastHitPart
+#include <QString>
+#include "blasthitpart.h"
+
+class BlastHit
 {
 public:
-    BlastHitPart() {}
-    BlastHitPart(QColor colour, double nodeFractionStart, double nodeFractionEnd) :
-        m_colour(colour), m_nodeFractionStart(nodeFractionStart), m_nodeFractionEnd(nodeFractionEnd) {}
-    ~BlastHitPart() {}
+    BlastHit(DeBruijnNode * node, int nodeStart, int nodeEnd,
+                BlastTarget * target, int targetStart, int targetEnd);
+    BlastHit();
+    ~BlastHit();
 
-    QColor m_colour;
-    double m_nodeFractionStart;
-    double m_nodeFractionEnd;
+    DeBruijnNode * m_node;
+    int m_nodeStart;
+    int m_nodeEnd;
+
+    BlastTarget * m_target;
+    int m_targetStart;
+    int m_targetEnd;
+
+    double m_nodeStartFraction;
+    double m_nodeEndFraction;
+    double m_targetStartFraction;
+    double m_targetEndFraction;
+
+    std::vector<BlastHitPart> getBlastHitParts(bool reverse);
 };
 
-#endif // BLASTHITPART_H
+#endif // BLASTHIT_H

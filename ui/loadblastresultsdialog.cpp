@@ -1,3 +1,21 @@
+//Copyright 2015 Ryan Wick
+
+//This file is part of Bandage
+
+//Bandage is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+
+//Bandage is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+
+//You should have received a copy of the GNU General Public License
+//along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
+
+
 #include "loadblastresultsdialog.h"
 #include "ui_loadblastresultsdialog.h"
 
@@ -5,7 +23,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QString>
-#include "../blast/blastresult.h"
+#include "../blast/blasthit.h"
 #include "../blast/blasttarget.h"
 #include <QStandardItemModel>
 #include "../program/globals.h"
@@ -122,13 +140,13 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
                 BlastTarget * target = getTargetFromString(targetName);
 
-                g_blastSearchResults->m_results.push_back(BlastResult(node, nodeStart, nodeEnd,
-                                                                      target, targetStart, targetEnd));
+                g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
+                                                                target, targetStart, targetEnd));
             }
         }
 
         //Fill in the hits table
-        size_t hitCount = g_blastSearchResults->m_results.size();
+        size_t hitCount = g_blastSearchResults->m_hits.size();
         QStandardItemModel * model = new QStandardItemModel(hitCount, 7, this); //7 Columns
         model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
         model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
@@ -139,13 +157,13 @@ void LoadBlastResultsDialog::loadBlastOutput()
         model->setHorizontalHeaderItem(6, new QStandardItem("Target end"));
         for (size_t i = 0; i < hitCount; ++i)
         {
-            model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_node->m_number)));
-            model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_node->m_length)));
-            model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_nodeStart)));
-            model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_nodeEnd)));
-            model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_results[i].m_target->m_name));
-            model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetStart)));
-            model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_results[i].m_targetEnd)));
+            model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
+            model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
+            model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
+            model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
+            model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
+            model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
+            model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
         }
         ui->blastHitsTableView->setModel(model);
         ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);

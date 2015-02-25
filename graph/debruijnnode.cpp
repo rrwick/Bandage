@@ -23,7 +23,7 @@
 #include "../program/settings.h"
 #include "graphicsitemnode.h"
 #include <math.h>
-#include "../blast/blastresult.h"
+#include "../blast/blasthit.h"
 
 DeBruijnNode::DeBruijnNode(int number, int length, double coverage, QByteArray sequence) :
     m_number(number), m_length(length), m_coverage(coverage),

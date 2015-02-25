@@ -29,7 +29,7 @@
 class OgdfNode;
 class DeBruijnEdge;
 class GraphicsItemNode;
-class BlastResult;
+class BlastHit;
 
 class DeBruijnNode
 {
@@ -52,7 +52,7 @@ public:
     int m_highestDistanceInNeighbourSearch;
     QColor m_customColour;
     QString m_customLabel;
-    std::vector<BlastResult *> m_blastHits;
+    std::vector<BlastHit *> m_blastHits;
 
     void addEdge(DeBruijnEdge * edge);
     void resetNode();
