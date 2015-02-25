@@ -141,9 +141,11 @@ void LoadBlastResultsDialog::loadBlastOutput()
 
                 g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
                                                                 target, targetStart, targetEnd));
+                ++(target->m_hits);
             }
         }
 
+        fillTargetsTable();
         fillHitsTable();
     }
 }
@@ -194,16 +196,19 @@ BlastTarget * LoadBlastResultsDialog::getTargetFromString(QString targetName)
 void LoadBlastResultsDialog::fillTargetsTable()
 {
     size_t targetCount = g_blastSearchResults->m_targets.size();
-    QStandardItemModel * model = new QStandardItemModel(targetCount, 2, this); //2 Columns
+    QStandardItemModel * model = new QStandardItemModel(targetCount, 3, this); //3 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
+    model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
     for (size_t i = 0; i < targetCount; ++i)
     {
         model->setItem(i, 0, new QStandardItem(g_blastSearchResults->m_targets[i].m_name));
         model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_targets[i].m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_targets[i].m_hits)));
     }
     ui->blastTargetsTableView->setModel(model);
-    ui->blastTargetsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+//    ui->blastTargetsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    ui->blastTargetsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 
@@ -229,7 +234,8 @@ void LoadBlastResultsDialog::fillHitsTable()
         model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
     }
     ui->blastHitsTableView->setModel(model);
-    ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+//    ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+    ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->blastHitsTableView->setEnabled(true);
 }

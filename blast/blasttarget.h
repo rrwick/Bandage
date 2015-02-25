@@ -25,10 +25,11 @@ class BlastTarget
 {
 public:
     BlastTarget() {}
-    BlastTarget(QString name, int length) : m_name(name), m_length(length) {}
+    BlastTarget(QString name, int length) : m_name(name), m_length(length), m_hits(0) {}
 
     QString m_name;
     int m_length;
+    int m_hits;
 };
 
 #endif // BLASTTARGET_H
