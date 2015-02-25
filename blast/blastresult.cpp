@@ -23,28 +23,37 @@ BlastResult::~BlastResult()
 }
 
 
-std::vector<BlastDot> BlastResult::getBlastDots(bool reverse)
+std::vector<BlastHitPart> BlastResult::getBlastHitParts(bool reverse)
 {
-    std::vector<BlastDot> returnVector;
+    //TEST CODE
+    if (m_node->m_number == 346)
+    {
+        int test = 5;
+    }
 
-    int dotCount = g_settings->blastDotsPerTarget * fabs(m_targetStartFraction - m_targetEndFraction);
 
-    double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / (dotCount - 1);
-    double targetSpacing = (m_targetEndFraction - m_targetStartFraction) / (dotCount - 1);
+    std::vector<BlastHitPart> returnVector;
+
+    int partCount = ceil(g_settings->blastPartsPerTarget * fabs(m_targetStartFraction - m_targetEndFraction));
+
+    double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
+    double targetSpacing = (m_targetEndFraction - m_targetStartFraction) / partCount;
 
     double nodeFraction = m_nodeStartFraction;
     double targetFraction = m_targetStartFraction;
-    for (int i = 0; i < dotCount; ++i)
+    for (int i = 0; i < partCount; ++i)
     {
         QColor dotColour;
-        dotColour.setHsvF(targetFraction, 1.0, 1.0);
+        dotColour.setHsvF(targetFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too clsoe to red, as that could confuse the end with the start
+
+        double nextFraction = nodeFraction + nodeSpacing;
 
         if (reverse)
-            returnVector.push_back(BlastDot(dotColour, 1.0 - nodeFraction));
+            returnVector.push_back(BlastHitPart(dotColour, 1.0 - nodeFraction, 1.0 - nextFraction));
         else
-            returnVector.push_back(BlastDot(dotColour, nodeFraction));
+            returnVector.push_back(BlastHitPart(dotColour, nodeFraction, nextFraction));
 
-        nodeFraction += nodeSpacing;
+        nodeFraction = nextFraction;
         targetFraction += targetSpacing;
     }
 

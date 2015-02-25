@@ -5,7 +5,7 @@ class DeBruijnNode;
 class BlastTarget;
 
 #include <QString>
-#include "blastdot.h"
+#include "blasthitpart.h"
 
 class BlastResult
 {
@@ -28,7 +28,7 @@ public:
     double m_targetStartFraction;
     double m_targetEndFraction;
 
-    std::vector<BlastDot> getBlastDots(bool reverse);
+    std::vector<BlastHitPart> getBlastHitParts(bool reverse);
 };
 
 #endif // BLASTRESULT_H

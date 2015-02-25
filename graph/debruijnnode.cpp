@@ -272,33 +272,19 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
 }
 
 
-std::vector<BlastDot> DeBruijnNode::getBlastDotsForThisNode()
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement()
 {
-    std::vector<BlastDot> returnVector;
+    std::vector<BlastHitPart> returnVector;
 
     for (size_t i = 0; i < m_blastHits.size(); ++i)
     {
-        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(false);
-        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
-    }
-
-    return returnVector;
-}
-
-
-std::vector<BlastDot> DeBruijnNode::getBlastDotsForThisNodeOrReverseComplement()
-{
-    std::vector<BlastDot> returnVector;
-
-    for (size_t i = 0; i < m_blastHits.size(); ++i)
-    {
-        std::vector<BlastDot> hitDots = m_blastHits[i]->getBlastDots(false);
-        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
+        std::vector<BlastHitPart> hitParts = m_blastHits[i]->getBlastHitParts(false);
+        returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
     for (size_t i = 0; i < m_reverseComplement->m_blastHits.size(); ++i)
     {
-        std::vector<BlastDot> hitDots = m_reverseComplement->m_blastHits[i]->getBlastDots(true);
-        returnVector.insert(returnVector.end(), hitDots.begin(), hitDots.end());
+        std::vector<BlastHitPart> hitParts = m_reverseComplement->m_blastHits[i]->getBlastHitParts(true);
+        returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
 
     return returnVector;

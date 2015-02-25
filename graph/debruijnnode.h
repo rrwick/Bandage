@@ -24,7 +24,7 @@
 #include <ogdf/basic/Graph.h>
 #include "../program/globals.h"
 #include <QColor>
-#include "../blast/blastdot.h"
+#include "../blast/blasthitpart.h"
 
 class OgdfNode;
 class DeBruijnEdge;
@@ -74,10 +74,8 @@ public:
     QByteArray getFasta();
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
 
-    bool thisNodeHasBlastHits() {return m_blastHits.size() > 0;}
     bool thisNodeOrReverseComplementHasBlastHits() {return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;}
-    std::vector<BlastDot> getBlastDotsForThisNode();
-    std::vector<BlastDot> getBlastDotsForThisNodeOrReverseComplement();
+    std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
 };
 
 #endif // DEBRUIJNNODE_H

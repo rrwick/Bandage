@@ -66,7 +66,7 @@ HEADERS  += \
     blast/blastsearchresults.h \
     blast/blasttarget.h \
     blast/blastresult.h \
-    blast/blastdot.h
+    blast/blasthitpart.h
 
 FORMS    += \
     ui/mainwindow.ui \

@@ -37,7 +37,7 @@
 #include <set>
 #include "../ui/mygraphicsview.h"
 #include <QTransform>
-#include "../blast/blastdot.h"
+#include "../blast/blasthitpart.h"
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -96,21 +96,22 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     //If the node contains a BLAST hit, draw that using dots.
     if (g_settings->nodeColourScheme == BLAST_HITS_COLOUR)
     {
-        std::vector<BlastDot> dots;
+        std::vector<BlastHitPart> parts;
 
         if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
-            dots = m_deBruijnNode->getBlastDotsForThisNodeOrReverseComplement();
+            parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
 
-        if (dots.size() > 0)
+        if (parts.size() > 0)
         {
-            painter->setPen(Qt::NoPen);
-            QPainterPath nodePath = path();
-            double dotRadius = getDrawnWidth() / 2.0;
-            for (size_t i = 0; i < dots.size(); ++i)
+            QPen partPen;
+            partPen.setWidthF(getDrawnWidth());
+
+            for (size_t i = 0; i < parts.size(); ++i)
             {
-                painter->setBrush(dots[i].m_colour);
-                QPointF dotCentre = nodePath.pointAtPercent(dots[i].m_nodeFraction);
-                painter->drawEllipse(dotCentre, dotRadius, dotRadius);
+                partPen.setColor(parts[i].m_colour);
+                painter->setPen(partPen);
+
+                painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
             }
         }
     }
@@ -476,14 +477,14 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
 
         //If the path is in progress and this segment hasn't yet reached the end,
         //just continue the path.
-        if (pathStarted && point1Fraction < endFraction)
+        if (pathStarted && point2Fraction < endFraction)
             path.lineTo(point2);
 
         //If the path is in progress and this segment passes the end, finish the line.
-        if (pathStarted && point1Fraction >= endFraction)
+        if (pathStarted && point2Fraction >= endFraction)
         {
             QPointF difference = point2 - point1;
-            double lineFraction = (startFraction - point1Fraction) / (point2Fraction - point1Fraction);
+            double lineFraction = (endFraction - point1Fraction) / (point2Fraction - point1Fraction);
             QPointF endPoint = difference * lineFraction + point1;
             path.lineTo(endPoint);
             return path;
