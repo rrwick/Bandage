@@ -865,32 +865,26 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
                 i.value()->m_drawn = true;
         }
     }
-    else if (g_settings->graphScope == AROUND_NODE)
+    else //The scope is either around specified nodes or around nodes with BLAST hits
     {
-        //If only some nodes are being drawn, they are the starting nodes.
+        std::vector<DeBruijnNode *> startingNodes;
 
-        std::vector<DeBruijnNode *> startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+        if (g_settings->graphScope == AROUND_NODE)
+            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+        else if (g_settings->graphScope == AROUND_BLAST_HITS)
+            startingNodes = getNodesFromBlastHits();
+
         int nodeDistance = ui->nodeDistanceSpinBox->value();
 
         for (size_t i = 0; i < startingNodes.size(); ++i)
         {
-            startingNodes[i]->m_drawn = true;
-            startingNodes[i]->m_startingNode = true;
-            startingNodes[i]->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
-        }
-    }
-    else if (g_settings->graphScope == AROUND_BLAST_HITS)
-    {
-        //Nodes with BLAST hits are the starting nodes.
+            DeBruijnNode * node = startingNodes[i];
+            if (node->m_number < 0)
+                node = node->m_reverseComplement;
 
-        std::vector<DeBruijnNode *> startingNodes = getNodesFromBlastHits();
-        int nodeDistance = ui->nodeDistanceSpinBox->value();
-
-        for (size_t i = 0; i < startingNodes.size(); ++i)
-        {
-            startingNodes[i]->m_drawn = true;
-            startingNodes[i]->m_startingNode = true;
-            startingNodes[i]->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
+            node->m_drawn = true;
+            node->m_startingNode = true;
+            node->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
         }
     }
 
