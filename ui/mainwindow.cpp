@@ -698,6 +698,12 @@ void MainWindow::graphScopeChanged()
         ui->distanceWidget->setVisible(true);
         ui->distanceWidget->setEnabled(true);
         break;
+    case 2:
+        g_settings->graphScope = AROUND_BLAST_HITS;
+        ui->nodeSelectionWidget->setVisible(false);
+        ui->distanceWidget->setVisible(true);
+        ui->distanceWidget->setEnabled(true);
+        break;
     }
 }
 
@@ -707,12 +713,23 @@ void MainWindow::drawGraph()
 {
     if (g_settings->graphScope == AROUND_NODE)
     {
-        std::vector<DeBruijnNode *> startingNodes = getNodeNumbersFromLineEdit(ui->startingNodesLineEdit);
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
 
         if (startingNodes.size() == 0)
         {
             QMessageBox::information(this, "No starting nodes",
                                      "Please enter at least one starting node when drawing the graph using the 'Around node(s)' scope.");
+            return;
+        }
+    }
+    else if (g_settings->graphScope == AROUND_BLAST_HITS)
+    {
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromBlastHits();
+
+        if (startingNodes.size() == 0)
+        {
+            QMessageBox::information(this, "No BLAST hits",
+                                     "Please load BLAST search results and select a target to draw the graph around BLAST hits.");
             return;
         }
     }
@@ -852,7 +869,21 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
     {
         //If only some nodes are being drawn, they are the starting nodes.
 
-        std::vector<DeBruijnNode *> startingNodes = getNodeNumbersFromLineEdit(ui->startingNodesLineEdit);
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+        int nodeDistance = ui->nodeDistanceSpinBox->value();
+
+        for (size_t i = 0; i < startingNodes.size(); ++i)
+        {
+            startingNodes[i]->m_drawn = true;
+            startingNodes[i]->m_startingNode = true;
+            startingNodes[i]->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
+        }
+    }
+    else if (g_settings->graphScope == AROUND_BLAST_HITS)
+    {
+        //Nodes with BLAST hits are the starting nodes.
+
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromBlastHits();
         int nodeDistance = ui->nodeDistanceSpinBox->value();
 
         for (size_t i = 0; i < startingNodes.size(); ++i)
@@ -883,7 +914,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
 }
 
 
-std::vector<DeBruijnNode *> MainWindow::getNodeNumbersFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -897,6 +928,26 @@ std::vector<DeBruijnNode *> MainWindow::getNodeNumbersFromLineEdit(QLineEdit * l
             returnVector.push_back(m_deBruijnGraphNodes[nodeNumber]);
         else if (nodesNotInGraph != 0)
             nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+    }
+
+    return returnVector;
+}
+
+std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    if (g_blastSearchResults == 0)
+        return returnVector;
+    if (g_blastSearchResults->m_targets.size() == 0)
+        return returnVector;
+
+    BlastTarget * currentTarget = &(g_blastSearchResults->m_targets[ui->blastTargetComboBox->currentIndex()]);
+
+    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    {
+        if (g_blastSearchResults->m_hits[i].m_target == currentTarget)
+            returnVector.push_back(g_blastSearchResults->m_hits[i].m_node);
     }
 
     return returnVector;
@@ -1489,7 +1540,7 @@ void MainWindow::selectUserSpecifiedNodes()
 
     m_scene->clearSelection();
     std::vector<QString> nodesNotInGraph;
-    std::vector<DeBruijnNode *> nodesToSelect = getNodeNumbersFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
+    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
 
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
@@ -1624,4 +1675,8 @@ void MainWindow::blastTargetChanged()
         if (hit->m_target == currentTarget)
             hit->m_node->m_blastHits.push_back(hit);
     }
+
+    g_graphicsView->viewport()->update();
 }
+
+

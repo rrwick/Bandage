@@ -221,6 +221,11 @@
                   <string>Around node(s)</string>
                  </property>
                 </item>
+                <item>
+                 <property name="text">
+                  <string>Around BLAST hits</string>
+                 </property>
+                </item>
                </widget>
               </item>
              </layout>

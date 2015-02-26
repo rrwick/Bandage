@@ -82,7 +82,8 @@ private:
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText);
     QString getSelectedEdgeListText();
     double getGraphicsItemNodeWidth(double coverageRelativeToMean);
-    std::vector<DeBruijnNode *> getNodeNumbersFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph = 0);
+    std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph = 0);
+    std::vector<DeBruijnNode *> getNodesFromBlastHits();
     void setRandomColourFactor();
     void setSceneRectangle();
     bool checkFileIsLastGraph(QString fullFileName);
