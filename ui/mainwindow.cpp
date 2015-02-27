@@ -1413,8 +1413,8 @@ void MainWindow::setNodeCustomColour()
     if (newColour.isValid())
     {
         //If the colouring scheme is not currently custom, change it to custom now
-        if (ui->coloursComboBox->currentIndex() != 3)
-            ui->coloursComboBox->setCurrentIndex(3);
+        if (ui->coloursComboBox->currentIndex() != 4)
+            ui->coloursComboBox->setCurrentIndex(4);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {

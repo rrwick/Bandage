@@ -172,6 +172,19 @@ void LoadBlastResultsDialog::loadBlastHits()
                     return;
                 }
 
+                //All BLAST hits will be saved as being on the forward strand.
+                if (targetStart > targetEnd)
+                {
+                    node = node->m_reverseComplement;
+                    std::swap(targetStart, targetEnd);
+
+                    int nodeLength = node->m_length;
+                    int newNodeStart = nodeLength - nodeEnd;
+                    int newNodeEnd = nodeLength - nodeStart;
+                    nodeStart = newNodeStart;
+                    nodeEnd = newNodeEnd;
+                }
+
                 g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
                                                                 target, targetStart, targetEnd));
 
@@ -232,6 +245,16 @@ BlastTarget * LoadBlastResultsDialog::getTargetFromString(QString targetName)
         if (g_blastSearchResults->m_targets[i].m_name == targetName)
             return &(g_blastSearchResults->m_targets[i]);
     }
+
+    //If searching for the whole name failed, try looking at just the name up
+    //to the first space.
+    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
+    {
+        QStringList parts = g_blastSearchResults->m_targets[i].m_name.split(QRegExp("\\s"));
+        QString firstPart = parts[0];
+        if (firstPart == targetName)
+            return &(g_blastSearchResults->m_targets[i]);
+    }
     return 0;
 }
 
@@ -250,21 +273,13 @@ void LoadBlastResultsDialog::fillTargetsTable()
         model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_targets[i].m_hits)));
     }
     ui->blastTargetsTableView->setModel(model);
-//    ui->blastTargetsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     ui->blastTargetsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 
 void LoadBlastResultsDialog::fillHitsTable()
 {
-    int hitsOnForwardStrand = 0;
-    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
-    {
-        if (g_blastSearchResults->m_hits[i].onForwardStrand())
-            ++hitsOnForwardStrand;
-    }
-
-    QStandardItemModel * model = new QStandardItemModel(hitsOnForwardStrand, 7, this); //7 Columns
+    QStandardItemModel * model = new QStandardItemModel(g_blastSearchResults->m_hits.size(), 7, this); //7 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
     model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
@@ -273,24 +288,17 @@ void LoadBlastResultsDialog::fillHitsTable()
     model->setHorizontalHeaderItem(5, new QStandardItem("Target start"));
     model->setHorizontalHeaderItem(6, new QStandardItem("Target end"));
 
-    int row = 0;
     for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
-        if (g_blastSearchResults->m_hits[i].onForwardStrand())
-        {
-            model->setItem(row, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
-            model->setItem(row, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
-            model->setItem(row, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
-            model->setItem(row, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
-            model->setItem(row, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
-            model->setItem(row, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
-            model->setItem(row, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
-
-            ++row;
-        }
+        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
+        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
+        model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
+        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
+        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
     }
     ui->blastHitsTableView->setModel(model);
-//    ui->blastHitsTableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
     ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->blastHitsTableView->setEnabled(true);

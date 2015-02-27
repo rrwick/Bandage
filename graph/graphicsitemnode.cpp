@@ -100,7 +100,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
         if (g_settings->doubleMode)
         {
-            if (m_deBruijnNode->thisNodeHasForwardStrandBlastHits())
+            if (m_deBruijnNode->thisNodeHasBlastHits())
                 parts = m_deBruijnNode->getBlastHitPartsForThisNode();
         }
         else
@@ -114,7 +114,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             QPen partPen;
             partPen.setWidthF(getDrawnWidth());
             partPen.setCapStyle(Qt::FlatCap);
-            partPen.setJoinStyle(Qt::RoundJoin);
+            partPen.setJoinStyle(Qt::BevelJoin);
 
             for (size_t i = 0; i < parts.size(); ++i)
             {

@@ -35,7 +35,7 @@ Settings::Settings()
     arrowheadSize = 0.01;
     textOutlineThickness = 0.5;
 
-    blastPartsPerTarget = 300;
+    blastPartsPerTarget = 100;
 
     graphScope = WHOLE_GRAPH;
 

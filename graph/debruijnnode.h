@@ -74,7 +74,7 @@ public:
     QByteArray getFasta();
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
 
-    bool thisNodeHasForwardStrandBlastHits();
+    bool thisNodeHasBlastHits();
     bool thisNodeOrReverseComplementHasBlastHits();
     std::vector<BlastHitPart> getBlastHitPartsForThisNode();
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();

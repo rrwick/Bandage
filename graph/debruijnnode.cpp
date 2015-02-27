@@ -272,17 +272,9 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
 }
 
 
-bool DeBruijnNode::thisNodeHasForwardStrandBlastHits()
+bool DeBruijnNode::thisNodeHasBlastHits()
 {
-    if (m_blastHits.size() == 0)
-        return false;
-
-    for (size_t i = 0; i < m_blastHits.size(); ++i)
-    {
-        if (m_blastHits[i]->onForwardStrand())
-            return true;
-    }
-    return false;
+    return m_blastHits.size() > 0;
 }
 
 bool DeBruijnNode::thisNodeOrReverseComplementHasBlastHits()
