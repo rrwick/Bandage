@@ -403,6 +403,7 @@ void LoadBlastResultsDialog::runBlastSearch()
     system(blastCommand.toLocal8Bit().constData());
 
     loadBlastHits();
+    setUiStep(4);
 }
 
 
@@ -424,6 +425,7 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->parametersLineEdit->setEnabled(false);
         ui->startBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
+        ui->hitsLabel->setEnabled(false);
         break;
 
     //Step 2 is for loading queries
@@ -439,6 +441,7 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->parametersLineEdit->setEnabled(false);
         ui->startBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
+        ui->hitsLabel->setEnabled(false);
         break;
 
     //Step 3 is for running the BLAST search
@@ -454,8 +457,23 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->parametersLineEdit->setEnabled(true);
         ui->startBlastSearchButton->setEnabled(true);
         ui->clearQueriesButton->setEnabled(true);
+        ui->hitsLabel->setEnabled(false);
         break;
 
-
+    //Step 4 is after the BLAST search has been run.
+    case 4:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableView->setEnabled(true);
+        ui->step3Label->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->startBlastSearchButton->setEnabled(true);
+        ui->clearQueriesButton->setEnabled(true);
+        ui->hitsLabel->setEnabled(true);
+        break;
     }
 }
