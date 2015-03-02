@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
     srand(time(NULL));
     setRandomColourFactor();
 
-    g_tempDirectory = QDir::tempPath() + "/bandage_temp/";
+    g_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
 
     g_settings = new Settings();
     m_previousZoomSpinBoxValue = ui->zoomSpinBox->value();
@@ -160,7 +160,13 @@ MainWindow::~MainWindow()
     cleanUp();
     delete m_graphicsViewZoom;
     delete ui;
+}
 
+
+
+//Check to see if the Bandage temp directory exists, and if so, delete it.
+void MainWindow::deleteTempDirectory()
+{
     QString tempDirectoryCheckCommand = "test -d " + g_tempDirectory;
     if (system(tempDirectoryCheckCommand.toLocal8Bit().constData()) == 0)
     {
@@ -180,6 +186,7 @@ void MainWindow::cleanUp()
         g_blastSearchResults = 0;
     }
     ui->blastQueryComboBox->clear();
+    deleteTempDirectory();
 
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())

@@ -124,12 +124,17 @@ void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString
     }
 }
 
-void LoadBlastResultsDialog::loadBlastHits()
+void LoadBlastResultsDialog::clearBlastHits()
 {
-    //Clear any existing hits
     g_blastSearchResults->m_hits.clear();
     for (size_t i = 0 ; i < g_blastSearchResults->m_queries.size(); ++i)
         g_blastSearchResults->m_queries[i].m_hits = 0;
+    ui->blastHitsTableView->setModel(0);
+}
+
+void LoadBlastResultsDialog::loadBlastHits()
+{
+    clearBlastHits();
 
     QFile inputFile(g_tempDirectory + "blast_results");
     if (inputFile.open(QIODevice::ReadOnly))
@@ -212,11 +217,7 @@ void LoadBlastResultsDialog::fillQueriesTable()
     ui->blastQueriesTableView->setModel(model);
     ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->step3Label->setEnabled(true);
-    ui->parametersLabel->setEnabled(true);
-    ui->parametersLineEdit->setEnabled(true);
-    ui->startBlastSearchButton->setEnabled(true);
-    ui->clearQueriesButton->setEnabled(true);
+    setUiStep(3);
 }
 
 
@@ -286,11 +287,7 @@ void LoadBlastResultsDialog::buildBlastDatabase2()
         return;
     }
 
-    ui->step2Label->setEnabled(true);
-    ui->loadQueriesFromFastaButton->setEnabled(true);
-    ui->enterQueryManuallyButton->setEnabled(true);
-    ui->blastQueriesTableView->setEnabled(true);
-
+    setUiStep(2);
     makeQueryFile();
 }
 
@@ -325,6 +322,7 @@ void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
 
         loadBlastQueries();
         fillQueriesTable();
+        clearBlastHits();
     }
 }
 
@@ -351,6 +349,7 @@ void LoadBlastResultsDialog::enterQueryManually()
 
         loadBlastQueries();
         fillQueriesTable();
+        clearBlastHits();
     }
 }
 
@@ -362,11 +361,8 @@ void LoadBlastResultsDialog::clearQueries()
     ui->blastQueriesTableView->setModel(0);
     ui->clearQueriesButton->setEnabled(false);
 
-    ui->step3Label->setEnabled(false);
-    ui->parametersLabel->setEnabled(false);
-    ui->parametersLineEdit->setEnabled(false);
-    ui->startBlastSearchButton->setEnabled(false);
-    ui->clearQueriesButton->setEnabled(false);
+    clearBlastHits();
+    setUiStep(2);
 }
 
 
@@ -399,4 +395,59 @@ void LoadBlastResultsDialog::runBlastSearch()
     system(blastCommand.toLocal8Bit().constData());
 
     loadBlastHits();
+}
+
+
+
+void LoadBlastResultsDialog::setUiStep(int step)
+{
+    switch (step)
+    {
+    //Step 1 is for when the BLAST database has not yet been made.
+    case 1:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(true);
+        ui->step2Label->setEnabled(false);
+        ui->loadQueriesFromFastaButton->setEnabled(false);
+        ui->enterQueryManuallyButton->setEnabled(false);
+        ui->blastQueriesTableView->setEnabled(false);
+        ui->step3Label->setEnabled(false);
+        ui->parametersLabel->setEnabled(false);
+        ui->parametersLineEdit->setEnabled(false);
+        ui->startBlastSearchButton->setEnabled(false);
+        ui->clearQueriesButton->setEnabled(false);
+        break;
+
+    //Step 2 is for loading queries
+    case 2:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableView->setEnabled(true);
+        ui->step3Label->setEnabled(false);
+        ui->parametersLabel->setEnabled(false);
+        ui->parametersLineEdit->setEnabled(false);
+        ui->startBlastSearchButton->setEnabled(false);
+        ui->clearQueriesButton->setEnabled(false);
+        break;
+
+    //Step 3 is for running the BLAST search
+    case 3:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableView->setEnabled(true);
+        ui->step3Label->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->startBlastSearchButton->setEnabled(true);
+        ui->clearQueriesButton->setEnabled(true);
+        break;
+
+
+    }
 }

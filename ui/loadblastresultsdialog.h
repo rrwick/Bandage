@@ -47,6 +47,8 @@ private:
     BlastQuery * getQueryFromString(QString queryName);
     void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
     void makeQueryFile();
+    void setUiStep(int step);
+    void clearBlastHits();
 
 private slots:
     void buildBlastDatabase1();
