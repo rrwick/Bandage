@@ -1172,11 +1172,19 @@ from selected node</string>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_LastGraph">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
    <property name="text">
     <string>Load LastGraph (Velvet)</string>
    </property>
   </action>
   <action name="actionLoad_fastg">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
    <property name="text">
     <string>Load fastg (SPAdes)</string>
    </property>
@@ -1185,21 +1193,37 @@ from selected node</string>
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
    <property name="text">
     <string>Save image (current view)</string>
    </property>
   </action>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/exit-256.png</normaloff>:/icons/exit-256.png</iconset>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
   <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/settings-256.png</normaloff>:/icons/settings-256.png</iconset>
+   </property>
    <property name="text">
     <string>Settings</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/information-256.png</normaloff>:/icons/information-256.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
@@ -1207,6 +1231,10 @@ from selected node</string>
   <action name="actionSave_image_entire_scene">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
     <string>Save image (entire scene)</string>

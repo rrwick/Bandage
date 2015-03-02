@@ -410,6 +410,9 @@ void LoadBlastResultsDialog::runBlastSearch()
 
 void LoadBlastResultsDialog::setUiStep(int step)
 {
+    QPixmap tick(":/icons/tick-128.png");
+    QPixmap tickScaled = tick.scaled(32, 32);
+
     switch (step)
     {
     //Step 1 is for when the BLAST database has not yet been made.
@@ -426,6 +429,9 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->startBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(QPixmap());
+        ui->step2TickLabel->setPixmap(QPixmap());
+        ui->step3TickLabel->setPixmap(QPixmap());
         break;
 
     //Step 2 is for loading queries
@@ -442,6 +448,9 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->startBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step2TickLabel->setPixmap(QPixmap());
+        ui->step3TickLabel->setPixmap(QPixmap());
         break;
 
     //Step 3 is for running the BLAST search
@@ -458,6 +467,9 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->startBlastSearchButton->setEnabled(true);
         ui->clearQueriesButton->setEnabled(true);
         ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step3TickLabel->setPixmap(QPixmap());
         break;
 
     //Step 4 is after the BLAST search has been run.
@@ -474,6 +486,9 @@ void LoadBlastResultsDialog::setUiStep(int step)
         ui->startBlastSearchButton->setEnabled(true);
         ui->clearQueriesButton->setEnabled(true);
         ui->hitsLabel->setEnabled(true);
+        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step3TickLabel->setPixmap(tickScaled);
         break;
     }
 }

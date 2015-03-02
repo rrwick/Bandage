@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
         <file>icon.png</file>
+        <file>load-256.png</file>
+        <file>settings-256.png</file>
+        <file>tick-128.png</file>
+        <file>information-256.png</file>
+        <file>save-256.png</file>
+        <file>exit-256.png</file>
     </qresource>
 </RCC>
