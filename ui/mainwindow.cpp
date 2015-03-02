@@ -1654,13 +1654,20 @@ void MainWindow::openLoadBlastResultsDialog()
 
     loadBlastResultsDialog.exec();
 
-//    //Fill in the blast results combo box
-//    ui->blastTargetComboBox->clear();
-//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//    {
-//        if (g_blastSearchResults->m_targets[i].m_hits > 0)
-//            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
-//    }
+    //Fill in the blast results combo box
+    ui->blastQueryComboBox->clear();
+    for (size_t i = 0; i < g_blastSearchResults->m_queries.size(); ++i)
+    {
+        if (g_blastSearchResults->m_queries[i].m_hits > 0)
+            ui->blastQueryComboBox->addItem(g_blastSearchResults->m_queries[i].m_name);
+    }
+
+    if (ui->blastQueryComboBox->count() > 0)
+    {
+        //If the colouring scheme is not currently sequence, change it to custom now
+        if (ui->coloursComboBox->currentIndex() != 3)
+            ui->coloursComboBox->setCurrentIndex(3);
+    }
 }
 
 
