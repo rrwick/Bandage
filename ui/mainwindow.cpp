@@ -1632,17 +1632,19 @@ void MainWindow::openAboutDialog()
 void MainWindow::openLoadBlastResultsDialog()
 {
     LoadBlastResultsDialog loadBlastResultsDialog(&m_deBruijnGraphNodes, this);
+
+    connect(&loadBlastResultsDialog, SIGNAL(createAllNodesFasta(QString)), this, SLOT(saveAllNodesToFasta(QString)));
+    connect(this, SIGNAL(saveAllNodesToFastaFinished()), &loadBlastResultsDialog, SLOT(buildBlastDatabase2()));
+
     loadBlastResultsDialog.exec();
 
-    //POSSIBLE EFFICIENCY IMPROVEMENT: ONLY CONTINUE IF SOMETHING WAS CHANGED
-
-    //Fill in the blast results combo box
-    ui->blastTargetComboBox->clear();
-    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-    {
-        if (g_blastSearchResults->m_targets[i].m_hits > 0)
-            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
-    }
+//    //Fill in the blast results combo box
+//    ui->blastTargetComboBox->clear();
+//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
+//    {
+//        if (g_blastSearchResults->m_targets[i].m_hits > 0)
+//            ui->blastTargetComboBox->addItem(g_blastSearchResults->m_targets[i].m_name);
+//    }
 }
 
 
@@ -1673,4 +1675,23 @@ void MainWindow::blastTargetChanged()
     g_graphicsView->viewport()->update();
 }
 
+
+
+void MainWindow::saveAllNodesToFasta(QString path)
+{
+    QFile file(path + "all_nodes.fasta");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+
+        out << i.value()->getFasta();
+        out << "\n";
+    }
+
+    emit saveAllNodesToFastaFinished();
+}
 

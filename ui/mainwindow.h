@@ -117,6 +117,10 @@ private slots:
     void graphLayoutFinished();
     void openLoadBlastResultsDialog();
     void blastTargetChanged();
+    void saveAllNodesToFasta(QString path);
+
+signals:
+    void saveAllNodesToFastaFinished();
 };
 
 #endif // MAINWINDOW_H

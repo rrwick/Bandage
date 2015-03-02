@@ -42,16 +42,25 @@ public:
 private:
     Ui::LoadBlastResultsDialog *ui;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
+    QString m_tempDirectory;
 
     int getNodeNumberFromString(QString nodeString);
     BlastTarget * getTargetFromString(QString targetName);
     void quitBlastHitLoading(QString error);
 
 private slots:
+    void buildBlastDatabase1();
+    void buildBlastDatabase2();
+
+
+
     void loadBlastTargets();
     void loadBlastHits();
     void fillTargetsTable();
     void fillHitsTable();
+
+signals:
+    void createAllNodesFasta(QString path);
 };
 
 #endif // LOADBLASTRESULTSDIALOG_H
