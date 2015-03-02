@@ -24,12 +24,13 @@
 #include <QTextStream>
 #include <QString>
 #include "../blast/blasthit.h"
-#include "../blast/blasttarget.h"
+#include "../blast/blastquery.h"
 #include <QStandardItemModel>
 #include "../program/globals.h"
 #include "../graph/debruijnnode.h"
 #include <QMessageBox>
 #include <QDir>
+#include "enteroneblastquerydialog.h"
 
 LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBruijnGraphNodes,
                                                QWidget *parent) :
@@ -50,6 +51,10 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
 //    }
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
+    connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
+    connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
+    connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
+    connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearch()));
 
 
 //    connect(ui->loadBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(loadBlastTargets()));
@@ -61,268 +66,189 @@ LoadBlastResultsDialog::~LoadBlastResultsDialog()
     delete ui;
 }
 
-void LoadBlastResultsDialog::loadBlastTargets()
+void LoadBlastResultsDialog::loadBlastQueries()
 {
-//    QString fileName = QFileDialog::getOpenFileName(this, "Load BLAST database");
+    //If there a BLAST results object, delete it now and make a new one.
+    if (g_blastSearchResults != 0)
+        delete g_blastSearchResults;
+    g_blastSearchResults = new BlastSearchResults();
 
-//    if (fileName != "") //User did not hit cancel
-//    {
-//        //If there a BLAST results object, delete it now and make a new one.
-//        if (g_blastSearchResults != 0)
-//            delete g_blastSearchResults;
-//        g_blastSearchResults = new BlastSearchResults();
+    std::vector<QString> queryNames;
+    std::vector<QString> querySequences;
+    readFastaFile(m_tempDirectory + "queries.fasta", &queryNames, &querySequences);
 
-//        QFile inputFile(fileName);
-//        if (inputFile.open(QIODevice::ReadOnly))
-//        {
-//            int sequenceLength = 0;
-//            QString targetName = "";
+    for (size_t i = 0; i < queryNames.size(); ++i)
+        g_blastSearchResults->m_queries.push_back(BlastQuery(queryNames[i], querySequences[i].length()));
+}
 
-//            QTextStream in(&inputFile);
-//            bool firstLine = true;
-//            while (!in.atEnd())
-//            {
-//                QString line = in.readLine();
+void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
+{
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QString name = "";
+        QString sequence = "";
 
-//                //If the first character in the file is not '>',
-//                //then quit because this probably isn't a FASTA file.
-//                if (firstLine && line.at(0) != '>')
-//                {
-//                    QMessageBox::warning(this, "Problem loading BLAST database", "This file does not appear to be a BLAST database.\nLoading failed.");
-//                    delete g_blastSearchResults;
-//                    g_blastSearchResults = 0;
-//                    return;
-//                }
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
 
-//                if (line.length() > 0 && line.at(0) == '>')
-//                {
-//                    //If there is a current target, add it to the results now.
-//                    if (targetName.length() > 0)
-//                        g_blastSearchResults->m_targets.push_back(BlastTarget(targetName, sequenceLength));
+            if (line.length() == 0)
+                continue;
 
-//                    line.remove(0, 1); //Remove '>' from start
-//                    targetName = line;
-//                    sequenceLength = 0;
-//                }
+            if (line.at(0) == '>')
+            {
+                //If there is a current sequence, add it to the vectors now.
+                if (name.length() > 0)
+                {
+                    names->push_back(name);
+                    sequences->push_back(sequence);
+                }
 
-//                else //It's a sequence line
-//                    sequenceLength += line.simplified().length();
+                line.remove(0, 1); //Remove '>' from start
+                name = line;
+                sequence = "";
+            }
 
-//                firstLine = false;
-//            }
+            else //It's a sequence line
+                sequence += line.simplified();
+        }
 
-//            //Add the last target to the results now.
-//            if (targetName.length() > 0)
-//                g_blastSearchResults->m_targets.push_back(BlastTarget(targetName, sequenceLength));
-//        }
+        //Add the last target to the results now.
+        if (name.length() > 0)
+        {
+            names->push_back(name);
+            sequences->push_back(sequence);
+        }
 
-//        fillTargetsTable();
-
-//        ui->blastTargetsTableView->setEnabled(true);
-//        ui->loadBlastOutputButton->setEnabled(true);
-
-//        g_blastSearchResults->m_hits.clear();
-//        ui->blastHitsTableView->setModel(0);
-//    }
+        inputFile.close();
+    }
 }
 
 void LoadBlastResultsDialog::loadBlastHits()
 {
-//    QString fileName = QFileDialog::getOpenFileName(this, "Load BLAST output");
+    //Clear any existing hits
+    g_blastSearchResults->m_hits.clear();
+    for (size_t i = 0 ; i < g_blastSearchResults->m_queries.size(); ++i)
+        g_blastSearchResults->m_queries[i].m_hits = 0;
 
-//    if (fileName != "") //User did not hit cancel
-//    {
-//        QFile inputFile(fileName);
-//        if (inputFile.open(QIODevice::ReadOnly))
-//        {
-//            QTextStream in(&inputFile);
-//            while (!in.atEnd())
-//            {
-//                QString line = in.readLine();
-//                QStringList alignmentParts = line.split('\t');
+    QFile inputFile(m_tempDirectory + "blast_results");
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            QStringList alignmentParts = line.split('\t');
 
-//                if (alignmentParts.size() != 12)
-//                {
-//                    quitBlastHitLoading("The file does not appear to be a correctly formmatted "
-//                                        "BLAST output.\n\nLoading failed.");
-//                    return;
-//                }
+            QString queryName = alignmentParts[0];
+            QString nodeLabel = alignmentParts[1];
+            int queryStart = alignmentParts[6].toInt();
+            int queryEnd = alignmentParts[7].toInt();
+            int nodeStart = alignmentParts[8].toInt();
+            int nodeEnd = alignmentParts[9].toInt();
+            QString eValue = alignmentParts[10];
 
-//                QString nodeLabel = alignmentParts[0];
-//                QString targetName = alignmentParts[1];
-//                int nodeStart = alignmentParts[6].toInt();
-//                int nodeEnd = alignmentParts[7].toInt();
-//                int targetStart = alignmentParts[8].toInt();
-//                int targetEnd = alignmentParts[9].toInt();
+            //Only save BLAST hits that are on forward strands.
+            if (nodeStart > nodeEnd)
+                continue;
 
-//                int nodeNumber = getNodeNumberFromString(nodeLabel);
-//                DeBruijnNode * node;
-//                if (m_deBruijnGraphNodes->contains(nodeNumber))
-//                    node = (*m_deBruijnGraphNodes)[nodeNumber];
-//                else
-//                {
-//                    quitBlastHitLoading("This BLAST output contains nodes that are not in "
-//                                        "the loaded graph.  Ensure that the BLAST output was generated "
-//                                        "using the loaded graph.\n\nLoading failed.");
-//                    return;
-//                }
+            int nodeNumber = getNodeNumberFromString(nodeLabel);
+            DeBruijnNode * node;
+            if (m_deBruijnGraphNodes->contains(nodeNumber))
+                node = (*m_deBruijnGraphNodes)[nodeNumber];
+            else
+                return;
 
-//                BlastTarget * target = getTargetFromString(targetName);
-//                if (target == 0)
-//                {
-//                    quitBlastHitLoading("This BLAST output contains a target that is not in "
-//                                        "the database.  Ensure that the BLAST output was generated "
-//                                        "using the specified database.\n\nLoading failed.");
-//                    return;
-//                }
+            BlastQuery * query = getQueryFromString(queryName);
+            if (query == 0)
+                return;
 
-//                //All BLAST hits will be saved as being on the forward strand.
-//                if (targetStart > targetEnd)
-//                {
-//                    node = node->m_reverseComplement;
-//                    std::swap(targetStart, targetEnd);
+            g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
+                                                            query, queryStart, queryEnd, eValue));
 
-//                    int nodeLength = node->m_length;
-//                    int newNodeStart = nodeLength - nodeEnd;
-//                    int newNodeEnd = nodeLength - nodeStart;
-//                    nodeStart = newNodeStart;
-//                    nodeEnd = newNodeEnd;
-//                }
+            ++(query->m_hits);
+        }
+    }
 
-//                g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
-//                                                                target, targetStart, targetEnd));
-
-//                if (targetStart < targetEnd)
-//                    ++(target->m_hits);
-//            }
-//        }
-
-//        fillTargetsTable();
-//        fillHitsTable();
-//    }
-}
-
-void LoadBlastResultsDialog::quitBlastHitLoading(QString error)
-{
-//    QMessageBox::warning(this, "Problem loading BLAST output", error);
-//    g_blastSearchResults->m_hits.clear();
-//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//        g_blastSearchResults->m_targets[i].m_hits = 0;
+    fillQueriesTable();
+    fillHitsTable();
 }
 
 
 int LoadBlastResultsDialog::getNodeNumberFromString(QString nodeString)
 {
-//    //Find the first occurrence of "NODE" and then the first number after that.
-//    int nodeWordIndex = nodeString.indexOf("NODE");
+    QStringList nodeStringParts = nodeString.split("_");
+    return nodeStringParts[1].toInt();
+}
 
-//    QString numberString = "";
-//    bool firstDigitFound = false;
-//    for (int i = nodeWordIndex; i < nodeString.size(); ++i)
-//    {
-//        if (nodeString.at(i).digitValue() >= 0)
-//        {
-//            numberString += nodeString.at(i);
-//            firstDigitFound = true;
-//        }
-//        else if (firstDigitFound)
-//            break;
-//    }    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//    {
-//        if (g_blastSearchResults->m_targets[i].m_name == targetName)
-//            return &(g_blastSearchResults->m_targets[i]);
-//    }
 
-//    //If searching for the whole name failed, try looking at just the name up
-//    //to the first space.
-//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//    {
-//        QStringList parts = g_blastSearchResults->m_targets[i].m_name.split(QRegExp("\\s"));
-//        QString firstPart = parts[0];
-//        if (firstPart == targetName)
-//            return &(g_blastSearchResults->m_targets[i]);
-//    }
-//    return 0;
-
-//    int nodeNumber = numberString.toInt();
-
-//    //If the node string ends with an inverted comma, then this
-//    //is the FASTG indication for a negative node.
-//    QStringList fastgParts = nodeString.split(':');
-//    QString firstPart = fastgParts[0];
-//    if (firstPart.at(firstPart.length() - 1) == '\'')
-//        nodeNumber *= -1;
-
-//    return nodeNumber;
+BlastQuery * LoadBlastResultsDialog::getQueryFromString(QString queryName)
+{
+    for (size_t i = 0; i < g_blastSearchResults->m_queries.size(); ++i)
+    {
+        if (g_blastSearchResults->m_queries[i].m_name == queryName)
+            return &(g_blastSearchResults->m_queries[i]);
+    }
     return 0;
 }
 
 
-BlastTarget * LoadBlastResultsDialog::getTargetFromString(QString targetName)
+void LoadBlastResultsDialog::fillQueriesTable()
 {
-//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//    {
-//        if (g_blastSearchResults->m_targets[i].m_name == targetName)
-//            return &(g_blastSearchResults->m_targets[i]);
-//    }
+    size_t queryCount = g_blastSearchResults->m_queries.size();
+    if (queryCount == 0)
+        return;
 
-//    //If searching for the whole name failed, try looking at just the name up
-//    //to the first space.
-//    for (size_t i = 0; i < g_blastSearchResults->m_targets.size(); ++i)
-//    {
-//        QStringList parts = g_blastSearchResults->m_targets[i].m_name.split(QRegExp("\\s"));
-//        QString firstPart = parts[0];
-//        if (firstPart == targetName)
-//            return &(g_blastSearchResults->m_targets[i]);
-//    }
-//    return 0;
-    return 0;
-}
+    QStandardItemModel * model = new QStandardItemModel(queryCount, 3, this); //3 Columns
+    model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
+    model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
+    model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
+    for (size_t i = 0; i < queryCount; ++i)
+    {
+        model->setItem(i, 0, new QStandardItem(g_blastSearchResults->m_queries[i].m_name));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_queries[i].m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_queries[i].m_hits)));
+    }
+    ui->blastQueriesTableView->setModel(model);
+    ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-
-void LoadBlastResultsDialog::fillTargetsTable()
-{
-//    size_t targetCount = g_blastSearchResults->m_targets.size();
-//    QStandardItemModel * model = new QStandardItemModel(targetCount, 3, this); //3 Columns
-//    model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
-//    model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
-//    model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
-//    for (size_t i = 0; i < targetCount; ++i)
-//    {
-//        model->setItem(i, 0, new QStandardItem(g_blastSearchResults->m_targets[i].m_name));
-//        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_targets[i].m_length)));
-//        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_targets[i].m_hits)));
-//    }
-//    ui->blastTargetsTableView->setModel(model);
-//    ui->blastTargetsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->step3Label->setEnabled(true);
+    ui->parametersLabel->setEnabled(true);
+    ui->parametersLineEdit->setEnabled(true);
+    ui->startBlastSearchButton->setEnabled(true);
+    ui->clearQueriesButton->setEnabled(true);
 }
 
 
 void LoadBlastResultsDialog::fillHitsTable()
 {
-//    QStandardItemModel * model = new QStandardItemModel(g_blastSearchResults->m_hits.size(), 7, this); //7 Columns
-//    model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
-//    model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
-//    model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
-//    model->setHorizontalHeaderItem(3, new QStandardItem("Node end"));
-//    model->setHorizontalHeaderItem(4, new QStandardItem("Target name"));
-//    model->setHorizontalHeaderItem(5, new QStandardItem("Target start"));
-//    model->setHorizontalHeaderItem(6, new QStandardItem("Target end"));
+    QStandardItemModel * model = new QStandardItemModel(g_blastSearchResults->m_hits.size(), 8, this); //8 Columns
+    model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
+    model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
+    model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
+    model->setHorizontalHeaderItem(3, new QStandardItem("Node end"));
+    model->setHorizontalHeaderItem(4, new QStandardItem("Query name"));
+    model->setHorizontalHeaderItem(5, new QStandardItem("Query start"));
+    model->setHorizontalHeaderItem(6, new QStandardItem("Query end"));
+    model->setHorizontalHeaderItem(7, new QStandardItem("E-value"));
 
-//    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
-//    {
-//        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
-//        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
-//        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
-//        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
-//        model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_target->m_name));
-//        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetStart)));
-//        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_targetEnd)));
-//    }
-//    ui->blastHitsTableView->setModel(model);
-//    ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    {
+        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
+        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
+        model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_query->m_name));
+        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_queryStart)));
+        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_queryEnd)));
+        model->setItem(i, 7, new QStandardItem(g_blastSearchResults->m_hits[i].m_eValue));
+    }
+    ui->blastHitsTableView->setModel(model);
+    ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-//    ui->blastHitsTableView->setEnabled(true);
+    ui->blastHitsTableView->setEnabled(true);
 }
 
 
@@ -368,5 +294,112 @@ void LoadBlastResultsDialog::buildBlastDatabase2()
     ui->enterQueryManuallyButton->setEnabled(true);
     ui->blastQueriesTableView->setEnabled(true);
 
+    makeQueryFile();
+}
 
+
+void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
+{
+    QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile queriesFile(m_tempDirectory + "queries.fasta");
+        queriesFile.open(QIODevice::Append | QIODevice::Text);
+        QTextStream out(&queriesFile);
+
+        std::vector<QString> queryNames;
+        std::vector<QString> querySequences;
+        readFastaFile(fullFileName, &queryNames, &querySequences);
+        int newQueryCount = int(queryNames.size());
+
+        if (queriesFile.pos() > 0 && newQueryCount > 0)
+            out << "\n";
+
+        for (int i = 0; i < newQueryCount; ++i)
+        {
+            out << ">" << queryNames[i].replace(" ", "_") << "\n";
+            out << querySequences[i];
+
+            if (i < newQueryCount - 1)
+                out << "\n";
+        }
+        queriesFile.close();
+
+        loadBlastQueries();
+        fillQueriesTable();
+    }
+}
+
+
+void LoadBlastResultsDialog::enterQueryManually()
+{
+    EnterOneBlastQueryDialog enterOneBlastQueryDialog(this);
+
+    if (enterOneBlastQueryDialog.exec())
+    {
+        QFile queriesFile(m_tempDirectory + "queries.fasta");
+        queriesFile.open(QIODevice::Append | QIODevice::Text);
+        QTextStream out(&queriesFile);
+
+        if (queriesFile.pos() > 0)
+            out << "\n";
+
+        out << ">";
+        out << enterOneBlastQueryDialog.getName();
+        out << "\n";
+        out << enterOneBlastQueryDialog.getSequence();
+
+        queriesFile.close();
+
+        loadBlastQueries();
+        fillQueriesTable();
+    }
+}
+
+
+
+void LoadBlastResultsDialog::clearQueries()
+{
+    makeQueryFile();
+    ui->blastQueriesTableView->setModel(0);
+    ui->clearQueriesButton->setEnabled(false);
+
+    ui->step3Label->setEnabled(false);
+    ui->parametersLabel->setEnabled(false);
+    ui->parametersLineEdit->setEnabled(false);
+    ui->startBlastSearchButton->setEnabled(false);
+    ui->clearQueriesButton->setEnabled(false);
+}
+
+
+void LoadBlastResultsDialog::makeQueryFile()
+{
+    //If the query file already exists, delete it.
+    QString checkForQueryFileCommmand = "test -e " + m_tempDirectory + "queries.fasta";
+    if (system(checkForQueryFileCommmand.toLocal8Bit().constData()) == 0)
+    {
+        QString deleteQueryFastaCommand = "rm " + m_tempDirectory + "queries.fasta";
+        system(deleteQueryFastaCommand.toLocal8Bit().constData());
+    }
+
+    //Make an empty query file.
+    QString createQueryFastaCommand = "touch " + m_tempDirectory + "queries.fasta";
+    system(createQueryFastaCommand.toLocal8Bit().constData());
+}
+
+
+void LoadBlastResultsDialog::runBlastSearch()
+{
+    if (system("which blastn") != 0)
+    {
+        QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
+        return;
+    }
+
+    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
+    QString blastCommand = "blastn -query " + m_tempDirectory + "queries.fasta -db " + m_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + m_tempDirectory + "blast_results";
+    system(blastCommand.toLocal8Bit().constData());
+
+    loadBlastHits();
 }

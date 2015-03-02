@@ -43,6 +43,7 @@ SOURCES += \
     ui/mygraphicsview.cpp \
     ui/mygraphicsscene.cpp \
     ui/aboutdialog.cpp \
+    ui/enteroneblastquerydialog.cpp \
     ui/loadblastresultsdialog.cpp \
     blast/blastsearchresults.cpp \
     blast/blasthit.cpp
@@ -63,16 +64,18 @@ HEADERS  += \
     ui/mygraphicsscene.h \
     ui/aboutdialog.h \
     ui/loadblastresultsdialog.h \
+    ui/enteroneblastquerydialog.h \
     blast/blastsearchresults.h \
-    blast/blasttarget.h \
     blast/blasthitpart.h \
-    blast/blasthit.h
+    blast/blasthit.h \
+    blast/blastquery.h
 
 FORMS    += \
     ui/mainwindow.ui \
     ui/settingsdialog.ui \
     ui/aboutdialog.ui \
-    ui/loadblastresultsdialog.ui
+    ui/loadblastresultsdialog.ui \
+    ui/enteroneblastquerydialog.ui
 
 
 # These includes are configured assuming that the OGDF

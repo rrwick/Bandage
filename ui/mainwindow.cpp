@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->setBlastResultsButton, SIGNAL(clicked()), this, SLOT(openLoadBlastResultsDialog()));
-    connect(ui->blastTargetComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
+    connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -170,7 +170,7 @@ void MainWindow::cleanUp()
         delete g_blastSearchResults;
         g_blastSearchResults = 0;
     }
-    ui->blastTargetComboBox->clear();
+    ui->blastQueryComboBox->clear();
 
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -933,14 +933,14 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 
     if (g_blastSearchResults == 0)
         return returnVector;
-    if (g_blastSearchResults->m_targets.size() == 0)
+    if (g_blastSearchResults->m_queries.size() == 0)
         return returnVector;
 
-    BlastTarget * currentTarget = &(g_blastSearchResults->m_targets[ui->blastTargetComboBox->currentIndex()]);
+    BlastQuery * currentQuery = &(g_blastSearchResults->m_queries[ui->blastQueryComboBox->currentIndex()]);
 
     for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
-        if (g_blastSearchResults->m_hits[i].m_target == currentTarget)
+        if (g_blastSearchResults->m_hits[i].m_query == currentQuery)
             returnVector.push_back(g_blastSearchResults->m_hits[i].m_node);
     }
 
@@ -1664,11 +1664,11 @@ void MainWindow::blastTargetChanged()
 
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target.
-    BlastTarget * currentTarget = &(g_blastSearchResults->m_targets[ui->blastTargetComboBox->currentIndex()]);
+    BlastQuery * currentTarget = &(g_blastSearchResults->m_queries[ui->blastQueryComboBox->currentIndex()]);
     for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
         BlastHit * hit = &(g_blastSearchResults->m_hits[i]);
-        if (hit->m_target == currentTarget)
+        if (hit->m_query == currentTarget)
             hit->m_node->m_blastHits.push_back(hit);
     }
 
@@ -1687,7 +1687,6 @@ void MainWindow::saveAllNodesToFasta(QString path)
     while (i.hasNext())
     {
         i.next();
-
         out << i.value()->getFasta();
         out << "\n";
     }

@@ -19,20 +19,22 @@
 #include "blasthit.h"
 
 #include "../graph/debruijnnode.h"
-#include "blasttarget.h"
+#include "blastquery.h"
 #include "../program/settings.h"
 #include "../program/globals.h"
 #include <math.h>
 
 BlastHit::BlastHit(DeBruijnNode * node, int nodeStart, int nodeEnd,
-                         BlastTarget * target, int targetStart, int targetEnd) :
+                   BlastQuery * query, int queryStart, int queryEnd,
+                   QString eValue) :
     m_node(node), m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
-    m_target(target), m_targetStart(targetStart), m_targetEnd(targetEnd)
+    m_query(query), m_queryStart(queryStart), m_queryEnd(queryEnd),
+    m_eValue(eValue)
 {
     m_nodeStartFraction = double(nodeStart) / m_node->m_length;
     m_nodeEndFraction = double(nodeEnd) / m_node->m_length;
-    m_targetStartFraction = double(targetStart) / m_target->m_length;
-    m_targetEndFraction = double(targetEnd) / m_target->m_length;
+    m_queryStartFraction = double(queryStart) / m_query->m_length;
+    m_queryEndFraction = double(queryEnd) / m_query->m_length;
 }
 
 BlastHit::~BlastHit()
@@ -45,17 +47,17 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
 {
     std::vector<BlastHitPart> returnVector;
 
-    int partCount = ceil(g_settings->blastPartsPerTarget * fabs(m_targetStartFraction - m_targetEndFraction));
+    int partCount = ceil(g_settings->blastPartsPerQuery * fabs(m_queryStartFraction - m_queryEndFraction));
 
     double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
-    double targetSpacing = (m_targetEndFraction - m_targetStartFraction) / partCount;
+    double querySpacing = (m_queryEndFraction - m_queryStartFraction) / partCount;
 
     double nodeFraction = m_nodeStartFraction;
-    double targetFraction = m_targetStartFraction;
+    double queryFraction = m_queryStartFraction;
     for (int i = 0; i < partCount; ++i)
     {
         QColor dotColour;
-        dotColour.setHsvF(targetFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too close to red, as that could confuse the end with the start
+        dotColour.setHsvF(queryFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too close to red, as that could confuse the end with the start
 
         double nextFraction = nodeFraction + nodeSpacing;
 
@@ -65,7 +67,7 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
             returnVector.push_back(BlastHitPart(dotColour, nodeFraction, nextFraction));
 
         nodeFraction = nextFraction;
-        targetFraction += targetSpacing;
+        queryFraction += querySpacing;
     }
 
     return returnVector;

@@ -16,20 +16,20 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef BLASTTARGET_H
-#define BLASTTARGET_H
+#ifndef BLASTQUERY_H
+#define BLASTQUERY_H
 
 #include <QString>
 
-class BlastTarget
+class BlastQuery
 {
 public:
-    BlastTarget() {}
-    BlastTarget(QString name, int length) : m_name(name), m_length(length), m_hits(0) {}
+    BlastQuery() {}
+    BlastQuery(QString name, int length) : m_name(name), m_length(length), m_hits(0) {}
 
     QString m_name;
     int m_length;
     int m_hits;
 };
 
-#endif // BLASTTARGET_H
+#endif // BLASTQUERY_H

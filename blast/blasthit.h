@@ -20,7 +20,7 @@
 #define BLASTHIT_H
 
 class DeBruijnNode;
-class BlastTarget;
+class BlastQuery;
 
 #include <QString>
 #include "blasthitpart.h"
@@ -29,25 +29,26 @@ class BlastHit
 {
 public:
     BlastHit(DeBruijnNode * node, int nodeStart, int nodeEnd,
-                BlastTarget * target, int targetStart, int targetEnd);
+             BlastQuery * query, int queryStart, int queryEnd,
+             QString eValue);
     BlastHit();
     ~BlastHit();
 
     DeBruijnNode * m_node;
     int m_nodeStart;
     int m_nodeEnd;
-
-    BlastTarget * m_target;
-    int m_targetStart;
-    int m_targetEnd;
+    BlastQuery * m_query;
+    int m_queryStart;
+    int m_queryEnd;
+    QString m_eValue;
 
     double m_nodeStartFraction;
     double m_nodeEndFraction;
-    double m_targetStartFraction;
-    double m_targetEndFraction;
+    double m_queryStartFraction;
+    double m_queryEndFraction;
 
     std::vector<BlastHitPart> getBlastHitParts(bool reverse);
-    bool onForwardStrand() {return m_targetStart < m_targetEnd;}
+    bool onForwardStrand() {return m_queryStart < m_queryEnd;}
 };
 
 #endif // BLASTHIT_H

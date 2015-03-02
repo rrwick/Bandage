@@ -19,7 +19,7 @@
 #ifndef BLASTSEARCHRESULTS_H
 #define BLASTSEARCHRESULTS_H
 
-#include "blasttarget.h"
+#include "blastquery.h"
 #include "blasthit.h"
 #include <vector>
 
@@ -29,7 +29,7 @@ public:
     BlastSearchResults();
     ~BlastSearchResults();
 
-    std::vector<BlastTarget> m_targets;
+    std::vector<BlastQuery> m_queries;
     std::vector<BlastHit> m_hits;
 };
 

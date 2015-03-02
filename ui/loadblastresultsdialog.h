@@ -24,7 +24,7 @@
 #include <QMap>
 
 class DeBruijnNode;
-class BlastTarget;
+class BlastQuery;
 
 namespace Ui {
 class LoadBlastResultsDialog;
@@ -45,22 +45,26 @@ private:
     QString m_tempDirectory;
 
     int getNodeNumberFromString(QString nodeString);
-    BlastTarget * getTargetFromString(QString targetName);
-    void quitBlastHitLoading(QString error);
+    BlastQuery * getQueryFromString(QString queryName);
+    void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
+    void makeQueryFile();
 
 private slots:
     void buildBlastDatabase1();
     void buildBlastDatabase2();
+    void loadBlastQueriesFromFastaFile();
+    void enterQueryManually();
+    void clearQueries();
+    void runBlastSearch();
 
-
-
-    void loadBlastTargets();
+    void loadBlastQueries();
     void loadBlastHits();
-    void fillTargetsTable();
+    void fillQueriesTable();
     void fillHitsTable();
 
 signals:
     void createAllNodesFasta(QString path);
+
 };
 
 #endif // LOADBLASTRESULTSDIALOG_H
