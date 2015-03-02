@@ -27,3 +27,14 @@ BlastSearchResults::~BlastSearchResults()
 {
 
 }
+
+
+BlastQuery * BlastSearchResults::getQueryFromName(QString queryName)
+{
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (m_queries[i].m_name == queryName)
+            return &(m_queries[i]);
+    }
+    return 0;
+}

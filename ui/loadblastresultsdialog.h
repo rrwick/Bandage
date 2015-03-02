@@ -44,7 +44,6 @@ private:
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
 
     int getNodeNumberFromString(QString nodeString);
-    BlastQuery * getQueryFromString(QString queryName);
     void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
     void makeQueryFile();
     void setUiStep(int step);

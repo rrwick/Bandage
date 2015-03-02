@@ -62,7 +62,14 @@ MainWindow::MainWindow(QWidget *parent) :
     srand(time(NULL));
     setRandomColourFactor();
 
+    //Make a temp directory to hold the BLAST files.
     g_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+    QString mkdirCommand = "mkdir " + g_tempDirectory;
+    if (system(mkdirCommand.toLocal8Bit().constData()) != 0)
+    {
+        QMessageBox::warning(this, "Error", "A temporary directory could not be created.  BLAST search functionality will not be available");
+        return;
+    }
 
     g_settings = new Settings();
     m_previousZoomSpinBoxValue = ui->zoomSpinBox->value();
@@ -79,8 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
-    //Blast search results is a null pointer until the user loads some
-    g_blastSearchResults = 0;
+    g_blastSearchResults = new BlastSearchResults();
 
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
@@ -160,6 +166,8 @@ MainWindow::~MainWindow()
     cleanUp();
     delete m_graphicsViewZoom;
     delete ui;
+    delete g_blastSearchResults;
+    deleteTempDirectory();
 }
 
 
@@ -179,14 +187,11 @@ void MainWindow::deleteTempDirectory()
 
 void MainWindow::cleanUp()
 {
-    //Delete the blast search results, if any exist.
-    if (g_blastSearchResults != 0)
-    {
-        delete g_blastSearchResults;
-        g_blastSearchResults = 0;
-    }
     ui->blastQueryComboBox->clear();
-    deleteTempDirectory();
+
+    //Delete all contents of the temporary directory
+    QString clearTempDirCommand = "rm -r " + g_tempDirectory + "*";
+    system(clearTempDirCommand.toLocal8Bit().constData());
 
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -947,8 +952,6 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 {
     std::vector<DeBruijnNode *> returnVector;
 
-    if (g_blastSearchResults == 0)
-        return returnVector;
     if (g_blastSearchResults->m_queries.size() == 0)
         return returnVector;
 
@@ -1682,16 +1685,13 @@ void MainWindow::blastTargetChanged()
         node->m_blastHits.clear();
     }
 
-    if (g_blastSearchResults == 0)
-        return;
-
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target.
-    BlastQuery * currentTarget = &(g_blastSearchResults->m_queries[ui->blastQueryComboBox->currentIndex()]);
+    BlastQuery * currentQuery = g_blastSearchResults->getQueryFromName(ui->blastQueryComboBox->currentText());
     for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
     {
         BlastHit * hit = &(g_blastSearchResults->m_hits[i]);
-        if (hit->m_query == currentTarget)
+        if (hit->m_query == currentQuery)
             hit->m_node->m_blastHits.push_back(hit);
     }
 

@@ -40,15 +40,35 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
 {
     ui->setupUi(this);
 
-//    if (g_blastSearchResults != 0)
-//    {
-//        fillTargetsTable();
-//        fillHitsTable();
+    //If a BLAST database already exists, move to step 2.
+    QString checkForQueryFileCommmand = "test -e " + g_tempDirectory + "all_nodes.fasta";
+    bool databaseExists =  system(checkForQueryFileCommmand.toLocal8Bit().constData()) == 0;
+    if (databaseExists)
+        setUiStep(2);
 
-//        ui->blastTargetsTableView->setEnabled(true);
-//        ui->loadBlastOutputButton->setEnabled(true);
-//        ui->blastHitsTableView->setEnabled(true);
-//    }
+    //If there isn't a BLAST database, clear the entire temporary directory
+    //and move to step 1.
+    else
+    {
+        QString clearTempDirCommand = "rm -r " + g_tempDirectory + "*";
+        system(clearTempDirCommand.toLocal8Bit().constData());
+
+        setUiStep(1);
+    }
+
+    //If queries already exist, display them and move to step 3.
+    if (g_blastSearchResults->m_queries.size() > 0)
+    {
+        fillQueriesTable();
+        setUiStep(3);
+    }
+
+    //If results already exist, display them and move to step 3.
+    if (g_blastSearchResults->m_hits.size() > 0)
+    {
+        fillHitsTable();
+        setUiStep(3);
+    }
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
@@ -66,10 +86,9 @@ LoadBlastResultsDialog::~LoadBlastResultsDialog()
 
 void LoadBlastResultsDialog::loadBlastQueries()
 {
-    //If there a BLAST results object, delete it now and make a new one.
-    if (g_blastSearchResults != 0)
-        delete g_blastSearchResults;
-    g_blastSearchResults = new BlastSearchResults();
+    g_blastSearchResults->m_queries.clear();
+    ui->blastQueriesTableView->setModel(0);
+    ui->clearQueriesButton->setEnabled(false);
 
     std::vector<QString> queryNames;
     std::vector<QString> querySequences;
@@ -139,6 +158,12 @@ void LoadBlastResultsDialog::loadBlastHits()
     QFile inputFile(g_tempDirectory + "blast_results");
     if (inputFile.open(QIODevice::ReadOnly))
     {
+        if (inputFile.size() == 0)
+        {
+            QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
+            return;
+        }
+
         QTextStream in(&inputFile);
         while (!in.atEnd())
         {
@@ -164,7 +189,7 @@ void LoadBlastResultsDialog::loadBlastHits()
             else
                 return;
 
-            BlastQuery * query = getQueryFromString(queryName);
+            BlastQuery * query = g_blastSearchResults->getQueryFromName(queryName);
             if (query == 0)
                 return;
 
@@ -186,16 +211,6 @@ int LoadBlastResultsDialog::getNodeNumberFromString(QString nodeString)
     return nodeStringParts[1].toInt();
 }
 
-
-BlastQuery * LoadBlastResultsDialog::getQueryFromString(QString queryName)
-{
-    for (size_t i = 0; i < g_blastSearchResults->m_queries.size(); ++i)
-    {
-        if (g_blastSearchResults->m_queries[i].m_name == queryName)
-            return &(g_blastSearchResults->m_queries[i]);
-    }
-    return 0;
-}
 
 
 void LoadBlastResultsDialog::fillQueriesTable()
@@ -265,14 +280,6 @@ void LoadBlastResultsDialog::buildBlastDatabase1()
         return;
     }
 
-    //Make a temp directory to hold the files.
-    QString mkdirCommand = "mkdir " + g_tempDirectory;
-    if (system(mkdirCommand.toLocal8Bit().constData()) != 0)
-    {
-        QMessageBox::warning(this, "Error", "A temporary directory could not be created.");
-        return;
-    }
-
     emit createAllNodesFasta(g_tempDirectory);
 }
 
@@ -280,7 +287,6 @@ void LoadBlastResultsDialog::buildBlastDatabase1()
 void LoadBlastResultsDialog::buildBlastDatabase2()
 {
     QString makeBlastDbCommand = "makeblastdb -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
-
     if (system(makeBlastDbCommand.toLocal8Bit().constData()) != 0)
     {
         QMessageBox::warning(this, "Error", "There was a problem building the BLAST database.");
@@ -358,6 +364,8 @@ void LoadBlastResultsDialog::enterQueryManually()
 void LoadBlastResultsDialog::clearQueries()
 {
     makeQueryFile();
+
+    g_blastSearchResults->m_queries.clear();
     ui->blastQueriesTableView->setModel(0);
     ui->clearQueriesButton->setEnabled(false);
 

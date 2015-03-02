@@ -31,6 +31,8 @@ public:
 
     std::vector<BlastQuery> m_queries;
     std::vector<BlastHit> m_hits;
+
+    BlastQuery * getQueryFromName(QString queryName);
 };
 
 #endif // BLASTSEARCHRESULTS_H
