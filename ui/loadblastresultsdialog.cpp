@@ -55,15 +55,13 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
     connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearch()));
-
-
-//    connect(ui->loadBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(loadBlastTargets()));
-//    connect(ui->loadBlastOutputButton, SIGNAL(clicked()), this, SLOT(loadBlastHits()));
 }
 
 LoadBlastResultsDialog::~LoadBlastResultsDialog()
 {
     delete ui;
+
+
 }
 
 void LoadBlastResultsDialog::loadBlastQueries()
@@ -75,7 +73,7 @@ void LoadBlastResultsDialog::loadBlastQueries()
 
     std::vector<QString> queryNames;
     std::vector<QString> querySequences;
-    readFastaFile(m_tempDirectory + "queries.fasta", &queryNames, &querySequences);
+    readFastaFile(g_tempDirectory + "queries.fasta", &queryNames, &querySequences);
 
     for (size_t i = 0; i < queryNames.size(); ++i)
         g_blastSearchResults->m_queries.push_back(BlastQuery(queryNames[i], querySequences[i].length()));
@@ -133,7 +131,7 @@ void LoadBlastResultsDialog::loadBlastHits()
     for (size_t i = 0 ; i < g_blastSearchResults->m_queries.size(); ++i)
         g_blastSearchResults->m_queries[i].m_hits = 0;
 
-    QFile inputFile(m_tempDirectory + "blast_results");
+    QFile inputFile(g_tempDirectory + "blast_results");
     if (inputFile.open(QIODevice::ReadOnly))
     {
         QTextStream in(&inputFile);
@@ -267,21 +265,20 @@ void LoadBlastResultsDialog::buildBlastDatabase1()
     }
 
     //Make a temp directory to hold the files.
-    m_tempDirectory = QDir::tempPath() + "/bandage_temp/";
-    QString mkdirCommand = "mkdir " + m_tempDirectory;
+    QString mkdirCommand = "mkdir " + g_tempDirectory;
     if (system(mkdirCommand.toLocal8Bit().constData()) != 0)
     {
         QMessageBox::warning(this, "Error", "A temporary directory could not be created.");
         return;
     }
 
-    emit createAllNodesFasta(m_tempDirectory);
+    emit createAllNodesFasta(g_tempDirectory);
 }
 
 
 void LoadBlastResultsDialog::buildBlastDatabase2()
 {
-    QString makeBlastDbCommand = "makeblastdb -in " + m_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
+    QString makeBlastDbCommand = "makeblastdb -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
 
     if (system(makeBlastDbCommand.toLocal8Bit().constData()) != 0)
     {
@@ -304,7 +301,7 @@ void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile queriesFile(m_tempDirectory + "queries.fasta");
+        QFile queriesFile(g_tempDirectory + "queries.fasta");
         queriesFile.open(QIODevice::Append | QIODevice::Text);
         QTextStream out(&queriesFile);
 
@@ -338,7 +335,7 @@ void LoadBlastResultsDialog::enterQueryManually()
 
     if (enterOneBlastQueryDialog.exec())
     {
-        QFile queriesFile(m_tempDirectory + "queries.fasta");
+        QFile queriesFile(g_tempDirectory + "queries.fasta");
         queriesFile.open(QIODevice::Append | QIODevice::Text);
         QTextStream out(&queriesFile);
 
@@ -376,15 +373,15 @@ void LoadBlastResultsDialog::clearQueries()
 void LoadBlastResultsDialog::makeQueryFile()
 {
     //If the query file already exists, delete it.
-    QString checkForQueryFileCommmand = "test -e " + m_tempDirectory + "queries.fasta";
+    QString checkForQueryFileCommmand = "test -e " + g_tempDirectory + "queries.fasta";
     if (system(checkForQueryFileCommmand.toLocal8Bit().constData()) == 0)
     {
-        QString deleteQueryFastaCommand = "rm " + m_tempDirectory + "queries.fasta";
+        QString deleteQueryFastaCommand = "rm " + g_tempDirectory + "queries.fasta";
         system(deleteQueryFastaCommand.toLocal8Bit().constData());
     }
 
     //Make an empty query file.
-    QString createQueryFastaCommand = "touch " + m_tempDirectory + "queries.fasta";
+    QString createQueryFastaCommand = "touch " + g_tempDirectory + "queries.fasta";
     system(createQueryFastaCommand.toLocal8Bit().constData());
 }
 
@@ -398,7 +395,7 @@ void LoadBlastResultsDialog::runBlastSearch()
     }
 
     QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
-    QString blastCommand = "blastn -query " + m_tempDirectory + "queries.fasta -db " + m_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + m_tempDirectory + "blast_results";
+    QString blastCommand = "blastn -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + g_tempDirectory + "blast_results";
     system(blastCommand.toLocal8Bit().constData());
 
     loadBlastHits();

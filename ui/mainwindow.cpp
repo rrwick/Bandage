@@ -62,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent) :
     srand(time(NULL));
     setRandomColourFactor();
 
+    g_tempDirectory = QDir::tempPath() + "/bandage_temp/";
+
     g_settings = new Settings();
     m_previousZoomSpinBoxValue = ui->zoomSpinBox->value();
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
@@ -158,6 +160,13 @@ MainWindow::~MainWindow()
     cleanUp();
     delete m_graphicsViewZoom;
     delete ui;
+
+    QString tempDirectoryCheckCommand = "test -d " + g_tempDirectory;
+    if (system(tempDirectoryCheckCommand.toLocal8Bit().constData()) == 0)
+    {
+        QString tempDirectoryDeleteCommand = "rm -rf " + g_tempDirectory;
+        system(tempDirectoryDeleteCommand.toLocal8Bit().constData());
+    }
 }
 
 

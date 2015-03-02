@@ -42,7 +42,6 @@ public:
 private:
     Ui::LoadBlastResultsDialog *ui;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
-    QString m_tempDirectory;
 
     int getNodeNumberFromString(QString nodeString);
     BlastQuery * getQueryFromString(QString queryName);

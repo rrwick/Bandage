@@ -36,6 +36,7 @@ extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
 extern int g_randomColourFactor;
 extern BlastSearchResults * g_blastSearchResults;
+extern QString g_tempDirectory;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
