@@ -16,8 +16,8 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef LOADBLASTRESULTSDIALOG_H
-#define LOADBLASTRESULTSDIALOG_H
+#ifndef BLASTSEARCHDIALOG_H
+#define BLASTSEARCHDIALOG_H
 
 #include <QDialog>
 #include "../blast/blastsearch.h"
@@ -27,20 +27,20 @@ class DeBruijnNode;
 class BlastQuery;
 
 namespace Ui {
-class LoadBlastResultsDialog;
+class BlastSearchDialog;
 }
 
-class LoadBlastResultsDialog : public QDialog
+class BlastSearchDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit LoadBlastResultsDialog(QMap<int, DeBruijnNode*> * deBruijnGraphNodes,
+    explicit BlastSearchDialog(QMap<int, DeBruijnNode*> * deBruijnGraphNodes,
                                     QWidget *parent = 0);
-    ~LoadBlastResultsDialog();
+    ~BlastSearchDialog();
 
 private:
-    Ui::LoadBlastResultsDialog *ui;
+    Ui::BlastSearchDialog *ui;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
 
     int getNodeNumberFromString(QString nodeString);
@@ -65,4 +65,4 @@ signals:
 
 };
 
-#endif // LOADBLASTRESULTSDIALOG_H
+#endif // BLASTSEARCHDIALOG_H

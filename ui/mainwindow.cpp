@@ -47,7 +47,7 @@
 #include <QShortcut>
 #include "aboutdialog.h"
 #include <QMainWindow>
-#include "loadblastresultsdialog.h"
+#include "blastsearchdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
-    connect(ui->setBlastResultsButton, SIGNAL(clicked()), this, SLOT(openLoadBlastResultsDialog()));
+    connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
     connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
@@ -1636,14 +1636,14 @@ void MainWindow::openAboutDialog()
 }
 
 
-void MainWindow::openLoadBlastResultsDialog()
+void MainWindow::openBlastSearchDialog()
 {
-    LoadBlastResultsDialog loadBlastResultsDialog(&m_deBruijnGraphNodes, this);
+    BlastSearchDialog blastSearchDialog(&m_deBruijnGraphNodes, this);
 
-    connect(&loadBlastResultsDialog, SIGNAL(createAllNodesFasta(QString)), this, SLOT(saveAllNodesToFasta(QString)));
-    connect(this, SIGNAL(saveAllNodesToFastaFinished()), &loadBlastResultsDialog, SLOT(buildBlastDatabase2()));
+    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString)), this, SLOT(saveAllNodesToFasta(QString)));
+    connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
 
-    loadBlastResultsDialog.exec();
+    blastSearchDialog.exec();
 
     //Fill in the blast results combo box
     ui->blastQueryComboBox->clear();

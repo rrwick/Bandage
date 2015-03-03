@@ -115,7 +115,7 @@ private slots:
     void openAboutDialog();
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
-    void openLoadBlastResultsDialog();
+    void openBlastSearchDialog();
     void blastTargetChanged();
     void saveAllNodesToFasta(QString path);
 

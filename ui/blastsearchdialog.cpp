@@ -16,8 +16,8 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "loadblastresultsdialog.h"
-#include "ui_loadblastresultsdialog.h"
+#include "blastsearchdialog.h"
+#include "ui_blastsearchdialog.h"
 
 #include <QFileDialog>
 #include <QFile>
@@ -32,10 +32,10 @@
 #include <QDir>
 #include "enteroneblastquerydialog.h"
 
-LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBruijnGraphNodes,
+BlastSearchDialog::BlastSearchDialog(QMap<int, DeBruijnNode *> * deBruijnGraphNodes,
                                                QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::LoadBlastResultsDialog),
+    ui(new Ui::BlastSearchDialog),
     m_deBruijnGraphNodes(deBruijnGraphNodes)
 {
     ui->setupUi(this);
@@ -74,13 +74,13 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
     connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearch()));
 }
 
-LoadBlastResultsDialog::~LoadBlastResultsDialog()
+BlastSearchDialog::~BlastSearchDialog()
 {
     delete ui;
 }
 
 
-void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
+void BlastSearchDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
 {
     QFile inputFile(filename);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -125,14 +125,14 @@ void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString
     }
 }
 
-void LoadBlastResultsDialog::clearBlastHits()
+void BlastSearchDialog::clearBlastHits()
 {
     g_blastSearch->m_hits.clear();
     g_blastSearch->m_blastQueries.clearSearchResults();
     ui->blastHitsTableView->setModel(0);
 }
 
-void LoadBlastResultsDialog::loadBlastHits()
+void BlastSearchDialog::loadBlastHits()
 {
     QFile inputFile(g_tempDirectory + "blast_results");
     if (inputFile.open(QIODevice::ReadOnly))
@@ -184,7 +184,7 @@ void LoadBlastResultsDialog::loadBlastHits()
 }
 
 
-int LoadBlastResultsDialog::getNodeNumberFromString(QString nodeString)
+int BlastSearchDialog::getNodeNumberFromString(QString nodeString)
 {
     QStringList nodeStringParts = nodeString.split("_");
     return nodeStringParts[1].toInt();
@@ -192,7 +192,7 @@ int LoadBlastResultsDialog::getNodeNumberFromString(QString nodeString)
 
 
 
-void LoadBlastResultsDialog::fillQueriesTable()
+void BlastSearchDialog::fillQueriesTable()
 {
     size_t queryCount = g_blastSearch->m_blastQueries.m_queries.size();
     if (queryCount == 0)
@@ -221,7 +221,7 @@ void LoadBlastResultsDialog::fillQueriesTable()
 }
 
 
-void LoadBlastResultsDialog::fillHitsTable()
+void BlastSearchDialog::fillHitsTable()
 {
     QStandardItemModel * model = new QStandardItemModel(g_blastSearch->m_hits.size(), 8, this); //8 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
@@ -252,11 +252,11 @@ void LoadBlastResultsDialog::fillHitsTable()
 }
 
 
-void LoadBlastResultsDialog::buildBlastDatabase1()
+void BlastSearchDialog::buildBlastDatabase1()
 {
     if (!system(NULL))
     {
-        QMessageBox::warning(this, "Error", "Bandage was unable to access the system's command line.");
+        QMessageBox::warning(this, "Error", "Bandage was unable to access the shell.");
         return;
     }
 
@@ -270,7 +270,7 @@ void LoadBlastResultsDialog::buildBlastDatabase1()
 }
 
 
-void LoadBlastResultsDialog::buildBlastDatabase2()
+void BlastSearchDialog::buildBlastDatabase2()
 {
     QString makeBlastDbCommand = "makeblastdb -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
     if (system(makeBlastDbCommand.toLocal8Bit().constData()) != 0)
@@ -283,7 +283,7 @@ void LoadBlastResultsDialog::buildBlastDatabase2()
 }
 
 
-void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
+void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 {
     QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA");
 
@@ -302,7 +302,7 @@ void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
 }
 
 
-void LoadBlastResultsDialog::enterQueryManually()
+void BlastSearchDialog::enterQueryManually()
 {
     EnterOneBlastQueryDialog enterOneBlastQueryDialog(this);
 
@@ -317,7 +317,7 @@ void LoadBlastResultsDialog::enterQueryManually()
 
 
 
-void LoadBlastResultsDialog::clearQueries()
+void BlastSearchDialog::clearQueries()
 {
     g_blastSearch->m_blastQueries.clearQueries();
     ui->blastQueriesTableView->setModel(0);
@@ -329,7 +329,7 @@ void LoadBlastResultsDialog::clearQueries()
 
 
 
-void LoadBlastResultsDialog::runBlastSearch()
+void BlastSearchDialog::runBlastSearch()
 {
     if (system("which blastn") != 0)
     {
@@ -339,7 +339,12 @@ void LoadBlastResultsDialog::runBlastSearch()
 
     QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
     QString blastCommand = "blastn -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + g_tempDirectory + "blast_results";
-    system(blastCommand.toLocal8Bit().constData());
+
+    if (system(blastCommand.toLocal8Bit().constData()) != 0)
+    {
+        QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
+        return;
+    }
 
     clearBlastHits();
     g_blastSearch->m_blastQueries.searchOccurred();
@@ -349,7 +354,7 @@ void LoadBlastResultsDialog::runBlastSearch()
 
 
 
-void LoadBlastResultsDialog::setUiStep(int step)
+void BlastSearchDialog::setUiStep(int step)
 {
     QPixmap tick(":/icons/tick-128.png");
     QPixmap tickScaled = tick.scaled(32, 32);

@@ -732,9 +732,9 @@ from selected node</string>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QPushButton" name="setBlastResultsButton">
+            <widget class="QPushButton" name="blastSearchButton">
              <property name="text">
-              <string>Load/view BLAST results</string>
+              <string>Create/view BLAST search</string>
              </property>
             </widget>
            </item>
