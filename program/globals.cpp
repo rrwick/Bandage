@@ -18,6 +18,8 @@
 
 #include "globals.h"
 #include <QLocale>
+#include <QDir>
+#include <QStringList>
 
 Settings * g_settings;
 MyGraphicsView * g_graphicsView;
@@ -61,4 +63,14 @@ QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay)
             pastDecimalPoint = true;
     }
     return final;
+}
+
+
+void emptyTempDirectory()
+{
+    QDir tempDirectory(g_tempDirectory);
+    tempDirectory.setNameFilters(QStringList() << "*.*");
+    tempDirectory.setFilter(QDir::Files);
+    foreach(QString dirFile, tempDirectory.entryList())
+        tempDirectory.remove(dirFile);
 }

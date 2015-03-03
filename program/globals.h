@@ -42,5 +42,7 @@ QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay);
 
+void emptyTempDirectory();
+
 
 #endif // GLOBALS_H

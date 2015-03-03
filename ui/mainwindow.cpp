@@ -64,8 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Make a temp directory to hold the BLAST files.
     g_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
-    QString mkdirCommand = "mkdir " + g_tempDirectory;
-    if (system(mkdirCommand.toLocal8Bit().constData()) != 0)
+    if (!QDir().mkdir(g_tempDirectory))
     {
         QMessageBox::warning(this, "Error", "A temporary directory could not be created.  BLAST search functionality will not be available");
         return;
@@ -167,20 +166,8 @@ MainWindow::~MainWindow()
     delete m_graphicsViewZoom;
     delete ui;
     delete g_blastSearch;
-    deleteTempDirectory();
-}
 
-
-
-//Check to see if the Bandage temp directory exists, and if so, delete it.
-void MainWindow::deleteTempDirectory()
-{
-    QString tempDirectoryCheckCommand = "test -d " + g_tempDirectory;
-    if (system(tempDirectoryCheckCommand.toLocal8Bit().constData()) == 0)
-    {
-        QString tempDirectoryDeleteCommand = "rm -rf " + g_tempDirectory;
-        system(tempDirectoryDeleteCommand.toLocal8Bit().constData());
-    }
+    QDir(g_tempDirectory).removeRecursively();
 }
 
 
@@ -189,9 +176,8 @@ void MainWindow::cleanUp()
 {
     ui->blastQueryComboBox->clear();
 
-    //Delete all contents of the temporary directory
-    QString clearTempDirCommand = "rm -r " + g_tempDirectory + "*";
-    system(clearTempDirCommand.toLocal8Bit().constData());
+    emptyTempDirectory();
+
     g_blastSearch->m_hits.clear();
     g_blastSearch->m_blastQueries.m_queries.clear();
 

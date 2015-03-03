@@ -90,7 +90,6 @@ private:
     bool checkFileIsFastG(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
     void loadGraphFile(QString graphFileType);
-    void deleteTempDirectory();
 
 private slots:
     void loadLastGraph();
