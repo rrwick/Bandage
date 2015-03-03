@@ -40,11 +40,24 @@ public:
 
 private:
     Ui::SettingsDialog *ui;
+    QColor m_uniformPositiveNodeColour;
+    QColor m_uniformNegativeNodeColour;
+    QColor m_uniformNodeSpecialColour;
+    QColor m_lowCoverageColour;
+    QColor m_highCoverageColour;
+    QColor m_selectionColour;
 
     void loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings * settings);
+    void setButtonColours();
 
 private slots:
     void restoreDefaults();
+    void uniformPositiveNodeColourClicked();
+    void uniformNegativeNodeColourClicked();
+    void uniformNodeSpecialColourClicked();
+    void lowCoverageColourClicked();
+    void highCoverageColourClicked();
+    void selectionColourClicked();
 };
 
 #endif // SETTINGSDIALOG_H

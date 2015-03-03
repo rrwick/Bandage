@@ -18,6 +18,7 @@
 
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
+#include <QColorDialog>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -26,6 +27,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
+    connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
+    connect(ui->uniformNegativeNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformNegativeNodeColourClicked()));
+    connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
+    connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
+    connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
+    connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -39,8 +46,10 @@ SettingsDialog::~SettingsDialog()
 //take care of both save and load functionality.
 void setOneSettingFromWidget(double * setting, QDoubleSpinBox * widget, bool percentage) {*setting = widget->value() / (percentage ? 100.0 : 1.0);}
 void setOneSettingFromWidget(int * setting, QSpinBox * widget) {*setting = widget->value();}
+void setOneSettingFromWidget(QColor * setting, QColor * widget) {*setting = *widget;}
 void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * widget, bool percentage) {widget->setValue(*setting * (percentage ? 100.0 : 1.0));}
 void setOneWidgetFromSetting(int * setting, QSpinBox * widget) {widget->setValue(*setting);}
+void setOneWidgetFromSetting(QColor * setting, QColor * widget) {*widget = *setting;}
 
 
 
@@ -56,7 +65,7 @@ void SettingsDialog::setSettingsFromWidgets()
 
     //The highlighted outline thickness should always be a bit
     //bigger than the outlineThickness.
-    g_settings->highlightThickness = g_settings->outlineThickness + 1.0;
+    g_settings->selectionThickness = g_settings->outlineThickness + 1.0;
 }
 
 
@@ -65,15 +74,19 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
 {
     void (*doubleFunctionPointer)(double *, QDoubleSpinBox *, bool);
     void (*intFunctionPointer)(int *, QSpinBox *);
+    void (*colourFunctionPointer)(QColor *, QColor *);
+
     if (setWidgets)
     {
         doubleFunctionPointer = setOneWidgetFromSetting;
         intFunctionPointer = setOneWidgetFromSetting;
+        colourFunctionPointer = setOneWidgetFromSetting;
     }
     else
     {
         doubleFunctionPointer = setOneSettingFromWidget;
         intFunctionPointer = setOneSettingFromWidget;
+        colourFunctionPointer = setOneSettingFromWidget;
     }
 
     intFunctionPointer(&settings->basePairsPerSegment, ui->basePairsPerSegmentSpinBox);
@@ -83,6 +96,12 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
+    colourFunctionPointer(&settings->uniformPositiveNodeColour, &m_uniformPositiveNodeColour);
+    colourFunctionPointer(&settings->uniformNegativeNodeColour, &m_uniformNegativeNodeColour);
+    colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
+    colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
+    colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
+    colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
 
 
     //A couple of settings are not in a spin box, so they
@@ -92,6 +111,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
+
+        setButtonColours();
     }
     else
     {
@@ -105,4 +126,71 @@ void SettingsDialog::restoreDefaults()
 {
     Settings defaultSettings;
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
+}
+
+void SettingsDialog::uniformPositiveNodeColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, 0, "Uniform positive node colour");
+    if (chosenColor.isValid())
+    {
+        m_uniformPositiveNodeColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::uniformNegativeNodeColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, 0, "Uniform negative node colour");
+    if (chosenColor.isValid())
+    {
+        m_uniformNegativeNodeColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::uniformNodeSpecialColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, 0, "Uniform node special colour");
+    if (chosenColor.isValid())
+    {
+        m_uniformNodeSpecialColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::lowCoverageColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, 0, "Low coverage colour");
+    if (chosenColor.isValid())
+    {
+        m_lowCoverageColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::highCoverageColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, 0, "High coverage colour");
+    if (chosenColor.isValid())
+    {
+        m_highCoverageColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::selectionColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_selectionColour, 0, "Selection colour");
+    if (chosenColor.isValid())
+    {
+        m_selectionColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+
+
+void SettingsDialog::setButtonColours()
+{
+    const QString COLOR_STYLE("QPushButton { background-color : %1 }");
+    ui->uniformPositiveNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformPositiveNodeColour.name()));
+    ui->uniformNegativeNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNegativeNodeColour.name()));
+    ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
+    ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
+    ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
+    ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
 }

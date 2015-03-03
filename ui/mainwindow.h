@@ -107,7 +107,6 @@ private slots:
     void saveImageEntireScene();
     void setTextDisplaySettings();
     void fontButtonPressed();
-    void setNodeColour();
     void setNodeCustomColour();
     void setNodeCustomLabel();
     void removeNodes();

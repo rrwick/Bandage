@@ -39,7 +39,7 @@ public:
     double maxContigWidth;
     double edgeWidth;
     double outlineThickness;
-    double highlightThickness;
+    double selectionThickness;
     double arrowheadSize;
     double textOutlineThickness;
 
@@ -64,18 +64,18 @@ public:
     NodeDragging nodeDragging;
 
     NodeColourScheme nodeColourScheme;
-    QColor positiveNodeColour;
-    QColor negativeNodeColour;
-    QColor highlightColour;
+    QColor uniformPositiveNodeColour;
+    QColor uniformNegativeNodeColour;
+    QColor uniformNodeSpecialColour;
+    QColor selectionColour;
+    QColor lowCoverageColour;
+    QColor highCoverageColour;
     QColor edgeColour;
     QColor noSequenceColour;
-    QColor startingColour;
     QColor contiguousColour;
     QColor maybeContiguousColour;
     QColor notContiguousColour;
     QColor notAssignedColour;
-    QColor minCoverageColour;
-    QColor maxCoverageColour;
     QColor noBlastHitsColour;
 
 

@@ -81,8 +81,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     double outlineThickness = g_settings->outlineThickness;
     if (isSelected())
     {
-        outlineColour = g_settings->highlightColour;
-        outlineThickness = g_settings->highlightThickness;
+        outlineColour = g_settings->selectionColour;
+        outlineThickness = g_settings->selectionThickness;
     }
     double widthScale = g_settings->widthScale(g_absoluteZoom);
     QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
@@ -194,11 +194,11 @@ void GraphicsItemNode::setNodeColour()
     {
     case ONE_COLOUR:
         if (m_deBruijnNode->m_startingNode)
-            m_colour = g_settings->startingColour;
+            m_colour = g_settings->uniformNodeSpecialColour;
         else if (usePositiveNodeColour())
-            m_colour = g_settings->positiveNodeColour;
+            m_colour = g_settings->uniformPositiveNodeColour;
         else
-            m_colour = g_settings->negativeNodeColour;
+            m_colour = g_settings->uniformNegativeNodeColour;
         break;
 
     case RANDOM_COLOURS:
@@ -259,7 +259,7 @@ void GraphicsItemNode::setNodeColour()
         switch (contiguityStatus)
         {
         case STARTING:
-            m_colour = g_settings->startingColour;
+            m_colour = g_settings->uniformNodeSpecialColour;
             break;
         case CONTIGUOUS:
             m_colour = g_settings->contiguousColour;
@@ -580,13 +580,13 @@ QColor GraphicsItemNode::getCoverageColour()
 {
     double fraction = 1.0 - (1.0 / pow(2.0, m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage));  //Asymptotically approaches 1 as the coverage goes up
 
-    int redDifference = g_settings->maxCoverageColour.red() - g_settings->minCoverageColour.red();
-    int greenDifference = g_settings->maxCoverageColour.green() - g_settings->minCoverageColour.green();
-    int blueDifference = g_settings->maxCoverageColour.blue() - g_settings->minCoverageColour.blue();
+    int redDifference = g_settings->highCoverageColour.red() - g_settings->lowCoverageColour.red();
+    int greenDifference = g_settings->highCoverageColour.green() - g_settings->lowCoverageColour.green();
+    int blueDifference = g_settings->highCoverageColour.blue() - g_settings->lowCoverageColour.blue();
 
-    int red = int(g_settings->minCoverageColour.red() + (fraction * redDifference) + 0.5);
-    int green = int(g_settings->minCoverageColour.green() + (fraction * greenDifference) + 0.5);
-    int blue = int(g_settings->minCoverageColour.blue() + (fraction * blueDifference) + 0.5);
+    int red = int(g_settings->lowCoverageColour.red() + (fraction * redDifference) + 0.5);
+    int green = int(g_settings->lowCoverageColour.green() + (fraction * greenDifference) + 0.5);
+    int blue = int(g_settings->lowCoverageColour.blue() + (fraction * blueDifference) + 0.5);
 
     return QColor(red, green, blue);
 }

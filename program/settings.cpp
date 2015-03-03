@@ -31,7 +31,7 @@ Settings::Settings()
     maxContigWidth = 30.0;
     edgeWidth = 2.0;
     outlineThickness = 0.5;
-    highlightThickness = 2.0;
+    selectionThickness = 1.5;
     arrowheadSize = 0.01;
     textOutlineThickness = 0.5;
 
@@ -56,18 +56,17 @@ Settings::Settings()
     nodeDragging = NEARBY_PIECES;
 
     nodeColourScheme = ONE_COLOUR;
-    positiveNodeColour = QColor(225, 125, 125);
+    uniformPositiveNodeColour = QColor(225, 125, 125);
     setNegativeNodeColour();
-
-    highlightColour = QColor(0, 0, 255);
+    uniformNodeSpecialColour = QColor(0, 255, 0);
+    selectionColour = QColor(0, 0, 255);
+    lowCoverageColour = QColor(0, 0, 0);
+    highCoverageColour = QColor(255, 20, 20);
     edgeColour = QColor(0, 0, 0, 180);
     noSequenceColour = QColor(190, 190, 190);
-    startingColour = QColor(0, 255, 0);
     contiguousColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 190, 190);
     notContiguousColour = QColor(190, 190, 190);
-    minCoverageColour = QColor(0, 0, 0);
-    maxCoverageColour = QColor(255, 20, 20);
     noBlastHitsColour = QColor(240, 240, 240);
 }
 
@@ -78,7 +77,7 @@ Settings::Settings()
 //colour is.
 void Settings::setNegativeNodeColour()
 {
-    negativeNodeColour = positiveNodeColour.darker(120);
+    uniformNegativeNodeColour = uniformPositiveNodeColour.darker(120);
 }
 
 

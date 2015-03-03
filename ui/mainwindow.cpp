@@ -116,7 +116,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->nodeSequenceToClipboardButton, SIGNAL(clicked()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(ui->nodeSequenceToFileButton, SIGNAL(clicked()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
-    connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
     connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
     connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
@@ -127,7 +126,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
     connect(ui->setNodeCustomColourButton, SIGNAL(clicked()), this, SLOT(setNodeCustomColour()));
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
-    connect(ui->setNodeColourButton, SIGNAL(clicked()), this, SLOT(setNodeColour()));
     connect(ui->removeNodeButton, SIGNAL(clicked()), this, SLOT(removeNodes()));
     connect(ui->actionSettings, SIGNAL(triggered()), this, SLOT(openSettingsDialog()));
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
@@ -551,11 +549,6 @@ void MainWindow::selectionChanged()
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
 
-    if (selectedNodes.size() == 1)
-        ui->contiguityButton->setEnabled(true);
-    else
-        ui->contiguityButton->setEnabled(false);
-
     //If both nodes and edges are selected, it's necessary to space
     //the UI elements out a bit
     if (selectedNodes.size() > 0 && selectedEdges.size() > 0)
@@ -738,7 +731,7 @@ void MainWindow::drawGraph()
         if (startingNodes.size() == 0)
         {
             QMessageBox::information(this, "No BLAST hits",
-                                     "Please load BLAST search results and select a target to draw the graph around BLAST hits.");
+                                     "To draw the graph around BLAST hits, you must first conduct a BLAST search.");
             return;
         }
     }
@@ -1257,37 +1250,27 @@ void MainWindow::switchColourScheme()
     {
     case 0:
         g_settings->nodeColourScheme = ONE_COLOUR;
-        ui->setNodeColourButton->setVisible(true);
-        ui->contiguityButton->setVisible(false);
         break;
     case 1:
         g_settings->nodeColourScheme = COVERAGE_COLOUR;
-        ui->setNodeColourButton->setVisible(false);
-        ui->contiguityButton->setVisible(false);
         break;
     case 2:
         setRandomColourFactor();
         g_settings->nodeColourScheme = RANDOM_COLOURS;
-        ui->setNodeColourButton->setVisible(false);
-        ui->contiguityButton->setVisible(false);
         break;
     case 3:
         setRandomColourFactor();
         g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
-        ui->setNodeColourButton->setVisible(false);
-        ui->contiguityButton->setVisible(false);
         break;
     case 4:
         g_settings->nodeColourScheme = CUSTOM_COLOURS;
-        ui->setNodeColourButton->setVisible(false);
-        ui->contiguityButton->setVisible(false);
         break;
-    case 5:  //CONTIGUITY - THIS OPTION IS TEMPORARILY DISABLED!
-        resetNodeContiguityStatus();
-        g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
-        ui->setNodeColourButton->setVisible(false);
-        ui->contiguityButton->setVisible(true);
-        break;
+//    case 5:  //CONTIGUITY - THIS OPTION IS TEMPORARILY DISABLED!
+//        resetNodeContiguityStatus();
+//        g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
+//        ui->setNodeColourButton->setVisible(false);
+//        ui->contiguityButton->setVisible(true);
+//        break;
     }
 
     resetAllNodeColours();
@@ -1393,18 +1376,6 @@ void MainWindow::fontButtonPressed()
 }
 
 
-void MainWindow::setNodeColour()
-{
-    QColor newColour = QColorDialog::getColor(g_settings->positiveNodeColour, this, "Select colour for all nodes");
-
-    if (newColour.isValid())
-    {
-        g_settings->positiveNodeColour = newColour;
-        g_settings->setNegativeNodeColour();
-        g_graphicsView->viewport()->update();
-    }
-    switchColourScheme();
-}
 
 void MainWindow::setNodeCustomColour()
 {
@@ -1524,6 +1495,18 @@ void MainWindow::openSettingsDialog()
                 if (graphicsItemNode != 0)
                     graphicsItemNode->setWidth();
             }
+        }
+
+        //If any of the colour changed, reset the node colours now.
+        if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
+                settingsBefore.uniformNegativeNodeColour != g_settings->uniformNegativeNodeColour ||
+                settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
+                settingsBefore.lowCoverageColour != g_settings->lowCoverageColour ||
+                settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
+                settingsBefore.selectionColour != g_settings->selectionColour)
+        {
+            resetAllNodeColours();
+            g_graphicsView->viewport()->update();
         }
 
         g_graphicsView->setAntialiasing(g_settings->antialiasing);

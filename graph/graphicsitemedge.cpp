@@ -51,7 +51,7 @@ void GraphicsItemEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     double edgeWidth = g_settings->widthScale(g_absoluteZoom) * g_settings->edgeWidth;
     QColor penColour;
     if (isSelected())
-        penColour = g_settings->highlightColour;
+        penColour = g_settings->selectionColour;
     else
         penColour = g_settings->edgeColour;
     QPen edgePen(QBrush(penColour), edgeWidth, Qt::SolidLine, Qt::RoundCap);
