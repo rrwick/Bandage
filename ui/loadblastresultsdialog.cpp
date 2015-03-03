@@ -57,14 +57,14 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
     }
 
     //If queries already exist, display them and move to step 3.
-    if (g_blastSearchResults->m_queries.size() > 0)
+    if (g_blastSearch->m_blastQueries.m_queries.size() > 0)
     {
         fillQueriesTable();
         setUiStep(3);
     }
 
     //If results already exist, display them and move to step 3.
-    if (g_blastSearchResults->m_hits.size() > 0)
+    if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
         setUiStep(3);
@@ -86,7 +86,7 @@ LoadBlastResultsDialog::~LoadBlastResultsDialog()
 
 void LoadBlastResultsDialog::loadBlastQueries()
 {
-    g_blastSearchResults->m_queries.clear();
+    g_blastSearch->m_blastQueries.m_queries.clear();
     ui->blastQueriesTableView->setModel(0);
     ui->clearQueriesButton->setEnabled(false);
 
@@ -95,7 +95,7 @@ void LoadBlastResultsDialog::loadBlastQueries()
     readFastaFile(g_tempDirectory + "queries.fasta", &queryNames, &querySequences);
 
     for (size_t i = 0; i < queryNames.size(); ++i)
-        g_blastSearchResults->m_queries.push_back(BlastQuery(queryNames[i], querySequences[i].length()));
+        g_blastSearch->m_blastQueries.m_queries.push_back(BlastQuery(queryNames[i], querySequences[i]));
 }
 
 void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
@@ -145,9 +145,9 @@ void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString
 
 void LoadBlastResultsDialog::clearBlastHits()
 {
-    g_blastSearchResults->m_hits.clear();
-    for (size_t i = 0 ; i < g_blastSearchResults->m_queries.size(); ++i)
-        g_blastSearchResults->m_queries[i].m_hits = 0;
+    g_blastSearch->m_hits.clear();
+    for (size_t i = 0 ; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
+        g_blastSearch->m_blastQueries.m_queries[i].m_hits = 0;
     ui->blastHitsTableView->setModel(0);
 }
 
@@ -189,11 +189,11 @@ void LoadBlastResultsDialog::loadBlastHits()
             else
                 return;
 
-            BlastQuery * query = g_blastSearchResults->getQueryFromName(queryName);
+            BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
             if (query == 0)
                 return;
 
-            g_blastSearchResults->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
+            g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
                                                             query, queryStart, queryEnd, eValue));
 
             ++(query->m_hits);
@@ -215,7 +215,7 @@ int LoadBlastResultsDialog::getNodeNumberFromString(QString nodeString)
 
 void LoadBlastResultsDialog::fillQueriesTable()
 {
-    size_t queryCount = g_blastSearchResults->m_queries.size();
+    size_t queryCount = g_blastSearch->m_blastQueries.m_queries.size();
     if (queryCount == 0)
         return;
 
@@ -225,9 +225,9 @@ void LoadBlastResultsDialog::fillQueriesTable()
     model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
     for (size_t i = 0; i < queryCount; ++i)
     {
-        model->setItem(i, 0, new QStandardItem(g_blastSearchResults->m_queries[i].m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_queries[i].m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_queries[i].m_hits)));
+        model->setItem(i, 0, new QStandardItem(g_blastSearch->m_blastQueries.m_queries[i].m_name));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearch->m_blastQueries.m_queries[i].m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearch->m_blastQueries.m_queries[i].m_hits)));
     }
     ui->blastQueriesTableView->setModel(model);
     ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -238,7 +238,7 @@ void LoadBlastResultsDialog::fillQueriesTable()
 
 void LoadBlastResultsDialog::fillHitsTable()
 {
-    QStandardItemModel * model = new QStandardItemModel(g_blastSearchResults->m_hits.size(), 8, this); //8 Columns
+    QStandardItemModel * model = new QStandardItemModel(g_blastSearch->m_hits.size(), 8, this); //8 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
     model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
@@ -248,16 +248,16 @@ void LoadBlastResultsDialog::fillHitsTable()
     model->setHorizontalHeaderItem(6, new QStandardItem("Query end"));
     model->setHorizontalHeaderItem(7, new QStandardItem("E-value"));
 
-    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
     {
-        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_number)));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_node->m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeStart)));
-        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_nodeEnd)));
-        model->setItem(i, 4, new QStandardItem(g_blastSearchResults->m_hits[i].m_query->m_name));
-        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_queryStart)));
-        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearchResults->m_hits[i].m_queryEnd)));
-        model->setItem(i, 7, new QStandardItem(g_blastSearchResults->m_hits[i].m_eValue));
+        model->setItem(i, 0, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_node->m_number)));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_node->m_length)));
+        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_nodeStart)));
+        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_nodeEnd)));
+        model->setItem(i, 4, new QStandardItem(g_blastSearch->m_hits[i].m_query->m_name));
+        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_queryStart)));
+        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(g_blastSearch->m_hits[i].m_queryEnd)));
+        model->setItem(i, 7, new QStandardItem(g_blastSearch->m_hits[i].m_eValue));
     }
     ui->blastHitsTableView->setModel(model);
     ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -365,7 +365,7 @@ void LoadBlastResultsDialog::clearQueries()
 {
     makeQueryFile();
 
-    g_blastSearchResults->m_queries.clear();
+    g_blastSearch->m_blastQueries.m_queries.clear();
     ui->blastQueriesTableView->setModel(0);
     ui->clearQueriesButton->setEnabled(false);
 

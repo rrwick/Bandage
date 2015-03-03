@@ -20,7 +20,7 @@
 #define LOADBLASTRESULTSDIALOG_H
 
 #include <QDialog>
-#include "../blast/blastsearchresults.h"
+#include "../blast/blastsearch.h"
 #include <QMap>
 
 class DeBruijnNode;

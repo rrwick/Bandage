@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
-    g_blastSearchResults = new BlastSearchResults();
+    g_blastSearch = new BlastSearch();
 
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
@@ -166,7 +166,7 @@ MainWindow::~MainWindow()
     cleanUp();
     delete m_graphicsViewZoom;
     delete ui;
-    delete g_blastSearchResults;
+    delete g_blastSearch;
     deleteTempDirectory();
 }
 
@@ -192,6 +192,8 @@ void MainWindow::cleanUp()
     //Delete all contents of the temporary directory
     QString clearTempDirCommand = "rm -r " + g_tempDirectory + "*";
     system(clearTempDirCommand.toLocal8Bit().constData());
+    g_blastSearch->m_hits.clear();
+    g_blastSearch->m_blastQueries.m_queries.clear();
 
     QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -952,15 +954,15 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 {
     std::vector<DeBruijnNode *> returnVector;
 
-    if (g_blastSearchResults->m_queries.size() == 0)
+    if (g_blastSearch->m_blastQueries.m_queries.size() == 0)
         return returnVector;
 
-    BlastQuery * currentQuery = &(g_blastSearchResults->m_queries[ui->blastQueryComboBox->currentIndex()]);
+    BlastQuery * currentQuery = &(g_blastSearch->m_blastQueries.m_queries[ui->blastQueryComboBox->currentIndex()]);
 
-    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
     {
-        if (g_blastSearchResults->m_hits[i].m_query == currentQuery)
-            returnVector.push_back(g_blastSearchResults->m_hits[i].m_node);
+        if (g_blastSearch->m_hits[i].m_query == currentQuery)
+            returnVector.push_back(g_blastSearch->m_hits[i].m_node);
     }
 
     return returnVector;
@@ -1659,10 +1661,10 @@ void MainWindow::openLoadBlastResultsDialog()
 
     //Fill in the blast results combo box
     ui->blastQueryComboBox->clear();
-    for (size_t i = 0; i < g_blastSearchResults->m_queries.size(); ++i)
+    for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearchResults->m_queries[i].m_hits > 0)
-            ui->blastQueryComboBox->addItem(g_blastSearchResults->m_queries[i].m_name);
+        if (g_blastSearch->m_blastQueries.m_queries[i].m_hits > 0)
+            ui->blastQueryComboBox->addItem(g_blastSearch->m_blastQueries.m_queries[i].m_name);
     }
 
     if (ui->blastQueryComboBox->count() > 0)
@@ -1687,10 +1689,10 @@ void MainWindow::blastTargetChanged()
 
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target.
-    BlastQuery * currentQuery = g_blastSearchResults->getQueryFromName(ui->blastQueryComboBox->currentText());
-    for (size_t i = 0; i < g_blastSearchResults->m_hits.size(); ++i)
+    BlastQuery * currentQuery = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
+    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
     {
-        BlastHit * hit = &(g_blastSearchResults->m_hits[i]);
+        BlastHit * hit = &(g_blastSearch->m_hits[i]);
         if (hit->m_query == currentQuery)
             hit->m_node->m_blastHits.push_back(hit);
     }

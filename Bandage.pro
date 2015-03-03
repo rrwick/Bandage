@@ -45,8 +45,8 @@ SOURCES += \
     ui/aboutdialog.cpp \
     ui/enteroneblastquerydialog.cpp \
     ui/loadblastresultsdialog.cpp \
-    blast/blastsearchresults.cpp \
-    blast/blasthit.cpp
+    blast/blasthit.cpp \
+    blast/blastqueries.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -65,10 +65,11 @@ HEADERS  += \
     ui/aboutdialog.h \
     ui/loadblastresultsdialog.h \
     ui/enteroneblastquerydialog.h \
-    blast/blastsearchresults.h \
     blast/blasthitpart.h \
     blast/blasthit.h \
-    blast/blastquery.h
+    blast/blastquery.h \
+    blast/blastqueries.h \
+    blast/blastsearch.h
 
 FORMS    += \
     ui/mainwindow.ui \
