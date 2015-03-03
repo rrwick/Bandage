@@ -1,4 +1,4 @@
-//Copyright 2015 Ryan Wick
+﻿//Copyright 2015 Ryan Wick
 
 //This file is part of Bandage
 
@@ -84,19 +84,6 @@ LoadBlastResultsDialog::~LoadBlastResultsDialog()
 
 }
 
-void LoadBlastResultsDialog::loadBlastQueries()
-{
-    g_blastSearch->m_blastQueries.m_queries.clear();
-    ui->blastQueriesTableView->setModel(0);
-    ui->clearQueriesButton->setEnabled(false);
-
-    std::vector<QString> queryNames;
-    std::vector<QString> querySequences;
-    readFastaFile(g_tempDirectory + "queries.fasta", &queryNames, &querySequences);
-
-    for (size_t i = 0; i < queryNames.size(); ++i)
-        g_blastSearch->m_blastQueries.m_queries.push_back(BlastQuery(queryNames[i], querySequences[i]));
-}
 
 void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
 {
@@ -294,7 +281,6 @@ void LoadBlastResultsDialog::buildBlastDatabase2()
     }
 
     setUiStep(2);
-    makeQueryFile();
 }
 
 
@@ -304,29 +290,14 @@ void LoadBlastResultsDialog::loadBlastQueriesFromFastaFile()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile queriesFile(g_tempDirectory + "queries.fasta");
-        queriesFile.open(QIODevice::Append | QIODevice::Text);
-        QTextStream out(&queriesFile);
-
         std::vector<QString> queryNames;
         std::vector<QString> querySequences;
         readFastaFile(fullFileName, &queryNames, &querySequences);
-        int newQueryCount = int(queryNames.size());
 
-        if (queriesFile.pos() > 0 && newQueryCount > 0)
-            out << "\n";
+        for (size_t i = 0; i < queryNames.size(); ++i)
+            g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryNames[i].replace(" ", "_"),
+                                                              querySequences[i]));
 
-        for (int i = 0; i < newQueryCount; ++i)
-        {
-            out << ">" << queryNames[i].replace(" ", "_") << "\n";
-            out << querySequences[i];
-
-            if (i < newQueryCount - 1)
-                out << "\n";
-        }
-        queriesFile.close();
-
-        loadBlastQueries();
         fillQueriesTable();
         clearBlastHits();
     }
@@ -339,21 +310,9 @@ void LoadBlastResultsDialog::enterQueryManually()
 
     if (enterOneBlastQueryDialog.exec())
     {
-        QFile queriesFile(g_tempDirectory + "queries.fasta");
-        queriesFile.open(QIODevice::Append | QIODevice::Text);
-        QTextStream out(&queriesFile);
+        g_blastSearch->m_blastQueries.addQuery(BlastQuery(enterOneBlastQueryDialog.getName(),
+                                                          enterOneBlastQueryDialog.getSequence()));
 
-        if (queriesFile.pos() > 0)
-            out << "\n";
-
-        out << ">";
-        out << enterOneBlastQueryDialog.getName();
-        out << "\n";
-        out << enterOneBlastQueryDialog.getSequence();
-
-        queriesFile.close();
-
-        loadBlastQueries();
         fillQueriesTable();
         clearBlastHits();
     }
@@ -363,9 +322,7 @@ void LoadBlastResultsDialog::enterQueryManually()
 
 void LoadBlastResultsDialog::clearQueries()
 {
-    makeQueryFile();
-
-    g_blastSearch->m_blastQueries.m_queries.clear();
+    g_blastSearch->m_blastQueries.clearQueries();
     ui->blastQueriesTableView->setModel(0);
     ui->clearQueriesButton->setEnabled(false);
 
@@ -373,21 +330,6 @@ void LoadBlastResultsDialog::clearQueries()
     setUiStep(2);
 }
 
-
-void LoadBlastResultsDialog::makeQueryFile()
-{
-    //If the query file already exists, delete it.
-    QString checkForQueryFileCommmand = "test -e " + g_tempDirectory + "queries.fasta";
-    if (system(checkForQueryFileCommmand.toLocal8Bit().constData()) == 0)
-    {
-        QString deleteQueryFastaCommand = "rm " + g_tempDirectory + "queries.fasta";
-        system(deleteQueryFastaCommand.toLocal8Bit().constData());
-    }
-
-    //Make an empty query file.
-    QString createQueryFastaCommand = "touch " + g_tempDirectory + "queries.fasta";
-    system(createQueryFastaCommand.toLocal8Bit().constData());
-}
 
 
 void LoadBlastResultsDialog::runBlastSearch()

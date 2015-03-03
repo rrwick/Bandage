@@ -1,5 +1,6 @@
 #include "blastqueries.h"
 #include "../program/globals.h"
+#include <QTextStream>
 
 BlastQueries::BlastQueries() :
     m_tempFile(g_tempDirectory + "queries.fasta")
@@ -39,11 +40,6 @@ void BlastQueries::clearQueries()
     deleteTempFile();
 }
 
-void BlastQueries::createTempFile()
-{
-    m_tempFile.open(QIODevice::WriteOnly);
-}
-
 void BlastQueries::deleteTempFile()
 {
     if (tempFileDoesNotExist())
@@ -60,8 +56,16 @@ void BlastQueries::updateTempFile()
     if (m_queries.size() == 0)
         return;
 
-    if (tempFileDoesNotExist())
-        createTempFile();
+    m_tempFile.open(QIODevice::Append | QIODevice::Text);
+    QTextStream out(&m_tempFile);
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        out << ">" << m_queries[i].m_name << "\n";
+        out << m_queries[i].m_sequence;
 
-    //ADD THE QUERIES TO THE FILE HERE!
+        if (i + 1 != m_queries.size())
+            out << "\n";
+    }
+
+    m_tempFile.close();
 }

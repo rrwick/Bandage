@@ -56,6 +56,10 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>nameLineEdit</tabstop>
+  <tabstop>sequenceTextEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

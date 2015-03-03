@@ -22,7 +22,6 @@ public:
 private:
     QFile m_tempFile;
 
-    void createTempFile();
     void deleteTempFile();
     void updateTempFile();
     bool tempFileExists() {return m_tempFile.exists();}

@@ -45,7 +45,6 @@ private:
 
     int getNodeNumberFromString(QString nodeString);
     void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
-    void makeQueryFile();
     void setUiStep(int step);
     void clearBlastHits();
 
@@ -57,7 +56,6 @@ private slots:
     void clearQueries();
     void runBlastSearch();
 
-    void loadBlastQueries();
     void loadBlastHits();
     void fillQueriesTable();
     void fillHitsTable();
