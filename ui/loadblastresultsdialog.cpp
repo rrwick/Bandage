@@ -80,8 +80,6 @@ LoadBlastResultsDialog::LoadBlastResultsDialog(QMap<int, DeBruijnNode *> * deBru
 LoadBlastResultsDialog::~LoadBlastResultsDialog()
 {
     delete ui;
-
-
 }
 
 
@@ -133,15 +131,12 @@ void LoadBlastResultsDialog::readFastaFile(QString filename, std::vector<QString
 void LoadBlastResultsDialog::clearBlastHits()
 {
     g_blastSearch->m_hits.clear();
-    for (size_t i = 0 ; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
-        g_blastSearch->m_blastQueries.m_queries[i].m_hits = 0;
+    g_blastSearch->m_blastQueries.clearSearchResults();
     ui->blastHitsTableView->setModel(0);
 }
 
 void LoadBlastResultsDialog::loadBlastHits()
 {
-    clearBlastHits();
-
     QFile inputFile(g_tempDirectory + "blast_results");
     if (inputFile.open(QIODevice::ReadOnly))
     {
@@ -212,9 +207,15 @@ void LoadBlastResultsDialog::fillQueriesTable()
     model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
     for (size_t i = 0; i < queryCount; ++i)
     {
-        model->setItem(i, 0, new QStandardItem(g_blastSearch->m_blastQueries.m_queries[i].m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(g_blastSearch->m_blastQueries.m_queries[i].m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(g_blastSearch->m_blastQueries.m_queries[i].m_hits)));
+        BlastQuery * query = &(g_blastSearch->m_blastQueries.m_queries[i]);
+        model->setItem(i, 0, new QStandardItem(query->m_name));
+        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(query->m_length)));
+
+        //If the search hasn't yet been run, don't put a number in the hits column.
+        if (query->m_searchedFor)
+            model->setItem(i, 2, new QStandardItem(formatIntForDisplay(query->m_hits)));
+        else
+            model->setItem(i, 2, new QStandardItem("-"));
     }
     ui->blastQueriesTableView->setModel(model);
     ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -344,6 +345,8 @@ void LoadBlastResultsDialog::runBlastSearch()
     QString blastCommand = "blastn -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + g_tempDirectory + "blast_results";
     system(blastCommand.toLocal8Bit().constData());
 
+    clearBlastHits();
+    g_blastSearch->m_blastQueries.searchOccurred();
     loadBlastHits();
     setUiStep(4);
 }

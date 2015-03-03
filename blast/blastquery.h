@@ -25,12 +25,15 @@ class BlastQuery
 {
 public:
     BlastQuery() {}
-    BlastQuery(QString name, QString sequence) : m_name(name), m_sequence(sequence), m_hits(0) {m_length = sequence.length();}
+    BlastQuery(QString name, QString sequence) : m_name(name), m_sequence(sequence),
+        m_hits(0), m_searchedFor(false)
+    {m_length = sequence.length();}
 
     QString m_name;
     QString m_sequence;
     int m_length;
     int m_hits;
+    bool m_searchedFor;
 };
 
 #endif // BLASTQUERY_H

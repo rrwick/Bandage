@@ -18,6 +18,8 @@ public:
 
     void addQuery(BlastQuery newQuery);
     void clearQueries();
+    void searchOccurred();
+    void clearSearchResults();
 
 private:
     QFile m_tempFile;

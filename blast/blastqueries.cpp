@@ -69,3 +69,20 @@ void BlastQueries::updateTempFile()
 
     m_tempFile.close();
 }
+
+
+void BlastQueries::searchOccurred()
+{
+    for (size_t i = 0; i < m_queries.size(); ++i)
+        m_queries[i].m_searchedFor = true;
+}
+
+
+void BlastQueries::clearSearchResults()
+{
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        m_queries[i].m_searchedFor = false;
+        m_queries[i].m_hits = 0;
+    }
+}
