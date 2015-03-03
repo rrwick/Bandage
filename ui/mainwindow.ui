@@ -223,7 +223,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Around BLAST hits</string>
+                  <string>Around BLAST hit(s)</string>
                  </property>
                 </item>
                </widget>

@@ -38,26 +38,13 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-71</y>
+        <y>-81</y>
         <width>434</width>
         <height>741</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" colspan="2">
-        <widget class="QLabel" name="label_9">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Graph layout</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
+       <item row="3" column="2">
         <widget class="QSlider" name="graphLayoutQualitySlider">
          <property name="maximum">
           <number>3</number>
@@ -73,7 +60,7 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="1">
+       <item row="10" column="2">
         <widget class="QDoubleSpinBox" name="edgeWidthSpinBox">
          <property name="minimum">
           <double>0.500000000000000</double>
@@ -86,7 +73,7 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
+       <item row="9" column="2">
         <widget class="QDoubleSpinBox" name="maximumContigWidthSpinBox">
          <property name="minimum">
           <double>1.000000000000000</double>
@@ -96,7 +83,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
+       <item row="8" column="2">
         <widget class="QDoubleSpinBox" name="coverageContigWidthSpinBox">
          <property name="minimum">
           <double>0.000000000000000</double>
@@ -106,7 +93,7 @@
          </property>
         </widget>
        </item>
-       <item row="12" column="1">
+       <item row="12" column="2">
         <widget class="QDoubleSpinBox" name="textOutlineThicknessSpinBox">
          <property name="maximum">
           <double>100.000000000000000</double>
@@ -116,28 +103,7 @@
          </property>
         </widget>
        </item>
-       <item row="13" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="text">
-          <string>Antialiasing:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="19" column="0">
-        <widget class="QLabel" name="label_14">
-         <property name="text">
-          <string>Uniform node special colour:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="16" column="0" colspan="2">
-        <widget class="Line" name="line_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="1">
+       <item row="11" column="2">
         <widget class="QDoubleSpinBox" name="outlineThicknessSpinBox">
          <property name="maximum">
           <double>100.000000000000000</double>
@@ -147,49 +113,77 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="1">
+       <item row="19" column="1">
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>Uniform node special colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Antialiasing:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="2">
         <widget class="QPushButton" name="highCoverageColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
+       <item row="8" column="1">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Additional node width from coverage:</string>
          </property>
         </widget>
        </item>
-       <item row="18" column="0">
+       <item row="18" column="1">
         <widget class="QLabel" name="label_17">
          <property name="text">
           <string>Uniform negative node colour:</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="2" column="1">
         <widget class="QLabel" name="label">
          <property name="text">
           <string>Base pairs per segment:</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
+       <item row="7" column="1">
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Base node width:</string>
          </property>
         </widget>
        </item>
-       <item row="18" column="1">
+       <item row="22" column="2">
+        <widget class="QPushButton" name="selectionColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="2">
         <widget class="QPushButton" name="uniformNegativeNodeColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="9" column="1">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Maximum node width:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
         <widget class="QSpinBox" name="basePairsPerSegmentSpinBox">
          <property name="minimum">
           <number>1</number>
@@ -205,7 +199,14 @@
          </property>
         </widget>
        </item>
-       <item row="23" column="0">
+       <item row="10" column="1">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Edge width:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -218,48 +219,35 @@
          </property>
         </spacer>
        </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>Maximum node width:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Edge width:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="0">
-        <widget class="QLabel" name="label_12">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Colours</string>
-         </property>
-        </widget>
-       </item>
-       <item row="17" column="1">
+       <item row="17" column="2">
         <widget class="QPushButton" name="uniformPositiveNodeColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
+       <item row="11" column="1">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Outline thickness:</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="19" column="2">
+        <widget class="QPushButton" name="uniformNodeSpecialColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="1">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>High coverage colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -275,55 +263,35 @@
          </property>
         </spacer>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_8">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Graph appearance</string>
-         </property>
-        </widget>
-       </item>
-       <item row="19" column="1">
-        <widget class="QPushButton" name="uniformNodeSpecialColourButton">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="21" column="0">
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>High coverage colour:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="20" column="0">
+       <item row="20" column="1">
         <widget class="QLabel" name="label_15">
          <property name="text">
           <string>Low coverage colour:</string>
          </property>
         </widget>
        </item>
-       <item row="12" column="0">
+       <item row="12" column="1">
         <widget class="QLabel" name="label_7">
          <property name="text">
           <string>Text outline thickness:</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="3" column="1">
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Graph layout iterations:</string>
          </property>
         </widget>
        </item>
-       <item row="14" column="0">
+       <item row="20" column="2">
+        <widget class="QPushButton" name="lowCoverageColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -339,14 +307,14 @@
          </property>
         </spacer>
        </item>
-       <item row="20" column="1">
-        <widget class="QPushButton" name="lowCoverageColourButton">
+       <item row="17" column="1">
+        <widget class="QLabel" name="label_13">
          <property name="text">
-          <string/>
+          <string>Uniform positive node colour:</string>
          </property>
         </widget>
        </item>
-       <item row="13" column="1">
+       <item row="13" column="2">
         <widget class="QWidget" name="widget_3" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <property name="leftMargin">
@@ -381,14 +349,7 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
+       <item row="7" column="2">
         <widget class="QDoubleSpinBox" name="minimumContigWidthSpinBox">
          <property name="minimum">
           <double>1.000000000000000</double>
@@ -398,31 +359,310 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="17" column="0">
-        <widget class="QLabel" name="label_13">
-         <property name="text">
-          <string>Uniform positive node colour:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="22" column="0">
+       <item row="22" column="1">
         <widget class="QLabel" name="label_18">
          <property name="text">
           <string>Selection colour:</string>
          </property>
         </widget>
        </item>
-       <item row="22" column="1">
-        <widget class="QPushButton" name="selectionColourButton">
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="label_8">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
-          <string/>
+          <string>Graph appearance</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="3">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="InfoTextWidget" name="minimumContigWidthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0" colspan="2">
+        <widget class="QLabel" name="label_12">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Colours</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0" colspan="3">
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="3">
+        <widget class="QLabel" name="label_9">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Graph layout</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="3">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="InfoTextWidget" name="coverageContigWidthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="InfoTextWidget" name="maximumContigWidthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="InfoTextWidget" name="edgeWidthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="0">
+        <widget class="InfoTextWidget" name="uniformPositiveNodeColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="0">
+        <widget class="InfoTextWidget" name="uniformNegativeNodeColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="InfoTextWidget" name="outlineThicknessInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="InfoTextWidget" name="antialiasingInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="InfoTextWidget" name="textOutlineThicknessInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="0">
+        <widget class="InfoTextWidget" name="uniformNodeSpecialColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="InfoTextWidget" name="basePairsPerSegmentInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="0">
+        <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="0">
+        <widget class="InfoTextWidget" name="highCoverageColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="0">
+        <widget class="InfoTextWidget" name="selectionColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="InfoTextWidget" name="graphLayoutQualityInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -462,6 +702,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>InfoTextWidget</class>
+   <extends>QWidget</extends>
+   <header>ui/infotextwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

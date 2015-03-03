@@ -22,6 +22,7 @@
 #include <QDialog>
 #include "../program/globals.h"
 #include "../program/settings.h"
+#include "infotextwidget.h"
 
 namespace Ui {
 class SettingsDialog;
@@ -49,6 +50,7 @@ private:
 
     void loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings * settings);
     void setButtonColours();
+    void setInfoTexts();
 
 private slots:
     void restoreDefaults();

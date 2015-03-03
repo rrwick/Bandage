@@ -25,6 +25,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
+    setInfoTexts();
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
     connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
@@ -193,4 +194,49 @@ void SettingsDialog::setButtonColours()
     ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
     ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
     ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
+}
+
+
+void SettingsDialog::setInfoTexts()
+{
+    ui->basePairsPerSegmentInfoText->setInfoText("This controls the length of the drawn nodes. The number of line segments "
+                                                 "that make up a drawn node is determined by dividing the sequence length by "
+                                                 "this value (rounded up to the nearest integer). Any node with a sequence "
+                                                 "length of less than or equal to this value will be drawn a single line "
+                                                 "segment.<br><br>"
+                                                 "Guidelines for this setting:<ul>"
+                                                 "<li>Large values will result in shorter nodes. Very large values will result "
+                                                 "in all nodes being a similiar size (one line segment).</li>"
+                                                 "<li>Small values will result in longer nodes and a stronger correlation between "
+                                                 "sequence length and node length.</li></ul>");
+    ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
+                                                "positioning the graph components. Low settings are faster and therefore "
+                                                "recommended for big assembly graphs. Higher settings may result in smoother, "
+                                                "more pleasing layouts.");
+    ui->minimumContigWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
+    ui->coverageContigWidthInfoText->setInfoText("This setting controls the additional width added to nodes based on their "
+                                                 "coverage.  If set to zero, all nodes will have the same width.");
+    ui->maximumContigWidthInfoText->setInfoText("This setting limits the node width so very high coverge nodes do not appear "
+                                                "excessively wide");
+    ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
+    ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
+    ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
+                                                  "(when enabled).  Large values can make the text easier to read, but may "
+                                                  "obscure more of the graph.");
+    ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing.  Disable antialiasing "
+                                          "if you are having performance difficulties when viewing large graphs.");
+    ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the "
+                                                       "'Uniform colour' option.");
+    ui->uniformNegativeNodeColourInfoText->setInfoText("This is the colour of all negative nodes when Bandage is set to the "
+                                                       "'Uniform colour' option.  Negative nodes are only displayed when the "
+                                                       "graph is drawn in double mode.");
+    ui->uniformNodeSpecialColourInfoText->setInfoText("When Bandage is set to the 'Uniform colour' option, this colour will "
+                                                      "be used for limited graph scopes:<ul>"
+                                                      "<li>When the graph scope is set to 'Around node(s)', this colour will be "
+                                                      "used for the user-specified nodes.</li>"
+                                                      "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour will "
+                                                      "be used for nodes that contain at least one BLAST hit.</li></ul>");
+    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, ");
+    ui->highCoverageColourInfoText->setInfoText("");
+    ui->selectionColourInfoText->setInfoText("");
 }
