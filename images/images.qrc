@@ -7,5 +7,6 @@
         <file>information-256.png</file>
         <file>save-256.png</file>
         <file>exit-256.png</file>
+        <file>information-256-inactive.png</file>
     </qresource>
 </RCC>

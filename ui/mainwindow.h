@@ -73,6 +73,7 @@ private:
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
     bool buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildOgdfGraphFromNodesAndEdges();
+    void setInfoTexts();
 
 private slots:
     void loadLastGraph();

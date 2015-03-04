@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
 
     //Disable these until a graph is loaded or drawn
-    ui->graphDrawingGroupBox->setEnabled(false);
+    ui->graphDrawingWidget->setEnabled(false);
     ui->selectionSearchGroupBox->setEnabled(false);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->controlsScrollArea->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 45);
     ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 25);
 
+    setInfoTexts();
 
     selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
     graphScopeChanged();
@@ -226,7 +227,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
             }
         }
         //Enable UI elements that are now applicable that a graph is loaded
-        ui->graphDrawingGroupBox->setEnabled(true);
+        ui->graphDrawingWidget->setEnabled(true);
         ui->blastResultsGroupBox->setEnabled(true);
 
         //Disable UI elements that aren't applicable until the graph is drawn
@@ -520,7 +521,7 @@ bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
 
 void MainWindow::displayGraphDetails()
 {
-    ui->graphDetailsGroupBox->setEnabled(true);
+    ui->graphDetailsWidget->setEnabled(true);
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_deBruijnGraphNodes.size() / 2));
     ui->edgeCountLabel->setText(formatIntForDisplay(int(g_assemblyGraph->m_deBruijnGraphEdges.size()) / 2));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
@@ -1470,3 +1471,9 @@ void MainWindow::saveAllNodesToFasta(QString path)
     emit saveAllNodesToFastaFinished();
 }
 
+
+
+void MainWindow::setInfoTexts()
+{
+    ui->graphScopeInfoText->setInfoText("sdsdfsdf");
+}
