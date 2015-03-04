@@ -19,6 +19,7 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 #include <QColorDialog>
+#include <QMessageBox>
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -263,3 +264,13 @@ void SettingsDialog::enableDisableCoverageValueSpinBoxes()
     ui->lowCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
     ui->highCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
 }
+
+
+void SettingsDialog::accept()
+{
+    if (ui->lowCoverageValueSpinBox->value() > ui->highCoverageValueSpinBox->value())
+        QMessageBox::warning(this, "Coverage value error", "The low coverage value cannot be greater than the high coverage value.");
+    else
+        QDialog::accept();
+}
+

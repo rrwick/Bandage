@@ -23,6 +23,7 @@
 #include "../program/globals.h"
 #include "../program/settings.h"
 #include "infotextwidget.h"
+#include <QCloseEvent>
 
 namespace Ui {
 class SettingsDialog;
@@ -61,6 +62,9 @@ private slots:
     void highCoverageColourClicked();
     void selectionColourClicked();
     void enableDisableCoverageValueSpinBoxes();
+
+public slots:
+    void accept();
 };
 
 #endif // SETTINGSDIALOG_H
