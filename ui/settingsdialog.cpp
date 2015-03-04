@@ -34,6 +34,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
     connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
     connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
+    connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -57,6 +58,9 @@ void setOneWidgetFromSetting(QColor * setting, QColor * widget) {*widget = *sett
 void SettingsDialog::setWidgetsFromSettings()
 {
     loadOrSaveSettingsToOrFromWidgets(true, g_settings);
+
+    setButtonColours();
+    enableDisableCoverageValueSpinBoxes();
 }
 
 
@@ -103,7 +107,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
     colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
-
+    doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
+    doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -112,13 +117,14 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
-
-        setButtonColours();
+        ui->coverageValueAutoRadioButton->setChecked(settings->autoCoverageValue);
+        ui->coverageValueManualRadioButton->setChecked(!settings->autoCoverageValue);
     }
     else
     {
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
+        settings->autoCoverageValue = ui->coverageValueAutoRadioButton->isChecked();
     }
 }
 
@@ -236,7 +242,24 @@ void SettingsDialog::setInfoTexts()
                                                       "used for the user-specified nodes.</li>"
                                                       "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour will "
                                                       "be used for nodes that contain at least one BLAST hit.</li></ul>");
-    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, ");
-    ui->highCoverageColourInfoText->setInfoText("");
-    ui->selectionColourInfoText->setInfoText("");
+    ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
+                                             "Selected edges will also be displayed in this colour.");
+    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, this colour is used for "
+                                               "nodes with a coverage at or below the low coverage value.<br><br>"
+                                               "Nodes with a coverage between the low and high coverage values will get an "
+                                               "intermediate colour.");
+    ui->highCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, this colour is used for "
+                                                "nodes with a coverage above the high coverage value.<br><br>"
+                                                "Nodes with a coverage between the low and high coverage values will get an "
+                                                "intermediate colour.");
+    ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
+                                            "coverage value is set to the third quartile.  When set to 'Manual', you can specify "
+                                            "the values to be used for the coverage colouring.");
+}
+
+
+void SettingsDialog::enableDisableCoverageValueSpinBoxes()
+{
+    ui->lowCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
+    ui->highCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
 }

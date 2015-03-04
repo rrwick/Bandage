@@ -60,6 +60,7 @@ private slots:
     void lowCoverageColourClicked();
     void highCoverageColourClicked();
     void selectionColourClicked();
+    void enableDisableCoverageValueSpinBoxes();
 };
 
 #endif // SETTINGSDIALOG_H

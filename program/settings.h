@@ -68,8 +68,6 @@ public:
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
     QColor selectionColour;
-    QColor lowCoverageColour;
-    QColor highCoverageColour;
     QColor edgeColour;
     QColor noSequenceColour;
     QColor contiguousColour;
@@ -77,6 +75,12 @@ public:
     QColor notContiguousColour;
     QColor notAssignedColour;
     QColor noBlastHitsColour;
+
+    bool autoCoverageValue;
+    double lowCoverageValue;
+    QColor lowCoverageColour;
+    double highCoverageValue;
+    QColor highCoverageColour;
 
 
     double widthScale(double zoom);

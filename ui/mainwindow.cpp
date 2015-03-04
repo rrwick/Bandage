@@ -1503,7 +1503,9 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
                 settingsBefore.lowCoverageColour != g_settings->lowCoverageColour ||
                 settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
-                settingsBefore.selectionColour != g_settings->selectionColour)
+                settingsBefore.selectionColour != g_settings->selectionColour ||
+                settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
+                settingsBefore.highCoverageValue != g_settings->highCoverageValue)
         {
             resetAllNodeColours();
             g_graphicsView->viewport()->update();

@@ -60,14 +60,18 @@ Settings::Settings()
     setNegativeNodeColour();
     uniformNodeSpecialColour = QColor(0, 255, 0);
     selectionColour = QColor(0, 0, 255);
-    lowCoverageColour = QColor(0, 0, 0);
-    highCoverageColour = QColor(255, 20, 20);
     edgeColour = QColor(0, 0, 0, 180);
     noSequenceColour = QColor(190, 190, 190);
     contiguousColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 190, 190);
     notContiguousColour = QColor(190, 190, 190);
     noBlastHitsColour = QColor(240, 240, 240);
+
+    autoCoverageValue = true;
+    lowCoverageValue = 5.0;
+    lowCoverageColour = QColor(0, 0, 0);
+    highCoverageValue = 50.0;
+    highCoverageColour = QColor(255, 20, 20);
 }
 
 

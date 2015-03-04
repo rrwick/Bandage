@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>449</width>
-    <height>714</height>
+    <width>487</width>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-81</y>
-        <width>434</width>
-        <height>741</height>
+        <y>-217</y>
+        <width>472</width>
+        <height>856</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -127,13 +127,6 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="2">
-        <widget class="QPushButton" name="highCoverageColourButton">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
        <item row="8" column="1">
         <widget class="QLabel" name="label_4">
          <property name="text">
@@ -159,13 +152,6 @@
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>Base node width:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="22" column="2">
-        <widget class="QPushButton" name="selectionColourButton">
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>
@@ -206,7 +192,7 @@
          </property>
         </widget>
        </item>
-       <item row="23" column="1">
+       <item row="30" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -240,13 +226,6 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="1">
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>High coverage colour:</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="1">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
@@ -263,13 +242,6 @@
          </property>
         </spacer>
        </item>
-       <item row="20" column="1">
-        <widget class="QLabel" name="label_15">
-         <property name="text">
-          <string>Low coverage colour:</string>
-         </property>
-        </widget>
-       </item>
        <item row="12" column="1">
         <widget class="QLabel" name="label_7">
          <property name="text">
@@ -281,13 +253,6 @@
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>Graph layout iterations:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="20" column="2">
-        <widget class="QPushButton" name="lowCoverageColourButton">
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>
@@ -314,41 +279,6 @@
          </property>
         </widget>
        </item>
-       <item row="13" column="2">
-        <widget class="QWidget" name="widget_3" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QRadioButton" name="antialiasingOnRadioButton">
-            <property name="text">
-             <string>On</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="antialiasingOffRadioButton">
-            <property name="text">
-             <string>Off</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="7" column="2">
         <widget class="QDoubleSpinBox" name="minimumContigWidthSpinBox">
          <property name="minimum">
@@ -356,13 +286,6 @@
          </property>
          <property name="maximum">
           <double>100.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="22" column="1">
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>Selection colour:</string>
          </property>
         </widget>
        </item>
@@ -442,6 +365,36 @@
          </property>
         </widget>
        </item>
+       <item row="20" column="0">
+        <widget class="InfoTextWidget" name="selectionColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="0" colspan="3">
+        <widget class="Line" name="line_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="2">
+        <widget class="QPushButton" name="selectionColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="8" column="0">
         <widget class="InfoTextWidget" name="coverageContigWidthInfoText" native="true">
          <property name="sizePolicy">
@@ -474,6 +427,102 @@
          </property>
         </widget>
        </item>
+       <item row="13" column="2">
+        <widget class="QWidget" name="widget_3" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QRadioButton" name="antialiasingOnRadioButton">
+            <property name="text">
+             <string>On</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="antialiasingOffRadioButton">
+            <property name="text">
+             <string>Off</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="24" column="2">
+        <widget class="QWidget" name="widget_4" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QRadioButton" name="coverageValueAutoRadioButton">
+            <property name="text">
+             <string>Auto</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="coverageValueManualRadioButton">
+            <property name="text">
+             <string>Manual</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="10" column="0">
         <widget class="InfoTextWidget" name="edgeWidthInfoText" native="true">
          <property name="sizePolicy">
@@ -487,6 +536,13 @@
            <width>16</width>
            <height>16</height>
           </size>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="1">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>Selection colour:</string>
          </property>
         </widget>
        </item>
@@ -570,6 +626,13 @@
          </property>
         </widget>
        </item>
+       <item row="25" column="1">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>Low coverage value:</string>
+         </property>
+        </widget>
+       </item>
        <item row="19" column="0">
         <widget class="InfoTextWidget" name="uniformNodeSpecialColourInfoText" native="true">
          <property name="sizePolicy">
@@ -602,51 +665,10 @@
          </property>
         </widget>
        </item>
-       <item row="20" column="0">
-        <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="21" column="0">
-        <widget class="InfoTextWidget" name="highCoverageColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="22" column="0">
-        <widget class="InfoTextWidget" name="selectionColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
+       <item row="23" column="2">
+        <widget class="QPushButton" name="highCoverageColourButton">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -663,6 +685,109 @@
            <width>16</width>
            <height>16</height>
           </size>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="2">
+        <widget class="QDoubleSpinBox" name="lowCoverageValueSpinBox">
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="1">
+        <widget class="QLabel" name="label_15">
+         <property name="text">
+          <string>Low coverage colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="1">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>High coverage colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="2">
+        <widget class="QPushButton" name="lowCoverageColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="0">
+        <widget class="InfoTextWidget" name="coverageValuesInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="0">
+        <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="27" column="1">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>High coverage value:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="27" column="2">
+        <widget class="QDoubleSpinBox" name="highCoverageValueSpinBox">
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>1.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="0">
+        <widget class="InfoTextWidget" name="highCoverageColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="1">
+        <widget class="QLabel" name="label_41">
+         <property name="text">
+          <string>Coverage values:</string>
          </property>
         </widget>
        </item>

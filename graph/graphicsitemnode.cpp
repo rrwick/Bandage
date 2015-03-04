@@ -578,7 +578,16 @@ QSize GraphicsItemNode::getNodeTextSize(QString text)
 
 QColor GraphicsItemNode::getCoverageColour()
 {
-    double fraction = 1.0 - (1.0 / pow(2.0, m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage));  //Asymptotically approaches 1 as the coverage goes up
+    double coverage = m_deBruijnNode->m_coverage;
+    double lowValue = g_settings->lowCoverageValue;
+    double highValue = g_settings->highCoverageValue;
+
+    if (coverage <= lowValue)
+        return g_settings->lowCoverageColour;
+    if (coverage >= highValue)
+        return g_settings->highCoverageColour;
+
+    double fraction = (coverage - lowValue) / (highValue - lowValue);
 
     int redDifference = g_settings->highCoverageColour.red() - g_settings->lowCoverageColour.red();
     int greenDifference = g_settings->highCoverageColour.green() - g_settings->lowCoverageColour.green();

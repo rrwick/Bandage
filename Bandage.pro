@@ -47,7 +47,8 @@ SOURCES += \
     blast/blasthit.cpp \
     blast/blastqueries.cpp \
     ui/blastsearchdialog.cpp \
-    ui/infotextwidget.cpp
+    ui/infotextwidget.cpp \
+    graph/assemblygraph.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -71,7 +72,8 @@ HEADERS  += \
     blast/blastqueries.h \
     blast/blastsearch.h \
     ui/blastsearchdialog.h \
-    ui/infotextwidget.h
+    ui/infotextwidget.h \
+    graph/assemblygraph.h
 
 FORMS    += \
     ui/mainwindow.ui \
