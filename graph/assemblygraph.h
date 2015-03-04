@@ -23,6 +23,13 @@ public:
     ogdf::Graph * m_ogdfGraph;
     ogdf::GraphAttributes * m_graphAttributes;
 
+    long long m_totalLength;
+    long long m_shortestContig;
+    long long m_longestContig;
+    double m_meanCoverage;
+    double m_firstQuartileCoverage;
+    double m_medianCoverage;
+    double m_thirdQuartileCoverage;
 
     void cleanUp();
     void createDeBruijnEdge(int node1Number, int node2Number);
@@ -34,6 +41,11 @@ public:
     void resetNodeContiguityStatus();
     void resetAllNodeColours();
     void clearAllBlastHitPointers();
+    void determineGraphInfo();
+    void clearGraphInfo();
+
+private:
+    double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
 };
 
 #endif // ASSEMBLYGRAPH_H

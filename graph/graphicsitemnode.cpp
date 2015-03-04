@@ -38,6 +38,7 @@
 #include "../ui/mygraphicsview.h"
 #include <QTransform>
 #include "../blast/blasthitpart.h"
+#include "assemblygraph.h"
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -583,7 +584,8 @@ QColor GraphicsItemNode::getCoverageColour()
     double highValue;
     if (g_settings->autoCoverageValue)
     {
-
+        lowValue = g_assemblyGraph->m_firstQuartileCoverage;
+        highValue = g_assemblyGraph->m_thirdQuartileCoverage;
     }
     else
     {

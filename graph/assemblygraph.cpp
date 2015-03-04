@@ -2,6 +2,8 @@
 #include <QMapIterator>
 #include "../program/globals.h"
 #include "../program/settings.h"
+#include <limits>
+#include <algorithm>
 
 AssemblyGraph::AssemblyGraph()
 {
@@ -29,6 +31,8 @@ void AssemblyGraph::cleanUp()
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
         delete m_deBruijnGraphEdges[i];
     m_deBruijnGraphEdges.clear();
+
+    clearGraphInfo();
 }
 
 
@@ -230,4 +234,76 @@ void AssemblyGraph::clearAllBlastHitPointers()
         DeBruijnNode * node = i.value();
         node->m_blastHits.clear();
     }
+}
+
+
+
+void AssemblyGraph::determineGraphInfo()
+{
+    m_shortestContig = std::numeric_limits<long long>::max();
+    m_longestContig = 0;
+    long long totalLength = 0;
+    std::vector<double> nodeCoverages;
+
+    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        long long nodeLength = i.value()->m_length;
+
+        if (nodeLength < m_shortestContig)
+            m_shortestContig = nodeLength;
+        if (nodeLength > m_longestContig)
+            m_longestContig = nodeLength;
+        totalLength += nodeLength;
+
+        nodeCoverages.push_back(i.value()->m_coverage);
+    }
+    m_totalLength = totalLength;
+
+    m_meanCoverage = getMeanDeBruijnGraphCoverage();
+
+    std::sort(nodeCoverages.begin(), nodeCoverages.end());
+
+    double firstQuartileIndex = nodeCoverages.size() / 4.0;
+    double medianIndex = nodeCoverages.size() / 2.0;
+    double thirdQuartileIndex = nodeCoverages.size() * 3.0 / 4.0;
+
+    m_firstQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, firstQuartileIndex);
+    m_medianCoverage = getValueUsingFractionalIndex(&nodeCoverages, medianIndex);
+    m_thirdQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, thirdQuartileIndex);
+}
+
+double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index)
+{
+    if (doubleVector->size() == 0)
+        return 0.0;
+    if (doubleVector->size() == 1)
+        return (*doubleVector)[0];
+
+    int wholePart = floor(index);
+
+    if (wholePart < 0)
+        return (*doubleVector)[0];
+    if (wholePart >= int(doubleVector->size()) - 1)
+        return (*doubleVector)[doubleVector->size() - 1];
+
+    double fractionalPart = index - wholePart;
+
+    double piece1 = (*doubleVector)[wholePart];
+    double piece2 = (*doubleVector)[wholePart+1];
+
+    return piece1 * (1.0 - fractionalPart) + piece2 * fractionalPart;
+}
+
+void AssemblyGraph::clearGraphInfo()
+{
+    m_totalLength = 0;
+    m_shortestContig = 0;
+    m_longestContig = 0;
+
+    m_meanCoverage = 0.0;
+    m_firstQuartileCoverage = 0.0;
+    m_medianCoverage = 0.0;
+    m_thirdQuartileCoverage = 0.0;
 }

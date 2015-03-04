@@ -234,6 +234,8 @@ void MainWindow::loadGraphFile(QString graphFileType)
         ui->nodeLabelsGroupBox->setEnabled(false);
 
         setWindowTitle("Bandage - " + fullFileName);
+
+        g_assemblyGraph->determineGraphInfo();
     }
 }
 
@@ -248,7 +250,6 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
     int nodeCount = 0;
     int edgeCount = 0;
-    long long totalLength = 0;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -281,7 +282,6 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 g_assemblyGraph->m_deBruijnGraphNodes.insert(-nodeNumber, reverseComplementNode);
 
                 ++nodeCount;
-                totalLength += nodeLength;
             }
             else if (line.startsWith("ARC"))
             {
@@ -295,7 +295,7 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         inputFile.close();
     }
 
-    displayGraphDetails(nodeCount, edgeCount, totalLength, g_assemblyGraph->getMeanDeBruijnGraphCoverage());
+    displayGraphDetails(nodeCount, edgeCount);
 }
 
 
@@ -309,7 +309,6 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
     int nodeCount = 0;
     int edgeCount = 0;
-    long long totalLength = 0;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -363,10 +362,7 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                     nodeNumber *= -1;
                 }
                 else
-                {
                     ++nodeCount;
-                    totalLength += nodeLength;
-                }
                 nodeCoverage = nodeCoverageString.toDouble();
 
                 //Make the node
@@ -442,7 +438,7 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
     }
 
-    displayGraphDetails(nodeCount, edgeCount/2, totalLength, g_assemblyGraph->getMeanDeBruijnGraphCoverage());
+    displayGraphDetails(nodeCount, edgeCount/2);
 
     return true;
 }
@@ -537,13 +533,11 @@ bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
 
 
 
-void MainWindow::displayGraphDetails(int nodeCount, int edgeCount, long long totalLength, double meanCoverage)
+void MainWindow::displayGraphDetails(int nodeCount, int edgeCount)
 {
     ui->graphDetailsGroupBox->setEnabled(true);
     ui->nodeCountLabel->setText(formatIntForDisplay(nodeCount));
     ui->edgeCountLabel->setText(formatIntForDisplay(edgeCount));
-    ui->totalLengthLabel->setText(formatIntForDisplay(totalLength));
-    ui->meanCoverageLabel->setText(formatDoubleForDisplay(meanCoverage, 1));
 }
 
 

@@ -51,7 +51,7 @@ private:
     double m_previousZoomSpinBoxValue;
 
     void cleanUp();
-    void displayGraphDetails(int nodeCount, int edgeCount, long long totalLength, double meanCoverage);
+    void displayGraphDetails(int nodeCount, int edgeCount);
     void resetScene();
     void layoutGraph();
     void addGraphicsItemsToScene();
