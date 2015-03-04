@@ -228,11 +228,11 @@ void MainWindow::loadGraphFile(QString graphFileType)
         }
         //Enable UI elements that are now applicable that a graph is loaded
         ui->graphDrawingWidget->setEnabled(true);
-        ui->blastResultsGroupBox->setEnabled(true);
+        ui->blastSearchWidget->setEnabled(true);
 
         //Disable UI elements that aren't applicable until the graph is drawn
-        ui->graphDisplayGroupBox->setEnabled(false);
-        ui->nodeLabelsGroupBox->setEnabled(false);
+        ui->graphDisplayWidget->setEnabled(false);
+        ui->nodeLabelsWidget->setEnabled(false);
 
         setWindowTitle("Bandage - " + fullFileName);
 
@@ -737,8 +737,8 @@ void MainWindow::graphLayoutFinished()
     zoomToFitScene();
     selectionChanged();
 
-    ui->graphDisplayGroupBox->setEnabled(true);
-    ui->nodeLabelsGroupBox->setEnabled(true);
+    ui->graphDisplayWidget->setEnabled(true);
+    ui->nodeLabelsWidget->setEnabled(true);
     ui->actionSave_image_current_view->setEnabled(true);
     ui->actionSave_image_entire_scene->setEnabled(true);
     ui->selectionSearchGroupBox->setEnabled(true);
