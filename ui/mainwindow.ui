@@ -119,10 +119,20 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="2" rowspan="2">
-            <widget class="QPushButton" name="moreInfoButton">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>More</string>
+              <string>Total length:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="totalLengthLabel">
+             <property name="text">
+              <string>0</string>
              </property>
             </widget>
            </item>

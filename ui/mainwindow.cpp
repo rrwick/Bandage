@@ -236,6 +236,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
         setWindowTitle("Bandage - " + fullFileName);
 
         g_assemblyGraph->determineGraphInfo();
+        displayGraphDetails();
     }
 }
 
@@ -247,9 +248,6 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
     QProgressDialog progress("Reading LastGraph file", QString(), 0, 0, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
-
-    int nodeCount = 0;
-    int edgeCount = 0;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -280,8 +278,6 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 reverseComplementNode->m_reverseComplement = node;
                 g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
                 g_assemblyGraph->m_deBruijnGraphNodes.insert(-nodeNumber, reverseComplementNode);
-
-                ++nodeCount;
             }
             else if (line.startsWith("ARC"))
             {
@@ -289,13 +285,10 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 int node1Number = arcDetails.at(1).toInt();
                 int node2Number = arcDetails.at(2).toInt();
                 g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
-                ++edgeCount;
             }
         }
         inputFile.close();
     }
-
-    displayGraphDetails(nodeCount, edgeCount);
 }
 
 
@@ -306,9 +299,6 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     QProgressDialog progress("Reading FASTG file", QString(), 0, 0, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
-
-    int nodeCount = 0;
-    int edgeCount = 0;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -361,8 +351,6 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
                     nodeNumber *= -1;
                 }
-                else
-                    ++nodeCount;
                 nodeCoverage = nodeCoverageString.toDouble();
 
                 //Make the node
@@ -433,12 +421,9 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
             int node1Number = edgeStartingNodeNumbers[i];
             int node2Number = edgeEndingNodeNumbers[i];
             g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
-            ++edgeCount;
         }
 
     }
-
-    displayGraphDetails(nodeCount, edgeCount/2);
 
     return true;
 }
@@ -533,11 +518,12 @@ bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
 
 
 
-void MainWindow::displayGraphDetails(int nodeCount, int edgeCount)
+void MainWindow::displayGraphDetails()
 {
     ui->graphDetailsGroupBox->setEnabled(true);
-    ui->nodeCountLabel->setText(formatIntForDisplay(nodeCount));
-    ui->edgeCountLabel->setText(formatIntForDisplay(edgeCount));
+    ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_deBruijnGraphNodes.size() / 2));
+    ui->edgeCountLabel->setText(formatIntForDisplay(int(g_assemblyGraph->m_deBruijnGraphEdges.size()) / 2));
+    ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
 
 
