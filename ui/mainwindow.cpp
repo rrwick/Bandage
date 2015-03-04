@@ -96,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Fix the scroll areas' sizes.  The numbers added on were what I needed to prevent the horizontal
     //scroll bar from showing.  I'm not sure why they are necessary.
-    ui->controlsScrollArea->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 45);
+    ui->controlsScrollAreaWidgetContents->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width());
     ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 25);
 
     setInfoTexts();
