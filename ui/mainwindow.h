@@ -26,16 +26,10 @@
 #include <vector>
 #include <QLineEdit>
 #include <QRectF>
-#include "ogdf/basic/Graph.h"
-#include "ogdf/basic/GraphAttributes.h"
-#include "../graph/debruijnnode.h"
-#include "../graph/debruijnedge.h"
-#include "../graph/graphicsitemnode.h"
-#include "../graph/graphicsitemedge.h"
-#include "../graph/ogdfnode.h"
 #include "graphicsviewzoom.h"
 #include "mygraphicsview.h"
 #include "mygraphicsscene.h"
+#include "../graph/assemblygraph.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,31 +47,17 @@ private:
     Ui::MainWindow *ui;
     MyGraphicsScene * m_scene;
 
-    QMap<int, DeBruijnNode*> m_deBruijnGraphNodes;
-    std::vector<DeBruijnEdge*> m_deBruijnGraphEdges;
-    ogdf::Graph * m_ogdfGraph;
-    ogdf::GraphAttributes * m_graphAttributes;
     GraphicsViewZoom * m_graphicsViewZoom;
     double m_previousZoomSpinBoxValue;
 
     void cleanUp();
-    void buildDeBruijnGraphFromLastGraph(QString fullFileName);
-    bool buildDeBruijnGraphFromFastg(QString fullFileName);
     void displayGraphDetails(int nodeCount, int edgeCount, long long totalLength, double meanCoverage);
     void resetScene();
-    void clearOgdfGraphAndResetNodes();
-    void createDeBruijnEdge(int nodeNumber1, int nodeNumber2);
-    QByteArray getReverseComplement(QByteArray forwardSequence);
-    void buildOgdfGraphFromNodesAndEdges();
     void layoutGraph();
     void addGraphicsItemsToScene();
-    double getMeanDeBruijnGraphCoverage(bool drawnNodesOnly = false);
-    double getMaxDeBruijnGraphCoverageOfDrawnNodes();
     void zoomToFitRect(QRectF rect);
     void zoomToFitScene();
     void setZoomSpinBoxStep();
-    void resetNodeContiguityStatus();
-    void resetAllNodeColours();
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node);
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText);
     QString getSelectedEdgeListText();
@@ -90,6 +70,9 @@ private:
     bool checkFileIsFastG(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
     void loadGraphFile(QString graphFileType);
+    void buildDeBruijnGraphFromLastGraph(QString fullFileName);
+    bool buildDeBruijnGraphFromFastg(QString fullFileName);
+    void buildOgdfGraphFromNodesAndEdges();
 
 private slots:
     void loadLastGraph();

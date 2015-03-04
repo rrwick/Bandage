@@ -55,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    g_assemblyGraph = new AssemblyGraph();
+
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
     g_graphicsView = new MyGraphicsView();
     ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
@@ -86,10 +88,6 @@ MainWindow::MainWindow(QWidget *parent) :
     g_graphicsView->setScene(m_scene);
 
     g_blastSearch = new BlastSearch();
-
-    m_ogdfGraph = new ogdf::Graph();
-    m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
-                                                  ogdf::GraphAttributes::edgeGraphics);
 
     int fixedRightPanelWidth = ui->selectedNodesGroupBox->sizeHint().width();
     ui->selectedNodesGroupBox->setFixedWidth(fixedRightPanelWidth);
@@ -162,6 +160,7 @@ MainWindow::~MainWindow()
 {
     cleanUp();
     delete m_graphicsViewZoom;
+    delete g_assemblyGraph;
     delete ui;
     delete g_blastSearch;
 
@@ -173,23 +172,9 @@ MainWindow::~MainWindow()
 void MainWindow::cleanUp()
 {
     ui->blastQueryComboBox->clear();
-
     emptyTempDirectory();
-
-    g_blastSearch->m_hits.clear();
-    g_blastSearch->m_blastQueries.m_queries.clear();
-
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        delete i.value();
-    }
-    m_deBruijnGraphNodes.clear();
-
-    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
-        delete m_deBruijnGraphEdges[i];
-    m_deBruijnGraphEdges.clear();
+    g_blastSearch->cleanUp();
+    g_assemblyGraph->cleanUp();
 }
 
 
@@ -254,34 +239,6 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
 
 
-//Cursory look to see if file appears to be a LastGraph file.
-bool MainWindow::checkFileIsLastGraph(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, "\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
-}
-
-//Cursory look to see if file appears to be a FASTG file.
-bool MainWindow::checkFileIsFastG(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, ">NODE");
-}
-
-
-bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
-{
-    QFile inputFile(fullFileName);
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&inputFile);
-        if (in.atEnd())
-            return false;
-        QRegExp rx(regExp);
-        QString line = in.readLine();
-        if (rx.indexIn(line) != -1)
-            return true;
-    }
-    return false;
-}
 
 void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
@@ -320,8 +277,8 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 DeBruijnNode * reverseComplementNode = new DeBruijnNode(-nodeNumber, nodeLength, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
-                m_deBruijnGraphNodes.insert(nodeNumber, node);
-                m_deBruijnGraphNodes.insert(-nodeNumber, reverseComplementNode);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(-nodeNumber, reverseComplementNode);
 
                 ++nodeCount;
                 totalLength += nodeLength;
@@ -331,14 +288,14 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 QStringList arcDetails = line.split(QRegExp("\\s+"));
                 int node1Number = arcDetails.at(1).toInt();
                 int node2Number = arcDetails.at(2).toInt();
-                createDeBruijnEdge(node1Number, node2Number);
+                g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
                 ++edgeCount;
             }
         }
         inputFile.close();
     }
 
-    displayGraphDetails(nodeCount, edgeCount, totalLength, getMeanDeBruijnGraphCoverage());
+    displayGraphDetails(nodeCount, edgeCount, totalLength, g_assemblyGraph->getMeanDeBruijnGraphCoverage());
 }
 
 
@@ -390,9 +347,9 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                 //If this is the second node and its node number is NOT the
                 //same as the first node, then this is probably a FASTG file
                 //made by an earlier version of SPAdes (before 3.5).
-                if (m_deBruijnGraphNodes.size() == 1)
+                if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 1)
                 {
-                    if (m_deBruijnGraphNodes.first()->m_number != nodeNumber)
+                    if (g_assemblyGraph->m_deBruijnGraphNodes.first()->m_number != nodeNumber)
                         return false;
                 }
 
@@ -414,7 +371,7 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
                 //Make the node
                 node = new DeBruijnNode(nodeNumber, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
-                m_deBruijnGraphNodes.insert(nodeNumber, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
                 //Edges aren't made right now (because the other node might not yet exist),
@@ -457,7 +414,7 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         inputFile.close();
 
         //Now for each node, find its reverse complement and make them point to each other.
-        QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -465,7 +422,7 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
             if (positiveNode->m_number > 0)
             {
-                DeBruijnNode * negativeNode = m_deBruijnGraphNodes[-(positiveNode->m_number)];
+                DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[-(positiveNode->m_number)];
                 if (negativeNode != 0)
                 {
                     positiveNode->m_reverseComplement = negativeNode;
@@ -479,56 +436,103 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         {
             int node1Number = edgeStartingNodeNumbers[i];
             int node2Number = edgeEndingNodeNumbers[i];
-            createDeBruijnEdge(node1Number, node2Number);
+            g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
             ++edgeCount;
         }
 
     }
 
-    displayGraphDetails(nodeCount, edgeCount/2, totalLength, getMeanDeBruijnGraphCoverage());
+    displayGraphDetails(nodeCount, edgeCount/2, totalLength, g_assemblyGraph->getMeanDeBruijnGraphCoverage());
 
     return true;
 }
 
-
-
-//This function makes a double edge: in one direction for the given nodes
-//and the opposite direction for their reverse complements.  It adds the
-//new edges to the vector here and to the nodes themselves.
-void MainWindow::createDeBruijnEdge(int node1Number, int node2Number)
+void MainWindow::buildOgdfGraphFromNodesAndEdges()
 {
-    //Quit if any of the nodes don't exist.
-    if (!m_deBruijnGraphNodes.contains(node1Number) ||
-            !m_deBruijnGraphNodes.contains(node2Number) ||
-            !m_deBruijnGraphNodes.contains(-node1Number) ||
-            !m_deBruijnGraphNodes.contains(-node2Number))
-        return;
-
-    DeBruijnNode * node1 = m_deBruijnGraphNodes[node1Number];
-    DeBruijnNode * node2 = m_deBruijnGraphNodes[node2Number];
-    DeBruijnNode * negNode1 = m_deBruijnGraphNodes[-node1Number];
-    DeBruijnNode * negNode2 = m_deBruijnGraphNodes[-node2Number];
-
-    //Quit if the edge already exists
-    for (size_t i = 0; i < node1->m_edges.size(); ++i)
+    if (g_settings->graphScope == WHOLE_GRAPH)
     {
-        if (node1->m_edges[i]->m_endingNode == node2)
-            return;
+        QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+
+            //If double mode is off, only positive nodes are drawn.  If it's
+            //on, all nodes are drawn.
+            if (i.value()->m_number > 0 || g_settings->doubleMode)
+                i.value()->m_drawn = true;
+        }
+    }
+    else //The scope is either around specified nodes or around nodes with BLAST hits
+    {
+        std::vector<DeBruijnNode *> startingNodes;
+
+        if (g_settings->graphScope == AROUND_NODE)
+            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+        else if (g_settings->graphScope == AROUND_BLAST_HITS)
+            startingNodes = getNodesFromBlastHits();
+
+        int nodeDistance = ui->nodeDistanceSpinBox->value();
+
+        for (size_t i = 0; i < startingNodes.size(); ++i)
+        {
+            DeBruijnNode * node = startingNodes[i];
+            if (node->m_number < 0)
+                node = node->m_reverseComplement;
+
+            node->m_drawn = true;
+            node->m_startingNode = true;
+            node->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
+        }
     }
 
-    DeBruijnEdge * forwardEdge = new DeBruijnEdge(node1, node2);
-    DeBruijnEdge * backwardEdge = new DeBruijnEdge(negNode2, negNode1);
+    //First loop through each node, adding it to OGDF if it is drawn.
+    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        if (i.value()->m_drawn)
+            i.value()->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
+    }
 
-    forwardEdge->m_reverseComplement = backwardEdge;
-    backwardEdge->m_reverseComplement = forwardEdge;
+    //Then loop through each determining its drawn status and adding it
+    //to OGDF if it is drawn.
+    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+    {
+        g_assemblyGraph->m_deBruijnGraphEdges[i]->determineIfDrawn();
+        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
+            g_assemblyGraph->m_deBruijnGraphEdges[i]->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
+    }
+}
 
-    m_deBruijnGraphEdges.push_back(forwardEdge);
-    m_deBruijnGraphEdges.push_back(backwardEdge);
 
-    node1->addEdge(forwardEdge);
-    node2->addEdge(forwardEdge);
-    negNode1->addEdge(backwardEdge);
-    negNode2->addEdge(backwardEdge);
+
+//Cursory look to see if file appears to be a LastGraph file.
+bool MainWindow::checkFileIsLastGraph(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
+}
+
+//Cursory look to see if file appears to be a FASTG file.
+bool MainWindow::checkFileIsFastG(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, ">NODE");
+}
+
+
+bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
+{
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        if (in.atEnd())
+            return false;
+        QRegExp rx(regExp);
+        QString line = in.readLine();
+        if (rx.indexIn(line) != -1)
+            return true;
+    }
+    return false;
 }
 
 
@@ -739,7 +743,7 @@ void MainWindow::drawGraph()
     g_settings->doubleMode = ui->doubleNodesRadioButton->isChecked();
     resetScene();
     setRandomColourFactor();
-    clearOgdfGraphAndResetNodes();
+    g_assemblyGraph->clearOgdfGraphAndResetNodes();
     buildOgdfGraphFromNodesAndEdges();
     layoutGraph();
 }
@@ -769,8 +773,7 @@ void MainWindow::resetScene()
     //signal could alter what's in the startingNodes line edit.
     m_scene->blockSignals(true);
 
-    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
-        m_deBruijnGraphEdges[i]->reset();
+    g_assemblyGraph->resetEdges();
     delete m_scene;
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
@@ -779,134 +782,6 @@ void MainWindow::resetScene()
     //Undo the graphics view rotation
     g_graphicsView->rotate(-g_graphicsView->m_rotation);
     g_graphicsView->m_rotation = 0.0;
-}
-
-
-
-void MainWindow::clearOgdfGraphAndResetNodes()
-{
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        i.value()->resetNode();
-    }
-
-    m_ogdfGraph->clear();
-}
-
-
-
-
-
-
-//http://www.code10.info/index.php?option=com_content&view=article&id=62:articledna-reverse-complement&catid=49:cat_coding_algorithms_bioinformatics&Itemid=74
-QByteArray MainWindow::getReverseComplement(QByteArray forwardSequence)
-{
-    QByteArray reverseComplement;
-
-    for (int i = forwardSequence.length() - 1; i >= 0; --i)
-    {
-        char letter = forwardSequence.at(i);
-
-        switch (letter)
-        {
-        case 'A': reverseComplement.append('T'); break;
-        case 'T': reverseComplement.append('A'); break;
-        case 'G': reverseComplement.append('C'); break;
-        case 'C': reverseComplement.append('G'); break;
-        case 'a': reverseComplement.append('t'); break;
-        case 't': reverseComplement.append('a'); break;
-        case 'g': reverseComplement.append('c'); break;
-        case 'c': reverseComplement.append('g'); break;
-        case 'R': reverseComplement.append('Y'); break;
-        case 'Y': reverseComplement.append('R'); break;
-        case 'S': reverseComplement.append('S'); break;
-        case 'W': reverseComplement.append('W'); break;
-        case 'K': reverseComplement.append('M'); break;
-        case 'M': reverseComplement.append('K'); break;
-        case 'r': reverseComplement.append('y'); break;
-        case 'y': reverseComplement.append('r'); break;
-        case 's': reverseComplement.append('s'); break;
-        case 'w': reverseComplement.append('w'); break;
-        case 'k': reverseComplement.append('m'); break;
-        case 'm': reverseComplement.append('k'); break;
-        case 'B': reverseComplement.append('V'); break;
-        case 'D': reverseComplement.append('H'); break;
-        case 'H': reverseComplement.append('D'); break;
-        case 'V': reverseComplement.append('B'); break;
-        case 'b': reverseComplement.append('v'); break;
-        case 'd': reverseComplement.append('h'); break;
-        case 'h': reverseComplement.append('d'); break;
-        case 'v': reverseComplement.append('b'); break;
-        case 'N': reverseComplement.append('N'); break;
-        case 'n': reverseComplement.append('n'); break;
-        case '.': reverseComplement.append('.'); break;
-        case '-': reverseComplement.append('-'); break;
-        case '?': reverseComplement.append('?'); break;
-        }
-    }
-
-    return reverseComplement;
-}
-
-
-
-void MainWindow::buildOgdfGraphFromNodesAndEdges()
-{
-    if (g_settings->graphScope == WHOLE_GRAPH)
-    {
-        QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-
-            //If double mode is off, only positive nodes are drawn.  If it's
-            //on, all nodes are drawn.
-            if (i.value()->m_number > 0 || g_settings->doubleMode)
-                i.value()->m_drawn = true;
-        }
-    }
-    else //The scope is either around specified nodes or around nodes with BLAST hits
-    {
-        std::vector<DeBruijnNode *> startingNodes;
-
-        if (g_settings->graphScope == AROUND_NODE)
-            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
-        else if (g_settings->graphScope == AROUND_BLAST_HITS)
-            startingNodes = getNodesFromBlastHits();
-
-        int nodeDistance = ui->nodeDistanceSpinBox->value();
-
-        for (size_t i = 0; i < startingNodes.size(); ++i)
-        {
-            DeBruijnNode * node = startingNodes[i];
-            if (node->m_number < 0)
-                node = node->m_reverseComplement;
-
-            node->m_drawn = true;
-            node->m_startingNode = true;
-            node->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
-        }
-    }
-
-    //First loop through each node, adding it to OGDF if it is drawn.
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (i.value()->m_drawn)
-            i.value()->addToOgdfGraph(m_ogdfGraph);
-    }
-
-    //Then loop through each determining its drawn status and adding it
-    //to OGDF if it is drawn.
-    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
-    {
-        m_deBruijnGraphEdges[i]->determineIfDrawn();
-        if (m_deBruijnGraphEdges[i]->m_drawn)
-            m_deBruijnGraphEdges[i]->addToOgdfGraph(m_ogdfGraph);
-    }
 }
 
 
@@ -920,8 +795,8 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     for (int i = 0; i < nodesList.size(); ++i)
     {
         int nodeNumber = nodesList.at(i).toInt();
-        if (m_deBruijnGraphNodes.contains(nodeNumber))
-            returnVector.push_back(m_deBruijnGraphNodes[nodeNumber]);
+        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
+            returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber]);
         else if (nodesNotInGraph != 0)
             nodesNotInGraph->push_back(nodesList.at(i).trimmed());
     }
@@ -962,7 +837,7 @@ void MainWindow::layoutGraph()
     progress->show();
 
     QThread * thread = new QThread;
-    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_graphAttributes, g_settings->graphLayoutQuality, g_settings->segmentLength);
+    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(g_assemblyGraph->m_graphAttributes, g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->moveToThread(thread);
 
     connect(thread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
@@ -1027,10 +902,10 @@ void MainWindow::addGraphicsItemsToScene()
 {
     m_scene->clear();
 
-    double meanDrawnCoverage = getMeanDeBruijnGraphCoverage(true);
+    double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
 
     //First make the GraphicsItemNode objects
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -1038,23 +913,23 @@ void MainWindow::addGraphicsItemsToScene()
         {
             DeBruijnNode * node = i.value();
             node->m_coverageRelativeToMeanDrawnCoverage = node->m_coverage / meanDrawnCoverage;
-            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, m_graphAttributes);
+            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, g_assemblyGraph->m_graphAttributes);
             node->m_graphicsItemNode = graphicsItemNode;
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
         }
     }
 
-    resetAllNodeColours();
+    g_assemblyGraph->resetAllNodeColours();
 
     //Then make the GraphicsItemEdge objects and add them to the scene first
     //so they are drawn underneath
-    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
     {
-        if (m_deBruijnGraphEdges[i]->m_drawn)
+        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
         {
-            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(m_deBruijnGraphEdges[i]);
-            m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
+            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(g_assemblyGraph->m_deBruijnGraphEdges[i]);
+            g_assemblyGraph->m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
             graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
             m_scene->addItem(graphicsItemEdge);
         }
@@ -1062,7 +937,7 @@ void MainWindow::addGraphicsItemsToScene()
 
     //Now add the GraphicsItemNode objects to the scene so they are drawn
     //on top
-    QMapIterator<int, DeBruijnNode*> j(m_deBruijnGraphNodes);
+    QMapIterator<int, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
     while (j.hasNext())
     {
         j.next();
@@ -1071,52 +946,6 @@ void MainWindow::addGraphicsItemsToScene()
             m_scene->addItem(node->m_graphicsItemNode);
     }
 
-}
-
-
-double MainWindow::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
-{
-    int nodeCount = 0;
-    long double coverageSum = 0.0;
-    long long totalLength = 0;
-
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        DeBruijnNode * node = i.value();
-
-        if (drawnNodesOnly && !node->m_drawn)
-            continue;
-
-        if (node->m_number > 0)
-        {
-            ++nodeCount;
-            totalLength += node->m_length;
-            coverageSum += node->m_length * node->m_coverage;
-        }
-    }
-
-    if (totalLength == 0)
-        return 0.0;
-    else
-        return coverageSum / totalLength;
-}
-
-double MainWindow::getMaxDeBruijnGraphCoverageOfDrawnNodes()
-{
-    double maxCoverage = 1.0;
-
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-
-        if (i.value()->m_graphicsItemNode != 0 && i.value()->m_coverage > maxCoverage)
-            maxCoverage = i.value()->m_coverage;
-    }
-
-    return maxCoverage;
 }
 
 
@@ -1273,38 +1102,16 @@ void MainWindow::switchColourScheme()
 //        break;
     }
 
-    resetAllNodeColours();
+    g_assemblyGraph->resetAllNodeColours();
     g_graphicsView->viewport()->update();
 }
 
 
 
-void MainWindow::resetNodeContiguityStatus()
-{
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        i.value()->m_contiguityStatus = NOT_CONTIGUOUS;
-    }
-}
-
-void MainWindow::resetAllNodeColours()
-{
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (i.value()->m_graphicsItemNode != 0)
-            i.value()->m_graphicsItemNode->setNodeColour();
-    }
-}
-
-
 void MainWindow::determineContiguityFromSelectedNode()
 {
-    resetNodeContiguityStatus();
-    resetAllNodeColours();
+    g_assemblyGraph->resetNodeContiguityStatus();
+    g_assemblyGraph->resetAllNodeColours();
 
     DeBruijnNode * selectedNode = m_scene->getOneSelectedNode();
     if (selectedNode != 0)
@@ -1487,7 +1294,7 @@ void MainWindow::openSettingsDialog()
         if (settingsBefore.minimumContigWidth != g_settings->minimumContigWidth ||
                 settingsBefore.coverageContigWidth != g_settings->coverageContigWidth)
         {
-            QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+            QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
             while (i.hasNext())
             {
                 i.next();
@@ -1507,7 +1314,7 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
                 settingsBefore.highCoverageValue != g_settings->highCoverageValue)
         {
-            resetAllNodeColours();
+            g_assemblyGraph->resetAllNodeColours();
             g_graphicsView->viewport()->update();
         }
 
@@ -1623,7 +1430,7 @@ void MainWindow::openAboutDialog()
 
 void MainWindow::openBlastSearchDialog()
 {
-    BlastSearchDialog blastSearchDialog(&m_deBruijnGraphNodes, this);
+    BlastSearchDialog blastSearchDialog(this);
 
     connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString)), this, SLOT(saveAllNodesToFasta(QString)));
     connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
@@ -1649,14 +1456,7 @@ void MainWindow::openBlastSearchDialog()
 
 void MainWindow::blastTargetChanged()
 {
-    //Clear the blast hit pointer from all nodes
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        DeBruijnNode * node = i.value();
-        node->m_blastHits.clear();
-    }
+    g_assemblyGraph->clearAllBlastHitPointers();
 
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target.
@@ -1679,7 +1479,7 @@ void MainWindow::saveAllNodesToFasta(QString path)
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();

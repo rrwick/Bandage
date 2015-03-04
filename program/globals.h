@@ -24,6 +24,7 @@
 class Settings;
 class MyGraphicsView;
 class BlastSearch;
+class AssemblyGraph;
 
 enum NodeColourScheme {ONE_COLOUR, RANDOM_COLOURS, COVERAGE_COLOUR, BLAST_HITS_COLOUR, CONTIGUITY_COLOUR, CUSTOM_COLOURS};
 enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS};
@@ -37,6 +38,7 @@ extern double g_absoluteZoom;
 extern int g_randomColourFactor;
 extern BlastSearch * g_blastSearch;
 extern QString g_tempDirectory;
+extern AssemblyGraph * g_assemblyGraph;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);

@@ -27,6 +27,7 @@ double g_absoluteZoom;
 int g_randomColourFactor;
 BlastSearch * g_blastSearch;
 QString g_tempDirectory;
+AssemblyGraph * g_assemblyGraph;
 
 
 QString formatIntForDisplay(int num)

@@ -32,6 +32,8 @@ public:
     BlastQueries m_blastQueries;
     std::vector<BlastHit> m_hits;
 
+    void cleanUp() {m_hits.clear(); m_blastQueries.m_queries.clear();}
+
 };
 
 #endif // BLASTSEARCH_H

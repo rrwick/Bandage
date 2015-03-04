@@ -35,8 +35,7 @@ class BlastSearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit BlastSearchDialog(QMap<int, DeBruijnNode*> * deBruijnGraphNodes,
-                                    QWidget *parent = 0);
+    explicit BlastSearchDialog(QWidget *parent = 0);
     ~BlastSearchDialog();
 
 private:

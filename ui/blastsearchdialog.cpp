@@ -31,12 +31,11 @@
 #include <QMessageBox>
 #include <QDir>
 #include "enteroneblastquerydialog.h"
+#include "../graph/assemblygraph.h"
 
-BlastSearchDialog::BlastSearchDialog(QMap<int, DeBruijnNode *> * deBruijnGraphNodes,
-                                               QWidget *parent) :
+BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BlastSearchDialog),
-    m_deBruijnGraphNodes(deBruijnGraphNodes)
+    ui(new Ui::BlastSearchDialog)
 {
     ui->setupUi(this);
 
@@ -163,8 +162,8 @@ void BlastSearchDialog::loadBlastHits()
 
             int nodeNumber = getNodeNumberFromString(nodeLabel);
             DeBruijnNode * node;
-            if (m_deBruijnGraphNodes->contains(nodeNumber))
-                node = (*m_deBruijnGraphNodes)[nodeNumber];
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
+                node = g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber];
             else
                 return;
 
