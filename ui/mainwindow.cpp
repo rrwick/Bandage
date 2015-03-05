@@ -25,7 +25,6 @@
 #include <QRegExp>
 #include <ogdf/energybased/FMMMLayout.h>
 #include <cmath>
-#include "../program/globals.h"
 #include "../program/settings.h"
 #include <QClipboard>
 #include <QTransform>
@@ -48,6 +47,15 @@
 #include "aboutdialog.h"
 #include <QMainWindow>
 #include "blastsearchdialog.h"
+#include "../graph/assemblygraph.h"
+#include "mygraphicsview.h"
+#include "graphicsviewzoom.h"
+#include "mygraphicsscene.h"
+#include "../blast/blastsearch.h"
+#include "../graph/debruijnnode.h"
+#include "../graph/debruijnedge.h"
+#include "../graph/graphicsitemnode.h"
+#include "../graph/graphicsitemedge.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

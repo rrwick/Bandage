@@ -4,12 +4,11 @@
 #include <vector>
 #include "ogdf/basic/Graph.h"
 #include "ogdf/basic/GraphAttributes.h"
-#include "../graph/debruijnnode.h"
-#include "../graph/debruijnedge.h"
-#include "../graph/graphicsitemnode.h"
-#include "../graph/graphicsitemedge.h"
-#include "../graph/ogdfnode.h"
 #include <QString>
+#include <QMap>
+
+class DeBruijnNode;
+class DeBruijnEdge;
 
 class AssemblyGraph
 {

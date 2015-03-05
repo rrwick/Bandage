@@ -19,7 +19,6 @@
 #include "debruijnnode.h"
 #include "debruijnedge.h"
 #include "ogdfnode.h"
-#include "../program/globals.h"
 #include "../program/settings.h"
 #include "graphicsitemnode.h"
 #include <math.h>

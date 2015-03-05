@@ -28,7 +28,6 @@
 #include <QPointF>
 
 class DeBruijnEdge;
-class GraphicsItemNode;
 
 class GraphicsItemEdge : public QGraphicsPathItem
 {

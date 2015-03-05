@@ -26,11 +26,11 @@
 #include <vector>
 #include <QLineEdit>
 #include <QRectF>
-#include "graphicsviewzoom.h"
-#include "mygraphicsview.h"
-#include "mygraphicsscene.h"
-#include "../graph/assemblygraph.h"
 #include "../program/globals.h"
+
+class GraphicsViewZoom;
+class MyGraphicsScene;
+class DeBruijnNode;
 
 namespace Ui {
 class MainWindow;

@@ -20,11 +20,9 @@
 #define BLASTSEARCHDIALOG_H
 
 #include <QDialog>
-#include "../blast/blastsearch.h"
 #include <QMap>
 
 class DeBruijnNode;
-class BlastQuery;
 
 namespace Ui {
 class BlastSearchDialog;

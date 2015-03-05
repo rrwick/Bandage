@@ -20,7 +20,7 @@
 #include "debruijnnode.h"
 #include "ogdfnode.h"
 #include <QPainterPathStroker>
-#include "../program/globals.h"
+#include "../graph/ogdfnode.h"
 #include "../program/settings.h"
 #include <QPainter>
 #include <QPen>

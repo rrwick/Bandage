@@ -4,6 +4,9 @@
 #include "../program/settings.h"
 #include <limits>
 #include <algorithm>
+#include "../graph/debruijnnode.h"
+#include "../graph/debruijnedge.h"
+#include "../graph/graphicsitemnode.h"
 
 AssemblyGraph::AssemblyGraph()
 {

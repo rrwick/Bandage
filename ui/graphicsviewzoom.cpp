@@ -21,7 +21,6 @@
 #include <QApplication>
 #include <QScrollBar>
 #include <qmath.h>
-#include "../program/globals.h"
 #include "../program/settings.h"
 
 GraphicsViewZoom::GraphicsViewZoom(QGraphicsView* view)

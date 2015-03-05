@@ -20,10 +20,9 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
-#include "../program/globals.h"
-#include "../program/settings.h"
-#include "infotextwidget.h"
 #include <QCloseEvent>
+
+class Settings;
 
 namespace Ui {
 class SettingsDialog;

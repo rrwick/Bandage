@@ -20,8 +20,8 @@
 #define DEBRUIJNEDGE_H
 
 #include <ogdf/basic/Graph.h>
+#include "debruijnnode.h"
 
-class DeBruijnNode;
 class GraphicsItemEdge;
 
 class DeBruijnEdge

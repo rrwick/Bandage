@@ -32,6 +32,7 @@
 #include <QDir>
 #include "enteroneblastquerydialog.h"
 #include "../graph/assemblygraph.h"
+#include "../blast/blastsearch.h"
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),

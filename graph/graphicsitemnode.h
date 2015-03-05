@@ -27,7 +27,6 @@
 #include <QColor>
 #include <QFont>
 #include <QString>
-#include "../program/globals.h"
 
 class DeBruijnNode;
 
