@@ -261,8 +261,12 @@ void SettingsDialog::setInfoTexts()
 
 void SettingsDialog::enableDisableCoverageValueSpinBoxes()
 {
-    ui->lowCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
-    ui->highCoverageValueSpinBox->setEnabled(ui->coverageValueManualRadioButton->isChecked());
+    bool enable = ui->coverageValueManualRadioButton->isChecked();
+
+    ui->lowCoverageValueLabel->setEnabled(enable);
+    ui->highCoverageValueLabel->setEnabled(enable);
+    ui->lowCoverageValueSpinBox->setEnabled(enable);
+    ui->highCoverageValueSpinBox->setEnabled(enable);
 }
 
 

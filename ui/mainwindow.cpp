@@ -1467,12 +1467,12 @@ void MainWindow::setInfoTexts()
                                         "<li>'Entire graph': all nodes in the graph will be drawn.  This is "
                                         "appropriate for smaller assembly graphs, but large graphs may take a "
                                         "lot of time and memory to display in their entirety.</li>"
-                                        "<li>'Around nodes(s)': the user can specify nodes and a distance to "
+                                        "<li>'Around nodes': you can specify nodes and a distance to "
                                         "limit the graph drawing to a smaller region of the graph.</li>"
-                                        "<li>'Around BLAST hits(s)': if the user has conducted a BLAST search "
+                                        "<li>'Around BLAST hits': if you have conducted a BLAST search "
                                         "on this graph, then this option will draw the region(s) of the graph "
                                         "around nodes that contain hits.</li></ul>");
-    ui->startingNodesInfoText->setInfoText("The user can enter a comma-delimited list of the nodes that will "
+    ui->startingNodesInfoText->setInfoText("Enter a comma-delimited list here of the node numbers. This will "
                                            "define which regions of the graph will be drawn.");
     ui->nodeStyleInfoText->setInfoText("'Single' mode will only draw nodes with positive numbers, not their "
                                        "complement nodes with negative numbers.  This gives a simpler graph, but "
@@ -1483,8 +1483,71 @@ void MainWindow::setInfoTexts()
     ui->drawGraphInfoText->setInfoText("Clicking this button will conduct the graph layout and draw the graph to "
                                        "the screen.  This process is fast for small graphs but can be "
                                        "resource-intensive for large graphs.<br><br>"
-                                       "The layout algorithm uses a random seed, so clicking this button "
-                                       "multiple times will give different layouts of the same graph.");
+                                       "The layout algorithm uses a random seed, so each time this button is "
+                                       "clicked you will give different layouts of the same graph.");
+    ui->zoomInfoText->setInfoText("This value controls how large the graph appears in Bandage. The zoom level "
+                                  "can also be changed by:<ul>"
+                                  "<li>holding the Ctrl key and using the mouse wheel over the graph.</li>"
+                                  "<li>clicking on the graph display and then using the '+' and '-' keys</li></ul>");
+    ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
+                                        "<li>'Uniform colour': for graphs drawn with the 'entire graph' scope, all "
+                                        "nodes will be the same colour.  For graphs drawn with the 'Around nodes' "
+                                        "scope, your defined nodes will be drawn in a separate colour.  For "
+                                        "graphs drawn with the 'Around BLAST hits' scope, nodes with BLAST hits "
+                                        "will be drawn in a separate colour.</li>"
+                                        "<li>'Colour by coverage': node colours will be defined by their "
+                                        "coverage.</li>"
+                                        "<li>'Random colours': nodes will be coloured randomly.  Each time this is "
+                                        "selected, new random colours will be chosen.  Negative nodes (when shown "
+                                        "in 'Double' mode) will be a darker shade of their complement positive "
+                                        "nodes.</li>"
+                                        "<li>'Colour using BLAST hits': nodes will be drawn with a light colour "
+                                        "and BLAST hits for the currently selected query will be drawn using a "
+                                        "rainbow.  Red indicates the start of the query sequence and violet "
+                                        "indicates the end.</li>"
+                                        "<li>'Custom colours': nodes will be coloured using colours of your "
+                                        "choice.  Select one or more nodes and then click the 'Set colour' button "
+                                        "to define their colour.</li></ul>"
+                                        "See the 'Colours' section of the Bandage settings to control various "
+                                        "colouring options.");
+    ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
+                                        "nodes in the graph."
+                                        "'Number', 'Length' and 'Coverage' labels are created automatically. "
+                                        "'Custom' labels must be assigned by you by clicking the 'Set "
+                                        "label' button when one or more nodes are selected.");
+    ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels.<br><br>"
+                                      "Ticking 'Text outline' will surround the text with a white outline."
+                                      "This can help to make text more readable, especially over darkly "
+                                      "coloured nodes, but will obscure a little bit more of the underlying "
+                                      "graph.  The thickness of the text outline is configurable in Bandage's "
+                                      "settings.");
+    ui->blastSearchInfoText->setInfoText("Click this button to open a dialog where a BLAST search for one "
+                                         "or more queries can be carried out on the graph.<br><br>"
+                                         "After a BLAST search is complete, it will be possible to use the "
+                                         "'Around BLAST hits' graph scope and the 'Colour using BLAST "
+                                         "hits' colour mode.");
+    ui->blastQueryInfoText->setInfoText("After a BLAST search is completed, you can select a query here for use "
+                                        "with the 'Around BLAST hits' graph scope and the 'Colour using BLAST "
+                                        "hits' colour mode.");
+    ui->selectionSearchInfoText->setInfoText("Type a comma-delimited list one or mode node numbers and then click "
+                                             "the 'Find node(s)' button to search for nodes in the graph. "
+                                             "If the search is successful, the view will zoom into the found nodes "
+                                             "and they will be selected.");
+    ui->setColourAndLabelInfoText->setInfoText("Custom colours and labels can be applied to selected nodes using "
+                                               "these buttons.  They will only be visible when the colouring "
+                                               "mode is set to 'Custom colours' and the 'Custom' label option "
+                                               "is ticked.");
+    ui->removeNodesInfoText->setInfoText("Click this button to remove selected nodes from the drawn graph, along "
+                                         "with any edges that connect to those nodes.  This makes no change to "
+                                         "the underlying assembly graph, just the visualisation.<br><br>"
+                                         "To see a removed nodes in the visualisation again, you must redraw the "
+                                         "graph by clicking 'Draw graph'.");
+    ui->copySequencesInfoText->setInfoText("Click this button to copy the sequences of all selected nodes to the "
+                                           "clipboard.  If multiple nodes are selected, each node will be on its"
+                                           "own line without headers.");
+    ui->saveSequencesInfoText->setInfoText("Click this button to save the sequences of all selected nodes to a "
+                                           "FASTA file.  Each node's' number, length and coverage will be "
+                                           "included in its header.");
 }
 
 

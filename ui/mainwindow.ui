@@ -272,12 +272,12 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Around node(s)</string>
+                  <string>Around nodes</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>Around BLAST hit(s)</string>
+                  <string>Around BLAST hits</string>
                  </property>
                 </item>
                </widget>
@@ -1013,7 +1013,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="InfoTextWidget" name="blastQueryInfoText_2" native="true">
+               <widget class="InfoTextWidget" name="blastQueryInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1096,17 +1096,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QWidget" name="widget_15" native="true">
-         <zorder>graphDetailsWidget</zorder>
-         <zorder>graphDrawingWidget</zorder>
-         <zorder>graphDisplayWidget</zorder>
-         <zorder>nodeLabelsWidget</zorder>
-         <zorder>nodeLabelsWidget</zorder>
-         <zorder>nodeLabelsWidget</zorder>
-         <zorder>controlsScrollArea</zorder>
-         <zorder>blastSearchWidget</zorder>
-         <zorder>graphDetailsWidget</zorder>
-        </widget>
+        <widget class="QWidget" name="widget_15" native="true"/>
        </item>
       </layout>
      </widget>
@@ -1128,7 +1118,7 @@
          <x>0</x>
          <y>0</y>
          <width>274</width>
-         <height>1040</height>
+         <height>1053</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1667,7 +1657,6 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSettings"/>
-    <addaction name="actionGraph_information"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1749,11 +1738,6 @@
    </property>
    <property name="text">
     <string>Save image (entire scene)</string>
-   </property>
-  </action>
-  <action name="actionGraph_information">
-   <property name="text">
-    <string>Graph information</string>
    </property>
   </action>
   <action name="actionControls_panel">
