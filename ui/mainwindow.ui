@@ -19,23 +19,8 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
     <item>
-     <widget class="QScrollArea" name="controlsScrollArea">
+     <widget class="VerticalScrollArea" name="controlsScrollArea">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -60,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>1053</height>
+         <height>1035</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -553,8 +538,8 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>30</height>
+            <width>229</width>
+            <height>27</height>
            </size>
           </property>
          </spacer>
@@ -912,8 +897,8 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>30</height>
+            <width>229</width>
+            <height>27</height>
            </size>
           </property>
          </spacer>
@@ -1095,11 +1080,28 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
+       <item>
+        <widget class="QWidget" name="widget_15" native="true">
+         <zorder>graphDetailsWidget</zorder>
+         <zorder>verticalSpacer_2</zorder>
+         <zorder>graphDrawingWidget</zorder>
+         <zorder>verticalSpacer_3</zorder>
+         <zorder>graphDisplayWidget</zorder>
+         <zorder>verticalSpacer_4</zorder>
+         <zorder>nodeLabelsWidget</zorder>
+         <zorder>nodeLabelsWidget</zorder>
+         <zorder>nodeLabelsWidget</zorder>
+         <zorder>verticalSpacer_6</zorder>
+         <zorder>controlsScrollArea</zorder>
+         <zorder>blastSearchWidget</zorder>
+         <zorder>graphDetailsWidget</zorder>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QScrollArea" name="selectionScrollArea">
+     <widget class="VerticalScrollArea" name="selectionScrollArea">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -1114,8 +1116,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>257</width>
-         <height>1053</height>
+         <width>274</width>
+         <height>1022</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1142,6 +1144,12 @@
            </property>
            <item>
             <widget class="QLabel" name="label_14">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <weight>75</weight>
@@ -1199,6 +1207,12 @@
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Node(s):</string>
                 </property>
@@ -1213,7 +1227,7 @@
                  <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -1266,6 +1280,12 @@
            </item>
            <item>
             <widget class="QLabel" name="selectedNodesTitleLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <weight>75</weight>
@@ -1481,15 +1501,15 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="selectedContigNumberLabel">
-             <property name="text">
-              <string>Selected nodes</string>
+            <widget class="QPlainTextEdit" name="selectedNodesTextEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="wordWrap">
+             <property name="readOnly">
               <bool>true</bool>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
              </property>
             </widget>
            </item>
@@ -1545,6 +1565,12 @@
            </item>
            <item>
             <widget class="QLabel" name="selectedEdgesTitleLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <weight>75</weight>
@@ -1564,21 +1590,15 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="selectedEdgesLabel">
+            <widget class="QPlainTextEdit" name="selectedEdgesTextEdit">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="text">
-              <string>Selected edges</string>
-             </property>
-             <property name="wordWrap">
+             <property name="readOnly">
               <bool>true</bool>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
              </property>
             </widget>
            </item>
@@ -1724,6 +1744,12 @@
    <class>InfoTextWidget</class>
    <extends>QWidget</extends>
    <header>ui/infotextwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VerticalScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header>ui/verticalscrollarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

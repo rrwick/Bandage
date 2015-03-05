@@ -48,7 +48,8 @@ SOURCES += \
     blast/blastqueries.cpp \
     ui/blastsearchdialog.cpp \
     ui/infotextwidget.cpp \
-    graph/assemblygraph.cpp
+    graph/assemblygraph.cpp \
+    ui/verticalscrollarea.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -73,7 +74,8 @@ HEADERS  += \
     blast/blastsearch.h \
     ui/blastsearchdialog.h \
     ui/infotextwidget.h \
-    graph/assemblygraph.h
+    graph/assemblygraph.h \
+    ui/verticalscrollarea.h
 
 FORMS    += \
     ui/mainwindow.ui \

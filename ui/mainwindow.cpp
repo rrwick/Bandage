@@ -82,13 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->selectionSearchWidget->setFixedWidth(fixedRightPanelWidth);
     ui->selectedEdgesWidget->setFixedWidth(fixedRightPanelWidth);
 
-    //Fix the scroll areas' sizes.  The numbers added on were what I needed to prevent the horizontal
-    //scroll bar from showing.  I'm not sure why they are necessary.
-    ui->controlsScrollAreaWidgetContents->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 50);
-    ui->controlsScrollArea->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 60);
-    ui->selectionScrollAreaWidgetContents->setFixedWidth(fixedRightPanelWidth + 25);
-    ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 35);
-
     enableDisableUiElements(NO_GRAPH_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
@@ -529,7 +522,10 @@ void MainWindow::selectionChanged()
     std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
 
     if (selectedNodes.size() == 0)
+    {
+        ui->selectedNodesTextEdit->setPlainText("");
         ui->selectedNodesWidget->setVisible(false);
+    }
 
     else //One or more nodes selected
     {
@@ -559,12 +555,15 @@ void MainWindow::selectionChanged()
             ui->selectedContigLengthLabel->setText("<b>Total length:</b> " + selectedNodeLengthText);
         }
 
-        ui->selectedContigNumberLabel->setText(selectedNodeListText);
+        ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);
     }
 
 
     if (selectedEdges.size() == 0)
+    {
+        ui->selectedEdgesTextEdit->setPlainText("");
         ui->selectedEdgesWidget->setVisible(false);
+    }
 
     else //One or more edges selected
     {
@@ -574,7 +573,7 @@ void MainWindow::selectionChanged()
         else
             ui->selectedEdgesTitleLabel->setText("Selected edges (" + formatIntForDisplay(int(selectedEdges.size())) + ")");
 
-        ui->selectedEdgesLabel->setText(getSelectedEdgeListText());
+        ui->selectedEdgesTextEdit->setPlainText(getSelectedEdgeListText());
     }
 
 }
