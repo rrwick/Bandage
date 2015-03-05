@@ -867,7 +867,7 @@ void MainWindow::layoutGraph()
         break;
     }
 
-    fmmm.call(*m_graphAttributes);
+    fmmm.call(*(g_assemblyGraph->m_graphAttributes));
     graphLayoutFinished();
 
 #endif
