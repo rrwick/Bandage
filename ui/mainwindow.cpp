@@ -77,16 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
 
-    enableDisableUiElements(NO_GRAPH_LOADED);
-
-    m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
-    g_graphicsView->m_zoom = m_graphicsViewZoom;
-
-    m_scene = new MyGraphicsScene(this);
-    g_graphicsView->setScene(m_scene);
-
-    g_blastSearch = new BlastSearch();
-
     int fixedRightPanelWidth = ui->selectedNodesWidget->sizeHint().width();
     ui->selectedNodesWidget->setFixedWidth(fixedRightPanelWidth);
     ui->selectionSearchWidget->setFixedWidth(fixedRightPanelWidth);
@@ -96,7 +86,18 @@ MainWindow::MainWindow(QWidget *parent) :
     //scroll bar from showing.  I'm not sure why they are necessary.
     ui->controlsScrollAreaWidgetContents->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 50);
     ui->controlsScrollArea->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 60);
-    ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 25);
+    ui->selectionScrollAreaWidgetContents->setFixedWidth(fixedRightPanelWidth + 25);
+    ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 35);
+
+    enableDisableUiElements(NO_GRAPH_LOADED);
+
+    m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
+    g_graphicsView->m_zoom = m_graphicsViewZoom;
+
+    m_scene = new MyGraphicsScene(this);
+    g_graphicsView->setScene(m_scene);
+
+    g_blastSearch = new BlastSearch();
 
     setInfoTexts();
 
@@ -658,12 +659,22 @@ void MainWindow::graphScopeChanged()
         ui->nodeSelectionWidget->setEnabled(true);
         ui->distanceWidget->setVisible(true);
         ui->distanceWidget->setEnabled(true);
+        ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
+                                              "within this many steps away from any of those nodes.<br><br>"
+                                              "A value of 0 will result in only the specified nodes being drawn. "
+                                              "A large value will result in a large section of the graph around "
+                                              "the specified nodes being drawn.");
         break;
     case 2:
         g_settings->graphScope = AROUND_BLAST_HITS;
         ui->nodeSelectionWidget->setVisible(false);
         ui->distanceWidget->setVisible(true);
         ui->distanceWidget->setEnabled(true);
+        ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
+                                              "many steps away from nodes with a BLAST hit.<br><br>"
+                                              "A value of 0 will result in only nodes with BLAST hits being drawn. "
+                                              "A large value will result in a large section of the graph around "
+                                              "nodes with BLAST hits being drawn.");
         break;
     }
 }
@@ -1444,7 +1455,28 @@ void MainWindow::saveAllNodesToFasta(QString path)
 
 void MainWindow::setInfoTexts()
 {
-    ui->graphScopeInfoText->setInfoText("sdsdfsdf");
+    ui->graphScopeInfoText->setInfoText("This controls how much of the assembly graph will be drawn:<ul>"
+                                        "<li>'Entire graph': all nodes in the graph will be drawn.  This is "
+                                        "appropriate for smaller assembly graphs, but large graphs may take a "
+                                        "lot of time and memory to display in their entirety.</li>"
+                                        "<li>'Around nodes(s)': the user can specify nodes and a distance to "
+                                        "limit the graph drawing to a smaller region of the graph.</li>"
+                                        "<li>'Around BLAST hits(s)': if the user has conducted a BLAST search "
+                                        "on this graph, then this option will draw the region(s) of the graph "
+                                        "around nodes that contain hits.</li></ul>");
+    ui->startingNodesInfoText->setInfoText("The user can enter a comma-delimited list of the nodes that will "
+                                           "define which regions of the graph will be drawn.");
+    ui->nodeStyleInfoText->setInfoText("'Single' mode will only draw nodes with positive numbers, not their "
+                                       "complement nodes with negative numbers.  This gives a simpler graph, but "
+                                       "strand-specific sequences and directionality will be less clear.<br><br>"
+                                       "'Double' mode will draw both nodes and their complement nodes.  The nodes "
+                                       "will show directionality with an arrow head.  They will initially be "
+                                       "drawn on top of each other, but can be manually moved to separate them.");
+    ui->drawGraphInfoText->setInfoText("Clicking this button will conduct the graph layout and draw the graph to "
+                                       "the screen.  This process is fast for small graphs but can be "
+                                       "resource-intensive for large graphs.<br><br>"
+                                       "The layout algorithm uses a random seed, so clicking this button "
+                                       "multiple times will give different layouts of the same graph.");
 }
 
 
