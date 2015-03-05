@@ -63,6 +63,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="InfoTextWidget" name="buildBlastDatabaseInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="buildBlastDatabaseButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -189,6 +205,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="InfoTextWidget" name="startBlastSearchInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="startBlastSearchButton">
         <property name="enabled">
          <bool>false</bool>
@@ -249,6 +281,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="InfoTextWidget" name="loadQueriesFromFastaInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="loadQueriesFromFastaButton">
         <property name="enabled">
          <bool>false</bool>
@@ -278,6 +326,22 @@
        </spacer>
       </item>
       <item>
+       <widget class="InfoTextWidget" name="enterQueryManuallyInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="enterQueryManuallyButton">
         <property name="enabled">
          <bool>false</bool>
@@ -305,6 +369,22 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="InfoTextWidget" name="clearQueriesInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="clearQueriesButton">
@@ -353,6 +433,22 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
+      <item>
+       <widget class="InfoTextWidget" name="parametersInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QLabel" name="parametersLabel">
         <property name="enabled">
@@ -478,6 +574,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>InfoTextWidget</class>
+   <extends>QWidget</extends>
+   <header>ui/infotextwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

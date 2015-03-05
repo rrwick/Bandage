@@ -46,6 +46,7 @@ private:
     void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
     void setUiStep(int step);
     void clearBlastHits();
+    void setInfoTexts();
 
 private slots:
     void buildBlastDatabase1();
@@ -54,7 +55,6 @@ private slots:
     void enterQueryManually();
     void clearQueries();
     void runBlastSearch();
-
     void loadBlastHits();
     void fillQueriesTable();
     void fillHitsTable();

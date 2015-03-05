@@ -66,6 +66,8 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
         setUiStep(3);
     }
 
+    setInfoTexts();
+
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
@@ -377,6 +379,12 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step1TickLabel->setPixmap(QPixmap());
         ui->step2TickLabel->setPixmap(QPixmap());
         ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(true);
+        ui->loadQueriesFromFastaInfoText->setEnabled(false);
+        ui->enterQueryManuallyInfoText->setEnabled(false);
+        ui->parametersInfoText->setEnabled(false);
+        ui->startBlastSearchInfoText->setEnabled(false);
+        ui->clearQueriesInfoText->setEnabled(false);
         break;
 
     //Step 2 is for loading queries
@@ -396,6 +404,12 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(QPixmap());
         ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(true);
+        ui->enterQueryManuallyInfoText->setEnabled(true);
+        ui->parametersInfoText->setEnabled(false);
+        ui->startBlastSearchInfoText->setEnabled(false);
+        ui->clearQueriesInfoText->setEnabled(false);
         break;
 
     //Step 3 is for running the BLAST search
@@ -415,6 +429,12 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
         ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(true);
+        ui->enterQueryManuallyInfoText->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->startBlastSearchInfoText->setEnabled(true);
+        ui->clearQueriesInfoText->setEnabled(true);
         break;
 
     //Step 4 is after the BLAST search has been run.
@@ -434,6 +454,24 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
         ui->step3TickLabel->setPixmap(tickScaled);
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(true);
+        ui->enterQueryManuallyInfoText->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->startBlastSearchInfoText->setEnabled(true);
+        ui->clearQueriesInfoText->setEnabled(true);
         break;
     }
+}
+
+
+
+void BlastSearchDialog::setInfoTexts()
+{
+    ui->buildBlastDatabaseInfoText->setInfoText("");
+    ui->loadQueriesFromFastaInfoText->setInfoText("");
+    ui->enterQueryManuallyInfoText->setInfoText("");
+    ui->parametersInfoText->setInfoText("");
+    ui->startBlastSearchInfoText->setInfoText("");
+    ui->clearQueriesInfoText->setInfoText("");
 }
