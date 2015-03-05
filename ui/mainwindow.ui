@@ -1126,14 +1126,40 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QGroupBox" name="selectionSearchGroupBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="title">
-           <string>Select nodes</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
+         <widget class="QWidget" name="selectionSearchWidget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Find nodes</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QWidget" name="nodeSelectionWidget_2" native="true">
              <property name="enabled">
@@ -1184,7 +1210,7 @@
            <item>
             <widget class="QPushButton" name="selectNodesButton">
              <property name="text">
-              <string>Select node(s)</string>
+              <string>Find node(s)</string>
              </property>
             </widget>
            </item>
@@ -1192,8 +1218,8 @@
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="currentSelectionSpacerWidget_2" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_8">
+         <widget class="QWidget" name="selectedNodesWidget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_9">
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -1207,7 +1233,7 @@
             <number>0</number>
            </property>
            <item>
-            <spacer name="currentSelectionSpacer_2">
+            <spacer name="verticalSpacer_7">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -1216,27 +1242,32 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>177</width>
-               <height>10</height>
+               <width>20</width>
+               <height>30</height>
               </size>
              </property>
             </spacer>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="selectedNodesGroupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title">
-           <string>Currently selected nodes</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QLabel" name="selectedNodesTitleLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Selected nodes</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QWidget" name="widget_9" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -1316,16 +1347,9 @@
             </widget>
            </item>
            <item>
-            <widget class="Line" name="line_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QLabel" name="selectedContigNumberLabel">
              <property name="text">
-              <string>TextLabel</string>
+              <string>Selected nodes</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -1355,7 +1379,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="currentSelectionSpacerWidget" native="true">
+         <widget class="QWidget" name="selectedEdgesWidget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="leftMargin">
             <number>0</number>
@@ -1370,7 +1394,7 @@
             <number>0</number>
            </property>
            <item>
-            <spacer name="currentSelectionSpacer">
+            <spacer name="verticalSpacer_8">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -1379,28 +1403,33 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>177</width>
-               <height>10</height>
+               <width>20</width>
+               <height>30</height>
               </size>
              </property>
             </spacer>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="selectedEdgesGroupBox">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title">
-           <string>Currently selected edges</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_11">
-           <item row="0" column="0">
+           <item>
+            <widget class="QLabel" name="selectedEdgesTitleLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Selected edges</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="selectedEdgesLabel">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1409,7 +1438,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string/>
+              <string>Selected edges</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -1436,11 +1465,6 @@
          </spacer>
         </item>
        </layout>
-       <zorder>selectedNodesGroupBox</zorder>
-       <zorder>selectedEdgesGroupBox</zorder>
-       <zorder>currentSelectionSpacerWidget</zorder>
-       <zorder>selectionSearchGroupBox</zorder>
-       <zorder>currentSelectionSpacerWidget_2</zorder>
       </widget>
      </widget>
     </item>
@@ -1583,12 +1607,8 @@
   <tabstop>textOutlineCheckBox</tabstop>
   <tabstop>selectionScrollArea</tabstop>
   <tabstop>selectionSearchNodesLineEdit</tabstop>
-  <tabstop>selectNodesButton</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
   <tabstop>setNodeCustomLabelButton</tabstop>
-  <tabstop>removeNodeButton</tabstop>
-  <tabstop>nodeSequenceToClipboardButton</tabstop>
-  <tabstop>nodeSequenceToFileButton</tabstop>
  </tabstops>
  <resources>
   <include location="../images/images.qrc"/>

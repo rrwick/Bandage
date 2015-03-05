@@ -87,10 +87,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     g_blastSearch = new BlastSearch();
 
-    int fixedRightPanelWidth = ui->selectedNodesGroupBox->sizeHint().width();
-    ui->selectedNodesGroupBox->setFixedWidth(fixedRightPanelWidth);
-    ui->selectionSearchGroupBox->setFixedWidth(fixedRightPanelWidth);
-    ui->selectedEdgesGroupBox->setFixedWidth(fixedRightPanelWidth);
+    int fixedRightPanelWidth = ui->selectedNodesWidget->sizeHint().width();
+    ui->selectedNodesWidget->setFixedWidth(fixedRightPanelWidth);
+    ui->selectionSearchWidget->setFixedWidth(fixedRightPanelWidth);
+    ui->selectedEdgesWidget->setFixedWidth(fixedRightPanelWidth);
 
     //Fix the scroll areas' sizes.  The numbers added on were what I needed to prevent the horizontal
     //scroll bar from showing.  I'm not sure why they are necessary.
@@ -211,6 +211,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
         resetScene();
         cleanUp();
+        ui->selectionSearchNodesLineEdit->clear();
 
         if (graphFileType == "LastGraph")
             buildDeBruijnGraphFromLastGraph(fullFileName);
@@ -526,37 +527,12 @@ void MainWindow::selectionChanged()
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
 
-    //If both nodes and edges are selected, it's necessary to space
-    //the UI elements out a bit
-    if (selectedNodes.size() > 0 && selectedEdges.size() > 0)
-        ui->currentSelectionSpacerWidget->setVisible(true);
-    else
-        ui->currentSelectionSpacerWidget->setVisible(false);
-
     if (selectedNodes.size() == 0)
-    {
-        ui->selectedNodesGroupBox->setVisible(false);
-    }
+        ui->selectedNodesWidget->setVisible(false);
 
     else //One or more nodes selected
     {
-        ui->selectedNodesGroupBox->setVisible(true);
-
-
-        if (selectedNodes.size() == 1)
-        {
-            ui->selectedNodesGroupBox->setTitle("Currently selected node");
-            ui->nodeSequenceToClipboardButton->setText("Copy sequence to clipboard");
-            ui->nodeSequenceToFileButton->setText("Save sequence to FASTA file");
-            ui->removeNodeButton->setText("Remove node");
-        }
-        else
-        {
-            ui->selectedNodesGroupBox->setTitle("Currently selected nodes");
-            ui->nodeSequenceToClipboardButton->setText("Copy sequences to clipboard");
-            ui->nodeSequenceToFileButton->setText("Save sequences to FASTA file");
-            ui->removeNodeButton->setText("Remove nodes");
-        }
+        ui->selectedNodesWidget->setVisible(true);
 
         int selectedNodeCount;
         QString selectedNodeCountText;
@@ -567,29 +543,35 @@ void MainWindow::selectionChanged()
 
         if (selectedNodeCount == 1)
         {
-            ui->selectedContigNumberLabel->setText("<b>Selected node:</b> " + selectedNodeListText);
+            ui->selectedNodesTitleLabel->setText("Selected node");
+            ui->nodeSequenceToClipboardButton->setText("Copy sequence to clipboard");
+            ui->nodeSequenceToFileButton->setText("Save sequence to FASTA file");
+            ui->removeNodeButton->setText("Remove node");
             ui->selectedContigLengthLabel->setText("<b>Length:</b> " + selectedNodeLengthText);
         }
         else
         {
-            ui->selectedContigNumberLabel->setText("<b>Selected nodes (" + selectedNodeCountText + "):</b> " + selectedNodeListText);
+            ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
+            ui->nodeSequenceToClipboardButton->setText("Copy sequences to clipboard");
+            ui->nodeSequenceToFileButton->setText("Save sequences to FASTA file");
+            ui->removeNodeButton->setText("Remove nodes");
             ui->selectedContigLengthLabel->setText("<b>Total length:</b> " + selectedNodeLengthText);
         }
+
+        ui->selectedContigNumberLabel->setText(selectedNodeListText);
     }
 
 
     if (selectedEdges.size() == 0)
-    {
-        ui->selectedEdgesGroupBox->setVisible(false);
-    }
+        ui->selectedEdgesWidget->setVisible(false);
 
     else //One or more edges selected
     {
-        ui->selectedEdgesGroupBox->setVisible(true);
+        ui->selectedEdgesWidget->setVisible(true);
         if (selectedEdges.size() == 1)
-            ui->selectedEdgesGroupBox->setTitle("Currently selected edge");
+            ui->selectedEdgesTitleLabel->setText("Selected edge");
         else
-            ui->selectedEdgesGroupBox->setTitle("Currently selected edges");
+            ui->selectedEdgesTitleLabel->setText("Selected edges (" + formatIntForDisplay(int(selectedEdges.size())) + ")");
 
         ui->selectedEdgesLabel->setText(getSelectedEdgeListText());
     }
@@ -738,8 +720,6 @@ void MainWindow::graphLayoutFinished()
 
 void MainWindow::resetScene()
 {
-    //The scene to be deleted should emit signals, or else the selectionChanged
-    //signal could alter what's in the startingNodes line edit.
     m_scene->blockSignals(true);
 
     g_assemblyGraph->resetEdges();
@@ -747,6 +727,7 @@ void MainWindow::resetScene()
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
     connect(m_scene, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+    selectionChanged();
 
     //Undo the graphics view rotation
     g_graphicsView->rotate(-g_graphicsView->m_rotation);
@@ -1478,6 +1459,7 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
+        ui->selectionSearchWidget->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1485,6 +1467,7 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
+        ui->selectionSearchWidget->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1492,6 +1475,7 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->graphDisplayWidget->setEnabled(true);
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
+        ui->selectionSearchWidget->setEnabled(true);
         break;
     }
 }
