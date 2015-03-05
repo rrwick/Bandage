@@ -77,10 +77,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
 
+    //Fix the width of the objects in the selection panel so it doesn't
+    //change size.
     int fixedRightPanelWidth = ui->selectedNodesWidget->sizeHint().width();
     ui->selectedNodesWidget->setFixedWidth(fixedRightPanelWidth);
     ui->selectionSearchWidget->setFixedWidth(fixedRightPanelWidth);
     ui->selectedEdgesWidget->setFixedWidth(fixedRightPanelWidth);
+
+    //The normal height of the QPlainTextEdit objects is a bit much,
+    //so fix them at a smaller height.
+    ui->selectedNodesTextEdit->setFixedHeight(ui->selectedNodesTextEdit->sizeHint().height() / 2.5);
+    ui->selectedEdgesTextEdit->setFixedHeight(ui->selectedEdgesTextEdit->sizeHint().height() / 2.5);
 
     enableDisableUiElements(NO_GRAPH_LOADED);
 
@@ -546,7 +553,7 @@ void MainWindow::selectionChanged()
             ui->nodeSequenceToClipboardButton->setText("Copy sequence to clipboard");
             ui->nodeSequenceToFileButton->setText("Save sequence to FASTA file");
             ui->removeNodeButton->setText("Remove node");
-            ui->selectedContigLengthLabel->setText("<b>Length:</b> " + selectedNodeLengthText);
+            ui->selectedContigLengthLabel->setText("Length: " + selectedNodeLengthText);
         }
         else
         {
@@ -554,7 +561,7 @@ void MainWindow::selectionChanged()
             ui->nodeSequenceToClipboardButton->setText("Copy sequences to clipboard");
             ui->nodeSequenceToFileButton->setText("Save sequences to FASTA file");
             ui->removeNodeButton->setText("Remove nodes");
-            ui->selectedContigLengthLabel->setText("<b>Total length:</b> " + selectedNodeLengthText);
+            ui->selectedContigLengthLabel->setText("Total length: " + selectedNodeLengthText);
         }
 
         ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);

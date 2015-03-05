@@ -19,6 +19,21 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="VerticalScrollArea" name="controlsScrollArea">
       <property name="sizePolicy">
@@ -45,7 +60,7 @@
          <x>0</x>
          <y>0</y>
          <width>250</width>
-         <height>1035</height>
+         <height>1053</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -158,7 +173,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>30</height>
+            <height>35</height>
            </size>
           </property>
          </spacer>
@@ -539,7 +554,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>27</height>
+            <height>35</height>
            </size>
           </property>
          </spacer>
@@ -731,7 +746,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>30</height>
+            <height>35</height>
            </size>
           </property>
          </spacer>
@@ -898,7 +913,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>27</height>
+            <height>35</height>
            </size>
           </property>
          </spacer>
@@ -1083,15 +1098,11 @@
        <item>
         <widget class="QWidget" name="widget_15" native="true">
          <zorder>graphDetailsWidget</zorder>
-         <zorder>verticalSpacer_2</zorder>
          <zorder>graphDrawingWidget</zorder>
-         <zorder>verticalSpacer_3</zorder>
          <zorder>graphDisplayWidget</zorder>
-         <zorder>verticalSpacer_4</zorder>
          <zorder>nodeLabelsWidget</zorder>
          <zorder>nodeLabelsWidget</zorder>
          <zorder>nodeLabelsWidget</zorder>
-         <zorder>verticalSpacer_6</zorder>
          <zorder>controlsScrollArea</zorder>
          <zorder>blastSearchWidget</zorder>
          <zorder>graphDetailsWidget</zorder>
@@ -1117,7 +1128,7 @@
          <x>0</x>
          <y>0</y>
          <width>274</width>
-         <height>1022</height>
+         <height>1040</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1273,7 +1284,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>30</height>
+               <height>35</height>
               </size>
              </property>
             </spacer>
@@ -1299,6 +1310,42 @@
            </item>
            <item>
             <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPlainTextEdit" name="selectedNodesTextEdit">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="selectedContigLengthLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Total length:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_12">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -1403,13 +1450,6 @@
             </widget>
            </item>
            <item>
-            <widget class="Line" name="line_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QWidget" name="widget_12" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_18">
               <property name="leftMargin">
@@ -1500,35 +1540,6 @@
              </layout>
             </widget>
            </item>
-           <item>
-            <widget class="QPlainTextEdit" name="selectedNodesTextEdit">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="selectedContigLengthLabel">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Total length:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -1558,7 +1569,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>30</height>
+               <height>35</height>
               </size>
              </property>
             </spacer>
