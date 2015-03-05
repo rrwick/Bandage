@@ -125,6 +125,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
     connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
+    connect(ui->actionControls_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
+    connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1509,4 +1511,11 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->selectionSearchWidget->setEnabled(true);
         break;
     }
+}
+
+
+void MainWindow::showHidePanels()
+{
+    ui->controlsScrollArea->setVisible(ui->actionControls_panel->isChecked());
+    ui->selectionScrollArea->setVisible(ui->actionSelection_panel->isChecked());
 }

@@ -103,6 +103,7 @@ private slots:
     void openBlastSearchDialog();
     void blastTargetChanged();
     void saveAllNodesToFasta(QString path);
+    void showHidePanels();
 
 signals:
     void saveAllNodesToFastaFinished();
