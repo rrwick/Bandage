@@ -59,7 +59,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>254</width>
+         <width>250</width>
          <height>1053</height>
         </rect>
        </property>
@@ -73,7 +73,7 @@
         <item>
          <widget class="QWidget" name="graphDetailsWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <property name="leftMargin">
@@ -181,7 +181,7 @@
         <item>
          <widget class="QWidget" name="graphDrawingWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <property name="leftMargin">
@@ -288,7 +288,7 @@
            <item>
             <widget class="QWidget" name="nodeSelectionWidget" native="true">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <property name="leftMargin">
@@ -305,6 +305,9 @@
               </property>
               <item>
                <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -322,7 +325,7 @@
               <item>
                <widget class="QLabel" name="label_11">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="text">
                  <string>Node(s):</string>
@@ -335,7 +338,7 @@
               <item>
                <widget class="QLineEdit" name="startingNodesLineEdit">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -351,7 +354,7 @@
            <item>
             <widget class="QWidget" name="distanceWidget" native="true">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <property name="leftMargin">
@@ -368,6 +371,9 @@
               </property>
               <item>
                <widget class="InfoTextWidget" name="nodeDistanceInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -385,7 +391,7 @@
               <item>
                <widget class="QLabel" name="label">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="text">
                  <string>Distance:</string>
@@ -398,7 +404,7 @@
               <item>
                <widget class="QSpinBox" name="nodeDistanceSpinBox">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -447,6 +453,12 @@
               </item>
               <item>
                <widget class="QLabel" name="label_3">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Style:</string>
                 </property>
@@ -457,6 +469,12 @@
               </item>
               <item>
                <widget class="QRadioButton" name="singleNodesRadioButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Single</string>
                 </property>
@@ -467,6 +485,12 @@
               </item>
               <item>
                <widget class="QRadioButton" name="doubleNodesRadioButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Double</string>
                 </property>
@@ -538,7 +562,7 @@
         <item>
          <widget class="QWidget" name="graphDisplayWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <property name="leftMargin">
@@ -730,7 +754,7 @@
         <item>
          <widget class="QWidget" name="nodeLabelsWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <property name="leftMargin">
@@ -897,7 +921,7 @@
         <item>
          <widget class="QWidget" name="blastSearchWidget" native="true">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
            <property name="leftMargin">

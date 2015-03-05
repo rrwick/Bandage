@@ -31,6 +31,7 @@ enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS};
 enum ContiguityStatus {STARTING, CONTIGUOUS, CONTIGUOUS_UNTIL_BRANCHING, MAYBE_CONTIGUOUS, NOT_CONTIGUOUS};
 enum NodeDragging {ONE_PIECE, NEARBY_PIECES, ALL_PIECES};
 enum ZoomSource {MOUSE_WHEEL, SPIN_BOX, KEYBOARD};
+enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN};
 
 extern Settings * g_settings;
 extern MyGraphicsView * g_graphicsView;

@@ -30,6 +30,7 @@
 #include "mygraphicsview.h"
 #include "mygraphicsscene.h"
 #include "../graph/assemblygraph.h"
+#include "../program/globals.h"
 
 namespace Ui {
 class MainWindow;
@@ -74,6 +75,7 @@ private:
     bool buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
+    void enableDisableUiElements(UiState uiState);
 
 private slots:
     void loadLastGraph();

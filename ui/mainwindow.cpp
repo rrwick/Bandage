@@ -77,9 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
 
-    //Disable these until a graph is loaded or drawn
-    ui->graphDrawingWidget->setEnabled(false);
-    ui->selectionSearchGroupBox->setEnabled(false);
+    enableDisableUiElements(NO_GRAPH_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
@@ -96,7 +94,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Fix the scroll areas' sizes.  The numbers added on were what I needed to prevent the horizontal
     //scroll bar from showing.  I'm not sure why they are necessary.
-    ui->controlsScrollAreaWidgetContents->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width());
+    ui->controlsScrollAreaWidgetContents->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 50);
+    ui->controlsScrollArea->setFixedWidth(ui->controlsScrollAreaWidgetContents->sizeHint().width() + 60);
     ui->selectionScrollArea->setFixedWidth(fixedRightPanelWidth + 25);
 
     setInfoTexts();
@@ -226,14 +225,8 @@ void MainWindow::loadGraphFile(QString graphFileType)
                 cleanUp();
             }
         }
-        //Enable UI elements that are now applicable that a graph is loaded
-        ui->graphDrawingWidget->setEnabled(true);
-        ui->blastSearchWidget->setEnabled(true);
 
-        //Disable UI elements that aren't applicable until the graph is drawn
-        ui->graphDisplayWidget->setEnabled(false);
-        ui->nodeLabelsWidget->setEnabled(false);
-
+        enableDisableUiElements(GRAPH_LOADED);
         setWindowTitle("Bandage - " + fullFileName);
 
         g_assemblyGraph->determineGraphInfo();
@@ -521,7 +514,6 @@ bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
 
 void MainWindow::displayGraphDetails()
 {
-    ui->graphDetailsWidget->setEnabled(true);
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_deBruijnGraphNodes.size() / 2));
     ui->edgeCountLabel->setText(formatIntForDisplay(int(g_assemblyGraph->m_deBruijnGraphEdges.size()) / 2));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
@@ -737,11 +729,7 @@ void MainWindow::graphLayoutFinished()
     zoomToFitScene();
     selectionChanged();
 
-    ui->graphDisplayWidget->setEnabled(true);
-    ui->nodeLabelsWidget->setEnabled(true);
-    ui->actionSave_image_current_view->setEnabled(true);
-    ui->actionSave_image_entire_scene->setEnabled(true);
-    ui->selectionSearchGroupBox->setEnabled(true);
+    enableDisableUiElements(GRAPH_DRAWN);
 
     //Move the focus to the view so the user can use keyboard controls to navigate.
     g_graphicsView->setFocus();
@@ -1476,4 +1464,34 @@ void MainWindow::saveAllNodesToFasta(QString path)
 void MainWindow::setInfoTexts()
 {
     ui->graphScopeInfoText->setInfoText("sdsdfsdf");
+}
+
+
+
+void MainWindow::enableDisableUiElements(UiState uiState)
+{
+    switch (uiState)
+    {
+    case NO_GRAPH_LOADED:
+        ui->graphDetailsWidget->setEnabled(false);
+        ui->graphDrawingWidget->setEnabled(false);
+        ui->graphDisplayWidget->setEnabled(false);
+        ui->nodeLabelsWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(false);
+        break;
+    case GRAPH_LOADED:
+        ui->graphDetailsWidget->setEnabled(true);
+        ui->graphDrawingWidget->setEnabled(true);
+        ui->graphDisplayWidget->setEnabled(false);
+        ui->nodeLabelsWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(false);
+        break;
+    case GRAPH_DRAWN:
+        ui->graphDetailsWidget->setEnabled(true);
+        ui->graphDrawingWidget->setEnabled(true);
+        ui->graphDisplayWidget->setEnabled(true);
+        ui->nodeLabelsWidget->setEnabled(true);
+        ui->blastSearchWidget->setEnabled(true);
+        break;
+    }
 }
