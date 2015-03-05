@@ -1401,7 +1401,7 @@ void MainWindow::openBlastSearchDialog()
 {
     BlastSearchDialog blastSearchDialog(this);
 
-    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString)), this, SLOT(saveAllNodesToFasta(QString)));
+    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool)), this, SLOT(saveAllNodesToFasta(QString, bool)));
     connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
 
     blastSearchDialog.exec();
@@ -1442,7 +1442,7 @@ void MainWindow::blastTargetChanged()
 
 
 
-void MainWindow::saveAllNodesToFasta(QString path)
+void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
 {
     QFile file(path + "all_nodes.fasta");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -1452,8 +1452,11 @@ void MainWindow::saveAllNodesToFasta(QString path)
     while (i.hasNext())
     {
         i.next();
-        out << i.value()->getFasta();
-        out << "\n";
+        if (includeEmptyNodes || i.value()->m_length > 0)
+        {
+            out << i.value()->getFasta();
+            out << "\n";
+        }
     }
 
     emit saveAllNodesToFastaFinished();

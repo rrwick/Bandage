@@ -267,7 +267,7 @@ void BlastSearchDialog::buildBlastDatabase1()
         return;
     }
 
-    emit createAllNodesFasta(g_tempDirectory);
+    emit createAllNodesFasta(g_tempDirectory, false);
 }
 
 

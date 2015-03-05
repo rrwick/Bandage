@@ -102,7 +102,7 @@ private slots:
     void graphLayoutFinished();
     void openBlastSearchDialog();
     void blastTargetChanged();
-    void saveAllNodesToFasta(QString path);
+    void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
     void showHidePanels();
 
 signals:
