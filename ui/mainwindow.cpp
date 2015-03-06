@@ -252,7 +252,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
 void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
-    MyProgressDialog progress(this, "Reading LastGraph file", false);
+    MyProgressDialog progress(this, "Loading LastGraph file...", false);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
@@ -303,7 +303,7 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 //Returns true if it succeeded, false if it failed.
 bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
-    MyProgressDialog progress(this, "Reading FASTG file", false);
+    MyProgressDialog progress(this, "Loading FASTG file...", false);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
@@ -805,7 +805,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
-    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", false);
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
@@ -813,7 +813,6 @@ void MainWindow::layoutGraph()
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(g_assemblyGraph->m_graphAttributes, g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
-    connect(progress, SIGNAL(rejected()), this, SLOT(graphLayoutCancelled()));
     connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
@@ -823,16 +822,6 @@ void MainWindow::layoutGraph()
     m_layoutThread->start();
 }
 
-void MainWindow::graphLayoutCancelled()
-{
-    if (m_layoutThread != 0)
-    {
-        m_layoutThread->terminate();
-        m_layoutThread->wait();
-    }
-    enableDisableUiElements(GRAPH_LOADED);
-
-}
 
 
 

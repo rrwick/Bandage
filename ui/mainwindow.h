@@ -106,7 +106,6 @@ private slots:
     void blastTargetChanged();
     void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
     void showHidePanels();
-    void graphLayoutCancelled();
 
 signals:
     void saveAllNodesToFastaFinished();
