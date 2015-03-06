@@ -56,10 +56,11 @@
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
+#include "myprogressdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), m_layoutThread(0)
 {
     ui->setupUi(this);
 
@@ -251,7 +252,7 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
 void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
-    QProgressDialog progress("Reading LastGraph file", QString(), 0, 0, this);
+    MyProgressDialog progress(this, "Reading LastGraph file", false);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
@@ -302,7 +303,7 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 //Returns true if it succeeded, false if it failed.
 bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
-    QProgressDialog progress("Reading FASTG file", QString(), 0, 0, this);
+    MyProgressDialog progress(this, "Reading FASTG file", false);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
@@ -733,6 +734,7 @@ void MainWindow::drawGraph()
 
 void MainWindow::graphLayoutFinished()
 {
+    m_layoutThread = 0;
     addGraphicsItemsToScene();
     setSceneRectangle();
     zoomToFitScene();
@@ -803,21 +805,33 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
-    QProgressDialog * progress = new QProgressDialog("Laying out graph", QString(), 0, 0, this);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true);
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    QThread * thread = new QThread;
+    m_layoutThread = new QThread;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(g_assemblyGraph->m_graphAttributes, g_settings->graphLayoutQuality, g_settings->segmentLength);
-    graphLayoutWorker->moveToThread(thread);
+    graphLayoutWorker->moveToThread(m_layoutThread);
 
-    connect(thread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
-    connect(graphLayoutWorker, SIGNAL(finishedLayout()), thread, SLOT(quit()));
+    connect(progress, SIGNAL(rejected()), this, SLOT(graphLayoutCancelled()));
+    connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
+    connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), this, SLOT(graphLayoutFinished()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), progress, SLOT(deleteLater()));
-    thread->start();
+    connect(m_layoutThread, SIGNAL(finished()), m_layoutThread, SLOT(deleteLater()));
+    connect(m_layoutThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+    m_layoutThread->start();
+}
+
+void MainWindow::graphLayoutCancelled()
+{
+    if (m_layoutThread != 0)
+    {
+        m_layoutThread->terminate();
+        m_layoutThread->wait();
+    }
+    enableDisableUiElements(GRAPH_LOADED);
+
 }
 
 

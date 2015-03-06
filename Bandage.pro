@@ -49,7 +49,8 @@ SOURCES += \
     ui/blastsearchdialog.cpp \
     ui/infotextwidget.cpp \
     graph/assemblygraph.cpp \
-    ui/verticalscrollarea.cpp
+    ui/verticalscrollarea.cpp \
+    ui/myprogressdialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -75,14 +76,16 @@ HEADERS  += \
     ui/blastsearchdialog.h \
     ui/infotextwidget.h \
     graph/assemblygraph.h \
-    ui/verticalscrollarea.h
+    ui/verticalscrollarea.h \
+    ui/myprogressdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
     ui/settingsdialog.ui \
     ui/aboutdialog.ui \
     ui/enteroneblastquerydialog.ui \
-    ui/blastsearchdialog.ui
+    ui/blastsearchdialog.ui \
+    ui/myprogressdialog.ui
 
 
 # These includes are configured assuming that the OGDF
