@@ -29,8 +29,10 @@ class GraphLayoutWorker : public QObject
     Q_OBJECT
 
 public:
-    GraphLayoutWorker(ogdf::GraphAttributes * graphAttributes, int graphLayoutQuality, int segmentLength);
+    GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
+                      int graphLayoutQuality, int segmentLength);
 
+    ogdf::FMMMLayout * m_fmmm;
     ogdf::GraphAttributes * m_graphAttributes;
     int m_graphLayoutQuality;
     int m_segmentLength;

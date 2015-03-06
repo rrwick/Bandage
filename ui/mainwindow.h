@@ -28,6 +28,7 @@
 #include <QRectF>
 #include "../program/globals.h"
 #include <QThread>
+#include <ogdf/energybased/FMMMLayout.h>
 
 class GraphicsViewZoom;
 class MyGraphicsScene;
@@ -52,6 +53,7 @@ private:
     GraphicsViewZoom * m_graphicsViewZoom;
     double m_previousZoomSpinBoxValue;
     QThread * m_layoutThread;
+    ogdf::FMMMLayout * m_fmmm;
 
     void cleanUp();
     void displayGraphDetails();
@@ -106,6 +108,7 @@ private slots:
     void blastTargetChanged();
     void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
     void showHidePanels();
+    void graphLayoutCancelled();
 
 signals:
     void saveAllNodesToFastaFinished();

@@ -17,6 +17,12 @@ public:
 
 private:
     Ui::MyProgressDialog *ui;
+
+private slots:
+    void cancelLayout();
+
+signals:
+    void haltLayout();
 };
 
 #endif // MYPROGRESSDIALOG_H

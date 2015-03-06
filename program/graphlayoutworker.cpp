@@ -18,46 +18,47 @@
 
 #include "graphlayoutworker.h"
 
-GraphLayoutWorker::GraphLayoutWorker(ogdf::GraphAttributes * graphAttributes, int graphLayoutQuality, int segmentLength) :
-    m_graphAttributes(graphAttributes), m_graphLayoutQuality(graphLayoutQuality), m_segmentLength(segmentLength)
+GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
+                                     int graphLayoutQuality, int segmentLength) :
+    m_fmmm(fmmm), m_graphAttributes(graphAttributes),
+    m_graphLayoutQuality(graphLayoutQuality), m_segmentLength(segmentLength)
 {
 }
 
 
 void GraphLayoutWorker::layoutGraph()
 {
-    ogdf::FMMMLayout fmmm;
-
-    fmmm.useHighLevelOptions(false);
-    fmmm.initialPlacementForces(ogdf::FMMMLayout::ipfRandomTime);
-    fmmm.unitEdgeLength(m_segmentLength);
-    fmmm.newInitialPlacement(true);
+    m_fmmm->useHighLevelOptions(false);
+    m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomTime);
+    m_fmmm->unitEdgeLength(m_segmentLength);
+    m_fmmm->newInitialPlacement(true);
+    m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
 
     switch (m_graphLayoutQuality)
     {
     case 0:
-        fmmm.fixedIterations(15);
-        fmmm.fineTuningIterations(10);
-        fmmm.nmPrecision(2);
+        m_fmmm->fixedIterations(15);
+        m_fmmm->fineTuningIterations(10);
+        m_fmmm->nmPrecision(2);
         break;
     case 1:
-        fmmm.fixedIterations(30);
-        fmmm.fineTuningIterations(20);
-        fmmm.nmPrecision(4);
+        m_fmmm->fixedIterations(30);
+        m_fmmm->fineTuningIterations(20);
+        m_fmmm->nmPrecision(4);
         break;
     case 2:
-        fmmm.fixedIterations(60);
-        fmmm.fineTuningIterations(40);
-        fmmm.nmPrecision(6);
+        m_fmmm->fixedIterations(60);
+        m_fmmm->fineTuningIterations(40);
+        m_fmmm->nmPrecision(6);
         break;
     case 3:
-        fmmm.fixedIterations(120);
-        fmmm.fineTuningIterations(80);
-        fmmm.nmPrecision(8);
+        m_fmmm->fixedIterations(120);
+        m_fmmm->fineTuningIterations(80);
+        m_fmmm->nmPrecision(8);
         break;
     }
 
-    fmmm.call(*m_graphAttributes);
+    m_fmmm->call(*m_graphAttributes);
 
     emit finishedLayout();
 }

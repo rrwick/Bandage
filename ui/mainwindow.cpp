@@ -57,6 +57,7 @@
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
 #include "myprogressdialog.h"
+#include <limits>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -734,6 +735,7 @@ void MainWindow::drawGraph()
 
 void MainWindow::graphLayoutFinished()
 {
+    delete m_fmmm;
     m_layoutThread = 0;
     addGraphicsItemsToScene();
     setSceneRectangle();
@@ -744,6 +746,14 @@ void MainWindow::graphLayoutFinished()
 
     //Move the focus to the view so the user can use keyboard controls to navigate.
     g_graphicsView->setFocus();
+}
+
+
+void MainWindow::graphLayoutCancelled()
+{
+    m_fmmm->fixedIterations(0);
+    m_fmmm->fineTuningIterations(0);
+    m_fmmm->threshold(std::numeric_limits<double>::max());
 }
 
 
@@ -805,14 +815,18 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
-    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", false);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true);
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
+    m_fmmm = new ogdf::FMMMLayout();
+
     m_layoutThread = new QThread;
-    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(g_assemblyGraph->m_graphAttributes, g_settings->graphLayoutQuality, g_settings->segmentLength);
+    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
+                                                                  g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
+    connect(progress, SIGNAL(haltLayout()), this, SLOT(graphLayoutCancelled()));
     connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
