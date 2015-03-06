@@ -802,13 +802,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 
 void MainWindow::layoutGraph()
 {
-    //There is an unresolved issue with doing the graph layout in a thread on Mac OS X.
-    //Therefore, if the OS is not Mac, a thread will be used to keep the UI responsive
-    //during layout.  But if the OS is Mac, then the layout will be done in this function
-    //in the main thread.
-
-#ifndef Q_OS_MAC
-
+    //The actual layout is done in a different thread so the UI will stay responsive.
     QProgressDialog * progress = new QProgressDialog("Laying out graph", QString(), 0, 0, this);
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
@@ -824,53 +818,6 @@ void MainWindow::layoutGraph()
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), progress, SLOT(deleteLater()));
     thread->start();
-
-#else
-
-    QProgressDialog progress("Laying out graph", QString(), 0, 0, this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.show();
-
-    ogdf::FMMMLayout fmmm;
-
-    fmmm.useHighLevelOptions(false);
-    fmmm.initialPlacementForces(ogdf::FMMMLayout::ipfRandomTime);
-    fmmm.unitEdgeLength(g_settings->segmentLength);
-    fmmm.newInitialPlacement(true);
-
-    switch (g_settings->graphLayoutQuality)
-    {
-    case 0:
-        fmmm.fixedIterations(15);
-        fmmm.fineTuningIterations(10);
-        fmmm.nmPrecision(2);
-        break;
-    case 1:
-        fmmm.fixedIterations(30);
-        fmmm.fineTuningIterations(20);
-        fmmm.nmPrecision(4);
-        break;
-    case 2:
-        fmmm.fixedIterations(60);
-        fmmm.fineTuningIterations(40);
-        fmmm.nmPrecision(6);
-        break;
-    case 3:
-        fmmm.fixedIterations(120);
-        fmmm.fineTuningIterations(80);
-        fmmm.nmPrecision(8);
-        break;
-    case 4:
-        fmmm.fixedIterations(240);
-        fmmm.fineTuningIterations(600);
-        fmmm.nmPrecision(20);
-        break;
-    }
-
-    fmmm.call(*(g_assemblyGraph->m_graphAttributes));
-    graphLayoutFinished();
-
-#endif
 }
 
 
