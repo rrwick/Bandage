@@ -209,54 +209,56 @@ void SettingsDialog::setInfoTexts()
 {
     ui->basePairsPerSegmentInfoText->setInfoText("This controls the length of the drawn nodes. The number of line segments "
                                                  "that make up a drawn node is determined by dividing the sequence length by "
-                                                 "this value (rounded up to the nearest integer). Any node with a sequence "
-                                                 "length of less than or equal to this value will be drawn a single line "
-                                                 "segment.<br><br>"
+                                                 "this value and rounding up. Any node with a sequence length of less than or "
+                                                 "equal to this value will be drawn with a single line segment.<br><br>"
                                                  "Guidelines for this setting:<ul>"
                                                  "<li>Large values will result in shorter nodes. Very large values will result "
-                                                 "in all nodes being a similiar size (one line segment).</li>"
+                                                 "in all nodes being a similiar size (one line segment).  This can make the graph "
+                                                 "layout faster for large assembly graphs.</li>"
                                                  "<li>Small values will result in longer nodes and a stronger correlation between "
-                                                 "sequence length and node length.</li></ul>");
+                                                 "sequence length and node length.  Longer nodes take longer to lay out, so this "
+                                                 "can slow the graph layout process.</li></ul>");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
-                                                "positioning the graph components. Low settings are faster and therefore "
+                                                "positioning the graph components. Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
                                                 "more pleasing layouts.");
     ui->minimumContigWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
     ui->coverageContigWidthInfoText->setInfoText("This setting controls the additional width added to nodes based on their "
-                                                 "coverage.  If set to zero, all nodes will have the same width.");
+                                                 "coverage. If set to zero, all nodes will have the same width.");
     ui->maximumContigWidthInfoText->setInfoText("This setting limits the node width so very high coverge nodes do not appear "
-                                                "excessively wide");
+                                                "excessively wide.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
     ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
-                                                  "(when enabled).  Large values can make the text easier to read, but may "
+                                                  "when the 'Text outline' option is ticked.<br><br>"
+                                                  "Large values can make the text easier to read, but may "
                                                   "obscure more of the graph.");
-    ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing.  Disable antialiasing "
-                                          "if you are having performance difficulties when viewing large graphs.");
+    ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing "
+                                          "if you are experiencing slow performance when viewing large graphs.");
     ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the "
                                                        "'Uniform colour' option.");
     ui->uniformNegativeNodeColourInfoText->setInfoText("This is the colour of all negative nodes when Bandage is set to the "
-                                                       "'Uniform colour' option.  Negative nodes are only displayed when the "
-                                                       "graph is drawn in double mode.");
-    ui->uniformNodeSpecialColourInfoText->setInfoText("When Bandage is set to the 'Uniform colour' option, this colour will "
-                                                      "be used for limited graph scopes:<ul>"
-                                                      "<li>When the graph scope is set to 'Around node(s)', this colour will be "
+                                                       "'Uniform colour' option. Negative nodes are only displayed when the "
+                                                       "graph is drawn in 'Double' mode.");
+    ui->uniformNodeSpecialColourInfoText->setInfoText("When Bandage is set to the 'Uniform colour' option, this colour is "
+                                                      "used for limited graph scopes:<ul>"
+                                                      "<li>When the graph scope is set to 'Around node(s)', this colour is "
                                                       "used for the user-specified nodes.</li>"
-                                                      "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour will "
-                                                      "be used for nodes that contain at least one BLAST hit.</li></ul>");
+                                                      "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour is "
+                                                      "used for nodes that contain at least one BLAST hit.</li></ul>");
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
-    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, this colour is used for "
+    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
                                                "nodes with a coverage at or below the low coverage value.<br><br>"
                                                "Nodes with a coverage between the low and high coverage values will get an "
                                                "intermediate colour.");
-    ui->highCoverageColourInfoText->setInfoText("When Bandage is set to the 'Coverage' colouring option, this colour is used for "
+    ui->highCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
                                                 "nodes with a coverage above the high coverage value.<br><br>"
                                                 "Nodes with a coverage between the low and high coverage values will get an "
                                                 "intermediate colour.");
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
-                                            "coverage value is set to the third quartile.  When set to 'Manual', you can specify "
-                                            "the values to be used for the coverage colouring.");
+                                            "coverage value is set to the third quartile.<br><br>"
+                                            "When set to 'Manual', you can specify the values used for coverage colouring.");
 }
 
 
