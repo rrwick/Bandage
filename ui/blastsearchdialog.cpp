@@ -268,6 +268,11 @@ void BlastSearchDialog::buildBlastDatabase1()
         return;
     }
 
+    ui->buildBlastDatabaseButton->setEnabled(false);
+    ui->buildBlastDatabaseInfoText->setEnabled(false);
+
+    QApplication::processEvents();
+
     emit createAllNodesFasta(g_tempDirectory, false);
 }
 
@@ -469,10 +474,22 @@ void BlastSearchDialog::setUiStep(int step)
 
 void BlastSearchDialog::setInfoTexts()
 {
-    ui->buildBlastDatabaseInfoText->setInfoText("");
-    ui->loadQueriesFromFastaInfoText->setInfoText("");
-    ui->enterQueryManuallyInfoText->setInfoText("");
-    ui->parametersInfoText->setInfoText("");
-    ui->startBlastSearchInfoText->setInfoText("");
-    ui->clearQueriesInfoText->setInfoText("");
+    ui->buildBlastDatabaseInfoText->setInfoText("This step runs makeblastdb on the contig sequences, "
+                                                "preparing them for a BLAST search.<br><br>"
+                                                "The database files generated are temporary and will "
+                                                "be deleted when Bandage is closed.");
+    ui->loadQueriesFromFastaInfoText->setInfoText("Click this button to load a FASTA file.  Each "
+                                                  "sequence in the FASTA file will be a separate "
+                                                  "query.");
+    ui->enterQueryManuallyInfoText->setInfoText("Click this button to type or paste a single query sequence.");
+    ui->parametersInfoText->setInfoText("You may add additional blastn parameters here, exactly as they "
+                                        "would be typed at the command line.");
+    ui->startBlastSearchInfoText->setInfoText("Click this to conduct a blastn search for the above "
+                                              "queries on the graph nodes.<br><br>"
+                                              "If no parameters were added above, this will run:<br>"
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 > blast_results<br><br>"
+                                              "If, for example, '-evalue 0.01' was entered in the above "
+                                              "parameters field, then this will run:<br>"
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01 > blast_results");
+    ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }

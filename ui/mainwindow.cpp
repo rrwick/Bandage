@@ -1430,6 +1430,7 @@ void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
             out << "\n";
         }
     }
+    file.close();
 
     emit saveAllNodesToFastaFinished();
 }
@@ -1544,7 +1545,7 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->graphDrawingWidget->setEnabled(true);
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
-        ui->blastSearchWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
         break;
     case GRAPH_DRAWN:
