@@ -196,7 +196,7 @@ int BlastSearchDialog::getNodeNumberFromString(QString nodeString)
 
 void BlastSearchDialog::fillQueriesTable()
 {
-    size_t queryCount = g_blastSearch->m_blastQueries.m_queries.size();
+    int queryCount = int(g_blastSearch->m_blastQueries.m_queries.size());
     if (queryCount == 0)
         return;
 
@@ -204,7 +204,7 @@ void BlastSearchDialog::fillQueriesTable()
     model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
     model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
-    for (size_t i = 0; i < queryCount; ++i)
+    for (int i = 0; i < queryCount; ++i)
     {
         BlastQuery * query = &(g_blastSearch->m_blastQueries.m_queries[i]);
         model->setItem(i, 0, new QStandardItem(query->m_name));
@@ -225,7 +225,9 @@ void BlastSearchDialog::fillQueriesTable()
 
 void BlastSearchDialog::fillHitsTable()
 {
-    QStandardItemModel * model = new QStandardItemModel(g_blastSearch->m_hits.size(), 8, this); //8 Columns
+    int hitCount = int(g_blastSearch->m_hits.size());
+
+    QStandardItemModel * model = new QStandardItemModel(hitCount, 8, this); //8 Columns
     model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
     model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
     model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
@@ -235,7 +237,7 @@ void BlastSearchDialog::fillHitsTable()
     model->setHorizontalHeaderItem(6, new QStandardItem("Query end"));
     model->setHorizontalHeaderItem(7, new QStandardItem("E-value"));
 
-    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
+    for (int i = 0; i < hitCount; ++i)
     {
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
         model->setItem(i, 0, new QStandardItem(formatIntForDisplay(hit->m_node->m_number)));
@@ -264,7 +266,7 @@ void BlastSearchDialog::buildBlastDatabase1()
 
     int makeblastdbFound;
 #ifdef Q_OS_WIN32
-    makeblastdbFound = system("WHERE makeblastdb")
+    makeblastdbFound = system("WHERE makeblastdb");
 #else
     makeblastdbFound = system("which makeblastdb");
 #endif
@@ -347,7 +349,7 @@ void BlastSearchDialog::runBlastSearch()
 {
     int blastnFound;
 #ifdef Q_OS_WIN32
-    blastnFound = system("WHERE blastn")
+    blastnFound = system("WHERE blastn");
 #else
     blastnFound = system("which blastn");
 #endif
