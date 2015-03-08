@@ -262,7 +262,14 @@ void BlastSearchDialog::buildBlastDatabase1()
         return;
     }
 
-    if (system("which makeblastdb") != 0)
+    int makeblastdbFound;
+#ifdef Q_OS_WIN32
+    makeblastdbFound = system("WHERE makeblastdb")
+#else
+    makeblastdbFound = system("which makeblastdb");
+#endif
+
+    if (makeblastdbFound != 0)
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
         return;
@@ -338,11 +345,25 @@ void BlastSearchDialog::clearQueries()
 
 void BlastSearchDialog::runBlastSearch()
 {
-    if (system("which blastn") != 0)
+    int blastnFound;
+#ifdef Q_OS_WIN32
+    blastnFound = system("WHERE blastn")
+#else
+    blastnFound = system("which blastn");
+#endif
+
+    if (blastnFound != 0)
     {
         QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
         return;
     }
+
+    ui->startBlastSearchButton->setEnabled(false);
+    ui->parametersInfoText->setEnabled(false);
+    ui->parametersLineEdit->setEnabled(false);
+    ui->parametersLabel->setEnabled(false);
+
+    QApplication::processEvents();
 
     QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
     QString blastCommand = "blastn -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + g_tempDirectory + "blast_results";
