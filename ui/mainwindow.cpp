@@ -1510,7 +1510,7 @@ void MainWindow::setInfoTexts()
     ui->blastQueryInfoText->setInfoText("After a BLAST search is completed, you can select a query here for use "
                                         "with the 'Around BLAST hits' graph scope and the 'Colour using BLAST "
                                         "hits' colour mode.");
-    ui->selectionSearchInfoText->setInfoText("Type a comma-delimited list one or mode node numbers and then click "
+    ui->selectionSearchInfoText->setInfoText("Type a comma-delimited list of one or mode node numbers and then click "
                                              "the 'Find node(s)' button to search for nodes in the graph. "
                                              "If the search is successful, the view will zoom to the found nodes "
                                              "and they will be selected.");
