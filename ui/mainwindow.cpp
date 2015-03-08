@@ -1469,8 +1469,8 @@ void MainWindow::setInfoTexts()
                                        "clicked you will give different layouts of the same graph.");
     ui->zoomInfoText->setInfoText("This value controls how large the graph appears in Bandage. The zoom level "
                                   "can also be changed by:<ul>"
-                                  "<li>holding the " + control + " key and using the mouse wheel over the graph.</li>"
-                                  "<li>clicking on the graph display and then using the '+' and '-' keys</li></ul>");
+                                  "<li>Holding the " + control + " key and using the mouse wheel over the graph.</li>"
+                                  "<li>Clicking on the graph display and then using the '+' and '-' keys.</li></ul>");
     ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
                                         "<li>'Uniform colour': For graphs drawn with the 'Entire graph' scope, all "
                                         "nodes will be the same colour. For graphs drawn with the 'Around nodes' "
@@ -1498,7 +1498,7 @@ void MainWindow::setInfoTexts()
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.");
     ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels.<br><br>"
-                                      "Ticking 'Text outline' will surround the text with a white outline."
+                                      "Ticking 'Text outline' will surround the text with a white outline. "
                                       "This can help to make text more readable, but will obscure more of the "
                                       "underlying graph. The thickness of the text outline is configurable in "
                                       "Bandage's settings.");

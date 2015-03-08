@@ -213,11 +213,11 @@ void SettingsDialog::setInfoTexts()
                                                  "equal to this value will be drawn with a single line segment.<br><br>"
                                                  "Guidelines for this setting:<ul>"
                                                  "<li>Large values will result in shorter nodes. Very large values will result "
-                                                 "in all nodes being a similiar size (one line segment).  This can make the graph "
+                                                 "in all nodes being a similar size (one line segment).  This can make the graph "
                                                  "layout faster for large assembly graphs.</li>"
                                                  "<li>Small values will result in longer nodes and a stronger correlation between "
-                                                 "sequence length and node length.  Longer nodes take longer to lay out, so this "
-                                                 "can slow the graph layout process.</li></ul>");
+                                                 "sequence length and node length.  Longer nodes can slow the graph layout "
+                                                 "process.</li></ul>");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
                                                 "positioning the graph components. Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
@@ -225,7 +225,7 @@ void SettingsDialog::setInfoTexts()
     ui->minimumContigWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
     ui->coverageContigWidthInfoText->setInfoText("This setting controls the additional width added to nodes based on their "
                                                  "coverage. If set to zero, all nodes will have the same width.");
-    ui->maximumContigWidthInfoText->setInfoText("This setting limits the node width so very high coverge nodes do not appear "
+    ui->maximumContigWidthInfoText->setInfoText("This setting limits the node width so very high coverage nodes do not appear "
                                                 "excessively wide.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
@@ -249,12 +249,12 @@ void SettingsDialog::setInfoTexts()
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
     ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
-                                               "nodes with a coverage at or below the low coverage value.<br><br>"
-                                               "Nodes with a coverage between the low and high coverage values will get an "
+                                               "nodes with coverage at or below the low coverage value.<br><br>"
+                                               "Nodes with coverage between the low and high coverage values will get an "
                                                "intermediate colour.");
     ui->highCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
-                                                "nodes with a coverage above the high coverage value.<br><br>"
-                                                "Nodes with a coverage between the low and high coverage values will get an "
+                                                "nodes with coverage above the high coverage value.<br><br>"
+                                                "Nodes with coverage between the low and high coverage values will get an "
                                                 "intermediate colour.");
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
