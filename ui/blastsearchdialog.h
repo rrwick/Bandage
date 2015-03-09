@@ -39,6 +39,8 @@ public:
 private:
     Ui::BlastSearchDialog *ui;
     QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
+    QString m_makeblastdbCommand;
+    QString m_blastnCommand;
 
     int getNodeNumberFromString(QString nodeString);
     void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
@@ -53,7 +55,7 @@ private slots:
     void enterQueryManually();
     void clearQueries();
     void runBlastSearch();
-    void loadBlastHits();
+    void loadBlastHits(QString blastHits);
     void fillQueriesTable();
     void fillHitsTable();
 

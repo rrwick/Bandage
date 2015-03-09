@@ -33,10 +33,11 @@
 #include "enteroneblastquerydialog.h"
 #include "../graph/assemblygraph.h"
 #include "../blast/blastsearch.h"
+#include <QProcessEnvironment>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BlastSearchDialog)
+    ui(new Ui::BlastSearchDialog), m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn")
 {
     ui->setupUi(this);
 
@@ -134,51 +135,48 @@ void BlastSearchDialog::clearBlastHits()
     ui->blastHitsTableView->setModel(0);
 }
 
-void BlastSearchDialog::loadBlastHits()
+void BlastSearchDialog::loadBlastHits(QString blastHits)
 {
-    QFile inputFile(g_tempDirectory + "blast_results");
-    if (inputFile.open(QIODevice::ReadOnly))
+    QStringList blastHitList = blastHits.split("\n", QString::SkipEmptyParts);
+
+    if (blastHitList.size() == 0)
     {
-        if (inputFile.size() == 0)
-        {
-            QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
+        QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
+        return;
+    }
+
+    for (int i = 0; i < blastHitList.size(); ++i)
+    {
+        QString hit = blastHitList[i];
+        QStringList alignmentParts = hit.split('\t');
+
+        QString queryName = alignmentParts[0];
+        QString nodeLabel = alignmentParts[1];
+        int queryStart = alignmentParts[6].toInt();
+        int queryEnd = alignmentParts[7].toInt();
+        int nodeStart = alignmentParts[8].toInt();
+        int nodeEnd = alignmentParts[9].toInt();
+        QString eValue = alignmentParts[10];
+
+        //Only save BLAST hits that are on forward strands.
+        if (nodeStart > nodeEnd)
+            continue;
+
+        int nodeNumber = getNodeNumberFromString(nodeLabel);
+        DeBruijnNode * node;
+        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
+            node = g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber];
+        else
             return;
-        }
 
-        QTextStream in(&inputFile);
-        while (!in.atEnd())
-        {
-            QString line = in.readLine();
-            QStringList alignmentParts = line.split('\t');
+        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
+        if (query == 0)
+            return;
 
-            QString queryName = alignmentParts[0];
-            QString nodeLabel = alignmentParts[1];
-            int queryStart = alignmentParts[6].toInt();
-            int queryEnd = alignmentParts[7].toInt();
-            int nodeStart = alignmentParts[8].toInt();
-            int nodeEnd = alignmentParts[9].toInt();
-            QString eValue = alignmentParts[10];
+        g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
+                                                        query, queryStart, queryEnd, eValue));
 
-            //Only save BLAST hits that are on forward strands.
-            if (nodeStart > nodeEnd)
-                continue;
-
-            int nodeNumber = getNodeNumberFromString(nodeLabel);
-            DeBruijnNode * node;
-            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
-                node = g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber];
-            else
-                return;
-
-            BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
-            if (query == 0)
-                return;
-
-            g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
-                                                            query, queryStart, queryEnd, eValue));
-
-            ++(query->m_hits);
-        }
+        ++(query->m_hits);
     }
 
     fillQueriesTable();
@@ -258,20 +256,31 @@ void BlastSearchDialog::fillHitsTable()
 
 void BlastSearchDialog::buildBlastDatabase1()
 {
-    if (!system(NULL))
-    {
-        QMessageBox::warning(this, "Error", "Bandage was unable to access the shell.");
-        return;
-    }
-
-    int makeblastdbFound;
+    QString findMakeblastdbCommand = "which makeblastdb";
 #ifdef Q_OS_WIN32
-    makeblastdbFound = system("WHERE makeblastdb");
-#else
-    makeblastdbFound = system("which makeblastdb");
+    findMakeblastdbCommand = "WHERE makeblastdb";
 #endif
 
-    if (makeblastdbFound != 0)
+    QProcess findMakeblastdb;
+
+    //On Mac, it's necessary to do some stuff with the PATH variable in order
+    //for which to work.
+#ifdef Q_OS_MAC
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QStringList envlist = env.toStringList();
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH=/opt/local/bin:/usr/local/bin:$HOME/bin:\\1");
+    findMakeblastdb.setEnvironment(envlist);
+#endif
+
+    findMakeblastdb.start(findMakeblastdbCommand);
+    findMakeblastdb.waitForFinished();
+
+    //On Mac, the command for makeblastdb needs to be the absolute path.
+#ifdef Q_OS_MAC
+    m_makeblastdbCommand = QString(findMakeblastdb.readAll()).simplified();
+#endif
+
+    if (findMakeblastdb.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
         return;
@@ -288,8 +297,11 @@ void BlastSearchDialog::buildBlastDatabase1()
 
 void BlastSearchDialog::buildBlastDatabase2()
 {
-    QString makeBlastDbCommand = "makeblastdb -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
-    if (system(makeBlastDbCommand.toLocal8Bit().constData()) != 0)
+    QProcess makeblastdb;
+    makeblastdb.start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
+    makeblastdb.waitForFinished();
+
+    if (makeblastdb.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "There was a problem building the BLAST database.");
         return;
@@ -346,15 +358,32 @@ void BlastSearchDialog::clearQueries()
 
 
 void BlastSearchDialog::runBlastSearch()
-{
-    int blastnFound;
+{    
+    QString findBlastnCommand = "which blastn";
 #ifdef Q_OS_WIN32
-    blastnFound = system("WHERE blastn");
-#else
-    blastnFound = system("which blastn");
+    findBlastnCommand = "WHERE blastn";
 #endif
 
-    if (blastnFound != 0)
+    QProcess findBlastn;
+
+    //On Mac, it's necessary to do some stuff with the PATH variable in order
+    //for which to work.
+#ifdef Q_OS_MAC
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QStringList envlist = env.toStringList();
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH=/opt/local/bin:/usr/local/bin:$HOME/bin:\\1");
+    findBlastn.setEnvironment(envlist);
+#endif
+
+    findBlastn.start(findBlastnCommand);
+    findBlastn.waitForFinished();
+
+    //On Mac, the command for makeblastdb needs to be the absolute path.
+#ifdef Q_OS_MAC
+    m_blastnCommand = QString(findBlastn.readAll()).simplified();
+#endif
+
+    if (findBlastn.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
         return;
@@ -367,10 +396,16 @@ void BlastSearchDialog::runBlastSearch()
 
     QApplication::processEvents();
 
-    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
-    QString blastCommand = "blastn -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions + " > " + g_tempDirectory + "blast_results";
+    QProcess blastn;
+    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified() + " ";
+    QString fullBlastnCommand = m_blastnCommand + " -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions;
 
-    if (system(blastCommand.toLocal8Bit().constData()) != 0)
+    blastn.start(fullBlastnCommand);
+    blastn.waitForFinished();
+
+    QString blastHits = blastn.readAll();
+
+    if (blastn.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
         return;
@@ -378,7 +413,7 @@ void BlastSearchDialog::runBlastSearch()
 
     clearBlastHits();
     g_blastSearch->m_blastQueries.searchOccurred();
-    loadBlastHits();
+    loadBlastHits(blastHits);
     setUiStep(4);
 }
 
