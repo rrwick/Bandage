@@ -545,9 +545,9 @@ void BlastSearchDialog::setInfoTexts()
     ui->startBlastSearchInfoText->setInfoText("Click this to conduct a blastn search for the above "
                                               "queries on the graph nodes.<br><br>"
                                               "If no parameters were added above, this will run:<br>"
-                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 > blast_results<br><br>"
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6<br><br>"
                                               "If, for example, '-evalue 0.01' was entered in the above "
                                               "parameters field, then this will run:<br>"
-                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01 > blast_results");
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01");
     ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }
