@@ -41,7 +41,10 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
   * For OS X 10.7 (or if the Homebrew install fails), it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>.  The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 3. Prepare the OGDF library:
   1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
-  2. Open a terminal in the OGDF directory.
+  2. In the OGDF directory, edit the makeMakefile.config file.  In the 'VERSIONS' section, add `-DOGDF_MEMORY_MALLOC_TS` to both the debug and release lines so they look like this:
+    * `debug = -g3 -O0 -DOGDF_DEBUG -DOGDF_MEMORY_MALLOC_TS`
+    * `release = -O2 -DOGDF_MEMORY_MALLOC_TS`
+  3. Open a terminal in the OGDF directory.
   4. Create the Makefile: `./makeMakefile.sh`
   5. Compile the library: `make`
 4. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
