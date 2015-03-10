@@ -408,6 +408,12 @@ void BlastSearchDialog::runBlastSearch()
     if (blastn.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
+
+        ui->startBlastSearchButton->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+
         return;
     }
 
