@@ -1,10 +1,16 @@
-# <img src="http://rrwick.github.io/Bandage/images/logo.png" alt="alt text" width="115" height="115" align="middle">Bandage
+# <img src="http://rrwick.github.io/Bandage/images/logo.png" alt="Bandage" width="115" height="115" align="middle">Bandage
 
 Bandage is a GUI program that allows users to interact with the assembly graphs made by *de novo* assemblers Velvet and SPAdes.
 
 *De novo* assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Bandage visualises assembly graphs, with connections, using graph layout algorithms.  Nodes in the drawn graph, which represent contigs, can be automatically labelled with their ID, length or depth.  Users can interact with the graph by moving, labelling and colouring nodes.  Sequence information can also be extracted directly from the graph viewer.  By displaying connections between contigs, Bandage opens up new possibilities for analysing *de novo* assemblies that are not possible by looking at contigs alone.
 
 More information and screenshots are on the Bandage website: <a href="http://rrwick.github.io/Bandage/" target="_blank">rrwick.github.io/Bandage</a>
+
+## Help
+
+Bandage's help is built into the program.  Throughout the UI, you will find these help icons next to controls and settings: <img src="http://rrwick.github.io/Bandage/images/helptext.png" alt="help text icon" width="16" height="16">
+
+Click on these icons to read a description of how to use that element of Bandage.
 
 ## Installation
 
@@ -76,7 +82,7 @@ Building Bandage in Windows is more challenging than in Linux or OS X, but it ca
 ##### Drawing options:
 
 * Due to the stochastic nature of the graph layout algorithm, clicking the 'Draw graph' button again will redraw the graph with nodes in different positions.
-* By changing the scope from 'Entire graph' to 'Around node(s)', it is possible to draw only a subsection of the graph.  The specified nodes will be drawn, along with all nodes within the given distance.  For example, a distance of zero will draw only the specified nodes, a distance of one will draw the specified nodes and their immediate neighbours, etc.
+* By changing the scope from 'Entire graph' to 'Around nodes' or 'Around BLAST hits', it is possible to draw only a subsection of the graph.  The specified nodes will be drawn, along with all nodes within the given distance.  For example, a distance of zero will draw only the specified nodes, a distance of one will draw the specified nodes and their immediate neighbours, etc.
 
 ##### Node style:
 
@@ -109,45 +115,6 @@ Building Bandage in Windows is more challenging than in Linux or OS X, but it ca
 * Plus and minus keys will zoom in and out.
 * Arrow keys will pan the viewport horizontally and vertically.
 * Shift+plus and shift+minus will rotate the view clockwise and anti-clockwise.
-
-### Customisation
-
-##### Colours
-
-There are three built-in colouring schemes:
-* One colour – all nodes are the same colour, which can be set using the 'Select' button
-* Coverage – nodes range in colour from black (low coverage) to red (high coverage)
-* Random – colours are assigned randomly, to aid in distinguishing one from the next
-
-It is also possible to select the 'Custom' colouring scheme, where the user can specify node colours.  Inititially, all nodes will be grey, but selected nodes can have their colour specified by clicking the 'Set colour' button in the right pane.
-
-##### Labels
-
-Nodes can be labeled with their number, sequence length, coverage, a custom label or any combination of the above.  Custom labels are applied to selected nodes by clicking the 'Set label' button in the right pane.
-
-The font can be set using the 'Font' button.  Turning on 'Text outline' will surround the black text with a white outline, which can make reading the text easier, especially over darker coloured nodes.
-
-##### Graph layout
-
-The 'Settings' dialog (accessible under the 'Tools' menu) exposes more options.
-
-The 'Base pairs per segment' settings controls the length of the drawn nodes.  The number of line segments that make up a drawn node is determined by dividing the sequence length by this value (rounded up to the nearest integer).  Any node with a sequence length of less than or equal to this value will be drawn a single line segment.  Guidelines for this setting:
-* Large values will result in shorter nodes.  Very large values will result in all nodes being a similiar size (one line segment).
-* Small values will result in longer nodes and a stronger correlation between sequence length and node length.
-* Large values make the graph layout calculations easier, due to their being less pieces to position.  Large values are therefore recommended for visualising very big assembly graphs.
-
-The 'Graph layout iterations' setting controls how much time the graph layout algorithm spends on positioning the graph components.  Low settings are faster and therefore recommended for big assembly graphs.  Higher settings may result in smoother, more pleasing layouts.
-
-##### Graph appearance
-
-Additional settings for controling graph appearance are also accessible via the 'Settings' dialog:
-* Base node width – the minimum width for each node
-* Additional node width from coverage – the degree to which high coverage nodes are wide than the base node width
-* Maximum node width – limits node width so very high coverge nodes do not appear excessively wide
-* Edge width – the width of the edges that connect nodes
-* Outline thickness – the thickness of the black outline drawn around each node
-* Text outline thickness – the thickness of the white outline drawn around node labels (when enabled)
-* Antialiasing – results in a smoother graph appearance at the cost of performance
 
 ### Assembly tips
 
