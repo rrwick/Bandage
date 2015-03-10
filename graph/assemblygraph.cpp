@@ -265,8 +265,8 @@ void AssemblyGraph::determineGraphInfo()
 
         nodeCoverages.push_back(i.value()->m_coverage);
     }
-    m_totalLength = totalLength;
 
+    m_totalLength = totalLength;
     m_meanCoverage = getMeanDeBruijnGraphCoverage();
 
     std::sort(nodeCoverages.begin(), nodeCoverages.end());

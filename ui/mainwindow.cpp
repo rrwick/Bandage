@@ -405,12 +405,32 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
         inputFile.close();
 
-        //Now for each node, find its reverse complement and make them point to each other.
+        //If all went well, each node will have a reverse complement and the code
+        //will never get here.  However, I have noticed that some SPAdes fastg files
+        //have, for some reason, negative nodes with no positive counterpart.  For
+        //that reason, we will now make any reverse complement nodes for nodes that
+        //lack them.
         QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
-            DeBruijnNode * positiveNode = i.value();
+            DeBruijnNode * node = i.value();
+            int reverseComplementNumber = -(node->m_number);
+            DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementNumber];
+            if (reverseComplementNode == 0)
+            {
+                DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
+                                                          g_assemblyGraph->getReverseComplement(node->m_sequence));
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
+            }
+        }
+
+        //Now for each node, find its reverse complement and make them point to each other.
+        QMapIterator<int, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (j.hasNext())
+        {
+            j.next();
+            DeBruijnNode * positiveNode = j.value();
 
             if (positiveNode->m_number > 0)
             {
