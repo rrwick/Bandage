@@ -1466,6 +1466,9 @@ void MainWindow::setInfoTexts()
     control = command;
 #endif
 
+    ui->graphInformationInfoText->setInfoText("Node codes, edge count and total length are calculated using single "
+                                              "nodes, not double nodes.<br><br>"
+                                              "For example, node 5 and node -5 are counted only once.");
     ui->graphScopeInfoText->setInfoText("This controls how much of the assembly graph will be drawn:<ul>"
                                         "<li>'Entire graph': all nodes in the graph will be drawn. This is "
                                         "appropriate for smaller graphs, but large graphs may take a "
