@@ -72,6 +72,8 @@ Settings::Settings()
     lowCoverageColour = QColor(0, 0, 0);
     highCoverageValue = 50.0;
     highCoverageColour = QColor(255, 20, 20);
+
+    blastSearchParameters = "";
 }
 
 

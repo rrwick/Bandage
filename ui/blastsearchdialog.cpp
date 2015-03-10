@@ -27,6 +27,7 @@
 #include "../blast/blastquery.h"
 #include <QStandardItemModel>
 #include "../program/globals.h"
+#include "../program/settings.h"
 #include "../graph/debruijnnode.h"
 #include <QMessageBox>
 #include <QDir>
@@ -65,6 +66,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
+        ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
         setUiStep(3);
     }
 
@@ -420,6 +422,7 @@ void BlastSearchDialog::runBlastSearch()
     clearBlastHits();
     g_blastSearch->m_blastQueries.searchOccurred();
     loadBlastHits(blastHits);
+    g_settings->blastSearchParameters = extraCommandLineOptions;
     setUiStep(4);
 }
 

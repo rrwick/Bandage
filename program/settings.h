@@ -22,6 +22,7 @@
 #include <QColor>
 #include <QFont>
 #include "globals.h"
+#include <QString>
 
 class Settings
 {
@@ -81,6 +82,8 @@ public:
     QColor lowCoverageColour;
     double highCoverageValue;
     QColor highCoverageColour;
+
+    QString blastSearchParameters;
 
 
     double widthScale(double zoom);
