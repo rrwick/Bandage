@@ -486,7 +486,9 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
         for (size_t i = 0; i < startingNodes.size(); ++i)
         {
             DeBruijnNode * node = startingNodes[i];
-            if (node->m_number < 0)
+
+            //If we are in single mode, make sure that each node is positive.
+            if (!g_settings->doubleMode && node->m_number < 0)
                 node = node->m_reverseComplement;
 
             node->m_drawn = true;

@@ -188,12 +188,10 @@ double AssemblyGraph::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
         if (drawnNodesOnly && !node->m_drawn)
             continue;
 
-        if (node->m_number > 0)
-        {
-            ++nodeCount;
-            totalLength += node->m_length;
-            coverageSum += node->m_length * node->m_coverage;
-        }
+        ++nodeCount;
+        totalLength += node->m_length;
+        coverageSum += node->m_length * node->m_coverage;
+
     }
 
     if (totalLength == 0)
