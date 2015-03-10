@@ -258,7 +258,10 @@ void AssemblyGraph::determineGraphInfo()
             m_shortestContig = nodeLength;
         if (nodeLength > m_longestContig)
             m_longestContig = nodeLength;
-        totalLength += nodeLength;
+
+        //Only add up the length for positive nodes
+        if (i.value()->m_number > 0)
+            totalLength += nodeLength;
 
         nodeCoverages.push_back(i.value()->m_coverage);
     }
