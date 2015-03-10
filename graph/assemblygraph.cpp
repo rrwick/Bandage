@@ -62,7 +62,8 @@ void AssemblyGraph::createDeBruijnEdge(int node1Number, int node2Number)
     //Quit if the edge already exists
     for (size_t i = 0; i < node1->m_edges.size(); ++i)
     {
-        if (node1->m_edges[i]->m_endingNode == node2)
+        if (node1->m_edges[i]->m_startingNode == node1 &&
+                node1->m_edges[i]->m_endingNode == node2)
             return;
     }
 

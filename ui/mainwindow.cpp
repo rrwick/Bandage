@@ -292,6 +292,12 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 QStringList arcDetails = line.split(QRegExp("\\s+"));
                 int node1Number = arcDetails.at(1).toInt();
                 int node2Number = arcDetails.at(2).toInt();
+
+                if (node1Number == 561)
+                {
+                    int test = 5;
+                }
+
                 g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
             }
         }
