@@ -51,10 +51,10 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 5. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory.
 6. Open a terminal in the Bandage directory.
 7. Run qmake to generate a Makefile:
+  * On OS X 10.7 and 10.8, it is first necessary to remove this line from the Bandage.pro file, `CONFIG += C++11`.
   * If Qt was install with Homebrew, this command will work: `/usr/local/opt/qt5/bin/qmake`
   * If Qt was installed using the Qt installer, qmake will be located here: `QT_INSTALL_DIRECTORY/QT_VERSION/clang_64/bin/qmake`
 8. Build the program: `make`
-  * On OS X 10.7 and 10.8, it is first necessary to remove this line from the Bandage.pro file, `CONFIG += C++11`, run qmake again and then make again.
 9. `Bandage` should now be an application bundle.
 10. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
 11. Optionally, delete the OGDF directory.
