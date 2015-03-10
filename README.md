@@ -16,7 +16,7 @@ Click on these icons to read a description of how to use that element of Bandage
 
 Compiled 64-bit binaries for Linux, OS X and Windows are available in the GitHub <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">'Releases' section</a> and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
 
-### Linux
+### <img src="http://rrwick.github.io/Bandage/images/OS/linux.png" alt="" width="34" height="40" align="middle"> Linux
 
 The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04:
 
@@ -37,7 +37,7 @@ The following instructions successfully build Bandage on a fresh installation of
 11. Optionally, copy the program into /usr/local/bin: `sudo make install`.  The Bandage build directory can then be deleted.
 12. Optionally, delete the OGDF directory.
 
-### Mac
+### <img src="http://rrwick.github.io/Bandage/images/OS/apple.png" alt="" width="34" height="40" align="middle"> Mac
 
 The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 (Mountain Lion) 10.9 (Mavericks) and 10.10 (Yosemite):
 
@@ -65,7 +65,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 10. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
 11. Optionally, delete the OGDF directory.
 
-### Windows
+### <img src="http://rrwick.github.io/Bandage/images/OS/windows.png" alt="" width="34" height="40" align="middle"> Windows
 
 Building Bandage in Windows is more challenging than in Linux or OS X, but it can be done.  If you would like to, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
 
