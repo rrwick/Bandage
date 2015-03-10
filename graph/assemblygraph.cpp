@@ -67,14 +67,24 @@ void AssemblyGraph::createDeBruijnEdge(int node1Number, int node2Number)
             return;
     }
 
+    //Usually, an edge has a different pair, but it is possible
+    //for an edge to be its own pair.
+    bool isOwnPair = (node1 == negNode2 && node2 == negNode1);
+
     DeBruijnEdge * forwardEdge = new DeBruijnEdge(node1, node2);
-    DeBruijnEdge * backwardEdge = new DeBruijnEdge(negNode2, negNode1);
+    DeBruijnEdge * backwardEdge;
+
+    if (isOwnPair)
+        backwardEdge = forwardEdge;
+    else
+        backwardEdge = new DeBruijnEdge(negNode2, negNode1);
 
     forwardEdge->m_reverseComplement = backwardEdge;
     backwardEdge->m_reverseComplement = forwardEdge;
 
     m_deBruijnGraphEdges.push_back(forwardEdge);
-    m_deBruijnGraphEdges.push_back(backwardEdge);
+    if (!isOwnPair)
+        m_deBruijnGraphEdges.push_back(backwardEdge);
 
     node1->addEdge(forwardEdge);
     node2->addEdge(forwardEdge);
