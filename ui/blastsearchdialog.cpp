@@ -66,10 +66,10 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
-        ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
         setUiStep(3);
     }
 
+    ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
     setInfoTexts();
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
