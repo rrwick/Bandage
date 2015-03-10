@@ -17,7 +17,8 @@ AssemblyGraph::AssemblyGraph()
 
 AssemblyGraph::~AssemblyGraph()
 {
-
+    delete m_graphAttributes;
+    delete m_ogdfGraph;
 }
 
 
