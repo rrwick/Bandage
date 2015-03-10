@@ -22,6 +22,8 @@ public:
     ogdf::Graph * m_ogdfGraph;
     ogdf::GraphAttributes * m_graphAttributes;
 
+    int m_nodeCount;
+    int m_edgeCount;
     long long m_totalLength;
     long long m_shortestContig;
     long long m_longestContig;

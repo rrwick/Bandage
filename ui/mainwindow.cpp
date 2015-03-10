@@ -549,8 +549,8 @@ bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
 
 void MainWindow::displayGraphDetails()
 {
-    ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_deBruijnGraphNodes.size() / 2));
-    ui->edgeCountLabel->setText(formatIntForDisplay(int(g_assemblyGraph->m_deBruijnGraphEdges.size()) / 2));
+    ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_nodeCount));
+    ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
 

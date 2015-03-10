@@ -256,6 +256,7 @@ void AssemblyGraph::determineGraphInfo()
 {
     m_shortestContig = std::numeric_limits<long long>::max();
     m_longestContig = 0;
+    int nodeCount = 0;
     long long totalLength = 0;
     std::vector<double> nodeCoverages;
 
@@ -272,11 +273,27 @@ void AssemblyGraph::determineGraphInfo()
 
         //Only add up the length for positive nodes
         if (i.value()->m_number > 0)
+        {
             totalLength += nodeLength;
+            ++nodeCount;
+        }
 
         nodeCoverages.push_back(i.value()->m_coverage);
     }
 
+    //Count up the edges.  Edges that are their own pairs will
+    //not be counted, as these won't show up in single mode.
+    int edgeCount = 0;
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_deBruijnGraphEdges[i];
+        if (edge != edge->m_reverseComplement)
+            ++edgeCount;
+    }
+    edgeCount /= 2;
+
+    m_nodeCount = nodeCount;
+    m_edgeCount = edgeCount;
     m_totalLength = totalLength;
     m_meanCoverage = getMeanDeBruijnGraphCoverage();
 
