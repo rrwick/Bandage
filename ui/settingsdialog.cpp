@@ -139,7 +139,7 @@ void SettingsDialog::restoreDefaults()
 
 void SettingsDialog::uniformPositiveNodeColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, 0, "Uniform positive node colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour");
     if (chosenColor.isValid())
     {
         m_uniformPositiveNodeColour = chosenColor.rgb();
@@ -148,7 +148,7 @@ void SettingsDialog::uniformPositiveNodeColourClicked()
 }
 void SettingsDialog::uniformNegativeNodeColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, 0, "Uniform negative node colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, this, "Uniform negative node colour");
     if (chosenColor.isValid())
     {
         m_uniformNegativeNodeColour = chosenColor.rgb();
@@ -157,7 +157,7 @@ void SettingsDialog::uniformNegativeNodeColourClicked()
 }
 void SettingsDialog::uniformNodeSpecialColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, 0, "Uniform node special colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, this, "Uniform node special colour");
     if (chosenColor.isValid())
     {
         m_uniformNodeSpecialColour = chosenColor.rgb();
@@ -166,7 +166,7 @@ void SettingsDialog::uniformNodeSpecialColourClicked()
 }
 void SettingsDialog::lowCoverageColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, 0, "Low coverage colour");
+    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, this, "Low coverage colour");
     if (chosenColor.isValid())
     {
         m_lowCoverageColour = chosenColor.rgb();
@@ -175,7 +175,7 @@ void SettingsDialog::lowCoverageColourClicked()
 }
 void SettingsDialog::highCoverageColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, 0, "High coverage colour");
+    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, this, "High coverage colour");
     if (chosenColor.isValid())
     {
         m_highCoverageColour = chosenColor.rgb();
@@ -184,7 +184,7 @@ void SettingsDialog::highCoverageColourClicked()
 }
 void SettingsDialog::selectionColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_selectionColour, 0, "Selection colour");
+    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour");
     if (chosenColor.isValid())
     {
         m_selectionColour = chosenColor.rgb();
