@@ -1473,14 +1473,14 @@ void MainWindow::setInfoTexts()
                                               "For example, node 5 and node -5 are counted only once.");
     ui->graphScopeInfoText->setInfoText("This controls how much of the assembly graph will be drawn:<ul>"
                                         "<li>'Entire graph': all nodes in the graph will be drawn. This is "
-                                        "appropriate for smaller graphs, but large graphs may take a "
-                                        "long time and use large amounts of memory to draw in their entirety.</li>"
+                                        "appropriate for smaller graphs, but large graphs may take "
+                                        "longer and use large amounts of memory to draw in their entirety.</li>"
                                         "<li>'Around nodes': you can specify nodes and a distance to "
                                         "limit the drawing to a smaller region of the graph.</li>"
                                         "<li>'Around BLAST hits': if you have conducted a BLAST search "
-                                        "on this graph, then this option will draw the region(s) of the graph "
+                                        "on this graph, this option will draw the region(s) of the graph "
                                         "around nodes that contain hits.</li></ul>");
-    ui->startingNodesInfoText->setInfoText("Enter a comma-delimited list here of node numbers. This will "
+    ui->startingNodesInfoText->setInfoText("Enter a comma-delimited list of node numbers here. This will "
                                            "define which regions of the graph will be drawn.");
     ui->nodeStyleInfoText->setInfoText("'Single' mode will only draw nodes with positive numbers, not their "
                                        "complement nodes with negative numbers. This produces a simpler graph visualisation, but "

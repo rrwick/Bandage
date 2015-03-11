@@ -231,7 +231,7 @@ void SettingsDialog::setInfoTexts()
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
     ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
                                                   "when the 'Text outline' option is ticked.<br><br>"
-                                                  "Large values can make the text easier to read, but may "
+                                                  "Large values can make text easier to read, but may "
                                                   "obscure more of the graph.");
     ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing "
                                           "if you are experiencing slow performance when viewing large graphs.");
