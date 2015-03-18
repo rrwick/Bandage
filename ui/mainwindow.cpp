@@ -1573,6 +1573,8 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionSearchWidget->setEnabled(false);
+        ui->actionSave_image_current_view->setEnabled(false);
+        ui->actionSave_image_entire_scene->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1581,6 +1583,8 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
+        ui->actionSave_image_current_view->setEnabled(false);
+        ui->actionSave_image_entire_scene->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1589,6 +1593,8 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(true);
+        ui->actionSave_image_current_view->setEnabled(true);
+        ui->actionSave_image_entire_scene->setEnabled(true);
         break;
     }
 }
