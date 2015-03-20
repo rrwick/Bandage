@@ -17,6 +17,7 @@
 
 
 #include "settings.h"
+#include <QDir>
 
 Settings::Settings()
 {
@@ -74,6 +75,8 @@ Settings::Settings()
     highCoverageColour = QColor(255, 20, 20);
 
     blastSearchParameters = "";
+
+    rememberedPath = QDir::homePath();
 }
 
 

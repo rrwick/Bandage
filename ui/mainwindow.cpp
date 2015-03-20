@@ -206,7 +206,7 @@ void MainWindow::loadFastg()
 
 void MainWindow::loadGraphFile(QString graphFileType)
 {
-    QString fullFileName = QFileDialog::getOpenFileName(this, "Load " + graphFileType);
+    QString fullFileName = QFileDialog::getOpenFileName(this, "Load " + graphFileType, g_settings->rememberedPath);
 
     if (fullFileName != "") //User did not hit cancel
     {
@@ -245,6 +245,10 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
         g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
+
+        //Store the directory of the loaded file for the next time the
+        //users opens a load file dialog.
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 

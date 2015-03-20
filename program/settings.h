@@ -85,6 +85,7 @@ public:
 
     QString blastSearchParameters;
 
+    QString rememberedPath;
 
     double widthScale(double zoom);
     void setNegativeNodeColour();
