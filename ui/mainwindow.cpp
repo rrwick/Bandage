@@ -245,9 +245,6 @@ void MainWindow::loadGraphFile(QString graphFileType)
 
         g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
-
-        //Store the directory of the loaded file for the next time the
-        //users opens a load file dialog.
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
@@ -1023,7 +1020,7 @@ void MainWindow::saveSelectedSequencesToFile()
     if (selectedNodes.size() == 0)
         return;
 
-    QString defaultFileNameAndPath = QDir::homePath() + "/selected_sequences.fasta";
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/selected_sequences.fasta";
 
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save selected sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
 
@@ -1039,6 +1036,7 @@ void MainWindow::saveSelectedSequencesToFile()
             if (i != selectedNodes.size() - 1)
                 out << "\n";
         }
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
@@ -1098,7 +1096,7 @@ void MainWindow::determineContiguityFromSelectedNode()
 
 void MainWindow::saveImageCurrentView()
 {
-    QString defaultFileNameAndPath = QDir::homePath() + "/graph.png";
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph.png";
 
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)", defaultFileNameAndPath, "PNG image (*.png)");
 
@@ -1111,12 +1109,13 @@ void MainWindow::saveImageCurrentView()
 
         g_graphicsView->render(&painter);
         image.save(fullFileName);
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
 void MainWindow::saveImageEntireScene()
 {
-    QString defaultFileNameAndPath = QDir::homePath() + "/graph.png";
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph.png";
 
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (entire scene)", defaultFileNameAndPath, "PNG image (*.png)");
 
@@ -1129,6 +1128,7 @@ void MainWindow::saveImageEntireScene()
         setSceneRectangle();
         m_scene->render(&painter);
         image.save(fullFileName);
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
