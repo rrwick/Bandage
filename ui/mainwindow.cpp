@@ -880,7 +880,7 @@ void MainWindow::addGraphicsItemsToScene()
         if (i.value()->m_drawn)
         {
             DeBruijnNode * node = i.value();
-            if (meanDrawnCoverage == 0 || node->m_coverage == 0)
+            if (meanDrawnCoverage == 0)
                 node->m_coverageRelativeToMeanDrawnCoverage = 1.0;
             else
                 node->m_coverageRelativeToMeanDrawnCoverage = node->m_coverage / meanDrawnCoverage;
