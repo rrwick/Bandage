@@ -130,6 +130,10 @@ New contributors are welcome!  If you're interested or have ideas, please contac
 
 ## History
 
+Version 0.4.2 - bug fixes
+
+Version 0.4.1 - bug fixes
+
 Version 0.4.0 - new features, including BLAST integration
 
 Version 0.3.0 – initial release on GitHub
