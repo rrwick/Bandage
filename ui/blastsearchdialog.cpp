@@ -315,7 +315,7 @@ void BlastSearchDialog::buildBlastDatabase2()
 
 void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 {
-    QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA");
+    QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA", g_settings->rememberedPath);
 
     if (fullFileName != "") //User did not hit cancel
     {
@@ -328,6 +328,7 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
                                                               querySequences[i]));
         fillQueriesTable();
         clearBlastHits();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
