@@ -23,7 +23,7 @@ The following instructions successfully build Bandage on a fresh installation of
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
 2. Install the prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev`
 3. Prepare the OGDF library:
-  1. Download the OGDF code: <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a>
+  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
   2. Open a terminal in the OGDF directory.
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
@@ -129,6 +129,10 @@ When assembling 100 bp reads in Velvet, a k-mer of 51 would be a good starting p
 New contributors are welcome!  If you're interested or have ideas, please contact me (Ryan) at rrwick@gmail.com.
 
 ## History
+
+Version 0.4.2 - bug fixes
+
+Version 0.4.1 - bug fixes
 
 Version 0.4.0 - new features, including BLAST integration
 
