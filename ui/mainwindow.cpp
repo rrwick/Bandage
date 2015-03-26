@@ -343,15 +343,6 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                 nodeNumber = thisNodeDetails.at(1).toInt();
                 nodeLength = thisNodeDetails.at(3).toInt();
 
-                //If this is the second node and its node number is NOT the
-                //same as the first node, then this is probably a FASTG file
-                //made by an earlier version of SPAdes (before 3.5).
-                if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 1)
-                {
-                    if (g_assemblyGraph->m_deBruijnGraphNodes.first()->m_number != nodeNumber)
-                        return false;
-                }
-
                 QString nodeCoverageString = thisNodeDetails.at(5);
                 if (negativeNode)
                 {
