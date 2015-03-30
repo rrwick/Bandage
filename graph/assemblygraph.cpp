@@ -46,7 +46,7 @@ void AssemblyGraph::cleanUp()
 //This function makes a double edge: in one direction for the given nodes
 //and the opposite direction for their reverse complements.  It adds the
 //new edges to the vector here and to the nodes themselves.
-void AssemblyGraph::createDeBruijnEdge(int node1Number, int node2Number)
+void AssemblyGraph::createDeBruijnEdge(long long node1Number, long long node2Number)
 {
     //Quit if any of the nodes don't exist.
     if (!m_deBruijnGraphNodes.contains(node1Number) ||

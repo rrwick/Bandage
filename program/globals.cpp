@@ -126,3 +126,23 @@ void readFastaFile(QString filename, std::vector<QString> * names, std::vector<Q
         inputFile.close();
     }
 }
+
+
+
+//Trinity nodes are only unique within a component.  It is therefore necessary to generate
+//a unique node number using the transcript, component and node numbers.  These functions
+//turn those parts into the full unique node number and back.
+long long getFullTrinityNodeNumberFromParts(int transcript, int component, long long node)
+{
+    long long transcriptPart = 1000000000000LL * transcript;
+    long long componentPart = 1000000000LL * component;
+    return transcriptPart + componentPart + node;
+}
+void getTrinityPartsFromFullNodeNumber(long long fullNodeNumber, int * transcript, int * component, long long * node)
+{
+    *transcript = fullNodeNumber / 1000000000000LL;
+    long long remainder = fullNodeNumber % 1000000000000LL;
+
+    *component = remainder / 1000000000LL;
+    *node = remainder % 1000000000LL;
+}

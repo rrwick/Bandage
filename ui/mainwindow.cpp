@@ -269,7 +269,7 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             if (line.startsWith("NODE"))
             {
                 QStringList nodeDetails = line.split(QRegExp("\\s+"));
-                int nodeNumber = nodeDetails.at(1).toInt();
+                long long nodeNumber = nodeDetails.at(1).toLongLong();
                 int nodeLength = nodeDetails.at(2).toInt();
 
                 double nodeCoverage;
@@ -291,8 +291,8 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             else if (line.startsWith("ARC"))
             {
                 QStringList arcDetails = line.split(QRegExp("\\s+"));
-                int node1Number = arcDetails.at(1).toInt();
-                int node2Number = arcDetails.at(2).toInt();
+                long long node1Number = arcDetails.at(1).toLongLong();
+                long long node2Number = arcDetails.at(2).toLongLong();
 
                 g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
             }
@@ -313,8 +313,8 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
     {
-        std::vector<int> edgeStartingNodeNumbers;
-        std::vector<int> edgeEndingNodeNumbers;
+        std::vector<long long> edgeStartingNodeNumbers;
+        std::vector<long long> edgeEndingNodeNumbers;
         DeBruijnNode * node = 0;
 
         QTextStream in(&inputFile);
@@ -322,7 +322,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         {
             QApplication::processEvents();
 
-            int nodeNumber;
+            long long nodeNumber;
             int nodeLength;
             double nodeCoverage;
 
@@ -340,7 +340,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                 bool negativeNode = thisNode.at(thisNode.size() - 1) == '\'';
 
                 QStringList thisNodeDetails = thisNode.split("_");
-                nodeNumber = thisNodeDetails.at(1).toInt();
+                nodeNumber = thisNodeDetails.at(1).toLongLong();
                 nodeLength = thisNodeDetails.at(3).toInt();
 
                 QString nodeCoverageString = thisNodeDetails.at(5);
@@ -416,8 +416,8 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         //Create all of the edges
         for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
         {
-            int node1Number = edgeStartingNodeNumbers[i];
-            int node2Number = edgeEndingNodeNumbers[i];
+            long long node1Number = edgeStartingNodeNumbers[i];
+            long long node2Number = edgeEndingNodeNumbers[i];
             g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
         }
     }
@@ -434,13 +434,23 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     std::vector<QString> sequences;
     readFastaFile(fullFileName, &names, &sequences);
 
-    std::vector<int> edgeStartingNodeNumbers;
-    std::vector<int> edgeEndingNodeNumbers;
+    std::vector<long long> edgeStartingNodeNumbers;
+    std::vector<long long> edgeEndingNodeNumbers;
 
     for (size_t i = 0; i < names.size(); ++i)
     {
         QString name = names[i];
         QString sequence = sequences[i];
+
+        int transcriptStartIndex = name.indexOf("TR") + 2;
+        int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
+        int transcriptLength = transcriptEndIndex - transcriptStartIndex;
+        int transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+
+        int componentStartIndex = name.indexOf("|c") + 2;
+        int componentEndIndex = name.indexOf("_", componentStartIndex);
+        int componentLength = componentEndIndex - componentStartIndex;
+        int component = name.mid(componentStartIndex, componentLength).toInt();
 
         int pathStartIndex = name.indexOf("path=[") + 6;
         int pathEndIndex = name.indexOf("]", pathStartIndex);
@@ -450,7 +460,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QStringList pathParts = path.split(" ");
 
         //Each path part is a node
-        int previousNodeNumber = 0;
+        long long previousNodeNumber = 0;
         for (int i = 0; i < pathParts.length(); ++i)
         {
             QString pathPart = pathParts.at(i);
@@ -463,12 +473,13 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             if (nodeNumberString.at(0) == '@')
                 nodeNumberString = nodeNumberString.mid(1, nodeNumberString.length() - 3);
 
-            int nodeNumber = nodeNumberString.toInt();
-            QString nodeRange = nodeParts.at(1);
+            long long nodeNumber = nodeNumberString.toLongLong();
+            nodeNumber = getFullTrinityNodeNumberFromParts(transcript, component, nodeNumber);
 
             //If the node doesn't yet exist, make it now.
             if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
             {
+                QString nodeRange = nodeParts.at(1);
                 QStringList nodeRangeParts = nodeRange.split("-");
                 int nodeRangeStart = nodeRangeParts.at(0).toInt();
                 int nodeRangeEnd = nodeRangeParts.at(1).toInt();
@@ -504,8 +515,8 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     //duplicates, so it's okay if we try to add the same edge multiple times.
     for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
     {
-        int node1Number = edgeStartingNodeNumbers[i];
-        int node2Number = edgeEndingNodeNumbers[i];
+        long long node1Number = edgeStartingNodeNumbers[i];
+        long long node2Number = edgeEndingNodeNumbers[i];
         g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
     }
 }
@@ -513,7 +524,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
 void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 {
-    int reverseComplementNumber = -(node->m_number);
+    long long  reverseComplementNumber = -node->m_number;
     DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementNumber];
     if (reverseComplementNode == 0)
     {
@@ -900,7 +911,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     QStringList nodesList = nodesString.split(",");
     for (int i = 0; i < nodesList.size(); ++i)
     {
-        int nodeNumber = nodesList.at(i).toInt();
+        long long nodeNumber = nodesList.at(i).toLongLong();
         if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
             returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber]);
         else if (nodesNotInGraph != 0)

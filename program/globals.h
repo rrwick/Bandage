@@ -46,6 +46,9 @@ QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay);
 
+long long getFullTrinityNodeNumberFromParts(int transcript, int component, long long node);
+void getTrinityPartsFromFullNodeNumber(long long fullNodeNumber, int * transcript, int * component, long long * node);
+
 void emptyTempDirectory();
 
 void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);

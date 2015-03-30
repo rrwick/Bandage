@@ -33,7 +33,7 @@ public:
     double m_thirdQuartileCoverage;
 
     void cleanUp();
-    void createDeBruijnEdge(int node1Number, int node2Number);
+    void createDeBruijnEdge(long long node1Number, long long node2Number);
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();

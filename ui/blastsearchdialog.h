@@ -42,7 +42,7 @@ private:
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
 
-    int getNodeNumberFromString(QString nodeString);
+    long long getNodeNumberFromString(QString nodeString);
     void setUiStep(int step);
     void clearBlastHits();
     void setInfoTexts();

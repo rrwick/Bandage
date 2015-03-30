@@ -119,7 +119,7 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
         if (nodeStart > nodeEnd)
             continue;
 
-        int nodeNumber = getNodeNumberFromString(nodeLabel);
+        long long nodeNumber = getNodeNumberFromString(nodeLabel);
         DeBruijnNode * node;
         if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
             node = g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber];
@@ -141,10 +141,10 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
 }
 
 
-int BlastSearchDialog::getNodeNumberFromString(QString nodeString)
+long long BlastSearchDialog::getNodeNumberFromString(QString nodeString)
 {
     QStringList nodeStringParts = nodeString.split("_");
-    return nodeStringParts[1].toInt();
+    return nodeStringParts[1].toLongLong();
 }
 
 
