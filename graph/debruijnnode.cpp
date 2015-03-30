@@ -220,13 +220,16 @@ bool DeBruijnNode::isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 }
 
 
-QByteArray DeBruijnNode::getFasta()
+QByteArray DeBruijnNode::getFasta(bool useTrinityNames)
 {
     QByteArray fasta = ">";
 
     //If the node came from a Trinity graph, create a
     //FASTA header that matches the Trinity style.
-    if (g_assemblyGraph->m_trinityGraph)
+    //This requires useTrinityNames to be set, because
+    //in some situations (like when making a BLAST db),
+    //we don't want to use the Trinity style.
+    if (g_assemblyGraph->m_trinityGraph && useTrinityNames)
     {
         fasta += getTrinityNodeNameFromFullNodeNumber(m_number);
         fasta += "_len=";

@@ -1146,7 +1146,7 @@ void MainWindow::saveSelectedSequencesToFile()
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {
-            out << selectedNodes[i]->getFasta();
+            out << selectedNodes[i]->getFasta(true);
             if (i != selectedNodes.size() - 1)
                 out << "\n";
         }
@@ -1517,7 +1517,7 @@ void MainWindow::openBlastSearchDialog()
 {
     BlastSearchDialog blastSearchDialog(this);
 
-    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool)), this, SLOT(saveAllNodesToFasta(QString, bool)));
+    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool, bool)), this, SLOT(saveAllNodesToFasta(QString, bool, bool)));
     connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
 
     blastSearchDialog.exec();
@@ -1558,7 +1558,7 @@ void MainWindow::blastTargetChanged()
 
 
 
-void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
+void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool useTrinityNames)
 {
     QFile file(path + "all_nodes.fasta");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -1570,7 +1570,7 @@ void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
         i.next();
         if (includeEmptyNodes || i.value()->m_length > 0)
         {
-            out << i.value()->getFasta();
+            out << i.value()->getFasta(useTrinityNames);
             out << "\n";
         }
     }

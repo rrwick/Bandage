@@ -59,7 +59,7 @@ private slots:
     void fillHitsTable();
 
 signals:
-    void createAllNodesFasta(QString path, bool includeEmptyNodes);
+    void createAllNodesFasta(QString path, bool includeEmptyNodes, bool useTrinityNames);
 
 };
 

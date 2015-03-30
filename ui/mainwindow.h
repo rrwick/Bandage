@@ -111,7 +111,7 @@ private slots:
     void graphLayoutFinished();
     void openBlastSearchDialog();
     void blastTargetChanged();
-    void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
+    void saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool useTrinityNames);
     void showHidePanels();
     void graphLayoutCancelled();
 

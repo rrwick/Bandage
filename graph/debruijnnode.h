@@ -71,7 +71,7 @@ public:
                                      std::vector<DeBruijnNode *> * incomingNodes,
                                      std::vector<DeBruijnNode *> * outgoingNodes)
     {return !isOnlyPathInItsDirection(connectedNode, incomingNodes, outgoingNodes);}
-    QByteArray getFasta();
+    QByteArray getFasta(bool useTrinityNames);
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
 
     bool thisNodeHasBlastHits();
