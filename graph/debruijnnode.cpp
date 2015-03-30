@@ -222,13 +222,27 @@ bool DeBruijnNode::isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 
 QByteArray DeBruijnNode::getFasta()
 {
-    QByteArray fasta = ">NODE_";
-    fasta += QString::number(m_number);
-    fasta += "_length_";
-    fasta += QString::number(m_length);
-    fasta += "_cov_";
-    fasta += QString::number(m_coverage);
-    fasta += "\n";
+    QByteArray fasta = ">";
+
+    //If the node came from a Trinity graph, create a
+    //FASTA header that matches the Trinity style.
+    if (g_assemblyGraph->m_trinityGraph)
+    {
+        fasta += getTrinityNodeNameFromFullNodeNumber(m_number);
+        fasta += "_len=";
+        fasta += QString::number(m_length);
+        fasta += "\n";
+    }
+    else
+    {
+        fasta += "NODE_";
+        fasta += QString::number(m_number);
+        fasta += "_length_";
+        fasta += QString::number(m_length);
+        fasta += "_cov_";
+        fasta += QString::number(m_coverage);
+        fasta += "\n";
+    }
 
     int charactersOnLine = 0;
     for (int i = 0; i < m_sequence.length(); ++i)
