@@ -408,35 +408,12 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         {
             i.next();
             DeBruijnNode * node = i.value();
-            int reverseComplementNumber = -(node->m_number);
-            DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementNumber];
-            if (reverseComplementNode == 0)
-            {
-                DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
-                                                          g_assemblyGraph->getReverseComplement(node->m_sequence));
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
-            }
+            makeReverseComplementNodeIfNecessary(node);
         }
+        pointEachNodeToItsReverseComplement();
 
-        //Now for each node, find its reverse complement and make them point to each other.
-        QMapIterator<int, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (j.hasNext())
-        {
-            j.next();
-            DeBruijnNode * positiveNode = j.value();
 
-            if (positiveNode->m_number > 0)
-            {
-                DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[-(positiveNode->m_number)];
-                if (negativeNode != 0)
-                {
-                    positiveNode->m_reverseComplement = negativeNode;
-                    negativeNode->m_reverseComplement = positiveNode;
-                }
-            }
-        }
-
-        //For each edge, add the edges to the corresponding Node objects.
+        //Create all of the edges
         for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
         {
             int node1Number = edgeStartingNodeNumbers[i];
@@ -453,75 +430,109 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
-    DeBruijnNode * node = 0;
+    std::vector<QString> names;
+    std::vector<QString> sequences;
+    readFastaFile(fullFileName, &names, &sequences);
 
-    QFile inputFile(fullFileName);
-    if (inputFile.open(QIODevice::ReadOnly))
+    std::vector<int> edgeStartingNodeNumbers;
+    std::vector<int> edgeEndingNodeNumbers;
+
+    for (size_t i = 0; i < names.size(); ++i)
     {
-        QTextStream in(&inputFile);
-        while (!in.atEnd())
+        QString name = names[i];
+        QString sequence = sequences[i];
+
+        int pathStartIndex = name.indexOf("path=[") + 6;
+        int pathEndIndex = name.indexOf("]", pathStartIndex);
+        int pathLength = pathEndIndex - pathStartIndex;
+        QString path = name.mid(pathStartIndex, pathLength);
+
+        QStringList pathParts = path.split(" ");
+
+        //Each path part is a node
+        int previousNodeNumber = 0;
+        for (int i = 0; i < pathParts.length(); ++i)
         {
-            QApplication::processEvents();
+            QString pathPart = pathParts.at(i);
+            QStringList nodeParts = pathPart.split(":");
+            int nodeNumber = nodeParts.at(0).toInt();
+            QString nodeRange = nodeParts.at(1);
 
-            QString line = in.readLine();
-
-            //If the line starts with a '>', then we are beginning a new node.
-            if (line.startsWith(">"))
+            //If the node doesn't yet exist, make it now.
+            if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
             {
-                int lengthStartIndex = line.indexOf("len=") + 4;
-                int lengthEndIndex = line.indexOf(" ", lengthStartIndex);
-                int lengthLength = lengthEndIndex - lengthStartIndex;
-                int nodeLength = line.mid(lengthStartIndex, lengthLength).toInt();
+                QStringList nodeRangeParts = nodeRange.split("-");
+                int nodeRangeStart = nodeRangeParts.at(0).toInt();
+                int nodeRangeEnd = nodeRangeParts.at(1).toInt();
+                int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
-
-                int pathStartIndex = line.indexOf("path=[") + 6;
-                int pathEndIndex = line.indexOf("]", pathStartIndex);
-                int pathLength = pathEndIndex - pathStartIndex;
-                QString path = line.mid(pathStartIndex, pathLength);
-
-                QStringList pathParts = path.split(" ");
-
-
-
-
-
-                QString TEST = "";
-                for (int i = 0; i < pathParts.length(); ++i)
-                {
-                    TEST += pathParts.at(i);
-                    TEST += "\n";
-                }
-
-
-
-                QMessageBox::information(this, "TEST", TEST);
-                return;
-
-
-
-
-
-
-
-
-
-
+                QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
+                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
             }
 
-            //If the line does not start with a '>', then this line is part of the
-            //sequence for the last node.
-            else
+            //Remember to make an edge for the previous node to this one.
+            if (i > 0)
             {
-                QByteArray sequenceLine = line.simplified().toLocal8Bit();
-                if (node != 0)
-                    node->m_sequence.append(sequenceLine);
+                edgeStartingNodeNumbers.push_back(previousNodeNumber);
+                edgeEndingNodeNumbers.push_back(nodeNumber);
             }
-
-
+            previousNodeNumber = nodeNumber;
         }
+    }
+
+    //Even though the Trinity.fasta file only contains positive nodes, Bandage
+    //expects negative reverse complements nodes, so make them now.
+    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        makeReverseComplementNodeIfNecessary(node);
+    }
+    pointEachNodeToItsReverseComplement();
+
+    //Create all of the edges.  The createDeBruijnEdge function checks for
+    //duplicates, so it's okay if we try to add the same edge multiple times.
+    for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
+    {
+        int node1Number = edgeStartingNodeNumbers[i];
+        int node2Number = edgeEndingNodeNumbers[i];
+        g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
+    }
+}
 
 
+void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
+{
+    int reverseComplementNumber = -(node->m_number);
+    DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementNumber];
+    if (reverseComplementNode == 0)
+    {
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
+                                                  g_assemblyGraph->getReverseComplement(node->m_sequence));
+        g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
+    }
+}
 
+
+void MainWindow::pointEachNodeToItsReverseComplement()
+{
+    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * positiveNode = i.value();
+
+        if (positiveNode->m_number > 0)
+        {
+            DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[-(positiveNode->m_number)];
+            if (negativeNode != 0)
+            {
+                positiveNode->m_reverseComplement = negativeNode;
+                negativeNode->m_reverseComplement = positiveNode;
+            }
+        }
     }
 }
 

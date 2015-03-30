@@ -82,6 +82,8 @@ private:
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
     void enableDisableUiElements(UiState uiState);
+    void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
+    void pointEachNodeToItsReverseComplement();
 
 private slots:
     void loadLastGraph();

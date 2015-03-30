@@ -22,6 +22,7 @@
 #include <QStringList>
 #include <QFile>
 #include <QTextStream>
+#include <QApplication>
 
 Settings * g_settings;
 MyGraphicsView * g_graphicsView;
@@ -90,6 +91,8 @@ void readFastaFile(QString filename, std::vector<QString> * names, std::vector<Q
         QTextStream in(&inputFile);
         while (!in.atEnd())
         {
+            QApplication::processEvents();
+
             QString line = in.readLine();
 
             if (line.length() == 0)
