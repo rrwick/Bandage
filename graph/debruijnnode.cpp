@@ -331,7 +331,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 }
 
 
-QString DeBruijnNode::getNodeNumberText()
+QString DeBruijnNode::getNodeNumberText(bool commas)
 {
     if (m_trinityNode)
     {
@@ -343,7 +343,9 @@ QString DeBruijnNode::getNodeNumberText()
                 QString::number(component) + "_" + QString::number(node);
         return numberText;
     }
-    else
+    else if (commas)
         return formatIntForDisplay(m_number);
+    else
+        return QString::number(m_number);
 }
 

@@ -738,7 +738,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
     for (int i = 0; i < selectedNodeCount; ++i)
     {
-        selectedNodeListText += QString::number(selectedNodes[i]->m_number);  //I don't use the formatIntForDisplay function because I don't want commas in the numbers - that will mess up comma-delimited lists
+        selectedNodeListText += selectedNodes[i]->getNodeNumberText(false);  //I don't want commas in the numbers - that will mess up comma-delimited lists
         if (i != int(selectedNodes.size()) - 1)
             selectedNodeListText += ", ";
 
@@ -780,9 +780,9 @@ QString MainWindow::getSelectedEdgeListText()
     QString edgeText;
     for (size_t i = 0; i < selectedEdges.size(); ++i)
     {
-        edgeText += formatIntForDisplay(selectedEdges[i]->m_startingNode->m_number);
+        edgeText += selectedEdges[i]->m_startingNode->getNodeNumberText(true);
         edgeText += " to ";
-        edgeText += formatIntForDisplay(selectedEdges[i]->m_endingNode->m_number);
+        edgeText += selectedEdges[i]->m_endingNode->getNodeNumberText(true);
         if (i != selectedEdges.size() - 1)
             edgeText += ", ";
     }

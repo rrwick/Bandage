@@ -79,7 +79,7 @@ public:
     bool thisNodeOrReverseComplementHasBlastHits();
     std::vector<BlastHitPart> getBlastHitPartsForThisNode();
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
-    QString getNodeNumberText();
+    QString getNodeNumberText(bool commas);
 };
 
 #endif // DEBRUIJNNODE_H

@@ -134,15 +134,32 @@ void readFastaFile(QString filename, std::vector<QString> * names, std::vector<Q
 //turn those parts into the full unique node number and back.
 long long getFullTrinityNodeNumberFromParts(int transcript, int component, long long node)
 {
+    bool negative = node < 0;
+    node = llabs(node);
+
     long long transcriptPart = 1000000000000LL * transcript;
     long long componentPart = 1000000000LL * component;
-    return transcriptPart + componentPart + node;
+    long long fullNodeNumber = transcriptPart + componentPart + node;
+
+    if (negative)
+        fullNodeNumber *= -1LL;
+
+    return fullNodeNumber;
 }
+
 void getTrinityPartsFromFullNodeNumber(long long fullNodeNumber, int * transcript, int * component, long long * node)
 {
+    bool negative = fullNodeNumber < 0;
+    fullNodeNumber = llabs(fullNodeNumber);
+
     *transcript = fullNodeNumber / 1000000000000LL;
     long long remainder = fullNodeNumber % 1000000000000LL;
 
     *component = remainder / 1000000000LL;
-    *node = remainder % 1000000000LL;
+
+    long long nodeNumber = remainder % 1000000000LL;
+    if (negative)
+        nodeNumber *= -1LL;
+
+    *node = nodeNumber;
 }
