@@ -233,19 +233,35 @@ void MainWindow::loadGraphFile(QString graphFileType)
         cleanUp();
         ui->selectionSearchNodesLineEdit->clear();
 
-        if (graphFileType == "LastGraph")
-            buildDeBruijnGraphFromLastGraph(fullFileName);
-        else if (graphFileType == "FASTG")
-            buildDeBruijnGraphFromFastg(fullFileName);
-        else if (graphFileType == "Trinity.fasta")
-            buildDeBruijnGraphFromTrinityFasta(fullFileName);
+        try
+        {
+            if (graphFileType == "LastGraph")
+                buildDeBruijnGraphFromLastGraph(fullFileName);
+            else if (graphFileType == "FASTG")
+                buildDeBruijnGraphFromFastg(fullFileName);
+            else if (graphFileType == "Trinity.fasta")
+                buildDeBruijnGraphFromTrinityFasta(fullFileName);
 
-        enableDisableUiElements(GRAPH_LOADED);
-        setWindowTitle("Bandage - " + fullFileName);
+            enableDisableUiElements(GRAPH_LOADED);
+            setWindowTitle("Bandage - " + fullFileName);
 
-        g_assemblyGraph->determineGraphInfo();
-        displayGraphDetails();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+            g_assemblyGraph->determineGraphInfo();
+            displayGraphDetails();
+            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        }
+
+        catch (...)
+        {
+            QMessageBox::warning(this, "Error loading " + graphFileType,
+                                 "There was an error when attempting to load:\n"
+                                 + fullFileName + "\n\n"
+                                 "Please verify that this file has the correct format.");
+            resetScene();
+            cleanUp();
+            clearGraphDetails();
+            enableDisableUiElements(NO_GRAPH_LOADED);
+        }
+
     }
 }
 
@@ -271,6 +287,10 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             if (line.startsWith("NODE"))
             {
                 QStringList nodeDetails = line.split(QRegExp("\\s+"));
+
+                if (nodeDetails.size() < 4)
+                    throw "load error";
+
                 long long nodeNumber = nodeDetails.at(1).toLongLong();
                 int nodeLength = nodeDetails.at(2).toInt();
 
@@ -293,6 +313,10 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             else if (line.startsWith("ARC"))
             {
                 QStringList arcDetails = line.split(QRegExp("\\s+"));
+
+                if (arcDetails.size() < 3)
+                    throw "load error";
+
                 long long node1Number = arcDetails.at(1).toLongLong();
                 long long node2Number = arcDetails.at(2).toLongLong();
 
@@ -301,6 +325,9 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         }
         inputFile.close();
     }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
 }
 
 
@@ -338,12 +365,17 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                 line.remove(0, 1); //Remove '>' from start
                 line.chop(1); //Remove ';' from end
                 QStringList nodeDetails = line.split(":");
+
                 QString thisNode = nodeDetails.at(0);
 
                 //A single quote as the last character indicates a negative node.
                 bool negativeNode = thisNode.at(thisNode.size() - 1) == '\'';
 
                 QStringList thisNodeDetails = thisNode.split("_");
+
+                if (thisNodeDetails.size() < 6)
+                    throw "load error";
+
                 nodeNumber = thisNodeDetails.at(1).toLongLong();
                 nodeLength = thisNodeDetails.at(3).toInt();
 
@@ -380,6 +412,9 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                         edgeNode.chop(1);
                     }
                     QStringList edgeNodeDetails = edgeNode.split("_");
+
+                    if (edgeNodeDetails.size() < 2)
+                        throw "load error";
 
                     int edgeNodeNumber = edgeNodeDetails.at(1).toInt();
                     if (reverseComplement)
@@ -425,6 +460,9 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
             g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
         }
     }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
 }
 
 
@@ -450,18 +488,26 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
         int transcriptStartIndex = name.indexOf("TR") + 2;
         int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
+        if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
+            throw "load error";
         int transcriptLength = transcriptEndIndex - transcriptStartIndex;
         int transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
 
         int componentStartIndex = name.indexOf("|c") + 2;
         int componentEndIndex = name.indexOf("_", componentStartIndex);
+        if (componentStartIndex < 0 || componentEndIndex < 0)
+            throw "load error";
         int componentLength = componentEndIndex - componentStartIndex;
         int component = name.mid(componentStartIndex, componentLength).toInt();
 
         int pathStartIndex = name.indexOf("path=[") + 6;
         int pathEndIndex = name.indexOf("]", pathStartIndex);
+        if (pathStartIndex < 0 || pathEndIndex < 0)
+            throw "load error";
         int pathLength = pathEndIndex - pathStartIndex;
         QString path = name.mid(pathStartIndex, pathLength);
+        if (path.size() == 0)
+            throw "load error";
 
         QStringList pathParts = path.split(" ");
 
@@ -471,6 +517,8 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         {
             QString pathPart = pathParts.at(i);
             QStringList nodeParts = pathPart.split(":");
+            if (nodeParts.size() < 2)
+                throw "load error";
 
             //Most node numbers will be formatted simply as the number, but some
             //(I don't know why) have '@' and the start and '@!' at the end.  In
@@ -487,6 +535,10 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             {
                 QString nodeRange = nodeParts.at(1);
                 QStringList nodeRangeParts = nodeRange.split("-");
+
+                if (nodeRangeParts.size() < 2)
+                    throw "load error";
+
                 int nodeRangeStart = nodeRangeParts.at(0).toInt();
                 int nodeRangeEnd = nodeRangeParts.at(1).toInt();
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
@@ -525,6 +577,9 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         long long node2Number = edgeEndingNodeNumbers[i];
         g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
     }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
 }
 
 
@@ -666,7 +721,12 @@ void MainWindow::displayGraphDetails()
     ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
-
+void MainWindow::clearGraphDetails()
+{
+    ui->nodeCountLabel->setText("0");
+    ui->edgeCountLabel->setText("0");
+    ui->totalLengthLabel->setText("0");
+}
 
 
 void MainWindow::selectionChanged()

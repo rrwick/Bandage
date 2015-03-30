@@ -57,6 +57,7 @@ private:
 
     void cleanUp();
     void displayGraphDetails();
+    void clearGraphDetails();
     void resetScene();
     void layoutGraph();
     void addGraphicsItemsToScene();
