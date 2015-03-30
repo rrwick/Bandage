@@ -16,7 +16,7 @@ public:
     AssemblyGraph();
     ~AssemblyGraph();
 
-    QMap<int, DeBruijnNode*> m_deBruijnGraphNodes;
+    QMap<long long, DeBruijnNode*> m_deBruijnGraphNodes;
     std::vector<DeBruijnEdge*> m_deBruijnGraphEdges;
 
     ogdf::Graph * m_ogdfGraph;

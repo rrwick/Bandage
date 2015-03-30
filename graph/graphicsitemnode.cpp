@@ -207,8 +207,8 @@ void GraphicsItemNode::setNodeColour()
         //Make a colour with a pseudo-random hue.  The absolute
         //value of the node number is used so positive/negative
         //pairs have the same hue.
-        long long randomNumberFromNodeNumber = g_randomColourFactor * abs(m_deBruijnNode->m_number);
-        long long randomHue = abs(randomNumberFromNodeNumber) % 360;
+        long long randomNumberFromNodeNumber = g_randomColourFactor * llabs(m_deBruijnNode->m_number);
+        long long randomHue = llabs(randomNumberFromNodeNumber) % 360;
 
         int hue = randomHue;
         int saturation;

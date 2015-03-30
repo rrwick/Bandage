@@ -30,11 +30,11 @@ MyGraphicsScene::MyGraphicsScene(QObject *parent) :
 
 bool compareNodePointers(DeBruijnNode * a, DeBruijnNode * b)
 {
-    int aNum = a->m_number;
-    int bNum = b->m_number;
+    long long aNum = a->m_number;
+    long long bNum = b->m_number;
 
-    if (abs(aNum) != abs(bNum))
-        return (abs(aNum) < abs(bNum));
+    if (llabs(aNum) != llabs(bNum))
+        return (llabs(aNum) < llabs(bNum));
 
     return aNum > bNum;
 }

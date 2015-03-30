@@ -34,10 +34,10 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(int number, int length, double coverage, QByteArray sequence);
+    DeBruijnNode(long long number, int length, double coverage, QByteArray sequence);
     ~DeBruijnNode();
 
-    int m_number;
+    long long m_number;
     int m_length;
     double m_coverage;
     double m_coverageRelativeToMeanDrawnCoverage;

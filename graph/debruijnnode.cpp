@@ -24,7 +24,7 @@
 #include <math.h>
 #include "../blast/blasthit.h"
 
-DeBruijnNode::DeBruijnNode(int number, int length, double coverage, QByteArray sequence) :
+DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
     m_number(number), m_length(length), m_coverage(coverage),
     m_coverageRelativeToMeanDrawnCoverage(1.0), m_sequence(sequence),
     m_contiguityStatus(NOT_CONTIGUOUS), m_reverseComplement(0), m_ogdfNode(0),

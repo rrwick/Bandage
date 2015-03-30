@@ -403,7 +403,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         //have, for some reason, negative nodes with no positive counterpart.  For
         //that reason, we will now make any reverse complement nodes for nodes that
         //lack them.
-        QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -491,7 +491,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
     //Even though the Trinity.fasta file only contains positive nodes, Bandage
     //expects negative reverse complements nodes, so make them now.
-    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -526,7 +526,7 @@ void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 
 void MainWindow::pointEachNodeToItsReverseComplement()
 {
-    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -549,7 +549,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
 {
     if (g_settings->graphScope == WHOLE_GRAPH)
     {
-        QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -586,7 +586,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
     }
 
     //First loop through each node, adding it to OGDF if it is drawn.
-    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -740,14 +740,14 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
 bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
 {
-    int aStart = abs(a->m_startingNode->m_number);
-    int bStart = abs(b->m_startingNode->m_number);
-    int positiveAStart = abs(aStart);
-    int positiveBStart = abs(bStart);
-    int aEnd = abs(a->m_endingNode->m_number);
-    int bEnd = abs(b->m_endingNode->m_number);
-    int positiveAEnd = abs(aEnd);
-    int positiveBEnd = abs(bEnd);
+    long long aStart = llabs(a->m_startingNode->m_number);
+    long long bStart = llabs(b->m_startingNode->m_number);
+    long long positiveAStart = llabs(aStart);
+    long long positiveBStart = llabs(bStart);
+    long long aEnd = llabs(a->m_endingNode->m_number);
+    long long bEnd = llabs(b->m_endingNode->m_number);
+    long long positiveAEnd = llabs(aEnd);
+    long long positiveBEnd = llabs(bEnd);
 
     if (positiveAStart != positiveBStart)
         return positiveAStart < positiveBStart;
@@ -963,7 +963,7 @@ void MainWindow::addGraphicsItemsToScene()
     double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
 
     //First make the GraphicsItemNode objects
-    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -998,7 +998,7 @@ void MainWindow::addGraphicsItemsToScene()
 
     //Now add the GraphicsItemNode objects to the scene so they are drawn
     //on top
-    QMapIterator<int, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
     while (j.hasNext())
     {
         j.next();
@@ -1358,7 +1358,7 @@ void MainWindow::openSettingsDialog()
         if (settingsBefore.minimumContigWidth != g_settings->minimumContigWidth ||
                 settingsBefore.coverageContigWidth != g_settings->coverageContigWidth)
         {
-            QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+            QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
             while (i.hasNext())
             {
                 i.next();
@@ -1543,7 +1543,7 @@ void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
-    QMapIterator<int, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();

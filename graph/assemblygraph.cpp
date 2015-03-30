@@ -24,7 +24,7 @@ AssemblyGraph::~AssemblyGraph()
 
 void AssemblyGraph::cleanUp()
 {
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -98,7 +98,7 @@ void AssemblyGraph::createDeBruijnEdge(int node1Number, int node2Number)
 
 void AssemblyGraph::clearOgdfGraphAndResetNodes()
 {
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -179,7 +179,7 @@ double AssemblyGraph::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
     long double coverageSum = 0.0;
     long long totalLength = 0;
 
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -204,7 +204,7 @@ double AssemblyGraph::getMaxDeBruijnGraphCoverageOfDrawnNodes()
 {
     double maxCoverage = 1.0;
 
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -219,7 +219,7 @@ double AssemblyGraph::getMaxDeBruijnGraphCoverageOfDrawnNodes()
 
 void AssemblyGraph::resetNodeContiguityStatus()
 {
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -229,7 +229,7 @@ void AssemblyGraph::resetNodeContiguityStatus()
 
 void AssemblyGraph::resetAllNodeColours()
 {
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -240,7 +240,7 @@ void AssemblyGraph::resetAllNodeColours()
 
 void AssemblyGraph::clearAllBlastHitPointers()
 {
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -259,7 +259,7 @@ void AssemblyGraph::determineGraphInfo()
     long long totalLength = 0;
     std::vector<double> nodeCoverages;
 
-    QMapIterator<int, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    QMapIterator<long long, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();

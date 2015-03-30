@@ -38,7 +38,7 @@ public:
 
 private:
     Ui::BlastSearchDialog *ui;
-    QMap<int, DeBruijnNode*> * m_deBruijnGraphNodes;
+    QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
 
