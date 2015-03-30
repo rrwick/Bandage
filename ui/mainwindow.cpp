@@ -455,7 +455,15 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         {
             QString pathPart = pathParts.at(i);
             QStringList nodeParts = pathPart.split(":");
-            int nodeNumber = nodeParts.at(0).toInt();
+
+            //Most node numbers will be formatted simply as the number, but some
+            //(I don't know why) have '@' and the start and '@!' at the end.  In
+            //these cases, we must strip those extra characters off.
+            QString nodeNumberString = nodeParts.at(0);
+            if (nodeNumberString.at(0) == '@')
+                nodeNumberString = nodeNumberString.mid(1, nodeNumberString.length() - 3);
+
+            int nodeNumber = nodeNumberString.toInt();
             QString nodeRange = nodeParts.at(1);
 
             //If the node doesn't yet exist, make it now.
