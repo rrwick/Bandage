@@ -8,7 +8,8 @@
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
 
-AssemblyGraph::AssemblyGraph()
+AssemblyGraph::AssemblyGraph() :
+    m_trinityGraph(false)
 {
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |

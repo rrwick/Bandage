@@ -23,8 +23,9 @@
 #include "graphicsitemnode.h"
 #include <math.h>
 #include "../blast/blasthit.h"
+#include "assemblygraph.h"
 
-DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence, bool trinityNode) :
+DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
     m_number(number),
     m_length(length),
     m_coverage(coverage),
@@ -37,8 +38,7 @@ DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteA
     m_startingNode(false),
     m_drawn(false),
     m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190)),
-    m_trinityNode(trinityNode)
+    m_customColour(QColor(190, 190, 190))
 {
 }
 
@@ -333,7 +333,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 
 QString DeBruijnNode::getNodeNumberText(bool commas)
 {
-    if (m_trinityNode)
+    if (g_assemblyGraph->m_trinityGraph)
     {
         int transcript;
         int component;

@@ -258,6 +258,8 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
+    g_assemblyGraph->m_trinityGraph = false;
+
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
     {
@@ -309,6 +311,8 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     MyProgressDialog progress(this, "Loading FASTG file...", false);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
+
+    g_assemblyGraph->m_trinityGraph = false;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -430,6 +434,8 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
+    g_assemblyGraph->m_trinityGraph = true;
+
     std::vector<QString> names;
     std::vector<QString> sequences;
     readFastaFile(fullFileName, &names, &sequences);
@@ -486,7 +492,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
-                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence, true);
+                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence);
                 g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
             }
 
@@ -529,8 +535,7 @@ void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     if (reverseComplementNode == 0)
     {
         DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
-                                                  g_assemblyGraph->getReverseComplement(node->m_sequence),
-                                                  node->m_trinityNode);
+                                                  g_assemblyGraph->getReverseComplement(node->m_sequence));
         g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
     }
 }

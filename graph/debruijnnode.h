@@ -34,7 +34,7 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(long long number, int length, double coverage, QByteArray sequence, bool trinityNode = false);
+    DeBruijnNode(long long number, int length, double coverage, QByteArray sequence);
     ~DeBruijnNode();
 
     long long m_number;
@@ -53,7 +53,6 @@ public:
     QColor m_customColour;
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
-    bool m_trinityNode;
 
     void addEdge(DeBruijnEdge * edge);
     void resetNode();
