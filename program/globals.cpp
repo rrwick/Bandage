@@ -147,6 +147,26 @@ long long getFullTrinityNodeNumberFromParts(int transcript, int component, long 
     return fullNodeNumber;
 }
 
+long long getFullTrinityNodeNumberFromName(QString name)
+{
+    int transcriptStartIndex = name.indexOf("TR") + 2;
+    int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
+    int transcriptLength = transcriptEndIndex - transcriptStartIndex;
+    int transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+
+    int componentStartIndex = name.indexOf("|c") + 2;
+    int componentEndIndex = name.indexOf("_", componentStartIndex);
+    int componentLength = componentEndIndex - componentStartIndex;
+    int component = name.mid(componentStartIndex, componentLength).toInt();
+
+    int nodeNumberStartIndex = componentEndIndex + 1;
+    int nodeNumberEndIndex = name.length();
+    int nodeNumberLength = nodeNumberEndIndex - nodeNumberStartIndex;
+    long long nodeNumber = name.mid(nodeNumberStartIndex, nodeNumberLength).toLongLong();
+
+    return getFullTrinityNodeNumberFromParts(transcript, component, nodeNumber);
+}
+
 void getTrinityPartsFromFullNodeNumber(long long fullNodeNumber, int * transcript, int * component, long long * node)
 {
     bool negative = fullNodeNumber < 0;
@@ -162,4 +182,16 @@ void getTrinityPartsFromFullNodeNumber(long long fullNodeNumber, int * transcrip
         nodeNumber *= -1LL;
 
     *node = nodeNumber;
+}
+
+
+QString getTrinityNodeNameFromFullNodeNumber(long long fullNodeNumber)
+{
+    int transcript;
+    int component;
+    long long node;
+    getTrinityPartsFromFullNodeNumber(fullNodeNumber, &transcript, &component, &node);
+    QString numberText = "TR" + QString::number(transcript) + "|c" +
+            QString::number(component) + "_" + QString::number(node);
+    return numberText;
 }

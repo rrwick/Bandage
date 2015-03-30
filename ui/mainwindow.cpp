@@ -917,7 +917,11 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     QStringList nodesList = nodesString.split(",");
     for (int i = 0; i < nodesList.size(); ++i)
     {
-        long long nodeNumber = nodesList.at(i).toLongLong();
+        long long nodeNumber;
+        if (g_assemblyGraph->m_trinityGraph)
+            nodeNumber = getFullTrinityNodeNumberFromName(nodesList.at(i));
+        else
+            nodeNumber = nodesList.at(i).toLongLong();
         if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
             returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber]);
         else if (nodesNotInGraph != 0)

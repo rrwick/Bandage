@@ -334,15 +334,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 QString DeBruijnNode::getNodeNumberText(bool commas)
 {
     if (g_assemblyGraph->m_trinityGraph)
-    {
-        int transcript;
-        int component;
-        long long node;
-        getTrinityPartsFromFullNodeNumber(m_number, &transcript, &component, &node);
-        QString numberText = "TR" + QString::number(transcript) + "|c" +
-                QString::number(component) + "_" + QString::number(node);
-        return numberText;
-    }
+        return getTrinityNodeNameFromFullNodeNumber(m_number);
     else if (commas)
         return formatIntForDisplay(m_number);
     else
