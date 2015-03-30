@@ -43,7 +43,6 @@ private:
     QString m_blastnCommand;
 
     int getNodeNumberFromString(QString nodeString);
-    void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
     void setUiStep(int step);
     void clearBlastHits();
     void setInfoTexts();

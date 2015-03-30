@@ -1,4 +1,4 @@
-//Copyright 2015 Ryan Wick
+﻿//Copyright 2015 Ryan Wick
 
 //This file is part of Bandage
 
@@ -118,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_LastGraph, SIGNAL(triggered()), this, SLOT(loadLastGraph()));
     connect(ui->actionLoad_fastg, SIGNAL(triggered()), this, SLOT(loadFastg()));
+    connect(ui->actionLoad_Trinity_fasta, SIGNAL(triggered()), this, SLOT(loadTrinityFasta()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -203,6 +204,11 @@ void MainWindow::loadFastg()
     loadGraphFile("FASTG");
 }
 
+void MainWindow::loadTrinityFasta()
+{
+    loadGraphFile("Trinity.fasta");
+}
+
 
 void MainWindow::loadGraphFile(QString graphFileType)
 {
@@ -211,7 +217,8 @@ void MainWindow::loadGraphFile(QString graphFileType)
     if (fullFileName != "") //User did not hit cancel
     {
         if ( (graphFileType == "LastGraph" && !checkFileIsLastGraph(fullFileName)) ||
-             (graphFileType == "FASTG" && !checkFileIsFastG(fullFileName)) )
+             (graphFileType == "FASTG" && !checkFileIsFastG(fullFileName)) ||
+             (graphFileType == "Trinity.fasta" && !checkFileIsTrinityFasta(fullFileName)) )
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::question(this, graphFileType + " file?",
@@ -229,16 +236,9 @@ void MainWindow::loadGraphFile(QString graphFileType)
         if (graphFileType == "LastGraph")
             buildDeBruijnGraphFromLastGraph(fullFileName);
         else if (graphFileType == "FASTG")
-        {
-            bool succeeded = buildDeBruijnGraphFromFastg(fullFileName);
-            if (!succeeded)
-            {
-                QMessageBox::information(this, "FASTG problem", "There was a problem loading the FASTG file.  "
-                                                                "Are you sure it was made by SPAdes version 3.5.0 or later?",
-                                         QMessageBox::Close);
-                cleanUp();
-            }
-        }
+            buildDeBruijnGraphFromFastg(fullFileName);
+        else if (graphFileType == "Trinity.fasta")
+            buildDeBruijnGraphFromTrinityFasta(fullFileName);
 
         enableDisableUiElements(GRAPH_LOADED);
         setWindowTitle("Bandage - " + fullFileName);
@@ -303,8 +303,8 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
 
 
-//Returns true if it succeeded, false if it failed.
-bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
+
+void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
     MyProgressDialog progress(this, "Loading FASTG file...", false);
     progress.setWindowModality(Qt::WindowModal);
@@ -443,11 +443,88 @@ bool MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
             int node2Number = edgeEndingNodeNumbers[i];
             g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
         }
+    }
+}
+
+
+void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
+{
+    MyProgressDialog progress(this, "Loading Trinity.fasta file...", false);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+
+    DeBruijnNode * node = 0;
+
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+
+            QString line = in.readLine();
+
+            //If the line starts with a '>', then we are beginning a new node.
+            if (line.startsWith(">"))
+            {
+                int lengthStartIndex = line.indexOf("len=") + 4;
+                int lengthEndIndex = line.indexOf(" ", lengthStartIndex);
+                int lengthLength = lengthEndIndex - lengthStartIndex;
+                int nodeLength = line.mid(lengthStartIndex, lengthLength).toInt();
+
+
+                int pathStartIndex = line.indexOf("path=[") + 6;
+                int pathEndIndex = line.indexOf("]", pathStartIndex);
+                int pathLength = pathEndIndex - pathStartIndex;
+                QString path = line.mid(pathStartIndex, pathLength);
+
+                QStringList pathParts = path.split(" ");
+
+
+
+
+
+                QString TEST = "";
+                for (int i = 0; i < pathParts.length(); ++i)
+                {
+                    TEST += pathParts.at(i);
+                    TEST += "\n";
+                }
+
+
+
+                QMessageBox::information(this, "TEST", TEST);
+                return;
+
+
+
+
+
+
+
+
+
+
+            }
+
+            //If the line does not start with a '>', then this line is part of the
+            //sequence for the last node.
+            else
+            {
+                QByteArray sequenceLine = line.simplified().toLocal8Bit();
+                if (node != 0)
+                    node->m_sequence.append(sequenceLine);
+            }
+
+
+        }
+
+
 
     }
-
-    return true;
 }
+
 
 void MainWindow::buildOgdfGraphFromNodesAndEdges()
 {
@@ -520,6 +597,12 @@ bool MainWindow::checkFileIsLastGraph(QString fullFileName)
 bool MainWindow::checkFileIsFastG(QString fullFileName)
 {
     return checkFirstLineOfFile(fullFileName, ">NODE");
+}
+
+//Cursory look to see if file appears to be a Trinity.fasta file.
+bool MainWindow::checkFileIsTrinityFasta(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "path=\\[");
 }
 
 

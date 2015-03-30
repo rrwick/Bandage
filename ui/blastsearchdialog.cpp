@@ -85,51 +85,6 @@ BlastSearchDialog::~BlastSearchDialog()
 }
 
 
-void BlastSearchDialog::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
-{
-    QFile inputFile(filename);
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-        QString name = "";
-        QString sequence = "";
-
-        QTextStream in(&inputFile);
-        while (!in.atEnd())
-        {
-            QString line = in.readLine();
-
-            if (line.length() == 0)
-                continue;
-
-            if (line.at(0) == '>')
-            {
-                //If there is a current sequence, add it to the vectors now.
-                if (name.length() > 0)
-                {
-                    names->push_back(name);
-                    sequences->push_back(sequence);
-                }
-
-                line.remove(0, 1); //Remove '>' from start
-                name = line;
-                sequence = "";
-            }
-
-            else //It's a sequence line
-                sequence += line.simplified();
-        }
-
-        //Add the last target to the results now.
-        if (name.length() > 0)
-        {
-            names->push_back(name);
-            sequences->push_back(sequence);
-        }
-
-        inputFile.close();
-    }
-}
-
 void BlastSearchDialog::clearBlastHits()
 {
     g_blastSearch->m_hits.clear();

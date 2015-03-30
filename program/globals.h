@@ -19,6 +19,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#include <vector>
 #include <QString>
 
 class Settings;
@@ -47,5 +48,6 @@ QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay);
 
 void emptyTempDirectory();
 
+void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
 
 #endif // GLOBALS_H

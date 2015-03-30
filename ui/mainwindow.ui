@@ -1656,6 +1656,7 @@
     </property>
     <addaction name="actionLoad_LastGraph"/>
     <addaction name="actionLoad_fastg"/>
+    <addaction name="actionLoad_Trinity_fasta"/>
     <addaction name="separator"/>
     <addaction name="actionSave_image_current_view"/>
     <addaction name="actionSave_image_entire_scene"/>
@@ -1776,6 +1777,15 @@
    </property>
    <property name="text">
     <string>Selection panel</string>
+   </property>
+  </action>
+  <action name="actionLoad_Trinity_fasta">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Trinity.fasta</string>
    </property>
   </action>
  </widget>

@@ -73,10 +73,12 @@ private:
     void setSceneRectangle();
     bool checkFileIsLastGraph(QString fullFileName);
     bool checkFileIsFastG(QString fullFileName);
+    bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
     void loadGraphFile(QString graphFileType);
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
-    bool buildDeBruijnGraphFromFastg(QString fullFileName);
+    void buildDeBruijnGraphFromFastg(QString fullFileName);
+    void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
     void enableDisableUiElements(UiState uiState);
@@ -84,6 +86,7 @@ private:
 private slots:
     void loadLastGraph();
     void loadFastg();
+    void loadTrinityFasta();
     void selectionChanged();
     void graphScopeChanged();
     void drawGraph();
