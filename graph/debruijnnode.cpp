@@ -24,12 +24,21 @@
 #include <math.h>
 #include "../blast/blasthit.h"
 
-DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
-    m_number(number), m_length(length), m_coverage(coverage),
-    m_coverageRelativeToMeanDrawnCoverage(1.0), m_sequence(sequence),
-    m_contiguityStatus(NOT_CONTIGUOUS), m_reverseComplement(0), m_ogdfNode(0),
-    m_graphicsItemNode(0), m_startingNode(false), m_drawn(false), m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190))
+DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence, bool trinityNode) :
+    m_number(number),
+    m_length(length),
+    m_coverage(coverage),
+    m_coverageRelativeToMeanDrawnCoverage(1.0),
+    m_sequence(sequence),
+    m_contiguityStatus(NOT_CONTIGUOUS),
+    m_reverseComplement(0),
+    m_ogdfNode(0),
+    m_graphicsItemNode(0),
+    m_startingNode(false),
+    m_drawn(false),
+    m_highestDistanceInNeighbourSearch(0),
+    m_customColour(QColor(190, 190, 190)),
+    m_trinityNode(trinityNode)
 {
 }
 
@@ -320,3 +329,21 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 
     return returnVector;
 }
+
+
+QString DeBruijnNode::getNodeNumberText()
+{
+    if (m_trinityNode)
+    {
+        int transcript;
+        int component;
+        long long node;
+        getTrinityPartsFromFullNodeNumber(m_number, &transcript, &component, &node);
+        QString numberText = "TR" + QString::number(transcript) + "|c" +
+                QString::number(component) + "_" + QString::number(node);
+        return numberText;
+    }
+    else
+        return formatIntForDisplay(m_number);
+}
+

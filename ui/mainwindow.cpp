@@ -486,7 +486,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
-                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence);
+                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence, true);
                 g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
             }
 
@@ -529,7 +529,8 @@ void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     if (reverseComplementNode == 0)
     {
         DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
-                                                  g_assemblyGraph->getReverseComplement(node->m_sequence));
+                                                  g_assemblyGraph->getReverseComplement(node->m_sequence),
+                                                  node->m_trinityNode);
         g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
     }
 }
