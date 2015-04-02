@@ -29,6 +29,11 @@ img.progression {
 	margin-left: 10px;
 }
 
+.wrapper         {width:100%;height:100%;margin:0 auto;background:#CCC}
+.h_iframe        {position:relative;}
+.h_iframe .ratio {display:block;width:100%;height:auto;}
+.h_iframe iframe {position:absolute;top:0;left:0;width:100%; height:100%;}
+
 div.floatright {
 float: right;
 width: 160px;
