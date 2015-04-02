@@ -104,30 +104,39 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
     //in GraphicsViewZoom does.  This keeps the zoom steps consistent
     //between keyboard and mouse wheel.
     int angle = 0;
+
+
+    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+
     if (event->matches(QKeySequence::ZoomIn) ||
-            event->key() == Qt::Key_Equal)
-        angle = 120;
+            event->key() == Qt::Key_Equal ||
+            event->key() == Qt::Key_Plus)
+    {
+        if (shiftPressed)
+        {
+            rotate(1.0);
+            m_rotation += 1.0;
+        }
+        else
+            angle = 120;
+    }
     else if (event->matches(QKeySequence::ZoomOut) ||
-             event->key() == Qt::Key_Minus)
-        angle = -120;
+             event->key() == Qt::Key_Minus ||
+             event->key() == Qt::Key_Underscore)
+    {
+        if (shiftPressed)
+        {
+            rotate(-1.0);
+            m_rotation -= 1.0;
+        }
+        else
+            angle = -120;
+    }
 
     if (angle != 0)
     {
         double factor = qPow(m_zoom->_zoom_factor_base, angle);
         m_zoom->gentle_zoom(factor, KEYBOARD);
-    }
-
-    //When the user uses shift and the plus/minus keys, the view rotates
-    if (event->key() == Qt::Key_Plus && event->modifiers() == Qt::ShiftModifier)
-    {
-        rotate(1.0);
-        m_rotation += 1.0;
-    }
-    else if (event->key() == Qt::Key_Underscore && event->modifiers() == Qt::ShiftModifier)
-    {
-
-        rotate(-1.0);
-        m_rotation -= 1.0;
     }
 
     QGraphicsView::keyPressEvent(event);
