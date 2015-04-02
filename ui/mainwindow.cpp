@@ -189,6 +189,7 @@ void MainWindow::cleanUp()
     emptyTempDirectory();
     g_blastSearch->cleanUp();
     g_assemblyGraph->cleanUp();
+    setWindowTitle("Bandage");
 }
 
 
