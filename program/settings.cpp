@@ -27,9 +27,8 @@ Settings::Settings()
     segmentLength = 15.0;
     graphLayoutQuality = 1;
 
-    minimumContigWidth = 2.0;
-    coverageContigWidth = 4.0;
-    maxContigWidth = 30.0;
+    averageNodeWidth = 5.0;
+    coverageEffectOnWidth = 0.5;
     edgeWidth = 2.0;
     outlineThickness = 0.5;
     selectionThickness = 1.5;

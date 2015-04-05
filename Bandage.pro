@@ -28,6 +28,8 @@ CONFIG += c++11
 target.path += /usr/local/bin
 INSTALLS += target
 
+INCLUDEPATH += ui
+
 SOURCES += \
     program/main.cpp\
     program/settings.cpp \

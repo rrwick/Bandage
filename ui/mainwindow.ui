@@ -1794,13 +1794,13 @@
   <customwidget>
    <class>InfoTextWidget</class>
    <extends>QWidget</extends>
-   <header>ui/infotextwidget.h</header>
+   <header>infotextwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>VerticalScrollArea</class>
    <extends>QScrollArea</extends>
-   <header>ui/verticalscrollarea.h</header>
+   <header>verticalscrollarea.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

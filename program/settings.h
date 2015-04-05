@@ -35,9 +35,8 @@ public:
     double segmentLength;
     int graphLayoutQuality;
 
-    double minimumContigWidth;
-    double coverageContigWidth;
-    double maxContigWidth;
+    double averageNodeWidth;
+    double coverageEffectOnWidth;
     double edgeWidth;
     double outlineThickness;
     double selectionThickness;

@@ -615,9 +615,7 @@ QColor GraphicsItemNode::getCoverageColour()
 
 void GraphicsItemNode::setWidth()
 {
-    m_width = g_settings->coverageContigWidth * m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage +
-            g_settings->minimumContigWidth;
-    if (m_width > g_settings->maxContigWidth)
-        m_width = g_settings->maxContigWidth;
+    double widthRelativeToAverage = (m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage - 1.0) * g_settings->coverageEffectOnWidth + 1.0;
+    m_width = g_settings->averageNodeWidth * widthRelativeToAverage;
 }
 

@@ -97,9 +97,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     }
 
     intFunctionPointer(&settings->basePairsPerSegment, ui->basePairsPerSegmentSpinBox);
-    doubleFunctionPointer(&settings->minimumContigWidth, ui->minimumContigWidthSpinBox, false);
-    doubleFunctionPointer(&settings->coverageContigWidth, ui->coverageContigWidthSpinBox, false);
-    doubleFunctionPointer(&settings->maxContigWidth, ui->maximumContigWidthSpinBox, false);
+    doubleFunctionPointer(&settings->averageNodeWidth, ui->averageNodeWidthSpinBox, false);
+    doubleFunctionPointer(&settings->coverageEffectOnWidth, ui->coverageEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
@@ -222,11 +221,11 @@ void SettingsDialog::setInfoTexts()
                                                 "positioning the graph components. Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
                                                 "more pleasing layouts.");
-    ui->minimumContigWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
-    ui->coverageContigWidthInfoText->setInfoText("This setting controls the additional width added to nodes based on their "
-                                                 "coverage. If set to zero, all nodes will have the same width.");
-    ui->maximumContigWidthInfoText->setInfoText("This setting limits the node width so very high coverage nodes do not appear "
-                                                "excessively wide.");
+    ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
+    ui->coverageEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's coverage affects its width.<br><br>"
+                                                   "If set to 0%, all nodes will have the same width (equal to the average "
+                                                   "node width).  If set to 100%, the width of each node will be in direct "
+                                                   "proportion to its coverage.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
     ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
