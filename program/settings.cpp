@@ -33,7 +33,7 @@ Settings::Settings()
     outlineThickness = 0.5;
     selectionThickness = 1.5;
     arrowheadSize = 0.01;
-    textOutlineThickness = 0.5;
+    textOutlineThickness = 0.3;
 
     blastPartsPerQuery = 100;
 
