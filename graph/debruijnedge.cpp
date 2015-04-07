@@ -110,23 +110,53 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 //If forward is true, it looks in a forward direction (starting nodes to
 //ending nodes).  If forward is false, it looks in a backward direction
 //(ending nodes to starting nodes).
-std::vector< std::vector <DeBruijnNode *> > DeBruijnEdge::getAllPaths(bool forward)
+void DeBruijnEdge::tracePaths(bool forward,
+                              int stepsRemaining,
+                              std::vector< std::vector <DeBruijnNode *> > * allPaths,
+                              std::vector<DeBruijnNode *> pathSoFar)
 {
-    std::vector< std::vector <DeBruijnNode *> > paths;
+    //Find the node in the direction we are tracing.
+    DeBruijnNode * nextNode;
+    if (forward)
+        nextNode = m_endingNode;
+    else
+        nextNode = m_startingNode;
 
+    //Add that node to the path so far.
+    pathSoFar.push_back(nextNode);
 
+    //If there are no steps left, then the path so far is done.
+    --stepsRemaining;
+    if (stepsRemaining == 0)
+    {
+        allPaths->push_back(pathSoFar);
+        return;
+    }
 
+    //If the code got here, then more steps remain.
+    //Find the edges that are in the correct direction.
+    std::vector<DeBruijnEdge *> nextEdges;
+    for (size_t i = 0; i < nextNode->m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = nextNode->m_edges[i];
 
+        //If forward, we're looking for edges that lead away from
+        //nextNode.  If backward, we're looking for edges that lead
+        //into nextNode.
+        if ((forward && edge->m_startingNode == nextNode) ||
+                (!forward && edge->m_endingNode == nextNode))
+            nextEdges.push_back(edge);
+    }
 
+    //If there are no next edges, then we are finished with the
+    //path search, even though steps remain.
+    if (nextEdges.size() == 0)
+    {
+        allPaths->push_back(pathSoFar);
+        return;
+    }
 
-
-
-
-
-
-
-
-
-
-    return paths;
+    //Call this function on all of the next edges.
+    for (size_t i = 0; i < nextEdges.size(); ++i)
+        (nextEdges[i])->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
 }

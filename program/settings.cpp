@@ -63,9 +63,11 @@ Settings::Settings()
     edgeColour = QColor(0, 0, 0, 180);
     noSequenceColour = QColor(190, 190, 190);
     contiguousColour = QColor(0, 155, 0);
-    maybeContiguousColour = QColor(190, 190, 190);
+    maybeContiguousColour = QColor(155, 190, 155);
     notContiguousColour = QColor(240, 240, 240);
     noBlastHitsColour = QColor(240, 240, 240);
+
+    contiguitySearchSteps = 12;
 
     autoCoverageValue = true;
     lowCoverageValue = 5.0;

@@ -123,16 +123,17 @@ void DeBruijnNode::determineContiguity()
 
         bool outgoingEdge = (this == edge->m_startingNode);
 
-        std::vector< std::vector <DeBruijnNode *> > paths = edge->getAllPaths(outgoingEdge);
+        std::vector< std::vector <DeBruijnNode *> > allPaths;
+        edge->tracePaths(outgoingEdge, g_settings->contiguitySearchSteps, &allPaths);
 
         //Set all nodes in the paths as MAYBE_CONTIGUOUS
-        for (size_t j = 0; j < paths.size(); ++j)
+        for (size_t j = 0; j < allPaths.size(); ++j)
         {
-            for (size_t k = 0; k < paths[j].size(); ++k)
-                (paths[j][k])->setContiguityStatus(MAYBE_CONTIGUOUS);
+            for (size_t k = 0; k < allPaths[j].size(); ++k)
+                (allPaths[j][k])->setContiguityStatus(MAYBE_CONTIGUOUS);
         }
 
-        std::vector<DeBruijnNode *> commonNodes = getNodesCommonToAllPaths(&paths);
+        std::vector<DeBruijnNode *> commonNodes = getNodesCommonToAllPaths(&allPaths);
 
         //Set all common nodes as CONTIGUOUS
         for (size_t j = 0; j < commonNodes.size(); ++j)

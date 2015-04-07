@@ -76,6 +76,8 @@ public:
     QColor notAssignedColour;
     QColor noBlastHitsColour;
 
+    int contiguitySearchSteps;
+
     bool autoCoverageValue;
     double lowCoverageValue;
     QColor lowCoverageColour;
