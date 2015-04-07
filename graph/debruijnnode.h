@@ -62,7 +62,7 @@ public:
     bool thisOrReverseComplementInOgdf() {return (inOgdf() || m_reverseComplement->inOgdf());}
     bool thisOrReverseComplementNotInOgdf() {return !thisOrReverseComplementInOgdf();}
     void addToOgdfGraph(ogdf::Graph * ogdfGraph);
-    void determineContiguity(DeBruijnNode * previousNode);
+    void determineContiguity();
     void setContiguityStatus(ContiguityStatus newStatus);
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
                                   std::vector<DeBruijnNode *> * incomingNodes,
@@ -79,6 +79,7 @@ public:
     std::vector<BlastHitPart> getBlastHitPartsForThisNode();
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
     QString getNodeNumberText(bool commas);
+    std::vector<DeBruijnNode *> getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths);
 };
 
 #endif // DEBRUIJNNODE_H

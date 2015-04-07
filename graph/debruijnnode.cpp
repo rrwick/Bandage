@@ -109,84 +109,48 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 
 
 
-void DeBruijnNode::determineContiguity(DeBruijnNode * previousNode)
+void DeBruijnNode::determineContiguity()
 {
-    //If this is the start of the contiguity determination, travel out in both directions.
-    if (previousNode == 0)
-    {
-        setContiguityStatus(STARTING);
-        for (size_t i = 0; i < m_edges.size(); ++i)
-        {
-            DeBruijnNode * otherNode = m_edges[i]->getOtherNode(this);
-            otherNode->determineContiguity(this);
-        }
-        return;
-    }
+    setContiguityStatus(STARTING);
 
-    //If this is not the start, determine whether the previous node came from the incoming or outgoing connections.
-    ContiguityStatus startingStatus = m_contiguityStatus;
-    std::vector<DeBruijnNode *> incomingNodes;
-    std::vector<DeBruijnNode *> outgoingNodes;
+    //For each path leaving this node, find all possible paths
+    //outward.  Nodes in any of the paths for an edge are
+    //MAYBE_CONTIGUOUS.  Nodes in all of the paths for an edge
+    //are CONTIGUOUS.
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
-        DeBruijnNode * otherNode = m_edges[i]->getOtherNode(this);
-        if (this == m_edges[i]->m_startingNode)
-            outgoingNodes.push_back(otherNode);
-        else //This node is the ending node of the edge
-            incomingNodes.push_back(otherNode);
+        DeBruijnEdge * edge = m_edges[i];
+
+        bool outgoingEdge = (this == edge->m_startingNode);
+
+        std::vector< std::vector <DeBruijnNode *> > paths = edge->getAllPaths(outgoingEdge);
+
+        //Set all nodes in the paths as MAYBE_CONTIGUOUS
+        for (size_t j = 0; j < paths.size(); ++j)
+        {
+            for (size_t k = 0; k < paths[j].size(); ++k)
+                (paths[j][k])->setContiguityStatus(MAYBE_CONTIGUOUS);
+        }
+
+        std::vector<DeBruijnNode *> commonNodes = getNodesCommonToAllPaths(&paths);
+
+        //Set all common nodes as CONTIGUOUS
+        for (size_t j = 0; j < commonNodes.size(); ++j)
+            (commonNodes[j])->setContiguityStatus(CONTIGUOUS);
     }
-    std::vector<DeBruijnNode *> * forwardNodes;
-    std::vector<DeBruijnNode *> * backwardNodes;
-    if (std::find(incomingNodes.begin(), incomingNodes.end(), previousNode) != incomingNodes.end())
-    {
-        //previousNode is in incomingEdges
-        forwardNodes = &outgoingNodes;
-        backwardNodes = &incomingNodes;
-    }
-    else
-    {
-        //previousNode is in outgoing
-        forwardNodes = &incomingNodes;
-        backwardNodes = &outgoingNodes;
-    }
+}
 
-    // If the previous node is contiguous (or the starting node) and the
-    // only path backward is to the previous node, then this node is
-    // definitely contiguous.
-    if ((previousNode->m_contiguityStatus == CONTIGUOUS || previousNode->m_contiguityStatus == STARTING) &&
-            backwardNodes->size() == 1 && (*backwardNodes)[0] == previousNode)
-        setContiguityStatus(CONTIGUOUS);
-
-    // If the previous node is contiguous, but there are multiple paths
-    // backwards, then this node is contiguous until branching.
-    else if ((previousNode->m_contiguityStatus == CONTIGUOUS || previousNode->m_contiguityStatus == STARTING) &&
-             backwardNodes->size() > 1)
-        setContiguityStatus(CONTIGUOUS_UNTIL_BRANCHING);
-
-    // If the previous node is contiguous until branching, but this is
-    // the only path from that node, then this node is also contiguous
-    // until branching.
-    else if (previousNode->m_contiguityStatus == CONTIGUOUS_UNTIL_BRANCHING &&
-             previousNode->isOnlyPathInItsDirection(this, &incomingNodes, &outgoingNodes))
-        setContiguityStatus(CONTIGUOUS_UNTIL_BRANCHING);
-
-    // If the previous node is contiguous until branching, and it has
-    // branched, then this node is maybe contiguous.
-    else if (previousNode->m_contiguityStatus == CONTIGUOUS_UNTIL_BRANCHING &&
-             previousNode->isNotOnlyPathInItsDirection(this, &incomingNodes, &outgoingNodes))
-        setContiguityStatus(MAYBE_CONTIGUOUS);
-
-    // If the previous node is maybe contiguous, then this node is also maybe contiguous.
-    else if (previousNode->m_contiguityStatus == MAYBE_CONTIGUOUS)
-        setContiguityStatus(MAYBE_CONTIGUOUS);
+std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths)
+{
+    std::vector<DeBruijnNode *> commonNodes;
 
 
-    //If this node's status has changed during this function, call this function
-    //on each of the forward connected nodes.
-    if (startingStatus == m_contiguityStatus)
-        return;
-    for (size_t i = 0; i < forwardNodes->size(); ++i)
-        (*forwardNodes)[i]->determineContiguity(this);
+
+
+
+
+
+    return commonNodes;
 }
 
 

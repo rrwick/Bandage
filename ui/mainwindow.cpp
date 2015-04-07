@@ -1264,9 +1264,7 @@ void MainWindow::determineContiguityFromSelectedNode()
     DeBruijnNode * selectedNode = m_scene->getOneSelectedNode();
     if (selectedNode != 0)
     {
-        selectedNode->determineContiguity(0);
-        if (!g_settings->doubleMode)
-            selectedNode->m_reverseComplement->determineContiguity(0);
+        selectedNode->determineContiguity();
         g_graphicsView->viewport()->update();
     }
     else

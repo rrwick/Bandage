@@ -40,6 +40,7 @@ public:
     void addToOgdfGraph(ogdf::Graph * ogdfGraph);
     void reset() {m_graphicsItemEdge = 0; m_drawn = false;}
     void determineIfDrawn() {m_drawn = edgeIsVisible();}
+    std::vector< std::vector <DeBruijnNode *> > getAllPaths(bool forward);
 
 private:
     bool edgeIsVisible();

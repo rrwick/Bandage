@@ -97,3 +97,36 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 
     ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
 }
+
+
+
+
+
+
+
+
+//This function traces all possible paths from this edge.
+//It proceeds a number of steps, as determined by a setting.
+//If forward is true, it looks in a forward direction (starting nodes to
+//ending nodes).  If forward is false, it looks in a backward direction
+//(ending nodes to starting nodes).
+std::vector< std::vector <DeBruijnNode *> > DeBruijnEdge::getAllPaths(bool forward)
+{
+    std::vector< std::vector <DeBruijnNode *> > paths;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return paths;
+}
