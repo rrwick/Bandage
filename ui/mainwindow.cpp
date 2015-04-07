@@ -145,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
     connect(ui->actionControls_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
+    connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1223,27 +1224,30 @@ void MainWindow::switchColourScheme()
     {
     case 0:
         g_settings->nodeColourScheme = ONE_COLOUR;
+        ui->contiguityWidget->setVisible(false);
         break;
     case 1:
         g_settings->nodeColourScheme = COVERAGE_COLOUR;
+        ui->contiguityWidget->setVisible(false);
         break;
     case 2:
         setRandomColourFactor();
         g_settings->nodeColourScheme = RANDOM_COLOURS;
+        ui->contiguityWidget->setVisible(false);
         break;
     case 3:
         setRandomColourFactor();
         g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
+        ui->contiguityWidget->setVisible(false);
         break;
     case 4:
-        g_settings->nodeColourScheme = CUSTOM_COLOURS;
+        g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
+        ui->contiguityWidget->setVisible(true);
         break;
-//    case 5:  //CONTIGUITY - THIS OPTION IS TEMPORARILY DISABLED!
-//        resetNodeContiguityStatus();
-//        g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
-//        ui->setNodeColourButton->setVisible(false);
-//        ui->contiguityButton->setVisible(true);
-//        break;
+    case 5:
+        g_settings->nodeColourScheme = CUSTOM_COLOURS;
+        ui->contiguityWidget->setVisible(false);
+        break;
     }
 
     g_assemblyGraph->resetAllNodeColours();
@@ -1265,6 +1269,9 @@ void MainWindow::determineContiguityFromSelectedNode()
             selectedNode->m_reverseComplement->determineContiguity(0);
         g_graphicsView->viewport()->update();
     }
+    else
+        QMessageBox::information(this, "No nodes selected", "Please select one or more nodes for which "
+                                                            "contiguity is to be determined.");
 }
 
 
@@ -1700,6 +1707,9 @@ void MainWindow::setInfoTexts()
                                         "to define their colour.</li></ul>"
                                         "See the 'Colours' section of the Bandage settings to control various "
                                         "colouring options.");
+    ui->contiguityInfoText->setInfoText("Select one or more nodes and then click this button.  Bandage will "
+                                        "then colour which other nodes in the graph are likely to be contiguous "
+                                        "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
                                         "nodes in the graph.<br><br>"
                                         "'Number', 'Length' and 'Coverage' labels are created automatically. "
