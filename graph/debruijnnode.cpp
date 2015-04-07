@@ -145,11 +145,25 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< 
 {
     std::vector<DeBruijnNode *> commonNodes;
 
+    //If there are no paths, then return the empty vector.
+    if (paths->size() == 0)
+        return commonNodes;
 
+    //If there is only one path in path, then they are all common nodes
+    commonNodes = (*paths)[0];
+    if (paths->size() == 1)
+        return commonNodes;
 
-
-
-
+    //If there are two or more paths, it's necessary to find the intersection.
+    for (size_t i = 1; i < paths->size(); ++i)
+    {
+        std::vector <DeBruijnNode *> * path = &((*paths)[i]);
+        std::sort(commonNodes.begin(), commonNodes.end());
+        std::sort(path->begin(), path->end());
+        std::vector<DeBruijnNode *> newCommonNodes;
+        std::set_intersection(commonNodes.begin(), commonNodes.end(), path->begin(), path->end(), std::back_inserter(newCommonNodes));
+        commonNodes = newCommonNodes;
+    }
 
     return commonNodes;
 }
