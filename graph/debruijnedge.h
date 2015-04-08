@@ -49,6 +49,7 @@ public:
                          DeBruijnNode * target);
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
                                                     bool forward);
+    int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path);
 
 private:
     bool edgeIsVisible();

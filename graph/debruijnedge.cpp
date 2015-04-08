@@ -146,8 +146,39 @@ void DeBruijnEdge::tracePaths(bool forward,
     }
 
     //Call this function on all of the next edges.
+    //However, we also need to check to see if we are tracing a loop
+    //and stop if that is the case.
     for (size_t i = 0; i < nextEdges.size(); ++i)
-        (nextEdges[i])->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
+    {
+        DeBruijnEdge * nextEdge = nextEdges[i];
+
+        //Determine the node that this next edge leads to.
+        DeBruijnNode * nextNextNode;
+        if (forward)
+            nextNextNode = nextEdge->m_endingNode;
+        else
+            nextNextNode = nextEdge->m_startingNode;
+
+        //If that node is already in the path TWICE so far, that means
+        //we're caught in a loop, and we should throw this path out.
+        //If it appears 0 or 1 times, then continue the path search.
+        if (timesNodeInPath(nextNextNode, &pathSoFar) < 2)
+            nextEdge->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
+    }
+}
+
+
+//This function counts how many times a node appears in a path
+int DeBruijnEdge::timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path)
+{
+    int count = 0;
+    for (size_t i = 0; i < path->size(); ++i)
+    {
+        if ( (*path)[i] == node)
+            ++count;
+    }
+
+    return count;
 }
 
 

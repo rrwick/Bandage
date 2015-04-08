@@ -67,7 +67,7 @@ Settings::Settings()
     notContiguousColour = QColor(240, 240, 240);
     noBlastHitsColour = QColor(240, 240, 240);
 
-    contiguitySearchSteps = 12;
+    contiguitySearchSteps = 10;
 
     autoCoverageValue = true;
     lowCoverageValue = 5.0;
