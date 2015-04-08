@@ -206,7 +206,9 @@ bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node)
         DeBruijnEdge * edge = m_edges[i];
         bool outgoingEdge = (this == edge->m_startingNode);
 
-        if (edge->leadsOnlyToNode(outgoingEdge, g_settings->contiguitySearchSteps, node))
+        std::vector<DeBruijnNode *> pathSoFar;
+        pathSoFar.push_back(this);
+        if (edge->leadsOnlyToNode(outgoingEdge, g_settings->contiguitySearchSteps, node, pathSoFar))
             return true;
     }
 

@@ -185,7 +185,8 @@ int DeBruijnEdge::timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode 
 
 bool DeBruijnEdge::leadsOnlyToNode(bool forward,
                                    int stepsRemaining,
-                                   DeBruijnNode * target)
+                                   DeBruijnNode * target,
+                                   std::vector<DeBruijnNode *> pathSoFar)
 {
     //Find the node in the direction we are tracing.
     DeBruijnNode * nextNode;
@@ -193,6 +194,16 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
         nextNode = m_endingNode;
     else
         nextNode = m_startingNode;
+
+    //Add that node to the path so far.
+    pathSoFar.push_back(nextNode);
+
+    //If this path has landed on the node from which the search began,
+    //that means we've followed a loop around.  The search has therefore
+    //failed because this path could represent circular DNA that does
+    //not contain the target.
+    if (nextNode == pathSoFar[0])
+        return false;
 
     //If the next node is the target, the search succeeded!
     if (nextNode == target)
@@ -214,10 +225,27 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
 
     //In order for the search to succeed, this function needs to return true
     //for all of the nextEdges.
+    //However, we also need to check to see if we are tracing a loop
+    //and stop if that is the case.
     for (size_t i = 0; i < nextEdges.size(); ++i)
     {
-        if ( !(nextEdges[i])->leadsOnlyToNode(forward, stepsRemaining, target) )
-            return false;
+        DeBruijnEdge * nextEdge = nextEdges[i];
+
+        //Determine the node that this next edge leads to.
+        DeBruijnNode * nextNextNode;
+        if (forward)
+            nextNextNode = nextEdge->m_endingNode;
+        else
+            nextNextNode = nextEdge->m_startingNode;
+
+        //If that node is already in the path TWICE so far, that means
+        //we're caught in a loop, and we should throw this path out.
+        //If it appears 0 or 1 times, then continue the path search.
+        if (timesNodeInPath(nextNextNode, &pathSoFar) < 2)
+        {
+            if ( !nextEdge->leadsOnlyToNode(forward, stepsRemaining, target, pathSoFar) )
+                return false;
+        }
     }
 
     //If the code got here, then the search succeeded!
