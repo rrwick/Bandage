@@ -260,12 +260,9 @@ void GraphicsItemNode::setNodeColour()
         switch (contiguityStatus)
         {
         case STARTING:
-            m_colour = g_settings->uniformNodeSpecialColour;
+            m_colour = g_settings->contiguityStartingColour;
             break;
         case CONTIGUOUS:
-            m_colour = g_settings->contiguousColour;
-            break;
-        case CONTIGUOUS_UNTIL_BRANCHING:
             m_colour = g_settings->contiguousColour;
             break;
         case MAYBE_CONTIGUOUS:

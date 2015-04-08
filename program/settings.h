@@ -69,14 +69,15 @@ public:
     QColor uniformNodeSpecialColour;
     QColor selectionColour;
     QColor edgeColour;
-    QColor noSequenceColour;
+
+    int contiguitySearchSteps;
     QColor contiguousColour;
     QColor maybeContiguousColour;
     QColor notContiguousColour;
-    QColor notAssignedColour;
+    QColor contiguityStartingColour;
+
     QColor noBlastHitsColour;
 
-    int contiguitySearchSteps;
 
     bool autoCoverageValue;
     double lowCoverageValue;

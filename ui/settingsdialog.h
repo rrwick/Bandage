@@ -47,6 +47,10 @@ private:
     QColor m_lowCoverageColour;
     QColor m_highCoverageColour;
     QColor m_selectionColour;
+    QColor m_contiguousColour;
+    QColor m_maybeContiguousColour;
+    QColor m_notContiguousColour;
+    QColor m_contiguityStartingColour;
 
     void loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings * settings);
     void setButtonColours();
@@ -60,6 +64,10 @@ private slots:
     void lowCoverageColourClicked();
     void highCoverageColourClicked();
     void selectionColourClicked();
+    void contiguousColourClicked();
+    void maybeContiguousColourClicked();
+    void notContiguousColourClicked();
+    void contiguityStartingColourClicked();
     void enableDisableCoverageValueSpinBoxes();
 
 public slots:

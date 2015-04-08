@@ -61,13 +61,14 @@ Settings::Settings()
     uniformNodeSpecialColour = QColor(0, 255, 0);
     selectionColour = QColor(0, 0, 255);
     edgeColour = QColor(0, 0, 0, 180);
-    noSequenceColour = QColor(190, 190, 190);
+
+    contiguitySearchSteps = 10;
     contiguousColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 240, 190);
     notContiguousColour = QColor(240, 240, 240);
-    noBlastHitsColour = QColor(240, 240, 240);
+    contiguityStartingColour = QColor(0, 255, 0);
 
-    contiguitySearchSteps = 10;
+    noBlastHitsColour = QColor(240, 240, 240);
 
     autoCoverageValue = true;
     lowCoverageValue = 5.0;

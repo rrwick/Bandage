@@ -36,6 +36,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
     connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
     connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
+    connect(ui->contiguousColourButton, SIGNAL(clicked()), this, SLOT(contiguousColourClicked()));
+    connect(ui->maybeContiguousColourButton, SIGNAL(clicked()), this, SLOT(maybeContiguousColourClicked()));
+    connect(ui->notContiguousColourButton, SIGNAL(clicked()), this, SLOT(notContiguousColourClicked()));
+    connect(ui->contiguityStartingColourButton, SIGNAL(clicked()), this, SLOT(contiguityStartingColourClicked()));
     connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
 }
 
@@ -108,6 +112,10 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
     colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
+    colourFunctionPointer(&settings->contiguousColour, &m_contiguousColour);
+    colourFunctionPointer(&settings->maybeContiguousColour, &m_maybeContiguousColour);
+    colourFunctionPointer(&settings->notContiguousColour, &m_notContiguousColour);
+    colourFunctionPointer(&settings->contiguityStartingColour, &m_contiguityStartingColour);
     doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
     doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
 
@@ -191,6 +199,43 @@ void SettingsDialog::selectionColourClicked()
     }
 }
 
+void SettingsDialog::contiguousColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour");
+    if (chosenColor.isValid())
+    {
+        m_contiguousColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::maybeContiguousColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_maybeContiguousColour, this, "Maybe contiguous colour");
+    if (chosenColor.isValid())
+    {
+        m_maybeContiguousColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::notContiguousColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_notContiguousColour, this, "Not contiguous colour");
+    if (chosenColor.isValid())
+    {
+        m_notContiguousColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::contiguityStartingColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_contiguityStartingColour, this, "Contiguity starting colour");
+    if (chosenColor.isValid())
+    {
+        m_contiguityStartingColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+
 
 void SettingsDialog::setButtonColours()
 {
@@ -201,6 +246,10 @@ void SettingsDialog::setButtonColours()
     ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
     ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
     ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
+    ui->contiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousColour.name()));
+    ui->maybeContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_maybeContiguousColour.name()));
+    ui->notContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_notContiguousColour.name()));
+    ui->contiguityStartingColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguityStartingColour.name()));
 }
 
 
@@ -258,6 +307,14 @@ void SettingsDialog::setInfoTexts()
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
+    ui->contiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
+                                              "are determined to be contiguous with the starting node(s).");
+    ui->maybeContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
+                                                   "are determined to be possibly contiguous with the starting node(s).");
+    ui->notContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
+                                                 "are not determined to be contiguous with the starting node(s).");
+    ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the "
+                                                      "starting node(s).");
 }
 
 

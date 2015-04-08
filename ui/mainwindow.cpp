@@ -1456,7 +1456,7 @@ void MainWindow::openSettingsDialog()
             }
         }
 
-        //If any of the colour changed, reset the node colours now.
+        //If any of the colours changed, reset the node colours now.
         if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
                 settingsBefore.uniformNegativeNodeColour != g_settings->uniformNegativeNodeColour ||
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
@@ -1464,7 +1464,11 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
                 settingsBefore.selectionColour != g_settings->selectionColour ||
                 settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
-                settingsBefore.highCoverageValue != g_settings->highCoverageValue)
+                settingsBefore.highCoverageValue != g_settings->highCoverageValue ||
+                settingsBefore.contiguousColour != g_settings->contiguousColour ||
+                settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
+                settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
+                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour)
         {
             g_assemblyGraph->resetAllNodeColours();
             g_graphicsView->viewport()->update();
