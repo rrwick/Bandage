@@ -63,8 +63,9 @@ public:
 
     NodeDragging nodeDragging;
 
-    QColor selectionColour;
     QColor edgeColour;
+    QColor outlineColour;
+    QColor selectionColour;
     QColor textColour;
 
     NodeColourScheme nodeColourScheme;

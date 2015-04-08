@@ -41,6 +41,8 @@ public:
 
 private:
     Ui::SettingsDialog *ui;
+    QColor m_edgeColour;
+    QColor m_outlineColour;
     QColor m_selectionColour;
     QColor m_textColour;
     QColor m_uniformPositiveNodeColour;
@@ -59,6 +61,8 @@ private:
 
 private slots:
     void restoreDefaults();
+    void edgeColourClicked();
+    void outlineColourClicked();
     void selectionColourClicked();
     void textColourClicked();
     void uniformPositiveNodeColourClicked();

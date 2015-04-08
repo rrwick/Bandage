@@ -1462,17 +1462,14 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
                 settingsBefore.lowCoverageColour != g_settings->lowCoverageColour ||
                 settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
-                settingsBefore.selectionColour != g_settings->selectionColour ||
                 settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
                 settingsBefore.highCoverageValue != g_settings->highCoverageValue ||
                 settingsBefore.contiguousColour != g_settings->contiguousColour ||
                 settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
                 settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
-                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour ||
-                settingsBefore.textColour != g_settings->textColour)
+                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour)
         {
             g_assemblyGraph->resetAllNodeColours();
-            g_graphicsView->viewport()->update();
         }
 
         g_graphicsView->setAntialiasing(g_settings->antialiasing);

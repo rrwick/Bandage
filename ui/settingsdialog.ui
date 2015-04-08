@@ -40,11 +40,18 @@
         <x>0</x>
         <y>-355</y>
         <width>472</width>
-        <height>1211</height>
+        <height>1285</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="23" column="0">
+       <item row="17" column="1">
+        <widget class="QLabel" name="label_27">
+         <property name="text">
+          <string>Outline colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="0">
         <widget class="InfoTextWidget" name="uniformNodeSpecialColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -89,7 +96,7 @@
          </property>
         </widget>
        </item>
-       <item row="18" column="1">
+       <item row="20" column="1">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -105,7 +112,7 @@
          </property>
         </spacer>
        </item>
-       <item row="38" column="0" colspan="3">
+       <item row="40" column="0" colspan="3">
         <widget class="Line" name="line_9">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -132,7 +139,7 @@
          </property>
         </widget>
        </item>
-       <item row="22" column="1">
+       <item row="24" column="1">
         <widget class="QLabel" name="label_17">
          <property name="text">
           <string>Uniform negative node colour:</string>
@@ -162,21 +169,21 @@
          </property>
         </spacer>
        </item>
-       <item row="17" column="1">
+       <item row="19" column="1">
         <widget class="QLabel" name="label_26">
          <property name="text">
           <string>Label font colour:</string>
          </property>
         </widget>
        </item>
-       <item row="22" column="2">
+       <item row="24" column="2">
         <widget class="QPushButton" name="uniformNegativeNodeColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="23" column="1">
+       <item row="25" column="1">
         <widget class="QLabel" name="label_14">
          <property name="text">
           <string>Uniform node special colour:</string>
@@ -193,7 +200,7 @@
          </property>
         </widget>
        </item>
-       <item row="17" column="0">
+       <item row="19" column="0">
         <widget class="InfoTextWidget" name="textColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -209,7 +216,7 @@
          </property>
         </widget>
        </item>
-       <item row="16" column="0">
+       <item row="18" column="0">
         <widget class="InfoTextWidget" name="selectionColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -273,7 +280,7 @@
          </layout>
         </widget>
        </item>
-       <item row="30" column="2">
+       <item row="32" column="2">
         <widget class="QWidget" name="widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="leftMargin">
@@ -340,7 +347,7 @@
          </property>
         </widget>
        </item>
-       <item row="29" column="2">
+       <item row="31" column="2">
         <widget class="QWidget" name="widget_4" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <property name="leftMargin">
@@ -404,7 +411,7 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="0">
+       <item row="23" column="0">
         <widget class="InfoTextWidget" name="uniformPositiveNodeColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -420,7 +427,7 @@
          </property>
         </widget>
        </item>
-       <item row="29" column="0">
+       <item row="31" column="0">
         <widget class="InfoTextWidget" name="coverageValuesInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -436,7 +443,7 @@
          </property>
         </widget>
        </item>
-       <item row="27" column="0">
+       <item row="29" column="0">
         <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -452,14 +459,14 @@
          </property>
         </widget>
        </item>
-       <item row="16" column="2">
+       <item row="18" column="2">
         <widget class="QPushButton" name="selectionColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="27" column="1">
+       <item row="29" column="1">
         <widget class="QLabel" name="label_15">
          <property name="text">
           <string>Low coverage colour:</string>
@@ -476,7 +483,7 @@
          </property>
         </widget>
        </item>
-       <item row="27" column="2">
+       <item row="29" column="2">
         <widget class="QPushButton" name="lowCoverageColourButton">
          <property name="text">
           <string/>
@@ -522,7 +529,7 @@
          </property>
         </widget>
        </item>
-       <item row="26" column="0" colspan="3">
+       <item row="28" column="0" colspan="3">
         <widget class="Line" name="line_8">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -586,7 +593,7 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="1">
+       <item row="23" column="1">
         <widget class="QLabel" name="label_13">
          <property name="text">
           <string>Uniform positive node colour:</string>
@@ -600,21 +607,21 @@
          </property>
         </widget>
        </item>
-       <item row="21" column="2">
+       <item row="23" column="2">
         <widget class="QPushButton" name="uniformPositiveNodeColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="28" column="2">
+       <item row="30" column="2">
         <widget class="QPushButton" name="highCoverageColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="35" column="0" colspan="3">
+       <item row="37" column="0" colspan="3">
         <widget class="QLabel" name="label_25">
          <property name="font">
           <font>
@@ -627,7 +634,7 @@
          </property>
         </widget>
        </item>
-       <item row="19" column="0" colspan="3">
+       <item row="21" column="0" colspan="3">
         <widget class="QLabel" name="label_23">
          <property name="font">
           <font>
@@ -640,7 +647,7 @@
          </property>
         </widget>
        </item>
-       <item row="25" column="0" colspan="3">
+       <item row="27" column="0" colspan="3">
         <widget class="QLabel" name="label_24">
          <property name="font">
           <font>
@@ -669,7 +676,7 @@
          </property>
         </widget>
        </item>
-       <item row="28" column="0">
+       <item row="30" column="0">
         <widget class="InfoTextWidget" name="highCoverageColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -701,14 +708,14 @@
          </property>
         </widget>
        </item>
-       <item row="28" column="1">
+       <item row="30" column="1">
         <widget class="QLabel" name="label_16">
          <property name="text">
           <string>High coverage colour:</string>
          </property>
         </widget>
        </item>
-       <item row="33" column="2">
+       <item row="35" column="2">
         <widget class="QWidget" name="widget_5" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <property name="leftMargin">
@@ -760,14 +767,14 @@
          </property>
         </widget>
        </item>
-       <item row="23" column="2">
+       <item row="25" column="2">
         <widget class="QPushButton" name="uniformNodeSpecialColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="39" column="1">
+       <item row="41" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -780,14 +787,14 @@
          </property>
         </spacer>
        </item>
-       <item row="16" column="1">
+       <item row="18" column="1">
         <widget class="QLabel" name="label_18">
          <property name="text">
           <string>Selection colour:</string>
          </property>
         </widget>
        </item>
-       <item row="29" column="1">
+       <item row="31" column="1">
         <widget class="QLabel" name="label_41">
          <property name="text">
           <string>Coverage values:</string>
@@ -808,7 +815,7 @@
          </property>
         </widget>
        </item>
-       <item row="22" column="0">
+       <item row="24" column="0">
         <widget class="InfoTextWidget" name="uniformNegativeNodeColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -872,6 +879,13 @@
          </property>
         </widget>
        </item>
+       <item row="19" column="2">
+        <widget class="QPushButton" name="textColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="14" column="0" colspan="3">
         <widget class="QLabel" name="label_12">
          <property name="font">
@@ -885,49 +899,49 @@
          </property>
         </widget>
        </item>
-       <item row="40" column="2">
+       <item row="42" column="2">
         <widget class="QPushButton" name="contiguousColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="41" column="1">
+       <item row="43" column="1">
         <widget class="QLabel" name="label_19">
          <property name="text">
           <string>Maybe contiguous colour:</string>
          </property>
         </widget>
        </item>
-       <item row="43" column="1">
+       <item row="45" column="1">
         <widget class="QLabel" name="label_20">
          <property name="text">
           <string>Contiguity starting colour:</string>
          </property>
         </widget>
        </item>
-       <item row="42" column="1">
+       <item row="44" column="1">
         <widget class="QLabel" name="label_21">
          <property name="text">
           <string>Not contiguous colour:</string>
          </property>
         </widget>
        </item>
-       <item row="41" column="2">
+       <item row="43" column="2">
         <widget class="QPushButton" name="maybeContiguousColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="40" column="1">
+       <item row="42" column="1">
         <widget class="QLabel" name="label_22">
          <property name="text">
           <string>Contiguous colour:</string>
          </property>
         </widget>
        </item>
-       <item row="40" column="0">
+       <item row="42" column="0">
         <widget class="InfoTextWidget" name="contiguousColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -943,21 +957,21 @@
          </property>
         </widget>
        </item>
-       <item row="42" column="2">
+       <item row="44" column="2">
         <widget class="QPushButton" name="notContiguousColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="43" column="2">
+       <item row="45" column="2">
         <widget class="QPushButton" name="contiguityStartingColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="41" column="0">
+       <item row="43" column="0">
         <widget class="InfoTextWidget" name="maybeContiguousColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -973,7 +987,7 @@
          </property>
         </widget>
        </item>
-       <item row="42" column="0">
+       <item row="44" column="0">
         <widget class="InfoTextWidget" name="notContiguousColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -989,7 +1003,7 @@
          </property>
         </widget>
        </item>
-       <item row="43" column="0">
+       <item row="45" column="0">
         <widget class="InfoTextWidget" name="contiguityStartingColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1005,14 +1019,14 @@
          </property>
         </widget>
        </item>
-       <item row="20" column="0" colspan="3">
+       <item row="22" column="0" colspan="3">
         <widget class="Line" name="line_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="34" column="1">
+       <item row="36" column="1">
         <spacer name="verticalSpacer_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1028,7 +1042,7 @@
          </property>
         </spacer>
        </item>
-       <item row="24" column="1">
+       <item row="26" column="1">
         <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1044,10 +1058,56 @@
          </property>
         </spacer>
        </item>
-       <item row="17" column="2">
-        <widget class="QPushButton" name="textColourButton">
+       <item row="16" column="1">
+        <widget class="QLabel" name="label_28">
+         <property name="text">
+          <string>Edge colour:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="2">
+        <widget class="QPushButton" name="edgeColourButton">
          <property name="text">
           <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="2">
+        <widget class="QPushButton" name="outlineColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0">
+        <widget class="InfoTextWidget" name="edgeColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="0">
+        <widget class="InfoTextWidget" name="outlineColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
          </property>
         </widget>
        </item>

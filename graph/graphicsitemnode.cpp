@@ -78,7 +78,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     QPainterPath outlinePath = shape();
 
     //Draw the node outline
-    QColor outlineColour = Qt::black;
+    QColor outlineColour = g_settings->outlineColour;
     double outlineThickness = g_settings->outlineThickness;
     if (isSelected())
     {

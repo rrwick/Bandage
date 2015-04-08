@@ -30,6 +30,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     setInfoTexts();
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
+    connect(ui->edgeColourButton, SIGNAL(clicked()), this, SLOT(edgeColourClicked()));
+    connect(ui->outlineColourButton, SIGNAL(clicked()), this, SLOT(outlineColourClicked()));
     connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
     connect(ui->textColourButton, SIGNAL(clicked()), this, SLOT(textColourClicked()));
     connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
@@ -107,6 +109,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
+    colourFunctionPointer(&settings->edgeColour, &m_edgeColour);
+    colourFunctionPointer(&settings->outlineColour, &m_outlineColour);
     colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
     colourFunctionPointer(&settings->textColour, &m_textColour);
     colourFunctionPointer(&settings->uniformPositiveNodeColour, &m_uniformPositiveNodeColour);
@@ -146,6 +150,25 @@ void SettingsDialog::restoreDefaults()
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
 }
 
+
+void SettingsDialog::edgeColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_edgeColour, this, "Edge colour");
+    if (chosenColor.isValid())
+    {
+        m_edgeColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::outlineColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_outlineColour, this, "Outline colour");
+    if (chosenColor.isValid())
+    {
+        m_outlineColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
 void SettingsDialog::selectionColourClicked()
 {
     QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour");
@@ -250,6 +273,8 @@ void SettingsDialog::contiguityStartingColourClicked()
 void SettingsDialog::setButtonColours()
 {
     const QString COLOR_STYLE("QPushButton { background-color : %1 }");
+    ui->edgeColourButton->setStyleSheet(COLOR_STYLE.arg(m_edgeColour.name()));
+    ui->outlineColourButton->setStyleSheet(COLOR_STYLE.arg(m_outlineColour.name()));
     ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
     ui->textColourButton->setStyleSheet(COLOR_STYLE.arg(m_textColour.name()));
     ui->uniformPositiveNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformPositiveNodeColour.name()));
@@ -305,6 +330,8 @@ void SettingsDialog::setInfoTexts()
                                                       "used for the user-specified nodes.</li>"
                                                       "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour is "
                                                       "used for nodes that contain at least one BLAST hit.</li></ul>");
+    ui->edgeColourInfoText->setInfoText("This colour is used for all edges connecting nodes.");
+    ui->outlineColourInfoText->setInfoText("This colour is used to outline nodes that are not currently selected by the user.");
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
     ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
