@@ -174,10 +174,6 @@ void DeBruijnNode::setContiguityStatus(ContiguityStatus newStatus)
 {
     if (newStatus < m_contiguityStatus)
         m_contiguityStatus = newStatus;
-
-    //if (g_settings->doubleMode)
-    if (m_graphicsItemNode != 0)
-        m_graphicsItemNode->setNodeColour();
 }
 
 

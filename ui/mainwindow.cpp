@@ -1265,6 +1265,7 @@ void MainWindow::determineContiguityFromSelectedNode()
     if (selectedNode != 0)
     {
         selectedNode->determineContiguity();
+        g_assemblyGraph->resetAllNodeColours();
         g_graphicsView->viewport()->update();
     }
     else
