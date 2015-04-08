@@ -24,6 +24,7 @@
 #include <math.h>
 #include "../blast/blasthit.h"
 #include "assemblygraph.h"
+#include <set>
 
 DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
     m_number(number),
@@ -109,9 +110,22 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 
 
 
+//This function determines the contiguity of nodes relative to this one.
+//It has two steps:
+// -First, for each edge leaving this node, all paths outward are found.
+//  Any nodes in any path are MAYBE_CONTIGUOUS, and nodes in all of the
+//  paths are CONTIGUOUS.
+// -Second, it is necessary to check in the opposite direction - for each
+//  of the MAYBE_CONTIGUOUS nodes, do they have a path that unambiguously
+//  leads to this node?  If so, then they are CONTIGUOUS.
 void DeBruijnNode::determineContiguity()
 {
     setContiguityStatus(STARTING);
+
+    //A set is used to store all nodes found in the paths, as the nodes
+    //that show up as MAYBE_CONTIGUOUS will have their paths checked
+    //to this node.
+    std::set<DeBruijnNode *> allCheckedNodes;
 
     //For each path leaving this node, find all possible paths
     //outward.  Nodes in any of the paths for an edge are
@@ -120,7 +134,6 @@ void DeBruijnNode::determineContiguity()
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-
         bool outgoingEdge = (this == edge->m_startingNode);
 
         std::vector< std::vector <DeBruijnNode *> > allPaths;
@@ -130,7 +143,11 @@ void DeBruijnNode::determineContiguity()
         for (size_t j = 0; j < allPaths.size(); ++j)
         {
             for (size_t k = 0; k < allPaths[j].size(); ++k)
-                (allPaths[j][k])->setContiguityStatus(MAYBE_CONTIGUOUS);
+            {
+                DeBruijnNode * node = allPaths[j][k];
+                node->setContiguityStatus(MAYBE_CONTIGUOUS);
+                allCheckedNodes.insert(node);
+            }
         }
 
         std::vector<DeBruijnNode *> commonNodes = getNodesCommonToAllPaths(&allPaths);
@@ -138,6 +155,16 @@ void DeBruijnNode::determineContiguity()
         //Set all common nodes as CONTIGUOUS
         for (size_t j = 0; j < commonNodes.size(); ++j)
             (commonNodes[j])->setContiguityStatus(CONTIGUOUS);
+    }
+
+    //For each node that was checked, if it has the MAYBE_CONTIGUOUS label,
+    //then we check to see if any of its paths leads unambiuously back to
+    //the starting node (this node).
+    for (std::set<DeBruijnNode *>::iterator i = allCheckedNodes.begin(); i != allCheckedNodes.end(); ++i)
+    {
+        DeBruijnNode * node = *i;
+        if (node->doesPathLeadOnlyToNode(this))
+            node->setContiguityStatus(CONTIGUOUS);
     }
 }
 
@@ -166,6 +193,24 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< 
     }
 
     return commonNodes;
+}
+
+
+//This function checks whether this node has any path leading outward that
+//unambiguously leads to the given node.
+//It checks a number of steps as set by the contiguitySearchSteps setting.
+bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node)
+{
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        bool outgoingEdge = (this == edge->m_startingNode);
+
+        if (edge->leadsOnlyToNode(outgoingEdge, g_settings->contiguitySearchSteps, node))
+            return true;
+    }
+
+    return false;
 }
 
 

@@ -44,6 +44,11 @@ public:
                     int stepsRemaining,
                     std::vector<std::vector<DeBruijnNode *> > * allPaths,
                     std::vector<DeBruijnNode *> pathSoFar = std::vector<DeBruijnNode *>());
+    bool leadsOnlyToNode(bool forward,
+                         int stepsRemaining,
+                         DeBruijnNode * target);
+    std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
+                                                    bool forward);
 
 private:
     bool edgeIsVisible();

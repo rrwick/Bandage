@@ -135,6 +135,68 @@ void DeBruijnEdge::tracePaths(bool forward,
 
     //If the code got here, then more steps remain.
     //Find the edges that are in the correct direction.
+    std::vector<DeBruijnEdge *> nextEdges = findNextEdgesInPath(nextNode, forward);
+
+    //If there are no next edges, then we are finished with the
+    //path search, even though steps remain.
+    if (nextEdges.size() == 0)
+    {
+        allPaths->push_back(pathSoFar);
+        return;
+    }
+
+    //Call this function on all of the next edges.
+    for (size_t i = 0; i < nextEdges.size(); ++i)
+        (nextEdges[i])->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
+}
+
+
+
+bool DeBruijnEdge::leadsOnlyToNode(bool forward,
+                                   int stepsRemaining,
+                                   DeBruijnNode * target)
+{
+    //Find the node in the direction we are tracing.
+    DeBruijnNode * nextNode;
+    if (forward)
+        nextNode = m_endingNode;
+    else
+        nextNode = m_startingNode;
+
+    //If the next node is the target, the search succeeded!
+    if (nextNode == target)
+        return true;
+
+    //If there are no steps left, then the search failed.
+    --stepsRemaining;
+    if (stepsRemaining == 0)
+        return false;
+
+    //If the code got here, then more steps remain.
+    //Find the edges that are in the correct direction.
+    std::vector<DeBruijnEdge *> nextEdges = findNextEdgesInPath(nextNode, forward);
+
+    //If there are no next edges, then the search failed, even
+    //though steps remain.
+    if (nextEdges.size() == 0)
+        return false;
+
+    //In order for the search to succeed, this function needs to return true
+    //for all of the nextEdges.
+    for (size_t i = 0; i < nextEdges.size(); ++i)
+    {
+        if ( !(nextEdges[i])->leadsOnlyToNode(forward, stepsRemaining, target) )
+            return false;
+    }
+
+    //If the code got here, then the search succeeded!
+    return true;
+}
+
+
+std::vector<DeBruijnEdge *> DeBruijnEdge::findNextEdgesInPath(DeBruijnNode * nextNode,
+                                                              bool forward)
+{
     std::vector<DeBruijnEdge *> nextEdges;
     for (size_t i = 0; i < nextNode->m_edges.size(); ++i)
     {
@@ -148,15 +210,5 @@ void DeBruijnEdge::tracePaths(bool forward,
             nextEdges.push_back(edge);
     }
 
-    //If there are no next edges, then we are finished with the
-    //path search, even though steps remain.
-    if (nextEdges.size() == 0)
-    {
-        allPaths->push_back(pathSoFar);
-        return;
-    }
-
-    //Call this function on all of the next edges.
-    for (size_t i = 0; i < nextEdges.size(); ++i)
-        (nextEdges[i])->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
+    return nextEdges;
 }

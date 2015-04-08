@@ -80,6 +80,7 @@ public:
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
     QString getNodeNumberText(bool commas);
     std::vector<DeBruijnNode *> getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths);
+    bool doesPathLeadOnlyToNode(DeBruijnNode * node);
 };
 
 #endif // DEBRUIJNNODE_H
