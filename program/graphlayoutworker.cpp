@@ -17,6 +17,7 @@
 
 
 #include "graphlayoutworker.h"
+#include <time.h>
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
                                      int graphLayoutQuality, int segmentLength) :
@@ -28,10 +29,10 @@ GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttribu
 
 void GraphLayoutWorker::layoutGraph()
 {
+    m_fmmm->randSeed(clock());
     m_fmmm->useHighLevelOptions(false);
-    m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomTime);
+    m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomRandIterNr);
     m_fmmm->unitEdgeLength(m_segmentLength);
-    m_fmmm->newInitialPlacement(true);
     m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
 
     switch (m_graphLayoutQuality)
