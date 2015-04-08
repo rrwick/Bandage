@@ -75,20 +75,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    QPainterPath outlinePath = shape();
-
-    //Draw the node outline
-    QColor outlineColour = g_settings->outlineColour;
-    double outlineThickness = g_settings->outlineThickness;
-    if (isSelected())
-    {
-        outlineColour = g_settings->selectionColour;
-        outlineThickness = g_settings->selectionThickness;
-    }
-    double widthScale = g_settings->widthScale(g_absoluteZoom);
-    QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
-    painter->setPen(outlinePen);
-    painter->drawPath(outlinePath);
+    QPainterPath outlinePath = shape().simplified();
 
     //Fill the node's colour
     QBrush brush(m_colour);
@@ -125,6 +112,22 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
                 painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
             }
         }
+    }
+
+    //Draw the node outline
+    QColor outlineColour = g_settings->outlineColour;
+    double outlineThickness = g_settings->outlineThickness;
+    if (isSelected())
+    {
+        outlineColour = g_settings->selectionColour;
+        outlineThickness = g_settings->selectionThickness;
+    }
+    if (outlineThickness > 0.0)
+    {
+        double widthScale = g_settings->widthScale(g_absoluteZoom);
+        QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
+        painter->setPen(outlinePen);
+        painter->drawPath(outlinePath);
     }
 
 
@@ -599,12 +602,14 @@ QColor GraphicsItemNode::getCoverageColour()
     int redDifference = g_settings->highCoverageColour.red() - g_settings->lowCoverageColour.red();
     int greenDifference = g_settings->highCoverageColour.green() - g_settings->lowCoverageColour.green();
     int blueDifference = g_settings->highCoverageColour.blue() - g_settings->lowCoverageColour.blue();
+    int alphaDifference = g_settings->highCoverageColour.alpha() - g_settings->lowCoverageColour.alpha();
 
     int red = int(g_settings->lowCoverageColour.red() + (fraction * redDifference) + 0.5);
     int green = int(g_settings->lowCoverageColour.green() + (fraction * greenDifference) + 0.5);
     int blue = int(g_settings->lowCoverageColour.blue() + (fraction * blueDifference) + 0.5);
+    int alpha = int(g_settings->lowCoverageColour.alpha() + (fraction * alphaDifference) + 0.5);
 
-    return QColor(red, green, blue);
+    return QColor(red, green, blue, alpha);
 }
 
 

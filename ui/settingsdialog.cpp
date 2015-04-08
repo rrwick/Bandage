@@ -189,7 +189,7 @@ void SettingsDialog::textColourClicked()
 }
 void SettingsDialog::uniformPositiveNodeColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_uniformPositiveNodeColour = chosenColor;
@@ -198,7 +198,7 @@ void SettingsDialog::uniformPositiveNodeColourClicked()
 }
 void SettingsDialog::uniformNegativeNodeColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, this, "Uniform negative node colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, this, "Uniform negative node colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_uniformNegativeNodeColour = chosenColor;
@@ -207,7 +207,7 @@ void SettingsDialog::uniformNegativeNodeColourClicked()
 }
 void SettingsDialog::uniformNodeSpecialColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, this, "Uniform node special colour");
+    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, this, "Uniform node special colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_uniformNodeSpecialColour = chosenColor;
@@ -216,7 +216,7 @@ void SettingsDialog::uniformNodeSpecialColourClicked()
 }
 void SettingsDialog::lowCoverageColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, this, "Low coverage colour");
+    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, this, "Low coverage colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_lowCoverageColour = chosenColor;
@@ -225,7 +225,7 @@ void SettingsDialog::lowCoverageColourClicked()
 }
 void SettingsDialog::highCoverageColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, this, "High coverage colour");
+    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, this, "High coverage colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_highCoverageColour = chosenColor;
@@ -234,7 +234,7 @@ void SettingsDialog::highCoverageColourClicked()
 }
 void SettingsDialog::contiguousColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour");
+    QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_contiguousColour = chosenColor;
@@ -243,7 +243,7 @@ void SettingsDialog::contiguousColourClicked()
 }
 void SettingsDialog::maybeContiguousColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_maybeContiguousColour, this, "Maybe contiguous colour");
+    QColor chosenColor = QColorDialog::getColor(m_maybeContiguousColour, this, "Maybe contiguous colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_maybeContiguousColour = chosenColor;
@@ -252,7 +252,7 @@ void SettingsDialog::maybeContiguousColourClicked()
 }
 void SettingsDialog::notContiguousColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_notContiguousColour, this, "Not contiguous colour");
+    QColor chosenColor = QColorDialog::getColor(m_notContiguousColour, this, "Not contiguous colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_notContiguousColour = chosenColor;
@@ -261,7 +261,7 @@ void SettingsDialog::notContiguousColourClicked()
 }
 void SettingsDialog::contiguityStartingColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_contiguityStartingColour, this, "Contiguity starting colour");
+    QColor chosenColor = QColorDialog::getColor(m_contiguityStartingColour, this, "Contiguity starting colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
         m_contiguityStartingColour = chosenColor;
