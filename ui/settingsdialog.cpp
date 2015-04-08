@@ -30,12 +30,13 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     setInfoTexts();
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
+    connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
+    connect(ui->textColourButton, SIGNAL(clicked()), this, SLOT(textColourClicked()));
     connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
     connect(ui->uniformNegativeNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformNegativeNodeColourClicked()));
     connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
     connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
     connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
-    connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
     connect(ui->contiguousColourButton, SIGNAL(clicked()), this, SLOT(contiguousColourClicked()));
     connect(ui->maybeContiguousColourButton, SIGNAL(clicked()), this, SLOT(maybeContiguousColourClicked()));
     connect(ui->notContiguousColourButton, SIGNAL(clicked()), this, SLOT(notContiguousColourClicked()));
@@ -106,12 +107,13 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
+    colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
+    colourFunctionPointer(&settings->textColour, &m_textColour);
     colourFunctionPointer(&settings->uniformPositiveNodeColour, &m_uniformPositiveNodeColour);
     colourFunctionPointer(&settings->uniformNegativeNodeColour, &m_uniformNegativeNodeColour);
     colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
     colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
-    colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
     colourFunctionPointer(&settings->contiguousColour, &m_contiguousColour);
     colourFunctionPointer(&settings->maybeContiguousColour, &m_maybeContiguousColour);
     colourFunctionPointer(&settings->notContiguousColour, &m_notContiguousColour);
@@ -144,6 +146,24 @@ void SettingsDialog::restoreDefaults()
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
 }
 
+void SettingsDialog::selectionColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour");
+    if (chosenColor.isValid())
+    {
+        m_selectionColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
+void SettingsDialog::textColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_textColour, this, "Text colour");
+    if (chosenColor.isValid())
+    {
+        m_textColour = chosenColor.rgb();
+        setButtonColours();
+    }
+}
 void SettingsDialog::uniformPositiveNodeColourClicked()
 {
     QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour");
@@ -189,16 +209,6 @@ void SettingsDialog::highCoverageColourClicked()
         setButtonColours();
     }
 }
-void SettingsDialog::selectionColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour");
-    if (chosenColor.isValid())
-    {
-        m_selectionColour = chosenColor.rgb();
-        setButtonColours();
-    }
-}
-
 void SettingsDialog::contiguousColourClicked()
 {
     QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour");
@@ -240,12 +250,13 @@ void SettingsDialog::contiguityStartingColourClicked()
 void SettingsDialog::setButtonColours()
 {
     const QString COLOR_STYLE("QPushButton { background-color : %1 }");
+    ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
+    ui->textColourButton->setStyleSheet(COLOR_STYLE.arg(m_textColour.name()));
     ui->uniformPositiveNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformPositiveNodeColour.name()));
     ui->uniformNegativeNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNegativeNodeColour.name()));
     ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
     ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
     ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
-    ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
     ui->contiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousColour.name()));
     ui->maybeContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_maybeContiguousColour.name()));
     ui->notContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_notContiguousColour.name()));
@@ -296,6 +307,7 @@ void SettingsDialog::setInfoTexts()
                                                       "used for nodes that contain at least one BLAST hit.</li></ul>");
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
+    ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
     ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
                                                "nodes with coverage at or below the low coverage value.<br><br>"
                                                "Nodes with coverage between the low and high coverage values will get an "

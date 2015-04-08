@@ -49,7 +49,7 @@ Settings::Settings()
     displayNodeNumbers = false;
     displayNodeLengths = false;
     displayNodeCoverages = false;
-    displayFont = QFont();
+    labelFont = QFont();
     textOutline = false;
     antialiasing = true;
 
@@ -59,9 +59,10 @@ Settings::Settings()
     uniformPositiveNodeColour = QColor(225, 125, 125);
     setNegativeNodeColour();
     uniformNodeSpecialColour = QColor(0, 255, 0);
-    selectionColour = QColor(0, 0, 255);
 
+    selectionColour = QColor(0, 0, 255);
     edgeColour = QColor(0, 0, 0, 180);
+    textColour = QColor(0, 0, 0);
 
     contiguitySearchSteps = 10;
     contiguousColour = QColor(0, 155, 0);

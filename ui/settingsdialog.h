@@ -41,12 +41,13 @@ public:
 
 private:
     Ui::SettingsDialog *ui;
+    QColor m_selectionColour;
+    QColor m_textColour;
     QColor m_uniformPositiveNodeColour;
     QColor m_uniformNegativeNodeColour;
     QColor m_uniformNodeSpecialColour;
     QColor m_lowCoverageColour;
     QColor m_highCoverageColour;
-    QColor m_selectionColour;
     QColor m_contiguousColour;
     QColor m_maybeContiguousColour;
     QColor m_notContiguousColour;
@@ -58,12 +59,13 @@ private:
 
 private slots:
     void restoreDefaults();
+    void selectionColourClicked();
+    void textColourClicked();
     void uniformPositiveNodeColourClicked();
     void uniformNegativeNodeColourClicked();
     void uniformNodeSpecialColourClicked();
     void lowCoverageColourClicked();
     void highCoverageColourClicked();
-    void selectionColourClicked();
     void contiguousColourClicked();
     void maybeContiguousColourClicked();
     void notContiguousColourClicked();

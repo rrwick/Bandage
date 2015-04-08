@@ -147,11 +147,11 @@ void MyGraphicsView::setAntialiasing(bool antialiasingOn)
     if (antialiasingOn)
     {
         setRenderHints(QPainter::Antialiasing);
-        g_settings->displayFont.setStyleStrategy(QFont::PreferDefault);
+        g_settings->labelFont.setStyleStrategy(QFont::PreferDefault);
     }
     else
     {
         setRenderHints(0);
-        g_settings->displayFont.setStyleStrategy(QFont::NoAntialias);
+        g_settings->labelFont.setStyleStrategy(QFont::NoAntialias);
     }
 }

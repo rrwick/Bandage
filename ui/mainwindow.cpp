@@ -1329,7 +1329,7 @@ void MainWindow::setTextDisplaySettings()
 void MainWindow::fontButtonPressed()
 {
     bool ok;
-    g_settings->displayFont = QFontDialog::getFont(&ok, g_settings->displayFont, this);
+    g_settings->labelFont = QFontDialog::getFont(&ok, g_settings->labelFont, this);
     if (ok)
         g_graphicsView->viewport()->update();
 }
@@ -1468,7 +1468,8 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.contiguousColour != g_settings->contiguousColour ||
                 settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
                 settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
-                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour)
+                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour ||
+                settingsBefore.textColour != g_settings->textColour)
         {
             g_assemblyGraph->resetAllNodeColours();
             g_graphicsView->viewport()->update();
@@ -1718,7 +1719,8 @@ void MainWindow::setInfoTexts()
                                         "'Number', 'Length' and 'Coverage' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.");
-    ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels.<br><br>"
+    ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels.  The "
+                                      "colour of the font is configurable in Bandage's settings.<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
                                       "This can help to make text more readable, but will obscure more of the "
                                       "underlying graph. The thickness of the text outline is configurable in "

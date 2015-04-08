@@ -135,7 +135,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         //counter the view's rotation here.
 
         painter->setRenderHint(QPainter::TextAntialiasing, true);
-        painter->setFont(g_settings->displayFont);
+        painter->setFont(g_settings->labelFont);
         QString displayText = getNodeText();
         QSize textSize = getNodeTextSize(displayText);
 
@@ -176,8 +176,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
         QRectF textRectangle(-textWidth / 2.0, -textHeight / 2.0,
                              textWidth, textHeight);
-        painter->setPen(Qt::black);
-
+        painter->setPen(g_settings->textColour);
 
         painter->translate(getCentre());
         painter->rotate(-g_graphicsView->m_rotation);
@@ -569,7 +568,7 @@ QString GraphicsItemNode::getNodeText()
 
 QSize GraphicsItemNode::getNodeTextSize(QString text)
 {
-    QFontMetrics fontMetrics(g_settings->displayFont);
+    QFontMetrics fontMetrics(g_settings->labelFont);
     return fontMetrics.size(0, text);
 }
 

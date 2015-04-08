@@ -57,7 +57,7 @@ public:
     bool displayNodeNumbers;
     bool displayNodeLengths;
     bool displayNodeCoverages;
-    QFont displayFont;
+    QFont labelFont;
     bool textOutline;
     bool antialiasing;
 
@@ -65,6 +65,7 @@ public:
 
     QColor selectionColour;
     QColor edgeColour;
+    QColor textColour;
 
     NodeColourScheme nodeColourScheme;
     QColor uniformPositiveNodeColour;
