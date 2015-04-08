@@ -153,37 +153,37 @@ void SettingsDialog::restoreDefaults()
 
 void SettingsDialog::edgeColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_edgeColour, this, "Edge colour");
+    QColor chosenColor = QColorDialog::getColor(m_edgeColour, this, "Edge colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
-        m_edgeColour = chosenColor.rgb();
+        m_edgeColour = chosenColor;
         setButtonColours();
     }
 }
 void SettingsDialog::outlineColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_outlineColour, this, "Outline colour");
+    QColor chosenColor = QColorDialog::getColor(m_outlineColour, this, "Outline colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
-        m_outlineColour = chosenColor.rgb();
+        m_outlineColour = chosenColor;
         setButtonColours();
     }
 }
 void SettingsDialog::selectionColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour");
+    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
-        m_selectionColour = chosenColor.rgb();
+        m_selectionColour = chosenColor;
         setButtonColours();
     }
 }
 void SettingsDialog::textColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_textColour, this, "Text colour");
+    QColor chosenColor = QColorDialog::getColor(m_textColour, this, "Text colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
-        m_textColour = chosenColor.rgb();
+        m_textColour = chosenColor;
         setButtonColours();
     }
 }
@@ -192,7 +192,7 @@ void SettingsDialog::uniformPositiveNodeColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour");
     if (chosenColor.isValid())
     {
-        m_uniformPositiveNodeColour = chosenColor.rgb();
+        m_uniformPositiveNodeColour = chosenColor;
         setButtonColours();
     }
 }
@@ -201,7 +201,7 @@ void SettingsDialog::uniformNegativeNodeColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, this, "Uniform negative node colour");
     if (chosenColor.isValid())
     {
-        m_uniformNegativeNodeColour = chosenColor.rgb();
+        m_uniformNegativeNodeColour = chosenColor;
         setButtonColours();
     }
 }
@@ -210,7 +210,7 @@ void SettingsDialog::uniformNodeSpecialColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, this, "Uniform node special colour");
     if (chosenColor.isValid())
     {
-        m_uniformNodeSpecialColour = chosenColor.rgb();
+        m_uniformNodeSpecialColour = chosenColor;
         setButtonColours();
     }
 }
@@ -219,7 +219,7 @@ void SettingsDialog::lowCoverageColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, this, "Low coverage colour");
     if (chosenColor.isValid())
     {
-        m_lowCoverageColour = chosenColor.rgb();
+        m_lowCoverageColour = chosenColor;
         setButtonColours();
     }
 }
@@ -228,7 +228,7 @@ void SettingsDialog::highCoverageColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, this, "High coverage colour");
     if (chosenColor.isValid())
     {
-        m_highCoverageColour = chosenColor.rgb();
+        m_highCoverageColour = chosenColor;
         setButtonColours();
     }
 }
@@ -237,7 +237,7 @@ void SettingsDialog::contiguousColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour");
     if (chosenColor.isValid())
     {
-        m_contiguousColour = chosenColor.rgb();
+        m_contiguousColour = chosenColor;
         setButtonColours();
     }
 }
@@ -246,7 +246,7 @@ void SettingsDialog::maybeContiguousColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_maybeContiguousColour, this, "Maybe contiguous colour");
     if (chosenColor.isValid())
     {
-        m_maybeContiguousColour = chosenColor.rgb();
+        m_maybeContiguousColour = chosenColor;
         setButtonColours();
     }
 }
@@ -255,7 +255,7 @@ void SettingsDialog::notContiguousColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_notContiguousColour, this, "Not contiguous colour");
     if (chosenColor.isValid())
     {
-        m_notContiguousColour = chosenColor.rgb();
+        m_notContiguousColour = chosenColor;
         setButtonColours();
     }
 }
@@ -264,7 +264,7 @@ void SettingsDialog::contiguityStartingColourClicked()
     QColor chosenColor = QColorDialog::getColor(m_contiguityStartingColour, this, "Contiguity starting colour");
     if (chosenColor.isValid())
     {
-        m_contiguityStartingColour = chosenColor.rgb();
+        m_contiguityStartingColour = chosenColor;
         setButtonColours();
     }
 }
