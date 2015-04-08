@@ -63,12 +63,13 @@ public:
 
     NodeDragging nodeDragging;
 
+    QColor selectionColour;
+    QColor edgeColour;
+
     NodeColourScheme nodeColourScheme;
     QColor uniformPositiveNodeColour;
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
-    QColor selectionColour;
-    QColor edgeColour;
 
     int contiguitySearchSteps;
     QColor contiguousColour;
