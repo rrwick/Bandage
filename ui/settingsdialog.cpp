@@ -360,8 +360,10 @@ void SettingsDialog::setInfoTexts()
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
-    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take.  Larger"
-                                                   "values will find more distant contiguous nodes, at a performance cost.");
+    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take.  Larger "
+                                                   "values will find more distant contiguous nodes, at a performance cost.<br><br>"
+                                                   "The time taken to complete the search can grow rapidly as values increase, "
+                                                   "so use values above 20 with caution.");
     ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
                                                             "nodes that are determined to be contiguous with the starting "
                                                             "node(s).<br><br>"

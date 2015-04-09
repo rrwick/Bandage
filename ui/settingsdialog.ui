@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-723</y>
+        <y>-733</y>
         <width>415</width>
         <height>1359</height>
        </rect>
@@ -1454,7 +1454,7 @@
           <number>1</number>
          </property>
          <property name="maximum">
-          <number>10000</number>
+          <number>50</number>
          </property>
         </widget>
        </item>

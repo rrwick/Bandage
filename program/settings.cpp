@@ -65,7 +65,7 @@ Settings::Settings()
     selectionColour = QColor(0, 0, 255);
     textColour = QColor(0, 0, 0);
 
-    contiguitySearchSteps = 20;
+    contiguitySearchSteps = 15;
     contiguousStrandSpecificColour = QColor(0, 155, 0);
     contiguousEitherStrandColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 240, 190);
