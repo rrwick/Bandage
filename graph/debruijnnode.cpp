@@ -151,13 +151,13 @@ void DeBruijnNode::determineContiguity()
         }
 
         //Set all common nodes as CONTIGUOUS_STRAND_SPECIFIC
-        std::vector<DeBruijnNode *> commonNodesStrandSpecific = getNodesCommonToAllPathsStrandSpecific(&allPaths);
+        std::vector<DeBruijnNode *> commonNodesStrandSpecific = getNodesCommonToAllPaths(&allPaths, false);
         for (size_t j = 0; j < commonNodesStrandSpecific.size(); ++j)
             (commonNodesStrandSpecific[j])->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
 
         //Set all common nodes (when including reverse complement nodes)
         //as CONTIGUOUS_EITHER_STRAND
-        std::vector<DeBruijnNode *> commonNodesEitherStrand = getNodesCommonToAllPathsEitherStrand(&allPaths);
+        std::vector<DeBruijnNode *> commonNodesEitherStrand = getNodesCommonToAllPaths(&allPaths, true);
         for (size_t j = 0; j < commonNodesEitherStrand.size(); ++j)
         {
             DeBruijnNode * node = commonNodesEitherStrand[j];
@@ -190,7 +190,11 @@ void DeBruijnNode::determineContiguity()
     }
 }
 
-std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsStrandSpecific(std::vector< std::vector <DeBruijnNode *> > * paths)
+
+//This function differs from the above by including all reverse complement
+//nodes in the path search.
+std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths,
+                                                                   bool includeReverseComplements)
 {
     std::vector<DeBruijnNode *> commonNodes;
 
@@ -207,51 +211,28 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsStrandSpecific
     for (size_t i = 1; i < paths->size(); ++i)
     {
         std::vector <DeBruijnNode *> * path = &((*paths)[i]);
+
+        //If we are including reverse complements in the search,
+        //then it is necessary to build a new vector that includes
+        //reverse complement nodes and then use that vector.
+        std::vector <DeBruijnNode *> pathWithReverseComplements;
+        if (includeReverseComplements)
+        {
+            for (size_t j = 0; j < path->size(); ++j)
+            {
+                DeBruijnNode * node = (*path)[j];
+                pathWithReverseComplements.push_back(node);
+                pathWithReverseComplements.push_back(node->m_reverseComplement);
+            }
+            path = &pathWithReverseComplements;
+        }
+
+        //Combine the commonNodes vector with the path vector,
+        //excluding any repeats.
         std::sort(commonNodes.begin(), commonNodes.end());
         std::sort(path->begin(), path->end());
         std::vector<DeBruijnNode *> newCommonNodes;
         std::set_intersection(commonNodes.begin(), commonNodes.end(), path->begin(), path->end(), std::back_inserter(newCommonNodes));
-        commonNodes = newCommonNodes;
-    }
-
-    return commonNodes;
-}
-
-
-//This function differs from the above by including all reverse complement
-//nodes in the path search.
-std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsEitherStrand(std::vector< std::vector <DeBruijnNode *> > * paths)
-{
-    std::vector<DeBruijnNode *> commonNodes;
-
-    //If there are no paths, then return the empty vector.
-    if (paths->size() == 0)
-        return commonNodes;
-
-    //If there is only one path in path, then they are all common nodes
-    commonNodes = (*paths)[0];
-    if (paths->size() == 1)
-        return commonNodes;
-
-    //If there are two or more paths, it's necessary to find the intersection.
-    for (size_t i = 1; i < paths->size(); ++i)
-    {
-        std::vector <DeBruijnNode *> * path = &((*paths)[i]);
-        std::vector <DeBruijnNode *> pathWithReverseComplements;
-
-        for (size_t j = 0; j < path->size(); ++j)
-        {
-            DeBruijnNode * node = (*path)[j];
-            pathWithReverseComplements.push_back(node);
-            pathWithReverseComplements.push_back(node->m_reverseComplement);
-        }
-
-        std::sort(commonNodes.begin(), commonNodes.end());
-        std::sort(pathWithReverseComplements.begin(), pathWithReverseComplements.end());
-        std::vector<DeBruijnNode *> newCommonNodes;
-        std::set_intersection(commonNodes.begin(), commonNodes.end(),
-                              pathWithReverseComplements.begin(), pathWithReverseComplements.end(),
-                              std::back_inserter(newCommonNodes));
         commonNodes = newCommonNodes;
     }
 

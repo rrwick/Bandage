@@ -79,8 +79,8 @@ public:
     std::vector<BlastHitPart> getBlastHitPartsForThisNode();
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
     QString getNodeNumberText(bool commas);
-    std::vector<DeBruijnNode *> getNodesCommonToAllPathsStrandSpecific(std::vector< std::vector <DeBruijnNode *> > * paths);
-    std::vector<DeBruijnNode *> getNodesCommonToAllPathsEitherStrand(std::vector< std::vector <DeBruijnNode *> > * paths);
+    std::vector<DeBruijnNode *> getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths,
+                                                         bool includeReverseComplements);
     bool doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement);
 };
 
