@@ -150,25 +150,35 @@ void DeBruijnNode::determineContiguity()
             }
         }
 
-        std::vector<DeBruijnNode *> commonNodes = getNodesCommonToAllPaths(&allPaths);
+        //Set all common nodes as CONTIGUOUS_STRAND_SPECIFIC
+        std::vector<DeBruijnNode *> commonNodesStrandSpecific = getNodesCommonToAllPathsStrandSpecific(&allPaths);
+        for (size_t j = 0; j < commonNodesStrandSpecific.size(); ++j)
+            (commonNodesStrandSpecific[j])->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
 
-        //Set all common nodes as CONTIGUOUS
-        for (size_t j = 0; j < commonNodes.size(); ++j)
-            (commonNodes[j])->setContiguityStatus(CONTIGUOUS);
+        //Set all common nodes (when including reverse complement nodes)
+        //as CONTIGUOUS_EITHER_STRAND
+        std::vector<DeBruijnNode *> commonNodesEitherStrand = getNodesCommonToAllPathsEitherStrand(&allPaths);
+        for (size_t j = 0; j < commonNodesEitherStrand.size(); ++j)
+        {
+            DeBruijnNode * node = commonNodesEitherStrand[j];
+            node->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->m_reverseComplement->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+        }
     }
 
-    //For each node that was checked, if it has the MAYBE_CONTIGUOUS label,
-    //then we check to see if any of its paths leads unambiuously back to
-    //the starting node (this node).
+    //For each node that was checked, then we check to see if any
+    //of its paths leads unambiuously back to the starting node (this node).
     for (std::set<DeBruijnNode *>::iterator i = allCheckedNodes.begin(); i != allCheckedNodes.end(); ++i)
     {
         DeBruijnNode * node = *i;
-        if (node->doesPathLeadOnlyToNode(this))
-            node->setContiguityStatus(CONTIGUOUS);
+
+        //Don't bother looking at nodes already determined to be CONTIGUOUS_STRAND_SPECIFIC
+        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC && node->doesPathLeadOnlyToNode(this))
+            node->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
     }
 }
 
-std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths)
+std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsStrandSpecific(std::vector< std::vector <DeBruijnNode *> > * paths)
 {
     std::vector<DeBruijnNode *> commonNodes;
 
@@ -189,6 +199,47 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< 
         std::sort(path->begin(), path->end());
         std::vector<DeBruijnNode *> newCommonNodes;
         std::set_intersection(commonNodes.begin(), commonNodes.end(), path->begin(), path->end(), std::back_inserter(newCommonNodes));
+        commonNodes = newCommonNodes;
+    }
+
+    return commonNodes;
+}
+
+
+//This function differs from the above by including all reverse complement
+//nodes in the path search.
+std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsEitherStrand(std::vector< std::vector <DeBruijnNode *> > * paths)
+{
+    std::vector<DeBruijnNode *> commonNodes;
+
+    //If there are no paths, then return the empty vector.
+    if (paths->size() == 0)
+        return commonNodes;
+
+    //If there is only one path in path, then they are all common nodes
+    commonNodes = (*paths)[0];
+    if (paths->size() == 1)
+        return commonNodes;
+
+    //If there are two or more paths, it's necessary to find the intersection.
+    for (size_t i = 1; i < paths->size(); ++i)
+    {
+        std::vector <DeBruijnNode *> * path = &((*paths)[i]);
+        std::vector <DeBruijnNode *> pathWithReverseComplements;
+
+        for (size_t j = 0; j < path->size(); ++j)
+        {
+            DeBruijnNode * node = (*path)[j];
+            pathWithReverseComplements.push_back(node);
+            pathWithReverseComplements.push_back(node->m_reverseComplement);
+        }
+
+        std::sort(commonNodes.begin(), commonNodes.end());
+        std::sort(pathWithReverseComplements.begin(), pathWithReverseComplements.end());
+        std::vector<DeBruijnNode *> newCommonNodes;
+        std::set_intersection(commonNodes.begin(), commonNodes.end(),
+                              pathWithReverseComplements.begin(), pathWithReverseComplements.end(),
+                              std::back_inserter(newCommonNodes));
         commonNodes = newCommonNodes;
     }
 

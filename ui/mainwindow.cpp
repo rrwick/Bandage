@@ -1464,7 +1464,8 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
                 settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
                 settingsBefore.highCoverageValue != g_settings->highCoverageValue ||
-                settingsBefore.contiguousColour != g_settings->contiguousColour ||
+                settingsBefore.contiguousStrandSpecificColour != g_settings->contiguousStrandSpecificColour ||
+                settingsBefore.contiguousEitherStrandColour != g_settings->contiguousEitherStrandColour ||
                 settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
                 settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
                 settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour)

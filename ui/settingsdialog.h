@@ -50,7 +50,8 @@ private:
     QColor m_uniformNodeSpecialColour;
     QColor m_lowCoverageColour;
     QColor m_highCoverageColour;
-    QColor m_contiguousColour;
+    QColor m_contiguousStrandSpecificColour;
+    QColor m_contiguousEitherStrandColour;
     QColor m_maybeContiguousColour;
     QColor m_notContiguousColour;
     QColor m_contiguityStartingColour;
@@ -70,7 +71,8 @@ private slots:
     void uniformNodeSpecialColourClicked();
     void lowCoverageColourClicked();
     void highCoverageColourClicked();
-    void contiguousColourClicked();
+    void contiguousStrandSpecificColourClicked();
+    void contiguousEitherStrandColourClicked();
     void maybeContiguousColourClicked();
     void notContiguousColourClicked();
     void contiguityStartingColourClicked();

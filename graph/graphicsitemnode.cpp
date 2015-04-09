@@ -264,8 +264,11 @@ void GraphicsItemNode::setNodeColour()
         case STARTING:
             m_colour = g_settings->contiguityStartingColour;
             break;
-        case CONTIGUOUS:
-            m_colour = g_settings->contiguousColour;
+        case CONTIGUOUS_STRAND_SPECIFIC:
+            m_colour = g_settings->contiguousStrandSpecificColour;
+            break;
+        case CONTIGUOUS_EITHER_STRAND:
+            m_colour = g_settings->contiguousEitherStrandColour;
             break;
         case MAYBE_CONTIGUOUS:
             m_colour = g_settings->maybeContiguousColour;

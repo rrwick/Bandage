@@ -74,7 +74,8 @@ public:
     QColor uniformNodeSpecialColour;
 
     int contiguitySearchSteps;
-    QColor contiguousColour;
+    QColor contiguousStrandSpecificColour;
+    QColor contiguousEitherStrandColour;
     QColor maybeContiguousColour;
     QColor notContiguousColour;
     QColor contiguityStartingColour;

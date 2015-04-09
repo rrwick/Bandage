@@ -39,7 +39,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
     connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
     connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
-    connect(ui->contiguousColourButton, SIGNAL(clicked()), this, SLOT(contiguousColourClicked()));
+    connect(ui->contiguousStrandSpecificColourButton, SIGNAL(clicked()), this, SLOT(contiguousStrandSpecificColourClicked()));
+    connect(ui->contiguousEitherStrandColourButton, SIGNAL(clicked()), this, SLOT(contiguousEitherStrandColourClicked()));
     connect(ui->maybeContiguousColourButton, SIGNAL(clicked()), this, SLOT(maybeContiguousColourClicked()));
     connect(ui->notContiguousColourButton, SIGNAL(clicked()), this, SLOT(notContiguousColourClicked()));
     connect(ui->contiguityStartingColourButton, SIGNAL(clicked()), this, SLOT(contiguityStartingColourClicked()));
@@ -118,7 +119,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
     colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
-    colourFunctionPointer(&settings->contiguousColour, &m_contiguousColour);
+    colourFunctionPointer(&settings->contiguousStrandSpecificColour, &m_contiguousStrandSpecificColour);
+    colourFunctionPointer(&settings->contiguousEitherStrandColour, &m_contiguousEitherStrandColour);
     colourFunctionPointer(&settings->maybeContiguousColour, &m_maybeContiguousColour);
     colourFunctionPointer(&settings->notContiguousColour, &m_notContiguousColour);
     colourFunctionPointer(&settings->contiguityStartingColour, &m_contiguityStartingColour);
@@ -148,6 +150,7 @@ void SettingsDialog::restoreDefaults()
 {
     Settings defaultSettings;
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
+    setButtonColours();
 }
 
 
@@ -232,12 +235,21 @@ void SettingsDialog::highCoverageColourClicked()
         setButtonColours();
     }
 }
-void SettingsDialog::contiguousColourClicked()
+void SettingsDialog::contiguousStrandSpecificColourClicked()
 {
-    QColor chosenColor = QColorDialog::getColor(m_contiguousColour, this, "Contiguous colour", QColorDialog::ShowAlphaChannel);
+    QColor chosenColor = QColorDialog::getColor(m_contiguousStrandSpecificColour, this, "Contiguous (strand-specific) colour", QColorDialog::ShowAlphaChannel);
     if (chosenColor.isValid())
     {
-        m_contiguousColour = chosenColor;
+        m_contiguousStrandSpecificColour = chosenColor;
+        setButtonColours();
+    }
+}
+void SettingsDialog::contiguousEitherStrandColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_contiguousEitherStrandColour, this, "Contiguous (either strand) colour", QColorDialog::ShowAlphaChannel);
+    if (chosenColor.isValid())
+    {
+        m_contiguousEitherStrandColour = chosenColor;
         setButtonColours();
     }
 }
@@ -282,7 +294,8 @@ void SettingsDialog::setButtonColours()
     ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
     ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
     ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
-    ui->contiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousColour.name()));
+    ui->contiguousStrandSpecificColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousStrandSpecificColour.name()));
+    ui->contiguousEitherStrandColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousEitherStrandColour.name()));
     ui->maybeContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_maybeContiguousColour.name()));
     ui->notContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_notContiguousColour.name()));
     ui->contiguityStartingColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguityStartingColour.name()));
@@ -346,8 +359,18 @@ void SettingsDialog::setInfoTexts()
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
-    ui->contiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
-                                              "are determined to be contiguous with the starting node(s).");
+    ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
+                                                            "nodes that are determined to be contiguous with the starting "
+                                                            "node(s).<br><br>"
+                                                            "This colour is used for strand-specific matches.  It is only used "
+                                                            "for nodes that are determined to be on the same strand as the "
+                                                            "starting node");
+    ui->contiguousEitherStrandColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
+                                                          "nodes that are determined to be contiguous with the starting "
+                                                          "node(s).<br><br>"
+                                                          "This colour is used for nodes where either the node or its reverse "
+                                                          "complement are contiguous with the starting node, but it cannot be "
+                                                          "determined which.");
     ui->maybeContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
                                                    "are determined to be possibly contiguous with the starting node(s).");
     ui->notContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
