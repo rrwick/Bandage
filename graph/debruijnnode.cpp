@@ -213,6 +213,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< 
     //If there are two or more paths, it's necessary to find the intersection.
     for (size_t i = 1; i < paths->size(); ++i)
     {
+        QApplication::processEvents();
         std::vector <DeBruijnNode *> * path = &((*paths)[i]);
 
         //If we are including reverse complements in the search,
