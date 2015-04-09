@@ -119,13 +119,14 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
     colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
+    doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
+    doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
+    intFunctionPointer(&settings->contiguitySearchSteps, ui->contiguitySearchDepthSpinBox);
     colourFunctionPointer(&settings->contiguousStrandSpecificColour, &m_contiguousStrandSpecificColour);
     colourFunctionPointer(&settings->contiguousEitherStrandColour, &m_contiguousEitherStrandColour);
     colourFunctionPointer(&settings->maybeContiguousColour, &m_maybeContiguousColour);
     colourFunctionPointer(&settings->notContiguousColour, &m_notContiguousColour);
     colourFunctionPointer(&settings->contiguityStartingColour, &m_contiguityStartingColour);
-    doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
-    doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -359,6 +360,8 @@ void SettingsDialog::setInfoTexts()
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
+    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take.  Larger"
+                                                   "values will find more distant contiguous nodes, at a performance cost.");
     ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
                                                             "nodes that are determined to be contiguous with the starting "
                                                             "node(s).<br><br>"

@@ -1264,6 +1264,10 @@ void MainWindow::determineContiguityFromSelectedNode()
     DeBruijnNode * selectedNode = m_scene->getOneSelectedNode();
     if (selectedNode != 0)
     {
+        MyProgressDialog progress(this, "Determining contiguity...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
         selectedNode->determineContiguity();
         g_assemblyGraph->resetAllNodeColours();
         g_graphicsView->viewport()->update();

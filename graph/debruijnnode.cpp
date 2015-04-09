@@ -25,6 +25,7 @@
 #include "../blast/blasthit.h"
 #include "assemblygraph.h"
 #include <set>
+#include <QApplication>
 
 DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
     m_number(number),
@@ -133,6 +134,7 @@ void DeBruijnNode::determineContiguity()
     //are CONTIGUOUS.
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
+        QApplication::processEvents();
         DeBruijnEdge * edge = m_edges[i];
         bool outgoingEdge = (this == edge->m_startingNode);
 
@@ -170,6 +172,7 @@ void DeBruijnNode::determineContiguity()
     //of its paths leads unambiuously back to the starting node (this node).
     for (std::set<DeBruijnNode *>::iterator i = allCheckedNodes.begin(); i != allCheckedNodes.end(); ++i)
     {
+        QApplication::processEvents();
         DeBruijnNode * node = *i;
 
         //First check without reverse complement target for

@@ -20,6 +20,7 @@
 #include <cmath>
 #include "../program/settings.h"
 #include "ogdfnode.h"
+#include <QApplication>
 
 DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode) :
     m_startingNode(startingNode), m_endingNode(endingNode), m_graphicsItemEdge(0), m_drawn(false)
@@ -115,6 +116,9 @@ void DeBruijnEdge::tracePaths(bool forward,
                               std::vector< std::vector <DeBruijnNode *> > * allPaths,
                               std::vector<DeBruijnNode *> pathSoFar)
 {
+    //This can go for a while, so keep the UI responsive.
+    QApplication::processEvents();
+
     //Find the node in the direction we are tracing.
     DeBruijnNode * nextNode;
     if (forward)
