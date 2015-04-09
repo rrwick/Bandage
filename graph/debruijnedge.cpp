@@ -186,7 +186,8 @@ int DeBruijnEdge::timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode 
 bool DeBruijnEdge::leadsOnlyToNode(bool forward,
                                    int stepsRemaining,
                                    DeBruijnNode * target,
-                                   std::vector<DeBruijnNode *> pathSoFar)
+                                   std::vector<DeBruijnNode *> pathSoFar,
+                                   bool includeReverseComplement)
 {
     //Find the node in the direction we are tracing.
     DeBruijnNode * nextNode;
@@ -207,6 +208,11 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
 
     //If the next node is the target, the search succeeded!
     if (nextNode == target)
+        return true;
+
+    //If we are including reverse complements and the next node is
+    //the reverse complement of the target, the search succeeded!
+    if (includeReverseComplement && nextNode->m_reverseComplement == target)
         return true;
 
     //If there are no steps left, then the search failed.
@@ -243,7 +249,7 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
         //If it appears 0 or 1 times, then continue the path search.
         if (timesNodeInPath(nextNextNode, &pathSoFar) < 2)
         {
-            if ( !nextEdge->leadsOnlyToNode(forward, stepsRemaining, target, pathSoFar) )
+            if ( !nextEdge->leadsOnlyToNode(forward, stepsRemaining, target, pathSoFar, includeReverseComplement) )
                 return false;
         }
     }

@@ -172,9 +172,21 @@ void DeBruijnNode::determineContiguity()
     {
         DeBruijnNode * node = *i;
 
-        //Don't bother looking at nodes already determined to be CONTIGUOUS_STRAND_SPECIFIC
-        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC && node->doesPathLeadOnlyToNode(this))
+        //First check without reverse complement target for
+        //strand-specific contiguity.
+        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC &&
+                node->doesPathLeadOnlyToNode(this, false))
             node->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
+
+        //Now check including the reverse complement target for
+        //either strand contiguity.
+        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC &&
+                node->m_contiguityStatus != CONTIGUOUS_EITHER_STRAND &&
+                node->doesPathLeadOnlyToNode(this, true))
+        {
+            node->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->m_reverseComplement->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+        }
     }
 }
 
@@ -250,7 +262,9 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPathsEitherStrand(s
 //This function checks whether this node has any path leading outward that
 //unambiguously leads to the given node.
 //It checks a number of steps as set by the contiguitySearchSteps setting.
-bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node)
+//If includeReverseComplement is true, then this function returns true if
+//all paths lead either to the node or its reverse complement node.
+bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement)
 {
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
@@ -259,7 +273,7 @@ bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node)
 
         std::vector<DeBruijnNode *> pathSoFar;
         pathSoFar.push_back(this);
-        if (edge->leadsOnlyToNode(outgoingEdge, g_settings->contiguitySearchSteps, node, pathSoFar))
+        if (edge->leadsOnlyToNode(outgoingEdge, g_settings->contiguitySearchSteps, node, pathSoFar, includeReverseComplement))
             return true;
     }
 

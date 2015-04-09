@@ -47,7 +47,8 @@ public:
     bool leadsOnlyToNode(bool forward,
                          int stepsRemaining,
                          DeBruijnNode * target,
-                         std::vector<DeBruijnNode *> pathSoFar);
+                         std::vector<DeBruijnNode *> pathSoFar,
+                         bool includeReverseComplement);
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
                                                     bool forward);
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path);

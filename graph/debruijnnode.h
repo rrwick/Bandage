@@ -81,7 +81,7 @@ public:
     QString getNodeNumberText(bool commas);
     std::vector<DeBruijnNode *> getNodesCommonToAllPathsStrandSpecific(std::vector< std::vector <DeBruijnNode *> > * paths);
     std::vector<DeBruijnNode *> getNodesCommonToAllPathsEitherStrand(std::vector< std::vector <DeBruijnNode *> > * paths);
-    bool doesPathLeadOnlyToNode(DeBruijnNode * node);
+    bool doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement);
 };
 
 #endif // DEBRUIJNNODE_H
