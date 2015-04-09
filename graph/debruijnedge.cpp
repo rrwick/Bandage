@@ -193,6 +193,9 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
                                    std::vector<DeBruijnNode *> pathSoFar,
                                    bool includeReverseComplement)
 {
+    //This can go for a while, so keep the UI responsive.
+    QApplication::processEvents();
+
     //Find the node in the direction we are tracing.
     DeBruijnNode * nextNode;
     if (forward)

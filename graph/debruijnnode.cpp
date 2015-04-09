@@ -134,7 +134,6 @@ void DeBruijnNode::determineContiguity()
     //are CONTIGUOUS.
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
-        QApplication::processEvents();
         DeBruijnEdge * edge = m_edges[i];
         bool outgoingEdge = (this == edge->m_startingNode);
 
@@ -144,6 +143,7 @@ void DeBruijnNode::determineContiguity()
         //Set all nodes in the paths as MAYBE_CONTIGUOUS
         for (size_t j = 0; j < allPaths.size(); ++j)
         {
+            QApplication::processEvents();
             for (size_t k = 0; k < allPaths[j].size(); ++k)
             {
                 DeBruijnNode * node = allPaths[j][k];
