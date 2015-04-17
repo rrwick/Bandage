@@ -491,15 +491,17 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QString sequence = sequences[i];
 
         //The header can come in a couple of different formats.
-        //It might start with 'comp', which specifies a component number, or it
-        //might start with 'TR', which will specify a transcript number followed
-        //by a componenet number.
+        //I need the transcript number and the component number.  Some
+        //of the formats don't seem to include the transcript number,
+        //so I use 0 in those cases.
         int transcript;
         int component;
 
         if (name.length() < 4)
             throw "load error";
 
+        // This is for header formats like this:
+        // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
         if (name.mid(0, 2) == "TR")
         {
             int transcriptStartIndex = name.indexOf("TR") + 2;
@@ -516,6 +518,9 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             int componentLength = componentEndIndex - componentStartIndex;
             component = name.mid(componentStartIndex, componentLength).toInt();
         }
+
+        // This is for header formats like this:
+        // comp0_c0_seq1 len=286 path=[6:0-285]
         else if (name.mid(0, 4) == "comp")
         {
             transcript = 0;
@@ -528,7 +533,21 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             component = name.mid(componentStartIndex, componentLength).toInt();
         }
 
-        //If the header doesn't start with either 'TR' or 'comp', then
+        // This is for header formats like this:
+        // c0_g1_i1 len=363 path=[119:0-185 43:186-244 43:245-303 43:304-362]
+        else if (name.at(0) == 'c' && name.at(1).isDigit())
+        {
+            transcript = 0;
+
+            int componentStartIndex = 1;
+            int componentEndIndex = name.indexOf("_", componentStartIndex);
+            if (componentStartIndex < 0 || componentEndIndex < 0)
+                throw "load error";
+            int componentLength = componentEndIndex - componentStartIndex;
+            component = name.mid(componentStartIndex, componentLength).toInt();
+        }
+
+        //If the header doesn't match any of the previous options, then
         //I don't know what's going on.
         else
             throw "load error";
