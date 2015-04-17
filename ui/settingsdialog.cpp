@@ -39,6 +39,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
     connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
     connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
+    connect(ui->noBlastHitsColourButton, SIGNAL(clicked()), this, SLOT(noBlastHitsColourClicked()));
     connect(ui->contiguousStrandSpecificColourButton, SIGNAL(clicked()), this, SLOT(contiguousStrandSpecificColourClicked()));
     connect(ui->contiguousEitherStrandColourButton, SIGNAL(clicked()), this, SLOT(contiguousEitherStrandColourClicked()));
     connect(ui->maybeContiguousColourButton, SIGNAL(clicked()), this, SLOT(maybeContiguousColourClicked()));
@@ -121,6 +122,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
     doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
     doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
+    colourFunctionPointer(&settings->noBlastHitsColour, &m_noBlastHitsColour);
     intFunctionPointer(&settings->contiguitySearchSteps, ui->contiguitySearchDepthSpinBox);
     colourFunctionPointer(&settings->contiguousStrandSpecificColour, &m_contiguousStrandSpecificColour);
     colourFunctionPointer(&settings->contiguousEitherStrandColour, &m_contiguousEitherStrandColour);
@@ -236,6 +238,15 @@ void SettingsDialog::highCoverageColourClicked()
         setButtonColours();
     }
 }
+void SettingsDialog::noBlastHitsColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_noBlastHitsColour, this, "No BLAST hits colour", QColorDialog::ShowAlphaChannel);
+    if (chosenColor.isValid())
+    {
+        m_noBlastHitsColour = chosenColor;
+        setButtonColours();
+    }
+}
 void SettingsDialog::contiguousStrandSpecificColourClicked()
 {
     QColor chosenColor = QColorDialog::getColor(m_contiguousStrandSpecificColour, this, "Contiguous (strand-specific) colour", QColorDialog::ShowAlphaChannel);
@@ -295,6 +306,7 @@ void SettingsDialog::setButtonColours()
     ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
     ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
     ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
+    ui->noBlastHitsColourButton->setStyleSheet(COLOR_STYLE.arg(m_noBlastHitsColour.name()));
     ui->contiguousStrandSpecificColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousStrandSpecificColour.name()));
     ui->contiguousEitherStrandColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousEitherStrandColour.name()));
     ui->maybeContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_maybeContiguousColour.name()));
@@ -360,6 +372,10 @@ void SettingsDialog::setInfoTexts()
     ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
+    ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is "
+                                               "used for nodes that do not have any BLAST hits.  It is also used for any region "
+                                               "of a node without BLAST hits, even if there are BLAST hits in other regions of "
+                                               "that node.");
     ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take.  Larger "
                                                    "values will find more distant contiguous nodes, at a performance cost.<br><br>"
                                                    "The time taken to complete the search can grow rapidly as values increase, "
