@@ -146,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionControls_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
+    connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1800,4 +1801,25 @@ void MainWindow::showHidePanels()
 {
     ui->controlsScrollArea->setVisible(ui->actionControls_panel->isChecked());
     ui->selectionScrollArea->setVisible(ui->actionSelection_panel->isChecked());
+}
+
+
+void MainWindow::bringSelectedNodesToFront()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+        return;
+
+    double topZ = m_scene->getTopZValue();
+    double newZ = topZ + 1.0;
+
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->m_graphicsItemNode;
+
+        if (graphicsItemNode == 0)
+            continue;
+
+        graphicsItemNode->setZValue(newZ);
+    }
 }

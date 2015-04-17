@@ -112,3 +112,24 @@ DeBruijnEdge * MyGraphicsScene::getOneSelectedEdge()
     else
         return selectedEdges[0];
 }
+
+double MyGraphicsScene::getTopZValue()
+{
+    double topZ;
+
+    QList<QGraphicsItem *> allItems = items();
+    for (int i = 0; i < allItems.size(); ++i)
+    {
+        QGraphicsItem * item = allItems[i];
+        if (i == 0)
+            topZ = item->zValue();
+        else
+        {
+            double z = item->zValue();
+            if (z > topZ)
+                topZ = z;
+        }
+    }
+
+    return topZ;
+}

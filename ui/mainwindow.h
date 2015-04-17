@@ -115,6 +115,7 @@ private slots:
     void saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool useTrinityNames);
     void showHidePanels();
     void graphLayoutCancelled();
+    void bringSelectedNodesToFront();
 
 signals:
     void saveAllNodesToFastaFinished();

@@ -36,6 +36,7 @@ public:
     std::vector<DeBruijnEdge *> getSelectedEdges();
     DeBruijnNode * getOneSelectedNode();
     DeBruijnEdge * getOneSelectedEdge();
+    double getTopZValue();
 
 signals:
 

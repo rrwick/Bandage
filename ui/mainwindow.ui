@@ -1728,9 +1728,16 @@
     <addaction name="actionControls_panel"/>
     <addaction name="actionSelection_panel"/>
    </widget>
+   <widget class="QMenu" name="menuSelection">
+    <property name="title">
+     <string>Selection</string>
+    </property>
+    <addaction name="actionBring_selected_nodes_to_front"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuView"/>
+   <addaction name="menuSelection"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1832,6 +1839,11 @@
    </property>
    <property name="text">
     <string>Load Trinity.fasta</string>
+   </property>
+  </action>
+  <action name="actionBring_selected_nodes_to_front">
+   <property name="text">
+    <string>Bring selected node(s) to front</string>
    </property>
   </action>
  </widget>
