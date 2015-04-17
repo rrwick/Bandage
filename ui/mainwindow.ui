@@ -1733,6 +1733,7 @@
      <string>Selection</string>
     </property>
     <addaction name="actionBring_selected_nodes_to_front"/>
+    <addaction name="actionSelect_nodes_with_BLAST_hits"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1844,6 +1845,11 @@
   <action name="actionBring_selected_nodes_to_front">
    <property name="text">
     <string>Bring selected node(s) to front</string>
+   </property>
+  </action>
+  <action name="actionSelect_nodes_with_BLAST_hits">
+   <property name="text">
+    <string>Select node(s) with BLAST hits</string>
    </property>
   </action>
  </widget>

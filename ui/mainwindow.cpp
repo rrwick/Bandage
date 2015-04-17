@@ -147,6 +147,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
     connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
+    connect(ui->actionSelect_nodes_with_BLAST_hits, SIGNAL(triggered()), this, SLOT(selectNodesWithBlastHits()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1821,5 +1822,36 @@ void MainWindow::bringSelectedNodesToFront()
             continue;
 
         graphicsItemNode->setZValue(newZ);
+    }
+}
+
+
+void MainWindow::selectNodesWithBlastHits()
+{
+    m_scene->clearSelection();
+
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        GraphicsItemNode * graphicsItemNode = node->m_graphicsItemNode;
+
+        if (graphicsItemNode == 0)
+            continue;
+
+        //If we're in double mode, only select a node if it has a BLAST hit itself.
+        if (g_settings->doubleMode)
+        {
+            if (node->m_blastHits.size() > 0)
+                graphicsItemNode->setSelected(true);
+        }
+
+        //In single mode, select a node if it or its reverse complement has a BLAST hit.
+        else
+        {
+            if (node->m_blastHits.size() > 0 || node->m_reverseComplement->m_blastHits.size() > 0)
+                graphicsItemNode->setSelected(true);
+        }
     }
 }

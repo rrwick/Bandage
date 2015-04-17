@@ -116,6 +116,7 @@ private slots:
     void showHidePanels();
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();
+    void selectNodesWithBlastHits();
 
 signals:
     void saveAllNodesToFastaFinished();
