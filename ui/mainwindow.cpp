@@ -490,19 +490,49 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QString name = names[i];
         QString sequence = sequences[i];
 
-        int transcriptStartIndex = name.indexOf("TR") + 2;
-        int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
-        if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
-            throw "load error";
-        int transcriptLength = transcriptEndIndex - transcriptStartIndex;
-        int transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+        //The header can come in a couple of different formats.
+        //It might start with 'comp', which specifies a component number, or it
+        //might start with 'TR', which will specify a transcript number followed
+        //by a componenet number.
+        int transcript;
+        int component;
 
-        int componentStartIndex = name.indexOf("|c") + 2;
-        int componentEndIndex = name.indexOf("_", componentStartIndex);
-        if (componentStartIndex < 0 || componentEndIndex < 0)
+        if (name.length() < 4)
             throw "load error";
-        int componentLength = componentEndIndex - componentStartIndex;
-        int component = name.mid(componentStartIndex, componentLength).toInt();
+
+        if (name.mid(0, 2) == "TR")
+        {
+            int transcriptStartIndex = name.indexOf("TR") + 2;
+            int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
+            if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
+                throw "load error";
+            int transcriptLength = transcriptEndIndex - transcriptStartIndex;
+            transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+
+            int componentStartIndex = name.indexOf("|c") + 2;
+            int componentEndIndex = name.indexOf("_", componentStartIndex);
+            if (componentStartIndex < 0 || componentEndIndex < 0)
+                throw "load error";
+            int componentLength = componentEndIndex - componentStartIndex;
+            component = name.mid(componentStartIndex, componentLength).toInt();
+        }
+        else if (name.mid(0, 4) == "comp")
+        {
+            transcript = 0;
+
+            int componentStartIndex = name.indexOf("comp") + 4;
+            int componentEndIndex = name.indexOf("_", componentStartIndex);
+            if (componentStartIndex < 0 || componentEndIndex < 0)
+                throw "load error";
+            int componentLength = componentEndIndex - componentStartIndex;
+            component = name.mid(componentStartIndex, componentLength).toInt();
+        }
+
+        //If the header doesn't start with either 'TR' or 'comp', then
+        //I don't know what's going on.
+        else
+            throw "load error";
+
 
         int pathStartIndex = name.indexOf("path=[") + 6;
         int pathEndIndex = name.indexOf("]", pathStartIndex);
