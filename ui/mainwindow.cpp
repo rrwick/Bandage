@@ -1832,6 +1832,17 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->selectionSearchWidget->setEnabled(false);
         ui->actionSave_image_current_view->setEnabled(false);
         ui->actionSave_image_entire_scene->setEnabled(false);
+        ui->actionSelect_all->setEnabled(false);
+        ui->actionSelect_none->setEnabled(false);
+        ui->actionInvert_selection->setEnabled(false);
+        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
+        ui->actionSelect_contiguous_nodes->setEnabled(false);
+        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
+        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
+        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
+        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
+        ui->actionBring_selected_nodes_to_front->setEnabled(false);
+        ui->actionZoom_to_selection->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1842,6 +1853,17 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->selectionSearchWidget->setEnabled(false);
         ui->actionSave_image_current_view->setEnabled(false);
         ui->actionSave_image_entire_scene->setEnabled(false);
+        ui->actionSelect_all->setEnabled(false);
+        ui->actionSelect_none->setEnabled(false);
+        ui->actionInvert_selection->setEnabled(false);
+        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
+        ui->actionSelect_contiguous_nodes->setEnabled(false);
+        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
+        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
+        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
+        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
+        ui->actionBring_selected_nodes_to_front->setEnabled(false);
+        ui->actionZoom_to_selection->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1852,6 +1874,17 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->selectionSearchWidget->setEnabled(true);
         ui->actionSave_image_current_view->setEnabled(true);
         ui->actionSave_image_entire_scene->setEnabled(true);
+        ui->actionSelect_all->setEnabled(true);
+        ui->actionSelect_none->setEnabled(true);
+        ui->actionInvert_selection->setEnabled(true);
+        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(true);
+        ui->actionSelect_contiguous_nodes->setEnabled(true);
+        ui->actionSelect_possibly_contiguous_nodes->setEnabled(true);
+        ui->actionSelect_not_contiguous_nodes->setEnabled(true);
+        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(true);
+        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(true);
+        ui->actionBring_selected_nodes_to_front->setEnabled(true);
+        ui->actionZoom_to_selection->setEnabled(true);
         break;
     }
 }
