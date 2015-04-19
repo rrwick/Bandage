@@ -120,6 +120,7 @@ private slots:
     void selectAll();
     void selectNone();
     void invertSelection();
+    void zoomToSelection();
 
 signals:
     void saveAllNodesToFastaFinished();

@@ -151,6 +151,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
     connect(ui->actionSelect_none, SIGNAL(triggered()), this, SLOT(selectNone()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
+    connect(ui->actionZoom_to_selection, SIGNAL(triggered()), this, SLOT(zoomToSelection()));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
@@ -1545,6 +1546,7 @@ void MainWindow::selectUserSpecifiedNodes()
         return;
     }
 
+    m_scene->blockSignals(true);
     m_scene->clearSelection();
     std::vector<QString> nodesNotInGraph;
     std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
@@ -1552,7 +1554,6 @@ void MainWindow::selectUserSpecifiedNodes()
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
-    QRectF boundingBox;
     std::vector<int> nodesNotFound;
     int foundNodes = 0;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
@@ -1567,8 +1568,6 @@ void MainWindow::selectUserSpecifiedNodes()
         if (graphicsItemNode != 0)
         {
             graphicsItemNode->setSelected(true);
-            QRectF thisNodeBoundingBox = graphicsItemNode->boundingRect();
-            boundingBox = boundingBox | thisNodeBoundingBox;
             ++foundNodes;
         }
         else
@@ -1576,7 +1575,7 @@ void MainWindow::selectUserSpecifiedNodes()
     }
 
     if (foundNodes > 0)
-        zoomToFitRect(boundingBox);
+        zoomToSelection();
 
     if (nodesNotInGraph.size() > 0 || nodesNotFound.size() > 0)
     {
@@ -1607,6 +1606,10 @@ void MainWindow::selectUserSpecifiedNodes()
         }
         QMessageBox::information(this, "Nodes not found", errorMessage);
     }
+
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+    selectionChanged();
 }
 
 
@@ -1801,7 +1804,7 @@ void MainWindow::setInfoTexts()
     ui->removeNodesInfoText->setInfoText("Click this button to remove selected nodes from the drawn graph, along "
                                          "with any edges that connect to those nodes. This makes no change to "
                                          "the underlying assembly graph, just the visualisation.<br><br>"
-                                         "To see a removed nodes again, you must redraw the graph by clicking "
+                                         "To see removed nodes again, you must redraw the graph by clicking "
                                          "'Draw graph'.");
 }
 
@@ -1920,6 +1923,8 @@ void MainWindow::selectNodesWithBlastHits()
     if (!atLeastOneNodeSelected)
         QMessageBox::information(this, "No BLAST hits",
                                        "To select nodes with BLAST hits, you must first conduct a BLAST search.");
+    else
+        zoomToSelection();
 }
 
 
@@ -1964,4 +1969,26 @@ void MainWindow::invertSelection()
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
+}
+
+
+
+void MainWindow::zoomToSelection()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+        return;
+
+    QRectF boundingBox;
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->m_graphicsItemNode;
+        if (graphicsItemNode != 0)
+        {
+            QRectF thisNodeBoundingBox = graphicsItemNode->boundingRect();
+            boundingBox = boundingBox | thisNodeBoundingBox;
+        }
+    }
+
+    zoomToFitRect(boundingBox);
 }

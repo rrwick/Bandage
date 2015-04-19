@@ -1646,6 +1646,8 @@
     <addaction name="actionInvert_selection"/>
     <addaction name="separator"/>
     <addaction name="actionBring_selected_nodes_to_front"/>
+    <addaction name="actionZoom_to_selection"/>
+    <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
     <addaction name="separator"/>
     <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
@@ -1797,6 +1799,11 @@
   <action name="actionSelect_none">
    <property name="text">
     <string>Select none</string>
+   </property>
+  </action>
+  <action name="actionZoom_to_selection">
+   <property name="text">
+    <string>Zoom to selection</string>
    </property>
   </action>
  </widget>
