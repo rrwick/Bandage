@@ -1803,7 +1803,7 @@
   </action>
   <action name="actionZoom_to_selection">
    <property name="text">
-    <string>Zoom to selection</string>
+    <string>Zoom to fit selection</string>
    </property>
   </action>
  </widget>

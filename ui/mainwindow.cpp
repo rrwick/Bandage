@@ -1975,19 +1975,15 @@ void MainWindow::invertSelection()
 
 void MainWindow::zoomToSelection()
 {
-    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    if (selectedNodes.size() == 0)
+    QList<QGraphicsItem *> selection = m_scene->selectedItems();
+    if (selection.size() == 0)
         return;
 
     QRectF boundingBox;
-    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    for (int i = 0; i < selection.size(); ++i)
     {
-        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->m_graphicsItemNode;
-        if (graphicsItemNode != 0)
-        {
-            QRectF thisNodeBoundingBox = graphicsItemNode->boundingRect();
-            boundingBox = boundingBox | thisNodeBoundingBox;
-        }
+        QGraphicsItem * selectedItem = selection[i];
+        boundingBox = boundingBox | selectedItem->boundingRect();
     }
 
     zoomToFitRect(boundingBox);
