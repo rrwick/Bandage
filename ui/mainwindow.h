@@ -85,6 +85,7 @@ private:
     void enableDisableUiElements(UiState uiState);
     void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
     void pointEachNodeToItsReverseComplement();
+    void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
 
 private slots:
     void loadLastGraph();
@@ -121,6 +122,9 @@ private slots:
     void selectNone();
     void invertSelection();
     void zoomToSelection();
+    void selectContiguous();
+    void selectMaybeContiguous();
+    void selectNotContiguous();
 
 signals:
     void saveAllNodesToFastaFinished();

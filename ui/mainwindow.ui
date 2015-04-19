@@ -1618,12 +1618,6 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="actionAbout"/>
-   </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
@@ -1641,6 +1635,14 @@
     <property name="title">
      <string>Select</string>
     </property>
+    <widget class="QMenu" name="menuSelect_nodes_based_on_contiguity">
+     <property name="title">
+      <string>Select nodes based on contiguity</string>
+     </property>
+     <addaction name="actionSelect_contiguous_nodes"/>
+     <addaction name="actionSelect_possibly_contiguous_nodes"/>
+     <addaction name="actionSelect_not_contiguous_nodes"/>
+    </widget>
     <addaction name="actionSelect_all"/>
     <addaction name="actionSelect_none"/>
     <addaction name="actionInvert_selection"/>
@@ -1649,9 +1651,16 @@
     <addaction name="actionZoom_to_selection"/>
     <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
+    <addaction name="menuSelect_nodes_based_on_contiguity"/>
     <addaction name="separator"/>
     <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
     <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1804,6 +1813,21 @@
   <action name="actionZoom_to_selection">
    <property name="text">
     <string>Zoom to fit selection</string>
+   </property>
+  </action>
+  <action name="actionSelect_possibly_contiguous_nodes">
+   <property name="text">
+    <string>Select possibly contiguous nodes</string>
+   </property>
+  </action>
+  <action name="actionSelect_contiguous_nodes">
+   <property name="text">
+    <string>Select contiguous nodes</string>
+   </property>
+  </action>
+  <action name="actionSelect_not_contiguous_nodes">
+   <property name="text">
+    <string>Select not contiguous nodes</string>
    </property>
   </action>
  </widget>

@@ -152,6 +152,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSelect_none, SIGNAL(triggered()), this, SLOT(selectNone()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
     connect(ui->actionZoom_to_selection, SIGNAL(triggered()), this, SLOT(zoomToSelection()));
+    connect(ui->actionSelect_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectContiguous()));
+    connect(ui->actionSelect_possibly_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectMaybeContiguous()));
+    connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
@@ -1988,4 +1991,64 @@ void MainWindow::zoomToSelection()
     }
 
     zoomToFitRect(boundingBox);
+}
+
+
+
+void MainWindow::selectContiguous()
+{
+    selectBasedOnContiguity(CONTIGUOUS_EITHER_STRAND);
+}
+
+void MainWindow::selectMaybeContiguous()
+{
+    selectBasedOnContiguity(MAYBE_CONTIGUOUS);
+}
+
+void MainWindow::selectNotContiguous()
+{
+    selectBasedOnContiguity(NOT_CONTIGUOUS);
+}
+
+
+
+void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus)
+{
+    m_scene->blockSignals(true);
+    m_scene->clearSelection();
+
+    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        GraphicsItemNode * graphicsItemNode = node->m_graphicsItemNode;
+
+        if (graphicsItemNode == 0)
+            continue;
+
+        //For single nodes, choose the greatest contiguity status of this
+        //node and its complement.
+        ContiguityStatus nodeContiguityStatus = node->m_contiguityStatus;
+        if (!g_settings->doubleMode)
+        {
+            ContiguityStatus twinContiguityStatus = node->m_reverseComplement->m_contiguityStatus;
+            if (twinContiguityStatus < nodeContiguityStatus)
+                nodeContiguityStatus = twinContiguityStatus;
+        }
+
+        if (targetContiguityStatus == CONTIGUOUS_EITHER_STRAND &&
+                (nodeContiguityStatus == CONTIGUOUS_STRAND_SPECIFIC || nodeContiguityStatus == CONTIGUOUS_EITHER_STRAND))
+            graphicsItemNode->setSelected(true);
+        else if (targetContiguityStatus == MAYBE_CONTIGUOUS &&
+                 nodeContiguityStatus == MAYBE_CONTIGUOUS)
+            graphicsItemNode->setSelected(true);
+        else if (targetContiguityStatus == NOT_CONTIGUOUS &&
+                 nodeContiguityStatus == NOT_CONTIGUOUS)
+            graphicsItemNode->setSelected(true);
+    }
+
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+    selectionChanged();
 }

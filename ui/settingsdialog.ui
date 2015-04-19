@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-483</y>
+        <y>-941</y>
         <width>415</width>
         <height>1567</height>
        </rect>
@@ -208,7 +208,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Maybe contiguous:</string>
+          <string>Possibly contiguous:</string>
          </property>
         </widget>
        </item>
