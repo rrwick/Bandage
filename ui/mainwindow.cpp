@@ -1321,14 +1321,16 @@ void MainWindow::determineContiguityFromSelectedNode()
     g_assemblyGraph->resetNodeContiguityStatus();
     g_assemblyGraph->resetAllNodeColours();
 
-    DeBruijnNode * selectedNode = m_scene->getOneSelectedNode();
-    if (selectedNode != 0)
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() > 0)
     {
         MyProgressDialog progress(this, "Determining contiguity...", false);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
-        selectedNode->determineContiguity();
+        for (size_t i = 0; i < selectedNodes.size(); ++i)
+            (selectedNodes[i])->determineContiguity();
+
         g_assemblyGraph->m_contiguitySearchDone = true;
         g_assemblyGraph->resetAllNodeColours();
         g_graphicsView->viewport()->update();
