@@ -73,6 +73,8 @@ public:
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
 
+    int randomColourOpacity;
+
     int contiguitySearchSteps;
     QColor contiguousStrandSpecificColour;
     QColor contiguousEitherStrandColour;

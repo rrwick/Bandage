@@ -137,12 +137,14 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
+        ui->randomColourOpacitySlider->setValue(settings->randomColourOpacity);
         ui->coverageValueAutoRadioButton->setChecked(settings->autoCoverageValue);
         ui->coverageValueManualRadioButton->setChecked(!settings->autoCoverageValue);
     }
     else
     {
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
+        settings->randomColourOpacity = ui->randomColourOpacitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
         settings->autoCoverageValue = ui->coverageValueAutoRadioButton->isChecked();
     }
@@ -361,6 +363,10 @@ void SettingsDialog::setInfoTexts()
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
     ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
+    ui->randomColourOpacityInfoText->setInfoText("This controls how opaque the nodes are when the 'Random colours' option is "
+                                                 "used.<br><br>"
+                                                 "Set to the minimum value (left) for fully transparent nodes.  Set to the "
+                                                 "maximum value (right) for completely opaque nodes.");
     ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
                                                "nodes with coverage at or below the low coverage value.<br><br>"
                                                "Nodes with coverage between the low and high coverage values will get an "

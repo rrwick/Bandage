@@ -1528,7 +1528,8 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.contiguousEitherStrandColour != g_settings->contiguousEitherStrandColour ||
                 settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
                 settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
-                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour)
+                settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour ||
+                settingsBefore.randomColourOpacity != g_settings->randomColourOpacity)
         {
             g_assemblyGraph->resetAllNodeColours();
         }

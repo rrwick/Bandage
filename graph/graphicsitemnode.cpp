@@ -226,6 +226,7 @@ void GraphicsItemNode::setNodeColour()
             value = 150;
         }
         m_colour.setHsv(hue, saturation, value);
+        m_colour.setAlpha(g_settings->randomColourOpacity);
         break;
     }
 
