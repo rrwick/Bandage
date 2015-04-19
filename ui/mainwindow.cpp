@@ -123,8 +123,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
     connect(m_graphicsViewZoom, SIGNAL(zoomed()), this, SLOT(zoomedWithMouseWheel()));
-    connect(ui->nodeSequenceToClipboardButton, SIGNAL(clicked()), this, SLOT(copySelectedSequencesToClipboard()));
-    connect(ui->nodeSequenceToFileButton, SIGNAL(clicked()), this, SLOT(saveSelectedSequencesToFile()));
+    connect(ui->actionCopy_selected_node_sequences_to_clipboard, SIGNAL(triggered()), this, SLOT(copySelectedSequencesToClipboard()));
+    connect(ui->actionSave_selected_node_sequences_to_FASTA, SIGNAL(triggered()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
     connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
     connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
@@ -151,10 +151,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
 
-    QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
-    connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
-    QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
-    connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveSelectedSequencesToFile()));
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
     QShortcut *labelShortcut = new QShortcut(QKeySequence("Ctrl+L"), this);
@@ -809,16 +805,12 @@ void MainWindow::selectionChanged()
         if (selectedNodeCount == 1)
         {
             ui->selectedNodesTitleLabel->setText("Selected node");
-            ui->nodeSequenceToClipboardButton->setText("Copy sequence to clipboard");
-            ui->nodeSequenceToFileButton->setText("Save sequence to FASTA file");
             ui->removeNodeButton->setText("Remove node");
             ui->selectedContigLengthLabel->setText("Length: " + selectedNodeLengthText);
         }
         else
         {
             ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
-            ui->nodeSequenceToClipboardButton->setText("Copy sequences to clipboard");
-            ui->nodeSequenceToFileButton->setText("Save sequences to FASTA file");
             ui->removeNodeButton->setText("Remove nodes");
             ui->selectedContigLengthLabel->setText("Total length: " + selectedNodeLengthText);
         }
@@ -1225,8 +1217,13 @@ void MainWindow::zoomToFitRect(QRectF rect)
 void MainWindow::copySelectedSequencesToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+
     if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Copy selected sequences", "No nodes are selected.\n\n"
+                                                                  "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
         return;
+    }
 
     QClipboard * clipboard = QApplication::clipboard();
     QString clipboardText;
@@ -1246,8 +1243,13 @@ void MainWindow::copySelectedSequencesToClipboard()
 void MainWindow::saveSelectedSequencesToFile()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+
     if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Save selected sequences", "No nodes are selected.\n\n"
+                                                                  "You must first select nodes in the graph before you can save their sequences to a FASTA file.");
         return;
+    }
 
     QString defaultFileNameAndPath = g_settings->rememberedPath + "/selected_sequences.fasta";
 
@@ -1802,12 +1804,6 @@ void MainWindow::setInfoTexts()
                                          "the underlying assembly graph, just the visualisation.<br><br>"
                                          "To see a removed nodes again, you must redraw the graph by clicking "
                                          "'Draw graph'.");
-    ui->copySequencesInfoText->setInfoText("Click this button to copy the sequences of all selected nodes to the "
-                                           "clipboard. If multiple nodes are selected, each node sequence will be "
-                                           "on its own line, without headers.");
-    ui->saveSequencesInfoText->setInfoText("Click this button to save the sequences of all selected nodes to a "
-                                           "FASTA file. Each node's number, length and coverage will be "
-                                           "included in its header.");
 }
 
 
