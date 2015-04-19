@@ -1639,6 +1639,10 @@
      <property name="title">
       <string>Select nodes based on contiguity</string>
      </property>
+     <property name="icon">
+      <iconset resource="../images/images.qrc">
+       <normaloff>:/icons/contiguity.png</normaloff>:/icons/contiguity.png</iconset>
+     </property>
      <addaction name="actionSelect_contiguous_nodes"/>
      <addaction name="actionSelect_possibly_contiguous_nodes"/>
      <addaction name="actionSelect_not_contiguous_nodes"/>
@@ -1770,62 +1774,106 @@
    </property>
   </action>
   <action name="actionBring_selected_nodes_to_front">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/bring-to-front.png</normaloff>:/icons/bring-to-front.png</iconset>
+   </property>
    <property name="text">
     <string>Bring selected node(s) to front</string>
    </property>
   </action>
   <action name="actionSelect_nodes_with_BLAST_hits">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/BLAST.png</normaloff>:/icons/BLAST.png</iconset>
+   </property>
    <property name="text">
     <string>Select node(s) with BLAST hits</string>
    </property>
   </action>
   <action name="actionSelect_all">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/select-all.png</normaloff>:/icons/select-all.png</iconset>
+   </property>
    <property name="text">
     <string>Select all</string>
    </property>
   </action>
   <action name="actionInvert_selection">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/invert-selection.png</normaloff>:/icons/invert-selection.png</iconset>
+   </property>
    <property name="text">
     <string>Invert selection</string>
    </property>
   </action>
   <action name="actionCopy_selected_node_sequences_to_clipboard">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
+   </property>
    <property name="text">
-    <string>Copy selected node sequences to clipboard</string>
+    <string>Copy selected node sequence(s) to clipboard</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
    </property>
   </action>
   <action name="actionSave_selected_node_sequences_to_FASTA">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
    <property name="text">
-    <string>Save selected node sequences to FASTA</string>
+    <string>Save selected node sequence(s) to FASTA</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSelect_none">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/select-none.png</normaloff>:/icons/select-none.png</iconset>
+   </property>
    <property name="text">
     <string>Select none</string>
    </property>
   </action>
   <action name="actionZoom_to_selection">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/zoom.png</normaloff>:/icons/zoom.png</iconset>
+   </property>
    <property name="text">
     <string>Zoom to fit selection</string>
    </property>
   </action>
   <action name="actionSelect_possibly_contiguous_nodes">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/contiguity-maybe_contiguous.png</normaloff>:/icons/contiguity-maybe_contiguous.png</iconset>
+   </property>
    <property name="text">
     <string>Select possibly contiguous nodes</string>
    </property>
   </action>
   <action name="actionSelect_contiguous_nodes">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/contiguity-contiguous.png</normaloff>:/icons/contiguity-contiguous.png</iconset>
+   </property>
    <property name="text">
     <string>Select contiguous nodes</string>
    </property>
   </action>
   <action name="actionSelect_not_contiguous_nodes">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/contiguity-not_contiguous.png</normaloff>:/icons/contiguity-not_contiguous.png</iconset>
+   </property>
    <property name="text">
     <string>Select not contiguous nodes</string>
    </property>

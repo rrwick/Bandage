@@ -8,5 +8,16 @@
         <file>save-256.png</file>
         <file>exit-256.png</file>
         <file>information-256-inactive.png</file>
+        <file>BLAST.png</file>
+        <file>bring-to-front.png</file>
+        <file>contiguity.png</file>
+        <file>contiguity-contiguous.png</file>
+        <file>contiguity-maybe_contiguous.png</file>
+        <file>contiguity-not_contiguous.png</file>
+        <file>invert-selection.png</file>
+        <file>select-all.png</file>
+        <file>select-none.png</file>
+        <file>copy.png</file>
+        <file>zoom.png</file>
     </qresource>
 </RCC>
