@@ -50,6 +50,7 @@ public:
     double m_medianCoverage;
     double m_thirdQuartileCoverage;
     bool m_trinityGraph;
+    bool m_contiguitySearchDone;
 
     void cleanUp();
     void createDeBruijnEdge(long long node1Number, long long node2Number);

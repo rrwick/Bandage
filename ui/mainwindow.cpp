@@ -1006,6 +1006,8 @@ void MainWindow::resetScene()
     m_scene->blockSignals(true);
 
     g_assemblyGraph->resetEdges();
+    g_assemblyGraph->m_contiguitySearchDone = false;
+
     delete m_scene;
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
@@ -1327,6 +1329,7 @@ void MainWindow::determineContiguityFromSelectedNode()
         progress.show();
 
         selectedNode->determineContiguity();
+        g_assemblyGraph->m_contiguitySearchDone = true;
         g_assemblyGraph->resetAllNodeColours();
         g_graphicsView->viewport()->update();
     }
@@ -2014,6 +2017,15 @@ void MainWindow::selectNotContiguous()
 
 void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus)
 {
+    if (!g_assemblyGraph->m_contiguitySearchDone)
+    {
+        QMessageBox::information(this, "Contiguity determination not done",
+                                       "To select nodes by their contiguity status, while in 'Colour "
+                                       "by contiguity' mode, you must select a node and then click "
+                                       "'Determine contiguity'.");
+        return;
+    }
+
     m_scene->blockSignals(true);
     m_scene->clearSelection();
 
@@ -2051,4 +2063,5 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
+    zoomToSelection();
 }

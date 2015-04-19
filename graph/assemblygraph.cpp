@@ -27,7 +27,7 @@
 #include "../graph/graphicsitemnode.h"
 
 AssemblyGraph::AssemblyGraph() :
-    m_trinityGraph(false)
+    m_trinityGraph(false), m_contiguitySearchDone(false)
 {
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
@@ -54,6 +54,8 @@ void AssemblyGraph::cleanUp()
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
         delete m_deBruijnGraphEdges[i];
     m_deBruijnGraphEdges.clear();
+
+    m_contiguitySearchDone = false;
 
     clearGraphInfo();
 }
@@ -244,6 +246,7 @@ void AssemblyGraph::resetNodeContiguityStatus()
         i.next();
         i.value()->m_contiguityStatus = NOT_CONTIGUOUS;
     }
+    m_contiguitySearchDone = false;
 }
 
 void AssemblyGraph::resetAllNodeColours()
