@@ -1642,6 +1642,7 @@
      <string>Select</string>
     </property>
     <addaction name="actionSelect_all"/>
+    <addaction name="actionSelect_none"/>
     <addaction name="actionInvert_selection"/>
     <addaction name="separator"/>
     <addaction name="actionBring_selected_nodes_to_front"/>
@@ -1791,6 +1792,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSelect_none">
+   <property name="text">
+    <string>Select none</string>
    </property>
   </action>
  </widget>

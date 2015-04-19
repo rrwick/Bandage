@@ -149,6 +149,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
     connect(ui->actionSelect_nodes_with_BLAST_hits, SIGNAL(triggered()), this, SLOT(selectNodesWithBlastHits()));
     connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
+    connect(ui->actionSelect_none, SIGNAL(triggered()), this, SLOT(selectNone()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -164,8 +165,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //so change the tooltips to reflect this.
 #ifdef Q_OS_MAC
     QString command(QChar(0x2318));
-    ui->nodeSequenceToClipboardButton->setToolTip(command + 'C');
-    ui->nodeSequenceToFileButton->setToolTip(command + 'S');
     ui->setNodeCustomColourButton->setToolTip(command + 'O');
     ui->setNodeCustomLabelButton->setToolTip(command + 'L');
 #endif
@@ -1883,6 +1882,7 @@ void MainWindow::selectNodesWithBlastHits()
     m_scene->blockSignals(true);
     m_scene->clearSelection();
 
+    bool atLeastOneNodeSelected = false;
     QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
@@ -1897,18 +1897,29 @@ void MainWindow::selectNodesWithBlastHits()
         if (g_settings->doubleMode)
         {
             if (node->m_blastHits.size() > 0)
+            {
                 graphicsItemNode->setSelected(true);
+                atLeastOneNodeSelected = true;
+            }
         }
 
         //In single mode, select a node if it or its reverse complement has a BLAST hit.
         else
         {
             if (node->m_blastHits.size() > 0 || node->m_reverseComplement->m_blastHits.size() > 0)
+            {
                 graphicsItemNode->setSelected(true);
+                atLeastOneNodeSelected = true;
+            }
         }
     }
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
+    selectionChanged();
+
+    if (!atLeastOneNodeSelected)
+        QMessageBox::information(this, "No BLAST hits",
+                                       "To select nodes with BLAST hits, you must first conduct a BLAST search.");
 }
 
 
@@ -1923,6 +1934,22 @@ void MainWindow::selectAll()
     }
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
+    selectionChanged();
+}
+
+
+void MainWindow::selectNone()
+{
+    m_scene->blockSignals(true);
+    QList<QGraphicsItem *> allItems = m_scene->items();
+    for (int i = 0; i < allItems.size(); ++i)
+    {
+        QGraphicsItem * item = allItems[i];
+        item->setSelected(false);
+    }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+    selectionChanged();
 }
 
 void MainWindow::invertSelection()
@@ -1936,4 +1963,5 @@ void MainWindow::invertSelection()
     }
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
+    selectionChanged();
 }

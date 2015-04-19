@@ -118,6 +118,7 @@ private slots:
     void bringSelectedNodesToFront();
     void selectNodesWithBlastHits();
     void selectAll();
+    void selectNone();
     void invertSelection();
 
 signals:
