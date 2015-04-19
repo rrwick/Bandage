@@ -148,6 +148,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
     connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
     connect(ui->actionSelect_nodes_with_BLAST_hits, SIGNAL(triggered()), this, SLOT(selectNodesWithBlastHits()));
+    connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
+    connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
 
     QShortcut *copyShortcut = new QShortcut(QKeySequence("Ctrl+C"), this);
     connect(copyShortcut, SIGNAL(activated()), this, SLOT(copySelectedSequencesToClipboard()));
@@ -1857,6 +1859,8 @@ void MainWindow::showHidePanels()
 
 void MainWindow::bringSelectedNodesToFront()
 {
+    m_scene->blockSignals(true);
+
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
         return;
@@ -1873,11 +1877,14 @@ void MainWindow::bringSelectedNodesToFront()
 
         graphicsItemNode->setZValue(newZ);
     }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
 }
 
 
 void MainWindow::selectNodesWithBlastHits()
 {
+    m_scene->blockSignals(true);
     m_scene->clearSelection();
 
     QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
@@ -1904,4 +1911,33 @@ void MainWindow::selectNodesWithBlastHits()
                 graphicsItemNode->setSelected(true);
         }
     }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+}
+
+
+void MainWindow::selectAll()
+{
+    m_scene->blockSignals(true);
+    QList<QGraphicsItem *> allItems = m_scene->items();
+    for (int i = 0; i < allItems.size(); ++i)
+    {
+        QGraphicsItem * item = allItems[i];
+        item->setSelected(true);
+    }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+}
+
+void MainWindow::invertSelection()
+{
+    m_scene->blockSignals(true);
+    QList<QGraphicsItem *> allItems = m_scene->items();
+    for (int i = 0; i < allItems.size(); ++i)
+    {
+        QGraphicsItem * item = allItems[i];
+        item->setSelected(!item->isSelected());
+    }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
 }

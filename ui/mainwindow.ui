@@ -1730,8 +1730,11 @@
    </widget>
    <widget class="QMenu" name="menuSelection">
     <property name="title">
-     <string>Selection</string>
+     <string>Select</string>
     </property>
+    <addaction name="actionSelect_all"/>
+    <addaction name="actionInvert_selection"/>
+    <addaction name="separator"/>
     <addaction name="actionBring_selected_nodes_to_front"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
    </widget>
@@ -1850,6 +1853,16 @@
   <action name="actionSelect_nodes_with_BLAST_hits">
    <property name="text">
     <string>Select node(s) with BLAST hits</string>
+   </property>
+  </action>
+  <action name="actionSelect_all">
+   <property name="text">
+    <string>Select all</string>
+   </property>
+  </action>
+  <action name="actionInvert_selection">
+   <property name="text">
+    <string>Invert selection</string>
    </property>
   </action>
  </widget>

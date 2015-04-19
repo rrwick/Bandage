@@ -117,6 +117,8 @@ private slots:
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();
     void selectNodesWithBlastHits();
+    void selectAll();
+    void invertSelection();
 
 signals:
     void saveAllNodesToFastaFinished();
