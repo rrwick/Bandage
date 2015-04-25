@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>1053</height>
+         <width>247</width>
+         <height>1065</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -720,17 +720,17 @@
                <widget class="QComboBox" name="coloursComboBox">
                 <item>
                  <property name="text">
+                  <string>Random colours</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>Uniform colour</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>Colour by coverage</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Random colours</string>
                  </property>
                 </item>
                 <item>
@@ -1180,7 +1180,7 @@
          <x>0</x>
          <y>0</y>
          <width>274</width>
-         <height>1053</height>
+         <height>1065</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1602,7 +1602,7 @@
      <x>0</x>
      <y>0</y>
      <width>1301</width>
-     <height>27</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

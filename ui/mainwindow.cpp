@@ -1283,16 +1283,16 @@ void MainWindow::switchColourScheme()
     switch (ui->coloursComboBox->currentIndex())
     {
     case 0:
-        g_settings->nodeColourScheme = ONE_COLOUR;
+        setRandomColourFactor();
+        g_settings->nodeColourScheme = RANDOM_COLOURS;
         ui->contiguityWidget->setVisible(false);
         break;
     case 1:
-        g_settings->nodeColourScheme = COVERAGE_COLOUR;
+        g_settings->nodeColourScheme = ONE_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 2:
-        setRandomColourFactor();
-        g_settings->nodeColourScheme = RANDOM_COLOURS;
+        g_settings->nodeColourScheme = COVERAGE_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 3:
