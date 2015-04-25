@@ -31,7 +31,7 @@ MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
 {
     setDragMode(QGraphicsView::RubberBandDrag);
     setRenderHints(QPainter::Antialiasing);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate); //CAN I CHANGE THIS LATER TO BE MORE EFFICIENT?
+    setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate); //CAN I CHANGE THIS LATER TO BE MORE EFFICIENT?
 }
 
 
