@@ -48,7 +48,7 @@ QPointF GraphicsItemEdge::extendLine(QPointF start, QPointF end, double extensio
 
 void GraphicsItemEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    double edgeWidth = g_settings->widthScale(g_absoluteZoom) * g_settings->edgeWidth;
+    double edgeWidth = g_settings->edgeWidth;
     QColor penColour;
     if (isSelected())
         penColour = g_settings->selectionColour;
@@ -64,7 +64,7 @@ void GraphicsItemEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 QPainterPath GraphicsItemEdge::shape() const
 {
     QPainterPathStroker stroker;
-    stroker.setWidth(g_settings->widthScale(g_absoluteZoom) * g_settings->edgeWidth);
+    stroker.setWidth(g_settings->edgeWidth);
     stroker.setCapStyle(Qt::RoundCap);
     stroker.setJoinStyle(Qt::RoundJoin);
     return stroker.createStroke(path());

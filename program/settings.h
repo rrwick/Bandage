@@ -95,7 +95,6 @@ public:
 
     QString rememberedPath;
 
-    double widthScale(double zoom);
     void setNegativeNodeColour();
     bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNumbers || displayNodeLengths || displayNodeCoverages;}
 };

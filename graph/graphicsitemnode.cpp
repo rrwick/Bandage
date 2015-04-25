@@ -100,7 +100,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         if (parts.size() > 0)
         {
             QPen partPen;
-            partPen.setWidthF(getDrawnWidth());
+            partPen.setWidthF(m_width);
             partPen.setCapStyle(Qt::FlatCap);
             partPen.setJoinStyle(Qt::BevelJoin);
 
@@ -125,8 +125,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     if (outlineThickness > 0.0)
     {
         outlinePath = outlinePath.simplified();
-        double widthScale = g_settings->widthScale(g_absoluteZoom);
-        QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
+        QPen outlinePen(QBrush(outlineColour), 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
         painter->setPen(outlinePen);
         painter->drawPath(outlinePath);
     }
@@ -286,18 +285,16 @@ void GraphicsItemNode::setNodeColour()
 
 QPainterPath GraphicsItemNode::shape() const
 {
-    double drawnWidth = getDrawnWidth();
-
     //If there is only one segment and it is shorter than half its
     //width, then the arrow head will not be made with 45 degree
     //angles, but rather whatever angle is made by going from the
     //end to the back corners (the final node will be a triangle).
     if (m_hasArrow
             && m_linePoints.size() == 2
-            && distance(getLast(), getSecondLast()) < drawnWidth / 2.0)
+            && distance(getLast(), getSecondLast()) < m_width / 2.0)
     {
         QLineF backline = QLineF(getSecondLast(), getLast()).normalVector();
-        backline.setLength(drawnWidth / 2.0);
+        backline.setLength(m_width / 2.0);
         QPointF backVector = backline.p2() - backline.p1();
         QPainterPath trianglePath;
         trianglePath.moveTo(getLast());
@@ -309,7 +306,7 @@ QPainterPath GraphicsItemNode::shape() const
 
     //Create a path that outlines the main node shape.
     QPainterPathStroker stroker;
-    stroker.setWidth(drawnWidth);
+    stroker.setWidth(m_width);
     stroker.setCapStyle(Qt::FlatCap);
     stroker.setJoinStyle(Qt::RoundJoin);
     QPainterPath mainNodePath = stroker.createStroke(path());
@@ -323,10 +320,10 @@ QPainterPath GraphicsItemNode::shape() const
     //POINTY END OVERLAPS WITH ANOTHER PART OF THE NODE.  PERHAPS THERE
     //IS A BETTER WAY TO MAKE ARROWHEADS?
     QLineF frontline = QLineF(getLast(), getSecondLast()).normalVector();
-    frontline.setLength(drawnWidth / 2.0);
+    frontline.setLength(m_width / 2.0);
     QPointF frontVector = frontline.p2() - frontline.p1();
     QLineF arrowheadLine(getLast(), getSecondLast());
-    arrowheadLine.setLength(1.42 * (drawnWidth / 2.0));
+    arrowheadLine.setLength(1.42 * (m_width / 2.0));
     arrowheadLine.setAngle(arrowheadLine.angle() + 45.0);
     QPointF arrow1 = arrowheadLine.p2();
     arrowheadLine.setAngle(arrowheadLine.angle() - 90.0);
@@ -517,13 +514,6 @@ double GraphicsItemNode::distance(QPointF p1, QPointF p2) const
     double xDiff = p1.x() - p2.x();
     double yDiff = p1.y() - p2.y();
     return sqrt(xDiff * xDiff + yDiff * yDiff);
-}
-
-
-
-double GraphicsItemNode::getDrawnWidth() const
-{
-    return g_settings->widthScale(g_absoluteZoom) * m_width;
 }
 
 

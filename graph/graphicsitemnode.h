@@ -51,7 +51,6 @@ public:
     void shiftPoints(QPointF difference);
     void remakePath();
     double distance(QPointF p1, QPointF p2) const;
-    double getDrawnWidth() const;
     bool usePositiveNodeColour();
     QPointF getFirst() const {return m_linePoints[0];}
     QPointF getSecond() const {return m_linePoints[1];}

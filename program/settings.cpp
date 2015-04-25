@@ -97,9 +97,3 @@ void Settings::setNegativeNodeColour()
     uniformNegativeNodeColour = uniformPositiveNodeColour.darker(120);
 }
 
-
-
-double Settings::widthScale(double zoom)
-{
-    return 1.0 / ((zoom + 7.0) / 8.0);
-}
