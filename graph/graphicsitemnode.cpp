@@ -75,7 +75,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    QPainterPath outlinePath = shape().simplified();
+    QPainterPath outlinePath = shape();
 
     //Fill the node's colour
     QBrush brush(m_colour);
@@ -124,6 +124,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
     if (outlineThickness > 0.0)
     {
+        outlinePath = outlinePath.simplified();
         double widthScale = g_settings->widthScale(g_absoluteZoom);
         QPen outlinePen(QBrush(outlineColour), widthScale * 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
         painter->setPen(outlinePen);
