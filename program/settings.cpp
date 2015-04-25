@@ -71,10 +71,10 @@ Settings::Settings()
     contiguousStrandSpecificColour = QColor(0, 155, 0);
     contiguousEitherStrandColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 240, 190);
-    notContiguousColour = QColor(240, 240, 240);
+    notContiguousColour = QColor(230, 230, 230);
     contiguityStartingColour = QColor(0, 255, 0);
 
-    noBlastHitsColour = QColor(240, 240, 240);
+    noBlastHitsColour = QColor(230, 230, 230);
 
     autoCoverageValue = true;
     lowCoverageValue = 5.0;
