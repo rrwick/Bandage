@@ -1389,6 +1389,21 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
+
+    //If any of the nodes have text displayed, then it is necessary to set the
+    //viewport update to full.  This is because the text may not stay within
+    //the GraphicsItemNode's bounding rectangle, and if not, artefacts would
+    //occur when nodes are moved.
+    //This change means that graphics performance will be somewhat worse when
+    //nodes have text displayed.
+    if (g_settings->displayNodeCustomLabels ||
+            g_settings->displayNodeNumbers ||
+            g_settings->displayNodeLengths ||
+            g_settings->displayNodeCoverages)
+        g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    else
+        g_graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+
     g_graphicsView->viewport()->update();
 }
 

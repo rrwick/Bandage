@@ -125,7 +125,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     if (outlineThickness > 0.0)
     {
         outlinePath = outlinePath.simplified();
-        QPen outlinePen(QBrush(outlineColour), 2.0 * outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
+        QPen outlinePen(QBrush(outlineColour), outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
         painter->setPen(outlinePen);
         painter->drawPath(outlinePath);
     }
@@ -625,3 +625,21 @@ void GraphicsItemNode::setWidth()
     }
 }
 
+
+
+//The bounding rectangle of a node has to be a little bit bigger than
+//the node's path, because of the outline.  The selection outline is
+//the largest outline we can expect, so use that to define the bounding
+//rectangle.
+QRectF GraphicsItemNode::boundingRect() const
+{
+    double extraSize = g_settings->selectionThickness / 2.0;
+    QRectF bound = QGraphicsPathItem::boundingRect();
+
+    bound.setTop(bound.top() - extraSize);
+    bound.setBottom(bound.bottom() + extraSize);
+    bound.setLeft(bound.left() - extraSize);
+    bound.setRight(bound.right() + extraSize);
+
+    return bound;
+}
