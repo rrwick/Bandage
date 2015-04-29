@@ -35,6 +35,7 @@
 #include "../graph/assemblygraph.h"
 #include "../blast/blastsearch.h"
 #include <QProcessEnvironment>
+#include <QMessageBox>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
@@ -226,7 +227,19 @@ void BlastSearchDialog::buildBlastDatabase1()
 #ifdef Q_OS_MAC
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QStringList envlist = env.toStringList();
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH=/opt/local/bin:/usr/local/bin:$HOME/bin:\\1");
+
+    //Add some paths to the process environment
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
+                                                                   "/usr/bin:"
+                                                                   "/bin:"
+                                                                   "/usr/sbin:"
+                                                                   "/sbin:"
+                                                                   "/opt/local/bin:"
+                                                                   "/usr/local/bin:"
+                                                                   "$HOME/bin:"
+                                                                   "/usr/local/ncbi/blast/bin:"
+                                                                   "\\1");
+
     findMakeblastdb.setEnvironment(envlist);
 #endif
 
@@ -341,7 +354,19 @@ void BlastSearchDialog::runBlastSearch()
 #ifdef Q_OS_MAC
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     QStringList envlist = env.toStringList();
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH=/opt/local/bin:/usr/local/bin:$HOME/bin:\\1");
+
+    //Add some paths to the process environment
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
+                                                                   "/usr/bin:"
+                                                                   "/bin:"
+                                                                   "/usr/sbin:"
+                                                                   "/sbin:"
+                                                                   "/opt/local/bin:"
+                                                                   "/usr/local/bin:"
+                                                                   "$HOME/bin:"
+                                                                   "/usr/local/ncbi/blast/bin:"
+                                                                   "\\1");
+
     findBlastn.setEnvironment(envlist);
 #endif
 

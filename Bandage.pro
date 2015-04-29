@@ -22,9 +22,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Bandage
 TEMPLATE = app
 
-# Delete the following line if building on OS X 10.7
-CONFIG += c++11
-
 target.path += /usr/local/bin
 INSTALLS += target
 
