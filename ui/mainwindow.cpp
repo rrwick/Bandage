@@ -521,6 +521,25 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         }
 
         // This is for header formats like this:
+        // GG1|c0_g1_i1 len=302 path=[1:0-301]
+        else if (name.mid(0, 2) == "GG")
+        {
+            int transcriptStartIndex = name.indexOf("GG") + 2;
+            int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
+            if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
+                throw "load error";
+            int transcriptLength = transcriptEndIndex - transcriptStartIndex;
+            transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+
+            int componentStartIndex = name.indexOf("|c") + 2;
+            int componentEndIndex = name.indexOf("_", componentStartIndex);
+            if (componentStartIndex < 0 || componentEndIndex < 0)
+                throw "load error";
+            int componentLength = componentEndIndex - componentStartIndex;
+            component = name.mid(componentStartIndex, componentLength).toInt();
+        }
+
+        // This is for header formats like this:
         // comp0_c0_seq1 len=286 path=[6:0-285]
         else if (name.mid(0, 4) == "comp")
         {
