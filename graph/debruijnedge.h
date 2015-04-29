@@ -43,6 +43,7 @@ public:
     void tracePaths(bool forward,
                     int stepsRemaining,
                     std::vector<std::vector<DeBruijnNode *> > * allPaths,
+                    DeBruijnNode * startingNode,
                     std::vector<DeBruijnNode *> pathSoFar = std::vector<DeBruijnNode *>());
     bool leadsOnlyToNode(bool forward,
                          int stepsRemaining,

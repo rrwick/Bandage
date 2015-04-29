@@ -114,6 +114,7 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 void DeBruijnEdge::tracePaths(bool forward,
                               int stepsRemaining,
                               std::vector< std::vector <DeBruijnNode *> > * allPaths,
+                              DeBruijnNode * startingNode,
                               std::vector<DeBruijnNode *> pathSoFar)
 {
     //This can go for a while, so keep the UI responsive.
@@ -163,11 +164,19 @@ void DeBruijnEdge::tracePaths(bool forward,
         else
             nextNextNode = nextEdge->m_startingNode;
 
+        //If that node is the starting node, then we've made
+        //a full loop and the path should be considered complete.
+        if (nextNextNode == startingNode)
+        {
+            allPaths->push_back(pathSoFar);
+            continue;
+        }
+
         //If that node is already in the path TWICE so far, that means
         //we're caught in a loop, and we should throw this path out.
         //If it appears 0 or 1 times, then continue the path search.
         if (timesNodeInPath(nextNextNode, &pathSoFar) < 2)
-            nextEdge->tracePaths(forward, stepsRemaining, allPaths, pathSoFar);
+            nextEdge->tracePaths(forward, stepsRemaining, allPaths, startingNode, pathSoFar);
     }
 }
 

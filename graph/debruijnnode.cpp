@@ -138,7 +138,7 @@ void DeBruijnNode::determineContiguity()
         bool outgoingEdge = (this == edge->m_startingNode);
 
         std::vector< std::vector <DeBruijnNode *> > allPaths;
-        edge->tracePaths(outgoingEdge, g_settings->contiguitySearchSteps, &allPaths);
+        edge->tracePaths(outgoingEdge, g_settings->contiguitySearchSteps, &allPaths, this);
 
         //Set all nodes in the paths as MAYBE_CONTIGUOUS
         for (size_t j = 0; j < allPaths.size(); ++j)
