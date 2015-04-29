@@ -399,22 +399,21 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
     if (m_number < 0)
         std::swap(positiveNode, negativeNode);
 
-    //Look for blast hit parts on the positive node first.  If none are found,
-    //then try the negative node.
+    //Look for blast hit parts on both the positive and the negative node,
+    // since hits were previously filtered such that startPos < endPos,
+    // hence we need to look at both positive and negative nodes to recover all hits.
     std::vector<BlastHitPart> returnVector;
     for (size_t i = 0; i < positiveNode->m_blastHits.size(); ++i)
     {
         std::vector<BlastHitPart> hitParts = positiveNode->m_blastHits[i]->getBlastHitParts(false);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
-    if (returnVector.size() == 0)
-    {
-        for (size_t i = 0; i < negativeNode->m_blastHits.size(); ++i)
+        
+    for (size_t i = 0; i < negativeNode->m_blastHits.size(); ++i)
         {
             std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true);
             returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
         }
-    }
 
     return returnVector;
 }

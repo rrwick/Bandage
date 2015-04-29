@@ -359,7 +359,9 @@ void BlastSearchDialog::runBlastSearch()
     QString fullBlastnCommand = m_blastnCommand + " -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions;
 
     blastn.start(fullBlastnCommand);
-    blastn.waitForFinished();
+
+    int timeOutMs = 90000;// wait up to 90 seconds (default is 30 seconds for waitForFinished)
+    blastn.waitForFinished(timeOutMs); 
 
     QString blastHits = blastn.readAll();
 
