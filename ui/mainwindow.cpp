@@ -1451,8 +1451,8 @@ void MainWindow::setNodeCustomColour()
     if (newColour.isValid())
     {
         //If the colouring scheme is not currently custom, change it to custom now
-        if (ui->coloursComboBox->currentIndex() != 4)
-            ui->coloursComboBox->setCurrentIndex(4);
+        if (ui->coloursComboBox->currentIndex() != 5)
+            ui->coloursComboBox->setCurrentIndex(5);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {
@@ -1707,7 +1707,7 @@ void MainWindow::openBlastSearchDialog()
 
     if (ui->blastQueryComboBox->count() > 0)
     {
-        //If the colouring scheme is not currently sequence, change it to custom now
+        //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
         if (ui->coloursComboBox->currentIndex() != 3)
             ui->coloursComboBox->setCurrentIndex(3);
     }
