@@ -408,12 +408,11 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
         std::vector<BlastHitPart> hitParts = positiveNode->m_blastHits[i]->getBlastHitParts(false);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
-        
     for (size_t i = 0; i < negativeNode->m_blastHits.size(); ++i)
-        {
-            std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true);
-            returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
-        }
+    {
+        std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true);
+        returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
+    }
 
     return returnVector;
 }

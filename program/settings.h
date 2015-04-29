@@ -92,6 +92,7 @@ public:
     QColor highCoverageColour;
 
     QString blastSearchParameters;
+    int blastTimeoutSeconds;
 
     QString rememberedPath;
 

@@ -70,6 +70,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     }
 
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
+    ui->timeoutSpinBox->setValue(g_settings->blastTimeoutSeconds);
     setInfoTexts();
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
@@ -256,11 +257,22 @@ void BlastSearchDialog::buildBlastDatabase2()
 {
     QProcess makeblastdb;
     makeblastdb.start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
-    makeblastdb.waitForFinished();
+
+
+    g_settings->blastTimeoutSeconds = ui->timeoutSpinBox->value();
+    bool finished = makeblastdb.waitForFinished(g_settings->blastTimeoutSeconds * 1000); //Multiply by 1000 because this function takes milliseconds
 
     if (makeblastdb.exitCode() != 0)
     {
         QMessageBox::warning(this, "Error", "There was a problem building the BLAST database.");
+        setUiStep(1);
+        return;
+    }
+    else if (!finished)
+    {
+        QMessageBox::warning(this, "Error", "The BLAST database did not build in the allotted time.\n\n"
+                                            "Increase the 'Allowed time' setting and try again.");
+        setUiStep(1);
         return;
     }
 
@@ -351,6 +363,10 @@ void BlastSearchDialog::runBlastSearch()
     ui->parametersInfoText->setEnabled(false);
     ui->parametersLineEdit->setEnabled(false);
     ui->parametersLabel->setEnabled(false);
+    ui->timeoutInfoText->setEnabled(false);
+    ui->timeoutSpinBox->setEnabled(false);
+    ui->timeoutLabel->setEnabled(false);
+
 
     QApplication::processEvents();
 
@@ -360,8 +376,8 @@ void BlastSearchDialog::runBlastSearch()
 
     blastn.start(fullBlastnCommand);
 
-    int timeOutMs = 90000;// wait up to 90 seconds (default is 30 seconds for waitForFinished)
-    blastn.waitForFinished(timeOutMs); 
+    g_settings->blastTimeoutSeconds = ui->timeoutSpinBox->value();
+    bool finished = blastn.waitForFinished(g_settings->blastTimeoutSeconds * 1000); //Multiply by 1000 because this function takes milliseconds
 
     QString blastHits = blastn.readAll();
 
@@ -373,6 +389,24 @@ void BlastSearchDialog::runBlastSearch()
         ui->parametersInfoText->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutLabel->setEnabled(true);
+
+        return;
+    }
+    else if (!finished)
+    {
+        QMessageBox::warning(this, "Error", "The BLAST search did not finish in the allotted time.\n\n"
+                                            "Increase the 'Allowed time' setting and try again.");
+
+        ui->startBlastSearchButton->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutLabel->setEnabled(true);
 
         return;
     }
@@ -397,6 +431,9 @@ void BlastSearchDialog::setUiStep(int step)
     case 1:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(true);
+        ui->timeoutLabel->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(false);
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
@@ -422,6 +459,9 @@ void BlastSearchDialog::setUiStep(int step)
     case 2:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->timeoutLabel->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
@@ -447,6 +487,9 @@ void BlastSearchDialog::setUiStep(int step)
     case 3:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->timeoutLabel->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
@@ -472,6 +515,9 @@ void BlastSearchDialog::setUiStep(int step)
     case 4:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->timeoutLabel->setEnabled(true);
+        ui->timeoutSpinBox->setEnabled(true);
+        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
@@ -503,6 +549,9 @@ void BlastSearchDialog::setInfoTexts()
                                                 "preparing them for a BLAST search.<br><br>"
                                                 "The database files generated are temporary and will "
                                                 "be deleted when Bandage is closed.");
+    ui->timeoutInfoText->setInfoText("This is the number of seconds Bandage will wait for the BLAST database "
+                                     "to build and for the BLAST search to complete. If the processes do not "
+                                     "finish in this time, they will be halted.");
     ui->loadQueriesFromFastaInfoText->setInfoText("Click this button to load a FASTA file.  Each "
                                                   "sequence in the FASTA file will be a separate "
                                                   "query.");
