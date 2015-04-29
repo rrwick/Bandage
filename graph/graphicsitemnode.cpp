@@ -104,6 +104,12 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             partPen.setCapStyle(Qt::FlatCap);
             partPen.setJoinStyle(Qt::BevelJoin);
 
+            //If the node has an arrow, then it's necessary to use the outline
+            //as a clipping path so the colours don't extend past the edge of the
+            //node.
+            if (m_hasArrow)
+                painter->setClipPath(outlinePath);
+
             for (size_t i = 0; i < parts.size(); ++i)
             {
                 partPen.setColor(parts[i].m_colour);
@@ -111,6 +117,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
                 painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
             }
+            painter->setClipping(false);
         }
     }
 
