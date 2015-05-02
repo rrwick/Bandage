@@ -46,6 +46,7 @@ private:
     void setUiStep(int step);
     void clearBlastHits();
     void setInfoTexts();
+    QString cleanQueryName(QString queryName);
 
 private slots:
     void buildBlastDatabase1();

@@ -305,16 +305,7 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 
         for (size_t i = 0; i < queryNames.size(); ++i)
         {
-            //Replace whitespace with underscores
-            QString queryName = queryNames[i].replace(QRegExp("\\s"), "_");
-
-            //Remove any dots from the end of the query name.  BLAST doesn't
-            //include them in its results, so if we don't remove them, then
-            //we won't be able to find a match between the query name and
-            //the BLAST hit.
-            while (queryName.length() > 0 && queryName[queryName.size() - 1] == '.')
-                queryName = queryName.left(queryName.size() - 1);
-
+            QString queryName = cleanQueryName(queryNames[i]);
             g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
                                                               querySequences[i]));
         }
@@ -326,13 +317,30 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 }
 
 
+QString BlastSearchDialog::cleanQueryName(QString queryName)
+{
+    //Replace whitespace with underscores
+    queryName = queryName.replace(QRegExp("\\s"), "_");
+
+    //Remove any dots from the end of the query name.  BLAST doesn't
+    //include them in its results, so if we don't remove them, then
+    //we won't be able to find a match between the query name and
+    //the BLAST hit.
+    while (queryName.length() > 0 && queryName[queryName.size() - 1] == '.')
+        queryName = queryName.left(queryName.size() - 1);
+
+    return queryName;
+}
+
+
 void BlastSearchDialog::enterQueryManually()
 {
     EnterOneBlastQueryDialog enterOneBlastQueryDialog(this);
 
     if (enterOneBlastQueryDialog.exec())
     {
-        g_blastSearch->m_blastQueries.addQuery(BlastQuery(enterOneBlastQueryDialog.getName(),
+        QString queryName = cleanQueryName(enterOneBlastQueryDialog.getName());
+        g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
                                                           enterOneBlastQueryDialog.getSequence()));
         fillQueriesTable();
         clearBlastHits();
