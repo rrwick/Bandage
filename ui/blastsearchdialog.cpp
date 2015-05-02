@@ -304,8 +304,21 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
         readFastaFile(fullFileName, &queryNames, &querySequences);
 
         for (size_t i = 0; i < queryNames.size(); ++i)
-            g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryNames[i].replace(" ", "_"),
+        {
+            //Replace whitespace with underscores
+            QString queryName = queryNames[i].replace(QRegExp("\\s"), "_");
+
+            //Remove any dots from the end of the query name.  BLAST doesn't
+            //include them in its results, so if we don't remove them, then
+            //we won't be able to find a match between the query name and
+            //the BLAST hit.
+            while (queryName.length() > 0 && queryName[queryName.size() - 1] == '.')
+                queryName = queryName.left(queryName.size() - 1);
+
+            g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
                                                               querySequences[i]));
+        }
+
         fillQueriesTable();
         clearBlastHits();
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
