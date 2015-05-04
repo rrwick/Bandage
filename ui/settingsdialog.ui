@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-603</y>
+        <y>-242</y>
         <width>404</width>
-        <height>1292</height>
+        <height>1270</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -508,22 +508,6 @@
        </item>
        <item row="37" column="1">
         <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="33" column="1">
-        <widget class="InfoTextWidget" name="randomColourOpacityInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1602,6 +1586,22 @@
          </property>
          <property name="text">
           <string>BLAST colours</string>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="1">
+        <widget class="InfoTextWidget" name="randomColourOpacityInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
          </property>
         </widget>
        </item>
