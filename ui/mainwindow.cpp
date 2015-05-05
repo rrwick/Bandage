@@ -1064,6 +1064,8 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     for (int i = 0; i < nodesList.size(); ++i)
     {
         long long nodeNumber;
+        if (nodesList.at(i) == "")
+            continue;
         if (g_assemblyGraph->m_trinityGraph)
             nodeNumber = getFullTrinityNodeNumberFromName(nodesList.at(i));
         else

@@ -151,6 +151,9 @@ long long getFullTrinityNodeNumberFromName(QString name)
 {
     QStringList nameParts = name.split("-");
 
+    if (nameParts.size() < 3)
+        return 0;
+
     int transcript = nameParts[0].toInt();
     int component = nameParts[1].toInt();
     long long nodeNumber = nameParts[2].toLongLong();
