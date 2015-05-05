@@ -59,8 +59,8 @@
 #include "myprogressdialog.h"
 #include <limits>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(QString filename) :
+    QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0)
 {
     ui->setupUi(this);
@@ -172,6 +172,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setNodeCustomColourButton->setToolTip(command + 'O');
     ui->setNodeCustomLabelButton->setToolTip(command + 'L');
 #endif
+
+    //If the user passed a filename as a command line argument, try to open it now.
+    if (filename != "")
+    {
+        if (checkFileIsLastGraph(filename))
+            loadGraphFile2("LastGraph", filename);
+        else if (checkFileIsFastG(filename))
+            loadGraphFile2("FASTG", filename);
+        else if (checkFileIsTrinityFasta(filename))
+            loadGraphFile2("Trinity.fasta", filename);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -200,73 +211,77 @@ void MainWindow::cleanUp()
 
 void MainWindow::loadLastGraph()
 {
-    loadGraphFile("LastGraph");
+    loadGraphFile1("LastGraph");
 }
 
 
 void MainWindow::loadFastg()
 {
-    loadGraphFile("FASTG");
+    loadGraphFile1("FASTG");
 }
 
 void MainWindow::loadTrinityFasta()
 {
-    loadGraphFile("Trinity.fasta");
+    loadGraphFile1("Trinity.fasta");
 }
 
 
-void MainWindow::loadGraphFile(QString graphFileType)
+void MainWindow::loadGraphFile1(QString graphFileType)
 {
     QString fullFileName = QFileDialog::getOpenFileName(this, "Load " + graphFileType, g_settings->rememberedPath);
 
     if (fullFileName != "") //User did not hit cancel
-    {
-        if ( (graphFileType == "LastGraph" && !checkFileIsLastGraph(fullFileName)) ||
-             (graphFileType == "FASTG" && !checkFileIsFastG(fullFileName)) ||
-             (graphFileType == "Trinity.fasta" && !checkFileIsTrinityFasta(fullFileName)) )
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, graphFileType + " file?",
-                                          "This file does not appear to be a " + graphFileType + " file."
-                                                                                                 "\nDo you want to load it as a " + graphFileType + " file anyway?",
-                                          QMessageBox::Yes|QMessageBox::No);
-            if (reply == QMessageBox::No)
-                return;
-        }
+        loadGraphFile2(graphFileType, fullFileName);
+}
 
+
+
+void MainWindow::loadGraphFile2(QString graphFileType, QString fullFileName)
+{
+    if ( (graphFileType == "LastGraph" && !checkFileIsLastGraph(fullFileName)) ||
+         (graphFileType == "FASTG" && !checkFileIsFastG(fullFileName)) ||
+         (graphFileType == "Trinity.fasta" && !checkFileIsTrinityFasta(fullFileName)) )
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, graphFileType + " file?",
+                                      "This file does not appear to be a " + graphFileType + " file."
+                                                                                             "\nDo you want to load it as a " + graphFileType + " file anyway?",
+                                      QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::No)
+            return;
+    }
+
+    resetScene();
+    cleanUp();
+    ui->selectionSearchNodesLineEdit->clear();
+
+    try
+    {
+        if (graphFileType == "LastGraph")
+            buildDeBruijnGraphFromLastGraph(fullFileName);
+        else if (graphFileType == "FASTG")
+            buildDeBruijnGraphFromFastg(fullFileName);
+        else if (graphFileType == "Trinity.fasta")
+            buildDeBruijnGraphFromTrinityFasta(fullFileName);
+
+        enableDisableUiElements(GRAPH_LOADED);
+        setWindowTitle("Bandage - " + fullFileName);
+
+        g_assemblyGraph->determineGraphInfo();
+        displayGraphDetails();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    }
+
+    catch (...)
+    {
+        QMessageBox::warning(this, "Error loading " + graphFileType,
+                             "There was an error when attempting to load:\n"
+                             + fullFileName + "\n\n"
+                             "Please verify that this file has the correct format.");
         resetScene();
         cleanUp();
-        ui->selectionSearchNodesLineEdit->clear();
-
-        try
-        {
-            if (graphFileType == "LastGraph")
-                buildDeBruijnGraphFromLastGraph(fullFileName);
-            else if (graphFileType == "FASTG")
-                buildDeBruijnGraphFromFastg(fullFileName);
-            else if (graphFileType == "Trinity.fasta")
-                buildDeBruijnGraphFromTrinityFasta(fullFileName);
-
-            enableDisableUiElements(GRAPH_LOADED);
-            setWindowTitle("Bandage - " + fullFileName);
-
-            g_assemblyGraph->determineGraphInfo();
-            displayGraphDetails();
-            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
-        }
-
-        catch (...)
-        {
-            QMessageBox::warning(this, "Error loading " + graphFileType,
-                                 "There was an error when attempting to load:\n"
-                                 + fullFileName + "\n\n"
-                                 "Please verify that this file has the correct format.");
-            resetScene();
-            cleanUp();
-            clearGraphDetails();
-            enableDisableUiElements(NO_GRAPH_LOADED);
-        }
-
+        clearGraphDetails();
+        enableDisableUiElements(NO_GRAPH_LOADED);
     }
 }
 

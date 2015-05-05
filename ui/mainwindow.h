@@ -43,7 +43,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString filename);
     ~MainWindow();
 
 private:
@@ -76,7 +76,8 @@ private:
     bool checkFileIsFastG(QString fullFileName);
     bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
-    void loadGraphFile(QString graphFileType);
+    void loadGraphFile1(QString graphFileType);
+    void loadGraphFile2(QString graphFileType, QString filename);
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
