@@ -41,7 +41,7 @@
 		
 	
 		  
-<p><em>De novo</em> assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users. Bandage is a program for visualising assembly graphs using graph layout algorithms. By displaying connections between contigs, Bandage opens up new possibilities for analysing <em>de novo</em> assemblies that are not possible by looking at contigs alone.</p>
+<p><em>De novo</em> assembly graphs contain assembled contigs (nodes) but also the connections between those contigs (edges), which are not easily accessible to users.  Bandage is a program for visualising assembly graphs using graph layout algorithms.  By displaying connections between contigs, Bandage opens up new possibilities for analysing <em>de novo</em> assemblies that are not possible by looking at contigs alone.</p>
 
 
 
@@ -51,22 +51,23 @@
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
 
 <ul class="list-a">
-  <li>Load multiple assembly graph formats: LastGraph (Velvet), FASTG (SPAdes) and Trinity.fasta.</li>
-  <li>Position nodes automatically with an efficient graph layout algorithm.</li>
+  <li>A layout algorithm is used to automatically position graph nodes.</li>
+  <li>Manually reposition and reshape nodes.</li>
   <li>Zoom, pan and rotate the view using either mouse or keyboard controls.</li>
-  <li>Reposition and reshape nodes by clicking and dragging with the mouse.</li>
-  <li>Configure graph scope: view the entire assembly graph or only a region of interest.</li>
+  <li>View the entire assembly graph or only a region of interest.</li>
   <li>Copy node sequences to the clipboard or save them to file.</li>
-  <li>Colour nodes using built-in colour schemes or user-defined colours.</li>
-  <li>Label nodes using node number, length, coverage or user-defined labels.</li>
+  <li>Nodes can be coloured using built-in colour schemes or user-defined colours.</li>
+  <li>Nodes can be labelled using node number, length, coverage or a user-defined label.</li>
   <li>Find nodes quickly in a large graph using node numbers.</li>
   <li>Specify the thickness of nodes and allow thickness to reflect the node's coverage.</li>
   <li>Define the relationship between the length of a node and the length of its sequence.</li>
-  <li>Draw graph in single node style: each node and its reverse complements appear as a single object.</li>
-  <li>Draw graph in double node style: nodes and their reverse complements appear as separate objects with arrow heads to indicate direction.</li>
+  <li>Two possible styles for handling reverse complement nodes:
+    <ul class="list-a">
+      <li>Single: nodes and their reverse complements are drawn as one object with no direction.</li>
+      <li>Double: nodes are drawn using arrow heads to indicate direction and reverse complement nodes are drawn separately with arrow heads pointing the opposite direction.</li>
+    </ul>
   </li>
-  <li>Highlight specific sequences with integrated BLAST search.</li>
-  <li>Automatically identify nodes contiguous with a node of interest.</li>
+  <li>Integrated BLAST search allows for highlighting specific sequences in an assembly graph.</li>
 </ul>
 
 
@@ -86,17 +87,25 @@
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>Bandage works equally well on Windows, OS X and Linux. Users are encouraged to download 64-bit binary executables using the links on this page or from the <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">GitHub 'Releases' page</a>. No installation is necessary – just unzip and run. Windows and Mac binaries come packaged with all necessary libraries. The Linux binary has a couple of dependencies, specified in the zip file.</p>
+<p>Bandage works equally well on Windows, OS X and Linux.  Users are encouraged to download 64-bit binary executables using the links on this page or from the <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">GitHub 'Releases' page</a>.  No installation is necessary – just unzip and run.  Windows and Mac binaries come packaged with all necessary libraries.  The Linux binary has a couple of dependencies, specified in the zip file.</p>
 
-<p>Alternatively, you can clone the source code from GitHub and build Bandage yourself. Instructions are on <a href="https://github.com/rrwick/Bandage/" target="_blank"> the GitHub page</a>.</p>
+<p>Alternatively, you can clone the source code from GitHub and build Bandage yourself.  Instructions are on <a href="https://github.com/rrwick/Bandage/" target="_blank"> the GitHub page</a>.</p>
 
 
+<h2>
+<a id="sampledata" class="anchor" href="#sampledata" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample data</h2>
 
+<p>Here are a couple of sample graph files you can download and view in Bandage:</p>
+
+<ul class="list-a">
+<li><a href="samples/E_coli_LastGraph.zip" target="_blank">An <i>E. coli</i> assembly from Velvet</a>.  The reads and more information are available <a href="http://www.ncbi.nlm.nih.gov/sra?linkname=bioproject_sra_all&from_uid=272917" target="_blank">here</a>.</li>
+<li><a href="samples/Trinity.fasta.zip" target="_blank">A small mouse transcriptome assembly from Trinity</a>.  This data comes with Trinity in the 'sample_data/test_Trinity_Assembly/' folder.</li>
+</ul>
 
 <h2>
 <a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
 
-<p>For a simple case, imagine a bacterial genome that contains a single repeated element in two separate places in the chromosome. A researcher (who does not yet know the structure of the genome) sequences it, and the resulting 100 bp reads are assembled with a <i>de novo</i> assembler.</p>
+<p>For an easy to understand case, let's use a hypothetical bacterial genome that contains a single repeated element (though for the moment, this genome is unknown to the user).  We then simulate 100 bp reads from this sequence and assemble using Velvet.</p>
 
 <div style="text-align: center;">
 <div class="diagram" style="max-width:100%; margin-bottom: 20px;">
@@ -104,9 +113,9 @@
 </div>
 </div>
 
-<p>Because the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig. Rather, three contigs are produced: one for the repeated sequence (even though it occurs twice) and one for each sequence between the repeated elements.</p>
+<p>Because the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig.  Rather, three contigs are produced: one for the repeated element (even though it occurs twice) and one for each sequence between the repeated elements.</p>
 
-<p>Given only the contigs, the relationship between these sequences is not clear. However, the assembly graph contains additional information which is made apparent in Bandage. There are two possible underlying sequences compatible with this graph: two separate circular sequences that share a region in common, or a single larger circular sequence with an element that occurs twice.</p>
+<p>Given only the contigs, the relationship between these sequences is not clear.  However, the assembly graph contains additional information, and when visualised in Bandage, it is made apparent.</p>
 
 <div style="text-align: center;">
 
@@ -123,7 +132,12 @@
 </div>
 
 
-<p>Additional knowledge, such as information on the approximate size of the bacterial chromosome, can help the researcher to rule out the first alternative. In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
+<p style="margin: 0">There are two possible underlying sequences compatible with this graph:</p>
+<ul class="list-a" style="margin: 5px">
+  <li>Two separate circular sequences that share a region in common</li>
+  <li>A single larger circular sequence with an element that occurs twice</li>
+</ul>
+<p>Additional information, such as prior knowledge on the approximate size of the genome, can help the user to rule out the first alternative.  In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
 
 
 
@@ -160,19 +174,19 @@
 <div class="screenshot_thumbnail" style="width: 210px;">
 <a href="images/screenshots/screenshot01.png" target="_blank">
 <img src="images/screenshots/screenshot01_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 21. This value is too small, resulting in short contigs and many connections, giving a dense tangled graph.</small-green>
+<small-green>K-mer of 21.  This value is too small, resulting in short contigs and many connections, giving a dense tangled graph.</small-green>
 </div>
 
 <div class="screenshot_thumbnail" style="width: 210px;">
 <a href="images/screenshots/screenshot02.png" target="_blank">
 <img src="images/screenshots/screenshot02_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 77. This is a good balance, giving long contigs that are well connected.</small-green>
+<small-green>K-mer of 77.  This is a good balance, giving long contigs that are well connected.</small-green>
 </div>
 
 <div class="screenshot_thumbnail" style="width: 210px;">
 <a href="images/screenshots/screenshot03.png" target="_blank">
 <img src="images/screenshots/screenshot03_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 127. This value is too large, resulting in the graph breaking into many discontinuous pieces.</small-green>
+<small-green>K-mer of 127.  This value is too large, resulting in the graph breaking into many discontinuous pieces.</small-green>
 </div>
 
 <p></p>
@@ -238,27 +252,20 @@
 
 <p></p>
 
-<h2>
-<a id="cite" class="anchor" href="#cite" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cite</h2>
-
-<p>The paper for Bandage has been submitted to <i>Bioinformatics</i> and is currently available on the preprint website bioRxiv: <a href="http://biorxiv.org/content/early/2015/04/21/018333">biorxiv.org/content/early/2015/04/21/018333</a> </p>
-
-
-
 
 
         </section>
 
         <aside id="sidebar">
-          <a href="https://github.com/rrwick/Bandage/releases/download/v0.5.3/Bandage_Linux_dynamic_v0.5.3.zip" class="button_linux">
+          <a href="https://github.com/rrwick/Bandage/releases/download/v0.4.2/Bandage_Linux_v0.4.2.zip" class="button_linux">
             <small>Download</small>
             Linux
           </a>
-          <a href="https://github.com/rrwick/Bandage/releases/download/v0.5.3/Bandage_Mac_v0.5.3.zip" class="button_mac">
+          <a href="https://github.com/rrwick/Bandage/releases/download/v0.4.2/Bandage_Mac_v0.4.2.zip" class="button_mac">
             <small>Download</small>
             Mac
           </a>
-          <a href="https://github.com/rrwick/Bandage/releases/download/v0.5.3/Bandage_Windows_v0.5.3.zip" class="button_windows">
+          <a href="https://github.com/rrwick/Bandage/releases/download/v0.4.2/Bandage_Windows_v0.4.2.zip" class="button_windows">
             <small>Download</small>
             Windows
           </a>
@@ -267,7 +274,7 @@
 			GitHub
 	      </a>
 
-          <p class="repo-owner">Bandage is made by <a href="https://github.com/rrwick">Ryan Wick</a>.</p>
+          <p class="repo-owner"><a href="https://github.com/rrwick/Bandage"></a>Bandage is made by <a href="https://github.com/rrwick">Ryan Wick</a>.</p>
         </aside>
       </div>
     </div>
