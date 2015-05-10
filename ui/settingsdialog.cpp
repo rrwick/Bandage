@@ -46,6 +46,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->notContiguousColourButton, SIGNAL(clicked()), this, SLOT(notContiguousColourClicked()));
     connect(ui->contiguityStartingColourButton, SIGNAL(clicked()), this, SLOT(contiguityStartingColourClicked()));
     connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
+    connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -105,7 +106,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         colourFunctionPointer = setOneSettingFromWidget;
     }
 
-    intFunctionPointer(&settings->basePairsPerSegment, ui->basePairsPerSegmentSpinBox);
+    intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
     doubleFunctionPointer(&settings->averageNodeWidth, ui->averageNodeWidthSpinBox, false);
     doubleFunctionPointer(&settings->coverageEffectOnWidth, ui->coverageEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
@@ -140,6 +141,10 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->randomColourOpacitySlider->setValue(settings->randomColourOpacity);
         ui->coverageValueAutoRadioButton->setChecked(settings->autoCoverageValue);
         ui->coverageValueManualRadioButton->setChecked(!settings->autoCoverageValue);
+        basePairsPerSegmentManualChanged();
+        ui->basePairsPerSegmentAutoLabel->setText(QString::number(settings->autoBasePairsPerSegment));
+        ui->basePairsPerSegmentAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
+        ui->basePairsPerSegmentManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
     }
     else
     {
@@ -147,6 +152,10 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         settings->randomColourOpacity = ui->randomColourOpacitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
         settings->autoCoverageValue = ui->coverageValueAutoRadioButton->isChecked();
+        if (ui->basePairsPerSegmentAutoRadioButton->isChecked())
+            settings->nodeLengthMode = AUTO_NODE_LENGTH;
+        else
+            settings->nodeLengthMode = MANUAL_NODE_LENGTH;
     }
 }
 
@@ -426,3 +435,10 @@ void SettingsDialog::accept()
         QDialog::accept();
 }
 
+
+void SettingsDialog::basePairsPerSegmentManualChanged()
+{
+    bool manual = ui->basePairsPerSegmentManualRadioButton->isChecked();
+    ui->basePairsPerSegmentSpinBox->setEnabled(manual);
+    ui->basePairsPerSegmentAutoLabel->setEnabled(!manual);
+}

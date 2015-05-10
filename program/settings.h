@@ -31,7 +31,9 @@ public:
 
     bool doubleMode;
 
-    int basePairsPerSegment;
+    NodeLengthMode nodeLengthMode;
+    int autoBasePairsPerSegment;
+    int manualBasePairsPerSegment;
     double segmentLength;
     int graphLayoutQuality;
 
@@ -98,6 +100,7 @@ public:
 
     void setNegativeNodeColour();
     bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNumbers || displayNodeLengths || displayNodeCoverages;}
+    int getBasePairsPerSegment();
 };
 
 #endif // SETTINGS_H

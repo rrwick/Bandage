@@ -79,6 +79,7 @@ private slots:
     void notContiguousColourClicked();
     void contiguityStartingColourClicked();
     void enableDisableCoverageValueSpinBoxes();
+    void basePairsPerSegmentManualChanged();
 
 public slots:
     void accept();

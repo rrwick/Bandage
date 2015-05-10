@@ -33,6 +33,7 @@ enum ContiguityStatus {STARTING, CONTIGUOUS_STRAND_SPECIFIC, CONTIGUOUS_EITHER_S
 enum NodeDragging {ONE_PIECE, NEARBY_PIECES, ALL_PIECES};
 enum ZoomSource {MOUSE_WHEEL, SPIN_BOX, KEYBOARD};
 enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN};
+enum NodeLengthMode {AUTO_NODE_LENGTH, MANUAL_NODE_LENGTH};
 
 extern Settings * g_settings;
 extern MyGraphicsView * g_graphicsView;

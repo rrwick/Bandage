@@ -23,7 +23,9 @@ Settings::Settings()
 {
     doubleMode = false;
 
-    basePairsPerSegment = 500;
+    nodeLengthMode = AUTO_NODE_LENGTH;
+    autoBasePairsPerSegment = 100;
+    manualBasePairsPerSegment = 500;
     segmentLength = 15.0;
     graphLayoutQuality = 1;
 
@@ -98,3 +100,11 @@ void Settings::setNegativeNodeColour()
     uniformNegativeNodeColour = uniformPositiveNodeColour.darker(120);
 }
 
+
+int Settings::getBasePairsPerSegment()
+{
+    if (nodeLengthMode == AUTO_NODE_LENGTH)
+        return autoBasePairsPerSegment;
+    else
+        return manualBasePairsPerSegment;
+}
