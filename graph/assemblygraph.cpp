@@ -327,6 +327,10 @@ void AssemblyGraph::determineGraphInfo()
     m_firstQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, firstQuartileIndex);
     m_medianCoverage = getValueUsingFractionalIndex(&nodeCoverages, medianIndex);
     m_thirdQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, thirdQuartileIndex);
+
+    //Set the auto base pairs per segment
+    int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
+    g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
 }
 
 double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index)

@@ -26,6 +26,7 @@ Settings::Settings()
     nodeLengthMode = AUTO_NODE_LENGTH;
     autoBasePairsPerSegment = 100;
     manualBasePairsPerSegment = 500;
+    meanSegmentsPerNode = 3;
     segmentLength = 15.0;
     graphLayoutQuality = 1;
 

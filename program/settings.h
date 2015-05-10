@@ -34,6 +34,7 @@ public:
     NodeLengthMode nodeLengthMode;
     int autoBasePairsPerSegment;
     int manualBasePairsPerSegment;
+    int meanSegmentsPerNode;
     double segmentLength;
     int graphLayoutQuality;
 
