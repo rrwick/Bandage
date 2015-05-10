@@ -619,8 +619,8 @@ QColor GraphicsItemNode::getCoverageColour()
 
 void GraphicsItemNode::setWidth()
 {
-    double widthRelativeToAverage = (pow(m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage, g_settings->coveragePower) - 1.0) * g_settings->coverageEffectOnWidth + 1.0;
-    m_width = g_settings->averageNodeWidth * widthRelativeToAverage;
+    m_width = getNodeWidth(m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage, g_settings->coveragePower,
+                           g_settings->coverageEffectOnWidth, g_settings->averageNodeWidth);
 
     //If the object already has a shape defined, then it needs to be redefined
     //now that the width is changing.
@@ -650,4 +650,12 @@ QRectF GraphicsItemNode::boundingRect() const
     bound.setRight(bound.right() + extraSize);
 
     return bound;
+}
+
+
+double GraphicsItemNode::getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
+                                      double coverageEffectOnWidth, double averageNodeWidth)
+{
+    double widthRelativeToAverage = (pow(coverageRelativeToMeanDrawnCoverage, coveragePower) - 1.0) * coverageEffectOnWidth + 1.0;
+    return averageNodeWidth * widthRelativeToAverage;
 }

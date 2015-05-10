@@ -80,6 +80,7 @@ private slots:
     void contiguityStartingColourClicked();
     void enableDisableCoverageValueSpinBoxes();
     void basePairsPerSegmentManualChanged();
+    void updateNodeWidthVisualAid();
 
 public slots:
     void accept();

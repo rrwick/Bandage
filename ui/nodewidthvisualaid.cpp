@@ -19,6 +19,7 @@
 #include "nodewidthvisualaid.h"
 #include <QPainter>
 #include <QSizePolicy>
+#include "../graph/graphicsitemnode.h"
 
 NodeWidthVisualAid::NodeWidthVisualAid(QWidget *parent) : QWidget(parent)
 {
@@ -36,5 +37,42 @@ void NodeWidthVisualAid::paintEvent(QPaintEvent * /*event*/)
 {
     QPainter painter(this);
     painter.fillRect(0, 0, width(), height(), QBrush(Qt::white));
+
+    QPen gridLinePen(QBrush(Qt::gray), 0.5);
+    painter.setPen(gridLinePen);
+
+    //Horizontal grid lines
+    painter.drawLine(0, height() * 0.125, width(), height() * 0.125);
+    painter.drawLine(0, height() * 0.25, width(), height() * 0.25);
+    painter.drawLine(0, height() * 0.375, width(), height() * 0.375);
+    painter.drawLine(0, height() * 0.5, width(), height() * 0.5);
+    painter.drawLine(0, height() * 0.625, width(), height() * 0.625);
+    painter.drawLine(0, height() * 0.75, width(), height() * 0.75);
+    painter.drawLine(0, height() * 0.875, width(), height() * 0.875);
+
+    //Vertical grid lines
+    painter.drawLine(width() * 0.125, 0, width() * 0.125, height());
+    painter.drawLine(width() * 0.25, 0, width() * 0.25, height());
+    painter.drawLine(width() * 0.375, 0, width() * 0.375, height());
+    painter.drawLine(width() * 0.5, 0, width() * 0.5, height());
+    painter.drawLine(width() * 0.625, 0, width() * 0.625, height());
+    painter.drawLine(width() * 0.75, 0, width() * 0.75, height());
+    painter.drawLine(width() * 0.875, 0, width() * 0.875, height());
+
     painter.setRenderHint(QPainter::Antialiasing, true);
+
+    QPainterPath graphLine;
+    graphLine.moveTo(0.0, height() - GraphicsItemNode::getNodeWidth(0.0, m_coveragePower, m_coverageEffectOnWidth, width() / 2.0));
+
+    for (int i = 0; i < width(); ++i)
+    {
+        double x = double(i);
+        double coverageRelativeToMeanDrawnCoverage = 2.0 * x / width();
+        double y = height() -GraphicsItemNode::getNodeWidth(coverageRelativeToMeanDrawnCoverage, m_coveragePower, m_coverageEffectOnWidth, width() / 2.0);
+        graphLine.lineTo(x, y);
+    }
+
+    QPen waterLinePen(QBrush(Qt::blue), 2.0);
+    painter.setPen(waterLinePen);
+    painter.drawPath(graphLine);
 }

@@ -47,6 +47,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->contiguityStartingColourButton, SIGNAL(clicked()), this, SLOT(contiguityStartingColourClicked()));
     connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
     connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
+    connect(ui->coveragePowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
+    connect(ui->coverageEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
+    connect(ui->averageNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -445,4 +448,14 @@ void SettingsDialog::basePairsPerSegmentManualChanged()
     bool manual = ui->basePairsPerSegmentManualRadioButton->isChecked();
     ui->basePairsPerSegmentSpinBox->setEnabled(manual);
     ui->basePairsPerSegmentAutoLabel->setEnabled(!manual);
+}
+
+
+void SettingsDialog::updateNodeWidthVisualAid()
+{
+    ui->nodeWidthVisualAid->m_averageNodeWidth = ui->averageNodeWidthSpinBox->value();
+    ui->nodeWidthVisualAid->m_coverageEffectOnWidth = ui->coverageEffectOnWidthSpinBox->value() / 100.0;
+    ui->nodeWidthVisualAid->m_coveragePower = ui->coveragePowerSpinBox->value();
+
+    ui->nodeWidthVisualAid->update();
 }
