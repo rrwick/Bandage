@@ -338,7 +338,10 @@ void SettingsDialog::setInfoTexts()
                                                  "layout faster for large assembly graphs.</li>"
                                                  "<li>Small values will result in longer nodes and a stronger correlation between "
                                                  "sequence length and node length.  Longer nodes can slow the graph layout "
-                                                 "process.</li></ul>");
+                                                 "process.</li></ul><br>"
+                                                 "When a graph is loaded, Bandage calculates an appropriate value and uses this "
+                                                 "for the 'Auto' option.  Switch to 'Manual' if you want to specify this setting "
+                                                 "yourself.");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
                                                 "positioning the graph components. Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
