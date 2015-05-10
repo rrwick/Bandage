@@ -32,6 +32,8 @@ Settings::Settings()
 
     averageNodeWidth = 5.0;
     coverageEffectOnWidth = 0.5;
+    coveragePower = 0.5;
+
     edgeWidth = 2.0;
     outlineThickness = 0.0;
     selectionThickness = 1.0;

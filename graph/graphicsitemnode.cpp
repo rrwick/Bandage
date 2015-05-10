@@ -39,6 +39,7 @@
 #include <QTransform>
 #include "../blast/blasthitpart.h"
 #include "assemblygraph.h"
+#include <cmath>
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -618,7 +619,7 @@ QColor GraphicsItemNode::getCoverageColour()
 
 void GraphicsItemNode::setWidth()
 {
-    double widthRelativeToAverage = (m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage - 1.0) * g_settings->coverageEffectOnWidth + 1.0;
+    double widthRelativeToAverage = (pow(m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage, g_settings->coveragePower) - 1.0) * g_settings->coverageEffectOnWidth + 1.0;
     m_width = g_settings->averageNodeWidth * widthRelativeToAverage;
 
     //If the object already has a shape defined, then it needs to be redefined

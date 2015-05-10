@@ -40,6 +40,8 @@ public:
 
     double averageNodeWidth;
     double coverageEffectOnWidth;
+    double coveragePower;
+
     double edgeWidth;
     double outlineThickness;
     double selectionThickness;

@@ -1562,7 +1562,8 @@ void MainWindow::openSettingsDialog()
 
         //If the contig width was changed, reset the width on each GraphicsItemNode.
         if (settingsBefore.averageNodeWidth != g_settings->averageNodeWidth ||
-                settingsBefore.coverageEffectOnWidth != g_settings->coverageEffectOnWidth)
+                settingsBefore.coverageEffectOnWidth != g_settings->coverageEffectOnWidth ||
+                settingsBefore.coveragePower != g_settings->coveragePower)
         {
             QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
             while (i.hasNext())
