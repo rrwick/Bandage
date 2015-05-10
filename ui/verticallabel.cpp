@@ -19,7 +19,8 @@ void VerticalLabel::paintEvent(QPaintEvent*)
     painter.setPen(Qt::black);
     painter.setBrush(Qt::Dense1Pattern);
 
-    painter.translate( sizeHint().width(), sizeHint().height() );
+    double shiftForCentering = (height() - sizeHint().height()) / 2.0;
+    painter.translate(sizeHint().width(), sizeHint().height() + shiftForCentering);
     painter.rotate(270);
 
     painter.drawText(0,0, text());
