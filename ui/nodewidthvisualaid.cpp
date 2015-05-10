@@ -38,23 +38,27 @@ void NodeWidthVisualAid::paintEvent(QPaintEvent * /*event*/)
     QPainter painter(this);
     painter.fillRect(0, 0, width(), height(), QBrush(Qt::white));
 
-    QPen gridLinePen(QBrush(Qt::gray), 0.5);
+    QPen gridLinePen(QBrush(QColor(50,50,50)), 0.5);
     painter.setPen(gridLinePen);
 
-    //Horizontal grid lines
+
+    painter.drawLine(0, height() * 0.5, width(), height() * 0.5);
+    painter.drawLine(0, height() - 1, width(), height() - 1);
+    painter.drawLine(width() * 0.0, 0, width() * 0.0, height());
+    painter.drawLine(width() * 0.5, 0, width() * 0.5, height());
+
+    gridLinePen = QPen(QBrush(Qt::gray), 0.5);
+    painter.setPen(gridLinePen);
+
     painter.drawLine(0, height() * 0.125, width(), height() * 0.125);
     painter.drawLine(0, height() * 0.25, width(), height() * 0.25);
     painter.drawLine(0, height() * 0.375, width(), height() * 0.375);
-    painter.drawLine(0, height() * 0.5, width(), height() * 0.5);
     painter.drawLine(0, height() * 0.625, width(), height() * 0.625);
     painter.drawLine(0, height() * 0.75, width(), height() * 0.75);
     painter.drawLine(0, height() * 0.875, width(), height() * 0.875);
-
-    //Vertical grid lines
     painter.drawLine(width() * 0.125, 0, width() * 0.125, height());
     painter.drawLine(width() * 0.25, 0, width() * 0.25, height());
     painter.drawLine(width() * 0.375, 0, width() * 0.375, height());
-    painter.drawLine(width() * 0.5, 0, width() * 0.5, height());
     painter.drawLine(width() * 0.625, 0, width() * 0.625, height());
     painter.drawLine(width() * 0.75, 0, width() * 0.75, height());
     painter.drawLine(width() * 0.875, 0, width() * 0.875, height());

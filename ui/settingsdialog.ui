@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>404</width>
-        <height>1428</height>
+        <height>1422</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1755,7 +1755,7 @@
           </sizepolicy>
          </property>
          <property name="minimum">
-          <double>0.200000000000000</double>
+          <double>0.100000000000000</double>
          </property>
          <property name="maximum">
           <double>1.000000000000000</double>
@@ -1780,6 +1780,25 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item row="0" column="2">
+           <widget class="InfoTextWidget" name="nodeWidthPlotInfoText" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="3">
            <widget class="VerticalLabel" name="label_37">
             <property name="sizePolicy">
@@ -1787,6 +1806,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255)</string>
             </property>
             <property name="text">
              <string>Node width</string>
@@ -1796,8 +1818,11 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="4">
-           <widget class="QLabel" name="label_38">
+          <item row="2" column="6">
+           <widget class="QLabel" name="label_39">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255)</string>
+            </property>
             <property name="text">
              <string>Coverage</string>
             </property>
@@ -1806,7 +1831,7 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
+          <item row="0" column="6">
            <widget class="NodeWidthVisualAid" name="nodeWidthVisualAid" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1833,7 +1858,7 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="5">
+          <item row="0" column="7">
            <spacer name="horizontalSpacer_6">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -1849,19 +1874,35 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="2">
-           <widget class="InfoTextWidget" name="nodeWidthPlotInfoText" native="true">
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_38">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
             <property name="minimumSize">
              <size>
-              <width>16</width>
-              <height>16</height>
+              <width>5</width>
+              <height>0</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255)</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3" rowspan="2" colspan="2">
+           <widget class="QLabel" name="label_40">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255)</string>
+            </property>
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>
