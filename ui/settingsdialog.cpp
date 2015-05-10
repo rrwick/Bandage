@@ -351,10 +351,13 @@ void SettingsDialog::setInfoTexts()
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
                                                 "more pleasing layouts.");
     ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
+    ui->coveragePowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
     ui->coverageEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's coverage affects its width.<br><br>"
                                                    "If set to 0%, all nodes will have the same width (equal to the average "
                                                    "node width).  If set to 100%, the width of each node will be in direct "
                                                    "proportion to its coverage.");
+    ui->nodeWidthPlotInfoText->setInfoText("This is a plot of the function that will be used to set node widths.<br><br>"
+                                           "The centre point on the plot is the average coverage and average node width.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
     ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
