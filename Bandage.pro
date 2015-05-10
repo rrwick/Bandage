@@ -52,7 +52,9 @@ SOURCES += \
     ui/infotextwidget.cpp \
     graph/assemblygraph.cpp \
     ui/verticalscrollarea.cpp \
-    ui/myprogressdialog.cpp
+    ui/myprogressdialog.cpp \
+    ui/nodewidthvisualaid.cpp \
+    ui/verticallabel.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -79,7 +81,9 @@ HEADERS  += \
     ui/infotextwidget.h \
     graph/assemblygraph.h \
     ui/verticalscrollarea.h \
-    ui/myprogressdialog.h
+    ui/myprogressdialog.h \
+    ui/nodewidthvisualaid.h \
+    ui/verticallabel.h
 
 FORMS    += \
     ui/mainwindow.ui \
