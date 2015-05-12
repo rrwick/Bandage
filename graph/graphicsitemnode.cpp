@@ -629,16 +629,6 @@ void GraphicsItemNode::setWidth()
 {
     m_width = getNodeWidth(m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage, g_settings->coveragePower,
                            g_settings->coverageEffectOnWidth, g_settings->averageNodeWidth);
-
-//    //If the object already has a shape defined, then it needs to be redefined
-//    //now that the width is changing.
-//    //I do this by clearing and remaking the path.  This is a bit of a hack, but
-//    //all I could come up with that works.
-//    if (m_linePoints.size() > 0)
-//    {
-//        setPath(QPainterPath());
-//        remakePath();
-//    }
 }
 
 
