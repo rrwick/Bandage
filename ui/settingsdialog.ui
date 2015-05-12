@@ -387,7 +387,6 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <zorder>label</zorder>
               </widget>
              </item>
              <item row="0" column="0">
