@@ -43,7 +43,7 @@
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
-    QGraphicsPathItem(parent), m_deBruijnNode(deBruijnNode),
+    QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
     m_hasArrow(g_settings->doubleMode)
 
 {
@@ -76,6 +76,12 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    //This code lets me see the node's bounding box.
+    //I use it for debugging graphics issues.
+//    painter->setBrush(Qt::NoBrush);
+//    painter->setPen(QPen(Qt::black, 1.0));
+//    painter->drawRect(boundingRect());
+
     QPainterPath outlinePath = shape();
 
     //Fill the node's colour
@@ -317,7 +323,7 @@ QPainterPath GraphicsItemNode::shape() const
     stroker.setWidth(m_width);
     stroker.setCapStyle(Qt::FlatCap);
     stroker.setJoinStyle(Qt::RoundJoin);
-    QPainterPath mainNodePath = stroker.createStroke(path());
+    QPainterPath mainNodePath = stroker.createStroke(m_path);
 
     if (!m_hasArrow)
         return mainNodePath;
@@ -425,6 +431,8 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
 void GraphicsItemNode::shiftPoints(QPointF difference)
 {
+    prepareGeometryChange();
+
     if (isSelected()) //Move all pieces for selected nodes
     {
         for (size_t i = 0; i < m_linePoints.size(); ++i)
@@ -452,7 +460,7 @@ void GraphicsItemNode::remakePath()
     for (size_t i = 1; i < m_linePoints.size(); ++i)
         path.lineTo(m_linePoints[i]);
 
-    setPath(path);
+    m_path = path;
 }
 
 
@@ -622,15 +630,15 @@ void GraphicsItemNode::setWidth()
     m_width = getNodeWidth(m_deBruijnNode->m_coverageRelativeToMeanDrawnCoverage, g_settings->coveragePower,
                            g_settings->coverageEffectOnWidth, g_settings->averageNodeWidth);
 
-    //If the object already has a shape defined, then it needs to be redefined
-    //now that the width is changing.
-    //I do this by clearing and remaking the path.  This is a bit of a hack, but
-    //all I could come up with that works.
-    if (m_linePoints.size() > 0)
-    {
-        setPath(QPainterPath());
-        remakePath();
-    }
+//    //If the object already has a shape defined, then it needs to be redefined
+//    //now that the width is changing.
+//    //I do this by clearing and remaking the path.  This is a bit of a hack, but
+//    //all I could come up with that works.
+//    if (m_linePoints.size() > 0)
+//    {
+//        setPath(QPainterPath());
+//        remakePath();
+//    }
 }
 
 
@@ -642,7 +650,7 @@ void GraphicsItemNode::setWidth()
 QRectF GraphicsItemNode::boundingRect() const
 {
     double extraSize = g_settings->selectionThickness / 2.0;
-    QRectF bound = QGraphicsPathItem::boundingRect();
+    QRectF bound = shape().boundingRect();
 
     bound.setTop(bound.top() - extraSize);
     bound.setBottom(bound.bottom() + extraSize);

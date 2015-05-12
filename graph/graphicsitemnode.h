@@ -19,7 +19,7 @@
 #ifndef GRAPHICSITEMNODE_H
 #define GRAPHICSITEMNODE_H
 
-#include <QGraphicsPathItem>
+#include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <ogdf/basic/GraphAttributes.h>
 #include <vector>
@@ -27,10 +27,11 @@
 #include <QColor>
 #include <QFont>
 #include <QString>
+#include <QPainterPath>
 
 class DeBruijnNode;
 
-class GraphicsItemNode : public QGraphicsPathItem
+class GraphicsItemNode : public QGraphicsItem
 {
 public:
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
@@ -43,6 +44,7 @@ public:
     std::vector<QPointF> m_linePoints;
     size_t m_grabIndex;
     QColor m_colour;
+    QPainterPath m_path;
 
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
@@ -67,6 +69,7 @@ public:
     QRectF boundingRect() const;
     static double getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
                                double coverageEffectOnWidth, double averageNodeWidth);
+
 };
 
 #endif // GRAPHICSITEMNODE_H
