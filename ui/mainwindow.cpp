@@ -1042,8 +1042,10 @@ void MainWindow::resetScene()
     g_assemblyGraph->resetEdges();
     g_assemblyGraph->m_contiguitySearchDone = false;
 
+    g_graphicsView->setScene(0);
     delete m_scene;
     m_scene = new MyGraphicsScene(this);
+
     g_graphicsView->setScene(m_scene);
     connect(m_scene, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
     selectionChanged();
