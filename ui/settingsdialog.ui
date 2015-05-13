@@ -39,8 +39,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>404</width>
-        <height>1417</height>
+        <width>432</width>
+        <height>1758</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1048,6 +1048,9 @@
          <property name="maximum">
           <double>100.000000000000000</double>
          </property>
+         <property name="singleStep">
+          <double>5.000000000000000</double>
+         </property>
         </widget>
        </item>
        <item row="38" column="2">
@@ -1928,7 +1931,7 @@
           <double>1.000000000000000</double>
          </property>
          <property name="singleStep">
-          <double>0.010000000000000</double>
+          <double>0.050000000000000</double>
          </property>
         </widget>
        </item>
