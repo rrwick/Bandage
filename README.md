@@ -39,6 +39,8 @@ The following instructions successfully build Bandage on a fresh installation of
 
 ### <img src="http://rrwick.github.io/Bandage/images/OS/apple.png" alt="" width="34" height="40" align="middle"> Mac
 
+If you download and run the Mac binary, you may receive a warning stating that Bandange 'can't be opened because it is from an unidentified developer.'  Right click on the file and select 'Open' to override this warning.
+
 The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 (Mountain Lion) 10.9 (Mavericks) and 10.10 (Yosemite):
 
 1. Install Xcode, along with the Xcode Command Line Tools.
