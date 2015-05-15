@@ -70,6 +70,12 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
         }
     }
 
+    //If we are in double mode and this node's complement is also drawn,
+    //then we should shift the points so the two nodes are not drawn directly
+    //on top of each other.
+    if (g_settings->doubleMode && deBruijnNode->m_reverseComplement->m_drawn)
+        shiftPointsLeft();
+
     remakePath();
 }
 
@@ -656,4 +662,57 @@ double GraphicsItemNode::getNodeWidth(double coverageRelativeToMeanDrawnCoverage
 {
     double widthRelativeToAverage = (pow(coverageRelativeToMeanDrawnCoverage, coveragePower) - 1.0) * coverageEffectOnWidth + 1.0;
     return averageNodeWidth * widthRelativeToAverage;
+}
+
+
+
+//This function shifts all the node's points to the left (relative to its
+//direction).  This is used in double mode to prevent nodes from displaying
+//directly on top of their complement nodes.
+void GraphicsItemNode::shiftPointsLeft()
+{
+    //The collection of line points should be at least
+    //two large.  But just to be safe, quit now if it
+    //is not.
+    size_t linePointsSize = m_linePoints.size();
+    if (linePointsSize < 2)
+        return;
+
+    //Shift by a quarter of the segment length.  This should make
+    //nodes one half segment length separated from their complements.
+    double shiftDistance = g_settings->segmentLength / 4.0;
+
+    for (size_t i = 0; i < linePointsSize; ++i)
+    {
+        QPointF point = m_linePoints[i];
+        QLineF nodeDirection;
+
+        //If the point is on the end, then determine the node direction
+        //using this point and its adjacent point.
+        if (i == 0)
+        {
+            QPointF nextPoint = m_linePoints[i+1];
+            nodeDirection = QLineF(point, nextPoint);
+        }
+        else if (i == linePointsSize - 1)
+        {
+            QPointF previousPoint = m_linePoints[i-1];
+            nodeDirection = QLineF(previousPoint, point);
+        }
+
+        // If the point is in the middle, then determine the node direction
+        //using both adjacent points.
+        else
+        {
+            QPointF previousPoint = m_linePoints[i-1];
+            QPointF nextPoint = m_linePoints[i+1];
+            nodeDirection = QLineF(previousPoint, nextPoint);
+        }
+
+        QLineF shiftLine = nodeDirection.normalVector().unitVector();
+        shiftLine.setLength(shiftDistance);
+        QPointF shiftVector = shiftLine.p2() - shiftLine.p1();
+        QPointF newPoint = point + shiftVector;
+        m_linePoints[i] = newPoint;
+    }
 }

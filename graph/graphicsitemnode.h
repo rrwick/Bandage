@@ -69,6 +69,7 @@ public:
     QRectF boundingRect() const;
     static double getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
                                double coverageEffectOnWidth, double averageNodeWidth);
+    void shiftPointsLeft();
 
 };
 
