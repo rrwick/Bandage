@@ -1186,8 +1186,8 @@ void MainWindow::addGraphicsItemsToScene()
 
 void MainWindow::zoomSpinBoxChanged()
 {
-    int newValue = ui->zoomSpinBox->value();
-    double zoomFactor = double(newValue) / m_previousZoomSpinBoxValue;
+    double newValue = ui->zoomSpinBox->value();
+    double zoomFactor = newValue / m_previousZoomSpinBoxValue;
     setZoomSpinBoxStep();
 
     m_graphicsViewZoom->gentle_zoom(zoomFactor, SPIN_BOX);
