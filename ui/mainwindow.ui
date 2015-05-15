@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>247</width>
-         <height>1065</height>
+         <width>250</width>
+         <height>1053</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1180,7 +1180,7 @@
          <x>0</x>
          <y>0</y>
          <width>274</width>
-         <height>1065</height>
+         <height>1053</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1602,7 +1602,7 @@
      <x>0</x>
      <y>0</y>
      <width>1301</width>
-     <height>21</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1665,6 +1665,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionBandage_website"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1876,6 +1877,15 @@
    </property>
    <property name="text">
     <string>Select not contiguous nodes</string>
+   </property>
+  </action>
+  <action name="actionBandage_website">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Bandage website</string>
    </property>
   </action>
  </widget>

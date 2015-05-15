@@ -58,6 +58,7 @@
 #include "../graph/graphicsitemedge.h"
 #include "myprogressdialog.h"
 #include <limits>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QString filename) :
     QMainWindow(0),
@@ -155,6 +156,7 @@ MainWindow::MainWindow(QString filename) :
     connect(ui->actionSelect_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectContiguous()));
     connect(ui->actionSelect_possibly_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectMaybeContiguous()));
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
+    connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
@@ -2153,4 +2155,11 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
     g_graphicsView->viewport()->update();
     selectionChanged();
     zoomToSelection();
+}
+
+
+
+void MainWindow::openBandageUrl()
+{
+    QDesktopServices::openUrl(QUrl("http://rrwick.github.io/Bandage/"));
 }

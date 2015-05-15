@@ -126,6 +126,7 @@ private slots:
     void selectContiguous();
     void selectMaybeContiguous();
     void selectNotContiguous();
+    void openBandageUrl();
 
 signals:
     void saveAllNodesToFastaFinished();
