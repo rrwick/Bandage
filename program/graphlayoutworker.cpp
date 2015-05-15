@@ -38,21 +38,26 @@ void GraphLayoutWorker::layoutGraph()
     switch (m_graphLayoutQuality)
     {
     case 0:
-        m_fmmm->fixedIterations(15);
-        m_fmmm->fineTuningIterations(10);
+        m_fmmm->fixedIterations(3);
+        m_fmmm->fineTuningIterations(1);
         m_fmmm->nmPrecision(2);
         break;
     case 1:
+        m_fmmm->fixedIterations(12);
+        m_fmmm->fineTuningIterations(8);
+        m_fmmm->nmPrecision(2);
+        break;
+    case 2:
         m_fmmm->fixedIterations(30);
         m_fmmm->fineTuningIterations(20);
         m_fmmm->nmPrecision(4);
         break;
-    case 2:
+    case 3:
         m_fmmm->fixedIterations(60);
         m_fmmm->fineTuningIterations(40);
         m_fmmm->nmPrecision(6);
         break;
-    case 3:
+    case 4:
         m_fmmm->fixedIterations(120);
         m_fmmm->fineTuningIterations(80);
         m_fmmm->nmPrecision(8);

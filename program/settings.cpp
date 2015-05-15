@@ -28,7 +28,7 @@ Settings::Settings()
     manualBasePairsPerSegment = 500;
     meanSegmentsPerNode = 3;
     segmentLength = 15.0;
-    graphLayoutQuality = 1;
+    graphLayoutQuality = 2;
 
     averageNodeWidth = 5.0;
     coverageEffectOnWidth = 0.5;
