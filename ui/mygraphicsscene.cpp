@@ -35,7 +35,7 @@ bool compareNodePointers(DeBruijnNode * a, DeBruijnNode * b)
 
     QString aName2 = aName;
     aName2.chop(1);
-    QString bName2 = aName;
+    QString bName2 = bName;
     bName2.chop(1);
 
     bool ok1, ok2;
@@ -46,7 +46,7 @@ bool compareNodePointers(DeBruijnNode * a, DeBruijnNode * b)
     if (ok1 && ok2 && aNum != bNum)
         return aNum < bNum;
 
-    return aName > bName;
+    return aName < bName;
 }
 
 
