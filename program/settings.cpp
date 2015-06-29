@@ -51,7 +51,7 @@ Settings::Settings()
     dragStrength = 100.0;
 
     displayNodeCustomLabels = false;
-    displayNodeNumbers = false;
+    displayNodeNames = false;
     displayNodeLengths = false;
     displayNodeCoverages = false;
     labelFont = QFont();

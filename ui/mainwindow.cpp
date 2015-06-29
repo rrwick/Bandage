@@ -127,7 +127,7 @@ MainWindow::MainWindow(QString filename) :
     connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
     connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
-    connect(ui->nodeNumbersCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeCoveragesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
@@ -571,96 +571,38 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     std::vector<QString> sequences;
     readFastaFile(fullFileName, &names, &sequences);
 
-    std::vector<long long> edgeStartingNodeNumbers;
-    std::vector<long long> edgeEndingNodeNumbers;
+    std::vector<QString> edgeStartingNodeNames;
+    std::vector<QString> edgeEndingNodeNames;
 
     for (size_t i = 0; i < names.size(); ++i)
     {
         QString name = names[i];
         QString sequence = sequences[i];
 
-        //The header can come in a couple of different formats.
-        //I need the transcript number and the component number.  Some
-        //of the formats don't seem to include the transcript number,
-        //so I use 0 in those cases.
-        int transcript;
-        int component;
+        //The header can come in a couple of different formats:
+        // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
+        // GG1|c0_g1_i1 len=302 path=[1:0-301]
+        // comp0_c0_seq1 len=286 path=[6:0-285]
+        // c0_g1_i1 len=363 path=[119:0-185 43:186-244 43:245-303 43:304-362]
+
+        //The node names will begin with a string that contains everything
+        //up to the component number (e.g. "c0"), in the same format as it is
+        //in the Trinity.fasta file.
 
         if (name.length() < 4)
             throw "load error";
 
-        // This is for header formats like this:
-        // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
-        if (name.mid(0, 2) == "TR")
-        {
-            int transcriptStartIndex = name.indexOf("TR") + 2;
-            int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
-            if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
-                throw "load error";
-            int transcriptLength = transcriptEndIndex - transcriptStartIndex;
-            transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
+        int componentStartIndex = name.indexOf(QRegExp("c\\d+_"));
+        int componentEndIndex = name.indexOf("_", componentStartIndex);
 
-            int componentStartIndex = name.indexOf("|c") + 2;
-            int componentEndIndex = name.indexOf("_", componentStartIndex);
-            if (componentStartIndex < 0 || componentEndIndex < 0)
-                throw "load error";
-            int componentLength = componentEndIndex - componentStartIndex;
-            component = name.mid(componentStartIndex, componentLength).toInt();
-        }
-
-        // This is for header formats like this:
-        // GG1|c0_g1_i1 len=302 path=[1:0-301]
-        else if (name.mid(0, 2) == "GG")
-        {
-            int transcriptStartIndex = name.indexOf("GG") + 2;
-            int transcriptEndIndex = name.indexOf("|", transcriptStartIndex);
-            if (transcriptStartIndex < 0 || transcriptEndIndex < 0)
-                throw "load error";
-            int transcriptLength = transcriptEndIndex - transcriptStartIndex;
-            transcript = name.mid(transcriptStartIndex, transcriptLength).toInt();
-
-            int componentStartIndex = name.indexOf("|c") + 2;
-            int componentEndIndex = name.indexOf("_", componentStartIndex);
-            if (componentStartIndex < 0 || componentEndIndex < 0)
-                throw "load error";
-            int componentLength = componentEndIndex - componentStartIndex;
-            component = name.mid(componentStartIndex, componentLength).toInt();
-        }
-
-        // This is for header formats like this:
-        // comp0_c0_seq1 len=286 path=[6:0-285]
-        else if (name.mid(0, 4) == "comp")
-        {
-            transcript = 0;
-
-            int componentStartIndex = name.indexOf("comp") + 4;
-            int componentEndIndex = name.indexOf("_", componentStartIndex);
-            if (componentStartIndex < 0 || componentEndIndex < 0)
-                throw "load error";
-            int componentLength = componentEndIndex - componentStartIndex;
-            component = name.mid(componentStartIndex, componentLength).toInt();
-        }
-
-        // This is for header formats like this:
-        // c0_g1_i1 len=363 path=[119:0-185 43:186-244 43:245-303 43:304-362]
-        else if (name.at(0) == 'c' && name.at(1).isDigit())
-        {
-            transcript = 0;
-
-            int componentStartIndex = 1;
-            int componentEndIndex = name.indexOf("_", componentStartIndex);
-            if (componentStartIndex < 0 || componentEndIndex < 0)
-                throw "load error";
-            int componentLength = componentEndIndex - componentStartIndex;
-            component = name.mid(componentStartIndex, componentLength).toInt();
-        }
-
-        //If the header doesn't match any of the previous options, then
-        //I don't know what's going on.
-        else
+        if (componentStartIndex < 0 || componentEndIndex < 0)
             throw "load error";
 
+        QString component = name.left(componentEndIndex);
 
+        if (component.length() < 3)
+            throw "load error";
+        
         int pathStartIndex = name.indexOf("path=[") + 6;
         int pathEndIndex = name.indexOf("]", pathStartIndex);
         if (pathStartIndex < 0 || pathEndIndex < 0)
@@ -673,7 +615,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QStringList pathParts = path.split(" ");
 
         //Each path part is a node
-        long long previousNodeNumber = 0;
+        QString previousNodeName;
         for (int i = 0; i < pathParts.length(); ++i)
         {
             QString pathPart = pathParts.at(i);
@@ -688,11 +630,10 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             if (nodeNumberString.at(0) == '@')
                 nodeNumberString = nodeNumberString.mid(1, nodeNumberString.length() - 3);
 
-            long long nodeNumber = nodeNumberString.toLongLong();
-            nodeNumber = getFullTrinityNodeNumberFromParts(transcript, component, nodeNumber);
+            QString nodeName = component + "_" + nodeNumberString + "+";
 
             //If the node doesn't yet exist, make it now.
-            if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
+            if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
             {
                 QString nodeRange = nodeParts.at(1);
                 QStringList nodeRangeParts = nodeRange.split("-");
@@ -705,23 +646,23 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
-                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, 0.0, nodeSequence);
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeLength, 0.0, nodeSequence);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
             //Remember to make an edge for the previous node to this one.
             if (i > 0)
             {
-                edgeStartingNodeNumbers.push_back(previousNodeNumber);
-                edgeEndingNodeNumbers.push_back(nodeNumber);
+                edgeStartingNodeNames.push_back(previousNodeName);
+                edgeEndingNodeNames.push_back(nodeName);
             }
-            previousNodeNumber = nodeNumber;
+            previousNodeName = nodeName;
         }
     }
 
     //Even though the Trinity.fasta file only contains positive nodes, Bandage
     //expects negative reverse complements nodes, so make them now.
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -732,11 +673,11 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
     //Create all of the edges.  The createDeBruijnEdge function checks for
     //duplicates, so it's okay if we try to add the same edge multiple times.
-    for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
+    for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
     {
-        long long node1Number = edgeStartingNodeNumbers[i];
-        long long node2Number = edgeEndingNodeNumbers[i];
-        g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
+        QString node1Name = edgeStartingNodeNames[i];
+        QString node2Name = edgeEndingNodeNames[i];
+        g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
     }
 
     if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
@@ -746,13 +687,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
 void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 {
-    QString nodeName = node->m_name;
-    QString reverseComplementName = nodeName;
-    reverseComplementName.chop(1);
-    if (node->isPositiveNode())
-        reverseComplementName += "-";
-    else
-        reverseComplementName += "+";
+    QString reverseComplementName = getOppositeNodeName(node->m_name);
 
     DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
@@ -766,7 +701,7 @@ void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 
 void MainWindow::pointEachNodeToItsReverseComplement()
 {
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -774,7 +709,7 @@ void MainWindow::pointEachNodeToItsReverseComplement()
 
         if (positiveNode->isPositiveNode())
         {
-            DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[-(positiveNode->m_number)];
+            DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->m_name)];
             if (negativeNode != 0)
             {
                 positiveNode->m_reverseComplement = negativeNode;
@@ -789,7 +724,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
 {
     if (g_settings->graphScope == WHOLE_GRAPH)
     {
-        QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -826,7 +761,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
     }
 
     //First loop through each node, adding it to OGDF if it is drawn.
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -1219,7 +1154,7 @@ void MainWindow::addGraphicsItemsToScene()
     double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
 
     //First make the GraphicsItemNode objects
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -1254,7 +1189,7 @@ void MainWindow::addGraphicsItemsToScene()
 
     //Now add the GraphicsItemNode objects to the scene so they are drawn
     //on top
-    QMapIterator<long long, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
     while (j.hasNext())
     {
         j.next();
@@ -1506,7 +1441,7 @@ void MainWindow::saveImageEntireScene()
 void MainWindow::setTextDisplaySettings()
 {
     g_settings->displayNodeCustomLabels = ui->nodeCustomLabelsCheckBox->isChecked();
-    g_settings->displayNodeNumbers = ui->nodeNumbersCheckBox->isChecked();
+    g_settings->displayNodeNames = ui->nodeNamesCheckBox->isChecked();
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
@@ -1518,7 +1453,7 @@ void MainWindow::setTextDisplaySettings()
     //This change means that graphics performance will be somewhat worse when
     //nodes have text displayed.
     if (g_settings->displayNodeCustomLabels ||
-            g_settings->displayNodeNumbers ||
+            g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
             g_settings->displayNodeCoverages)
         g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -1650,7 +1585,7 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.coverageEffectOnWidth != g_settings->coverageEffectOnWidth ||
                 settingsBefore.coveragePower != g_settings->coveragePower)
         {
-            QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+            QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
             while (i.hasNext())
             {
                 i.next();
@@ -1831,7 +1766,7 @@ void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool 
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -2054,7 +1989,7 @@ void MainWindow::selectNodesWithBlastHits()
     m_scene->clearSelection();
 
     bool atLeastOneNodeSelected = false;
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -2190,7 +2125,7 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
     m_scene->blockSignals(true);
     m_scene->clearSelection();
 
-    QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -2232,4 +2167,18 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
 void MainWindow::openBandageUrl()
 {
     QDesktopServices::openUrl(QUrl("http://rrwick.github.io/Bandage/"));
+}
+
+
+//The function returns a node name, replacing "+" at the end with "-" or
+//vice-versa.
+QString MainWindow::getOppositeNodeName(QString nodeName)
+{
+    QChar lastChar = nodeName.at(edgeNode.size() - 1);
+    nodeName.chop(1);
+
+    if (lastChar == '-')
+        return nodeName + "+";
+    else
+        return nodeName + "-";
 }

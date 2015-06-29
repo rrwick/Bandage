@@ -59,7 +59,7 @@ public:
     double dragStrength;
 
     bool displayNodeCustomLabels;
-    bool displayNodeNumbers;
+    bool displayNodeNames;
     bool displayNodeLengths;
     bool displayNodeCoverages;
     QFont labelFont;
@@ -102,7 +102,7 @@ public:
     QString rememberedPath;
 
     void setNegativeNodeColour();
-    bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNumbers || displayNodeLengths || displayNodeCoverages;}
+    bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
     int getBasePairsPerSegment();
 };
 

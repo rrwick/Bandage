@@ -874,9 +874,9 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QCheckBox" name="nodeNumbersCheckBox">
+               <widget class="QCheckBox" name="nodeNamesCheckBox">
                 <property name="text">
-                 <string>Number</string>
+                 <string>Name</string>
                 </property>
                </widget>
               </item>
@@ -1892,7 +1892,7 @@
   <tabstop>singleNodesRadioButton</tabstop>
   <tabstop>doubleNodesRadioButton</tabstop>
   <tabstop>nodeCustomLabelsCheckBox</tabstop>
-  <tabstop>nodeNumbersCheckBox</tabstop>
+  <tabstop>nodeNamesCheckBox</tabstop>
   <tabstop>nodeLengthsCheckBox</tabstop>
   <tabstop>nodeCoveragesCheckBox</tabstop>
   <tabstop>textOutlineCheckBox</tabstop>

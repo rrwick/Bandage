@@ -88,6 +88,7 @@ private:
     void pointEachNodeToItsReverseComplement();
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
     QString convertNormalNumberStringToBandageNodeName(QString number);
+    QString getOppositeNodeName(QString nodeName);
 
 private slots:
     void loadGraph(QString fullFileName = "");

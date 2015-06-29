@@ -588,7 +588,7 @@ QString GraphicsItemNode::getNodeText()
 
     if (g_settings->displayNodeCustomLabels && m_deBruijnNode->m_customLabel.length() > 0)
         nodeText += m_deBruijnNode->m_customLabel + "\n";
-    if (g_settings->displayNodeNumbers)
+    if (g_settings->displayNodeNames)
         nodeText += m_deBruijnNode->m_name + "\n";
     if (g_settings->displayNodeLengths)
         nodeText += formatIntForDisplay(m_deBruijnNode->m_length) + " bp\n";
