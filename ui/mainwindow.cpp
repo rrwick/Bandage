@@ -600,7 +600,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
         QString component = name.left(componentEndIndex);
 
-        if (component.length() < 3)
+        if (component.length() < 2)
             throw "load error";
         
         int pathStartIndex = name.indexOf("path=[") + 6;
