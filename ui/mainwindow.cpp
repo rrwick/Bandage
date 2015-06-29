@@ -312,7 +312,7 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
-    g_assemblyGraph->m_trinityGraph = false;
+    g_assemblyGraph->m_graphFileType = LAST_GRAPH;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -376,6 +376,8 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
+    g_assemblyGraph->m_graphFileType = GFA;
+
 
 
 
@@ -391,7 +393,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
-    g_assemblyGraph->m_trinityGraph = false;
+    g_assemblyGraph->m_graphFileType = FASTG;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -524,7 +526,7 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
 
-    g_assemblyGraph->m_trinityGraph = true;
+    g_assemblyGraph->m_graphFileType = TRINITY;
 
     std::vector<QString> names;
     std::vector<QString> sequences;
@@ -1106,7 +1108,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
         long long nodeNumber;
         if (nodesList.at(i) == "")
             continue;
-        if (g_assemblyGraph->m_trinityGraph)
+        if (g_assemblyGraph->m_graphFileType == TRINITY)
             nodeNumber = getFullTrinityNodeNumberFromName(nodesList.at(i));
         else
             nodeNumber = nodesList.at(i).toLongLong();

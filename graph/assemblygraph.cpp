@@ -27,7 +27,7 @@
 #include "../graph/graphicsitemnode.h"
 
 AssemblyGraph::AssemblyGraph() :
-    m_trinityGraph(false), m_contiguitySearchDone(false)
+    m_contiguitySearchDone(false)
 {
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |

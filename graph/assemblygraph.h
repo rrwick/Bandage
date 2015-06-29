@@ -24,6 +24,7 @@
 #include "ogdf/basic/GraphAttributes.h"
 #include <QString>
 #include <QMap>
+#include "../program/globals.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;
@@ -49,7 +50,7 @@ public:
     double m_firstQuartileCoverage;
     double m_medianCoverage;
     double m_thirdQuartileCoverage;
-    bool m_trinityGraph;
+    GraphFileType m_graphFileType;
     bool m_contiguitySearchDone;
 
     void cleanUp();

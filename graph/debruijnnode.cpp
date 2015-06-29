@@ -301,7 +301,7 @@ QByteArray DeBruijnNode::getFasta(bool useTrinityNames)
     //This requires useTrinityNames to be set, because
     //in some situations (like when making a BLAST db),
     //we don't want to use the Trinity style.
-    if (g_assemblyGraph->m_trinityGraph && useTrinityNames)
+    if (g_assemblyGraph->m_graphFileType == TRINITY && useTrinityNames)
     {
         fasta += getTrinityNodeNameFromFullNodeNumber(m_number);
         fasta += "_len=";
@@ -420,7 +420,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 
 QString DeBruijnNode::getNodeNumberText(bool commas)
 {
-    if (g_assemblyGraph->m_trinityGraph)
+    if (g_assemblyGraph->m_graphFileType == TRINITY)
         return getTrinityNodeNameFromFullNodeNumber(m_number);
     else if (commas)
         return formatIntForDisplay(m_number);
