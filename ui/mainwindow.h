@@ -76,7 +76,7 @@ private:
     bool checkFileIsFastG(QString fullFileName);
     bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
-    void loadGraphFile2(QString graphFileType, QString filename);
+    void loadGraph2(QString graphFileType, QString filename);
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
