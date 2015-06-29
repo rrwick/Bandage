@@ -379,9 +379,25 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
     g_assemblyGraph->m_graphFileType = GFA;
 
 
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
+    //READ GFA FILE HERE!!!!!!!!!!!
 
 
 
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
 }
 
 
