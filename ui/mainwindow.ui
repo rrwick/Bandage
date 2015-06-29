@@ -1609,9 +1609,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad_LastGraph"/>
-    <addaction name="actionLoad_fastg"/>
-    <addaction name="actionLoad_Trinity_fasta"/>
+    <addaction name="actionLoad_graph"/>
     <addaction name="separator"/>
     <addaction name="actionSave_image_current_view"/>
     <addaction name="actionSave_image_entire_scene"/>
@@ -1674,22 +1672,13 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionLoad_LastGraph">
+  <action name="actionLoad_graph">
    <property name="icon">
     <iconset resource="../images/images.qrc">
      <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
    </property>
    <property name="text">
-    <string>Load LastGraph (Velvet)</string>
-   </property>
-  </action>
-  <action name="actionLoad_fastg">
-   <property name="icon">
-    <iconset resource="../images/images.qrc">
-     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load fastg (SPAdes)</string>
+    <string>Load graph</string>
    </property>
   </action>
   <action name="actionSave_image_current_view">
@@ -1763,15 +1752,6 @@
    </property>
    <property name="text">
     <string>Selection panel</string>
-   </property>
-  </action>
-  <action name="actionLoad_Trinity_fasta">
-   <property name="icon">
-    <iconset resource="../images/images.qrc">
-     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
-   </property>
-   <property name="text">
-    <string>Load Trinity.fasta</string>
    </property>
   </action>
   <action name="actionBring_selected_nodes_to_front">

@@ -117,9 +117,7 @@ MainWindow::MainWindow(QString filename) :
     switchColourScheme();
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
-    connect(ui->actionLoad_LastGraph, SIGNAL(triggered()), this, SLOT(loadLastGraph()));
-    connect(ui->actionLoad_fastg, SIGNAL(triggered()), this, SLOT(loadFastg()));
-    connect(ui->actionLoad_Trinity_fasta, SIGNAL(triggered()), this, SLOT(loadTrinityFasta()));
+    connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -177,14 +175,7 @@ MainWindow::MainWindow(QString filename) :
 
     //If the user passed a filename as a command line argument, try to open it now.
     if (filename != "")
-    {
-        if (checkFileIsLastGraph(filename))
-            loadGraphFile2("LastGraph", filename);
-        else if (checkFileIsFastG(filename))
-            loadGraphFile2("FASTG", filename);
-        else if (checkFileIsTrinityFasta(filename))
-            loadGraphFile2("Trinity.fasta", filename);
-    }
+        loadGraph(filename);
 }
 
 MainWindow::~MainWindow()
@@ -210,32 +201,21 @@ void MainWindow::cleanUp()
 }
 
 
-
-void MainWindow::loadLastGraph()
+void MainWindow::loadGraph(QString fullFileName)
 {
-    loadGraphFile1("LastGraph");
-}
-
-
-void MainWindow::loadFastg()
-{
-    loadGraphFile1("FASTG");
-}
-
-void MainWindow::loadTrinityFasta()
-{
-    loadGraphFile1("Trinity.fasta");
-}
-
-
-void MainWindow::loadGraphFile1(QString graphFileType)
-{
-    QString fullFileName = QFileDialog::getOpenFileName(this, "Load " + graphFileType, g_settings->rememberedPath);
+    if (fullFileName == "")
+        fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_settings->rememberedPath);
 
     if (fullFileName != "") //User did not hit cancel
-        loadGraphFile2(graphFileType, fullFileName);
+    {
+        if (checkFileIsLastGraph(fullFileName))
+            loadGraphFile2("LastGraph", fullFileName);
+        else if (checkFileIsFastG(fullFileName))
+            loadGraphFile2("FASTG", fullFileName);
+        else if (checkFileIsTrinityFasta(fullFileName))
+            loadGraphFile2("Trinity.fasta", fullFileName);
+    }
 }
-
 
 
 void MainWindow::loadGraphFile2(QString graphFileType, QString fullFileName)
