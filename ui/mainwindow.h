@@ -87,6 +87,7 @@ private:
     void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
     void pointEachNodeToItsReverseComplement();
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
+    QString convertNormalNumberStringToBandageNodeName(QString number);
 
 private slots:
     void loadGraph(QString fullFileName = "");

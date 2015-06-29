@@ -35,7 +35,7 @@ public:
     AssemblyGraph();
     ~AssemblyGraph();
 
-    QMap<long long, DeBruijnNode*> m_deBruijnGraphNodes;
+    QMap<QString, DeBruijnNode*> m_deBruijnGraphNodes;
     std::vector<DeBruijnEdge*> m_deBruijnGraphEdges;
 
     ogdf::Graph * m_ogdfGraph;
@@ -54,7 +54,7 @@ public:
     bool m_contiguitySearchDone;
 
     void cleanUp();
-    void createDeBruijnEdge(long long node1Number, long long node2Number);
+    void createDeBruijnEdge(QString node1Name, QString node2Name);
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();

@@ -328,7 +328,10 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 if (nodeDetails.size() < 4)
                     throw "load error";
 
-                long long nodeNumber = nodeDetails.at(1).toLongLong();
+                QString nodeName = nodeDetails.at(1);
+                QString posNodeName = nodeName + "+";
+                QString negNodeName = nodeName + "-";
+
                 int nodeLength = nodeDetails.at(2).toInt();
 
                 double nodeCoverage;
@@ -340,12 +343,12 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 QByteArray sequence = in.readLine().toLocal8Bit();
                 QByteArray revCompSequence = in.readLine().toLocal8Bit();
 
-                DeBruijnNode * node = new DeBruijnNode(nodeNumber, nodeLength, nodeCoverage, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(-nodeNumber, nodeLength, nodeCoverage, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(-nodeNumber, reverseComplementNode);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
             else if (line.startsWith("ARC"))
             {
@@ -354,10 +357,10 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 if (arcDetails.size() < 3)
                     throw "load error";
 
-                long long node1Number = arcDetails.at(1).toLongLong();
-                long long node2Number = arcDetails.at(2).toLongLong();
+                QString node1Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(1));
+                QString node2Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(2));
 
-                g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
+                g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
             }
         }
         inputFile.close();
@@ -365,6 +368,21 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
     if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
         throw "load error";
+}
+
+
+
+//This function takes a normal number string like "5" or "-6" and changes
+//it to "5+" or "6-" - the format of Bandage node names.
+QString MainWindow::convertNormalNumberStringToBandageNodeName(QString number)
+{
+    if (number.at(0) == '-')
+    {
+        number.remove(0, 1);
+        return number + "-";
+    }
+    else
+        return number + "+";
 }
 
 
@@ -413,8 +431,8 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
     {
-        std::vector<long long> edgeStartingNodeNumbers;
-        std::vector<long long> edgeEndingNodeNumbers;
+        std::vector<QString> edgeStartingNodeNames;
+        std::vector<QString> edgeEndingNodeNames;
         DeBruijnNode * node = 0;
 
         QTextStream in(&inputFile);
@@ -422,7 +440,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         {
             QApplication::processEvents();
 
-            long long nodeNumber;
+            QString nodeName;
             int nodeLength;
             double nodeCoverage;
 
@@ -445,7 +463,12 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                 if (thisNodeDetails.size() < 6)
                     throw "load error";
 
-                nodeNumber = thisNodeDetails.at(1).toLongLong();
+                nodeName = thisNodeDetails.at(1);
+                if (negativeNode)
+                    nodeName += "-";
+                else
+                    nodeName += "+";
+
                 nodeLength = thisNodeDetails.at(3).toInt();
 
                 QString nodeCoverageString = thisNodeDetails.at(5);
@@ -454,14 +477,12 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                     //It may be necessary to remove a single quote from the end of the coverage
                     if (nodeCoverageString.at(nodeCoverageString.size() - 1) == '\'')
                         nodeCoverageString.chop(1);
-
-                    nodeNumber *= -1;
                 }
                 nodeCoverage = nodeCoverageString.toDouble();
 
                 //Make the node
-                node = new DeBruijnNode(nodeNumber, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeNumber, node);
+                node = new DeBruijnNode(nodeName, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
                 //Edges aren't made right now (because the other node might not yet exist),
@@ -474,10 +495,10 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                     QString edgeNode = edgeNodes.at(i);
 
                     QChar lastChar = edgeNode.at(edgeNode.size() - 1);
-                    bool reverseComplement = false;
+                    bool negativeNode = false;
                     if (lastChar == '\'')
                     {
-                        reverseComplement = true;
+                        negativeNode = true;
                         edgeNode.chop(1);
                     }
                     QStringList edgeNodeDetails = edgeNode.split("_");
@@ -485,12 +506,15 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
                     if (edgeNodeDetails.size() < 2)
                         throw "load error";
 
-                    int edgeNodeNumber = edgeNodeDetails.at(1).toInt();
-                    if (reverseComplement)
-                        edgeNodeNumber *= -1;
+                    QString edgeNodeName = edgeNodeDetails.at(1);
+                    if (negativeNode)
+                        if (negativeNode)
+                            edgeNodeName += "-";
+                        else
+                            edgeNodeName += "+";
 
-                    edgeStartingNodeNumbers.push_back(nodeNumber);
-                    edgeEndingNodeNumbers.push_back(edgeNodeNumber);
+                    edgeStartingNodeNames.push_back(nodeName);
+                    edgeEndingNodeNames.push_back(edgeNodeName);
                 }
             }
 
@@ -511,7 +535,7 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
         //have, for some reason, negative nodes with no positive counterpart.  For
         //that reason, we will now make any reverse complement nodes for nodes that
         //lack them.
-        QMapIterator<long long, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -522,11 +546,11 @@ void MainWindow::buildDeBruijnGraphFromFastg(QString fullFileName)
 
 
         //Create all of the edges
-        for (size_t i = 0; i < edgeStartingNodeNumbers.size(); ++i)
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
         {
-            long long node1Number = edgeStartingNodeNumbers[i];
-            long long node2Number = edgeEndingNodeNumbers[i];
-            g_assemblyGraph->createDeBruijnEdge(node1Number, node2Number);
+            QString node1Name = edgeStartingNodeNames[i];
+            QString node2Name = edgeEndingNodeNames[i];
+            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
         }
     }
 
@@ -722,13 +746,20 @@ void MainWindow::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
 void MainWindow::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 {
-    long long  reverseComplementNumber = -node->m_number;
-    DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementNumber];
+    QString nodeName = node->m_name;
+    QString reverseComplementName = nodeName;
+    reverseComplementName.chop(1);
+    if (node->isPositiveNode())
+        reverseComplementName += "-";
+    else
+        reverseComplementName += "+";
+
+    DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
-        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementNumber, node->m_length, node->m_coverage,
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_length, node->m_coverage,
                                                   g_assemblyGraph->getReverseComplement(node->m_sequence));
-        g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementNumber, newNode);
+        g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
 }
 
@@ -1360,7 +1391,7 @@ void MainWindow::saveSelectedSequencesToFile()
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {
-            out << selectedNodes[i]->getFasta(true);
+            out << selectedNodes[i]->getFasta();
             if (i != selectedNodes.size() - 1)
                 out << "\n";
         }
@@ -1806,7 +1837,7 @@ void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool 
         i.next();
         if (includeEmptyNodes || i.value()->m_length > 0)
         {
-            out << i.value()->getFasta(useTrinityNames);
+            out << i.value()->getFasta();
             out << "\n";
         }
     }

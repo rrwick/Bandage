@@ -34,7 +34,7 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(QString name, bool direction, int length, double coverage, QByteArray sequence);
+    DeBruijnNode(QString name, int length, double coverage, QByteArray sequence);
     ~DeBruijnNode();
 
     QString m_name;
@@ -71,7 +71,7 @@ public:
                                      std::vector<DeBruijnNode *> * incomingNodes,
                                      std::vector<DeBruijnNode *> * outgoingNodes)
     {return !isOnlyPathInItsDirection(connectedNode, incomingNodes, outgoingNodes);}
-    QByteArray getFasta(bool useTrinityNames);
+    QByteArray getFasta();
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
 
     bool thisNodeHasBlastHits();

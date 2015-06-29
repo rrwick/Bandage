@@ -27,7 +27,8 @@
 #include <set>
 #include <QApplication>
 
-DeBruijnNode::DeBruijnNode(QString name, bool direction, int length, double coverage, QByteArray sequence) :
+DeBruijnNode::DeBruijnNode(QString name, int length, double coverage, QByteArray sequence) :
+    m_name(name),
     m_length(length),
     m_coverage(coverage),
     m_coverageRelativeToMeanDrawnCoverage(1.0),
@@ -41,10 +42,6 @@ DeBruijnNode::DeBruijnNode(QString name, bool direction, int length, double cove
     m_highestDistanceInNeighbourSearch(0),
     m_customColour(QColor(190, 190, 190))
 {
-    if (direction)
-        m_name = name + "+";
-    else
-        m_name = name + "i";
 }
 
 
@@ -295,7 +292,7 @@ bool DeBruijnNode::isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 }
 
 
-QByteArray DeBruijnNode::getFasta(bool useTrinityNames)
+QByteArray DeBruijnNode::getFasta()
 {
     QByteArray fasta = ">";
 
