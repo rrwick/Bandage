@@ -203,11 +203,11 @@ void MainWindow::cleanUp()
 
 void MainWindow::loadGraph(QString fullFileName)
 {
-    QString graphFileType;
+    GraphFileType graphFileType;
     QString selectedFileType;
     if (fullFileName == "")
         fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_settings->rememberedPath,
-                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;Trinity.fasta (*.fasta)",
+                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta)",
                                                     &selectedFileType);
 
     if (fullFileName != "") //User did not hit cancel
@@ -215,11 +215,13 @@ void MainWindow::loadGraph(QString fullFileName)
         if (selectedFileType == "Any supported graph (*)")
         {
             if (checkFileIsLastGraph(fullFileName))
-                graphFileType = "LastGraph";
+                graphFileType = LAST_GRAPH;
             else if (checkFileIsFastG(fullFileName))
-                graphFileType = "FASTG";
+                graphFileType = FASTG;
+            else if (checkFileIsGfa(fullFileName))
+                graphFileType = GFA;
             else if (checkFileIsTrinityFasta(fullFileName))
-                graphFileType = "Trinity.fasta";
+                graphFileType = TRINITY;
             else
             {
                 QMessageBox::warning(this, "Graph format not recognised", "Cannot load file. The file' selected's format was not recognised as any supported graph type.");
@@ -227,27 +229,39 @@ void MainWindow::loadGraph(QString fullFileName)
             }
         }
         else if (selectedFileType == "LastGraph (*LastGraph*)")
-            graphFileType = "LastGraph";
+            graphFileType = LAST_GRAPH;
         else if (selectedFileType == "FASTG (*.fastg)")
-            graphFileType = "FASTG";
+            graphFileType = FASTG;
+        else if (selectedFileType == "GFA (*.gfa)")
+            graphFileType = GFA;
         else if (selectedFileType == "Trinity.fasta (*.fasta)")
-            graphFileType = "Trinity.fasta";
+            graphFileType = TRINITY;
 
         loadGraph2(graphFileType, fullFileName);
     }
 }
 
 
-void MainWindow::loadGraph2(QString graphFileType, QString fullFileName)
+void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
 {
-    if ( (graphFileType == "LastGraph" && !checkFileIsLastGraph(fullFileName)) ||
-         (graphFileType == "FASTG" && !checkFileIsFastG(fullFileName)) ||
-         (graphFileType == "Trinity.fasta" && !checkFileIsTrinityFasta(fullFileName)) )
+    if ( (graphFileType == LAST_GRAPH && !checkFileIsLastGraph(fullFileName)) ||
+         (graphFileType == FASTG && !checkFileIsFastG(fullFileName)) ||
+         (graphFileType == GFA && !checkFileIsGfa(fullFileName)) ||
+         (graphFileType == TRINITY && !checkFileIsTrinityFasta(fullFileName)) )
     {
+        QString graphFileTypeString;
+        switch (graphFileType)
+        {
+        case LAST_GRAPH: graphFileTypeString = "LastGraph"; break;
+        case FASTG: graphFileTypeString = "FASTG"; break;
+        case GFA: graphFileTypeString = "GFA"; break;
+        case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
+        }
+
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, graphFileType + " file?",
-                                      "This file does not appear to be a " + graphFileType + " file."
-                                                                                             "\nDo you want to load it as a " + graphFileType + " file anyway?",
+                                      "This file does not appear to be a " + graphFileTypeString + " file."
+                                      "\nDo you want to load it as a " + graphFileTypeString + " file anyway?",
                                       QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::No)
             return;
@@ -259,11 +273,13 @@ void MainWindow::loadGraph2(QString graphFileType, QString fullFileName)
 
     try
     {
-        if (graphFileType == "LastGraph")
+        if (graphFileType == LAST_GRAPH)
             buildDeBruijnGraphFromLastGraph(fullFileName);
-        else if (graphFileType == "FASTG")
+        else if (graphFileType == FASTG)
             buildDeBruijnGraphFromFastg(fullFileName);
-        else if (graphFileType == "Trinity.fasta")
+        else if (graphFileType == GFA)
+            buildDeBruijnGraphFromGfa(fullFileName);
+        else if (graphFileType == TRINITY)
             buildDeBruijnGraphFromTrinityFasta(fullFileName);
 
         enableDisableUiElements(GRAPH_LOADED);
@@ -350,6 +366,20 @@ void MainWindow::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
     if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
         throw "load error";
+}
+
+
+
+void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
+{
+    MyProgressDialog progress(this, "Loading GFA file...", false);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+
+
+
+
+
 }
 
 
@@ -778,6 +808,12 @@ bool MainWindow::checkFileIsLastGraph(QString fullFileName)
 bool MainWindow::checkFileIsFastG(QString fullFileName)
 {
     return checkFirstLineOfFile(fullFileName, ">NODE");
+}
+
+//Cursory look to see if file appears to be a GFA file.
+bool MainWindow::checkFileIsGfa(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "S\\s+\\d+");
 }
 
 //Cursory look to see if file appears to be a Trinity.fasta file.

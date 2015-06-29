@@ -74,11 +74,13 @@ private:
     void setSceneRectangle();
     bool checkFileIsLastGraph(QString fullFileName);
     bool checkFileIsFastG(QString fullFileName);
+    bool checkFileIsGfa(QString fullFileName);
     bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
-    void loadGraph2(QString graphFileType, QString filename);
+    void loadGraph2(GraphFileType graphFileType, QString filename);
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
+    void buildDeBruijnGraphFromGfa(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
