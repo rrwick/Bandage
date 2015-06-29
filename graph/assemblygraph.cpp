@@ -293,7 +293,7 @@ void AssemblyGraph::determineGraphInfo()
             m_longestContig = nodeLength;
 
         //Only add up the length for positive nodes
-        if (i.value()->m_number > 0)
+        if (i.value()->isPositiveNode())
         {
             totalLength += nodeLength;
             ++nodeCount;

@@ -226,27 +226,42 @@ void GraphicsItemNode::setNodeColour()
 
     case RANDOM_COLOURS:
     {
-        //Make a colour with a pseudo-random hue.  The absolute
-        //value of the node number is used so positive/negative
-        //pairs have the same hue.
-        long long randomNumberFromNodeNumber = g_randomColourFactor * llabs(m_deBruijnNode->m_number);
-        long long randomHue = llabs(randomNumberFromNodeNumber) % 360;
+        //Make a colour with a random hue.  Assign a colour to both this node and
+        //it complement so their hue matches.
+        int hue = rand() % 360;
 
-        int hue = randomHue;
-        int saturation;
-        int value;
-        if (usePositiveNodeColour())
+        int posSaturation = 200;
+        int posValue = 190;
+        QColor posColour;
+        posColour.setHsv(hue, posSaturation, posValue);
+        posColour.setAlpha(g_settings->randomColourOpacity);
+
+        int negSaturation = 130;
+        int negValue = 150;
+        QColor negColour;
+        negColour.setHsv(hue, negSaturation, negValue);
+        negColour.setAlpha(g_settings->randomColourOpacity);
+
+        QColor colour1, colour2;
+        if (m_deBruijnNode->isPositiveNode())
         {
-            saturation = 200;
-            value = 190;
+            colour1 = posColour;
+            colour2 = negColour;
         }
         else
         {
-            saturation = 130;
-            value = 150;
+            colour1 = negColour;
+            colour2 = posColour;
         }
-        m_colour.setHsv(hue, saturation, value);
-        m_colour.setAlpha(g_settings->randomColourOpacity);
+
+        m_colour = colour1;
+        DeBruijnNode * revCompNode = m_deBruijnNode->m_reverseComplement;
+        if (revCompNode != 0)
+        {
+            GraphicsItemNode * revCompGraphNode = revCompNode->m_graphicsItemNode;
+            if (revCompGraphNode != 0)
+                revCompGraphNode->m_colour = colour2;
+        }
         break;
     }
 
@@ -541,7 +556,7 @@ double GraphicsItemNode::distance(QPointF p1, QPointF p2) const
 
 bool GraphicsItemNode::usePositiveNodeColour()
 {
-    return !m_hasArrow || m_deBruijnNode->m_number > 0;
+    return !m_hasArrow || m_deBruijnNode->isPositiveNode();
 }
 
 
@@ -574,7 +589,7 @@ QString GraphicsItemNode::getNodeText()
     if (g_settings->displayNodeCustomLabels && m_deBruijnNode->m_customLabel.length() > 0)
         nodeText += m_deBruijnNode->m_customLabel + "\n";
     if (g_settings->displayNodeNumbers)
-        nodeText += m_deBruijnNode->getNodeNumberText(true) + "\n";
+        nodeText += m_deBruijnNode->m_name + "\n";
     if (g_settings->displayNodeLengths)
         nodeText += formatIntForDisplay(m_deBruijnNode->m_length) + " bp\n";
     if (g_settings->displayNodeCoverages)

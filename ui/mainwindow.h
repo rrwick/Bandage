@@ -70,7 +70,6 @@ private:
     double getGraphicsItemNodeWidth(double coverageRelativeToMean);
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph = 0);
     std::vector<DeBruijnNode *> getNodesFromBlastHits();
-    void setRandomColourFactor();
     void setSceneRectangle();
     bool checkFileIsLastGraph(QString fullFileName);
     bool checkFileIsFastG(QString fullFileName);

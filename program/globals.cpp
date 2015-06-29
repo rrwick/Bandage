@@ -27,7 +27,6 @@
 Settings * g_settings;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
-int g_randomColourFactor;
 BlastSearch * g_blastSearch;
 QString g_tempDirectory;
 AssemblyGraph * g_assemblyGraph;

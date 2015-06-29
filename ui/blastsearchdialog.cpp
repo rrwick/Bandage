@@ -197,7 +197,7 @@ void BlastSearchDialog::fillHitsTable()
     for (int i = 0; i < hitCount; ++i)
     {
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
-        model->setItem(i, 0, new QStandardItem(hit->m_node->getNodeNumberText(true)));
+        model->setItem(i, 0, new QStandardItem(hit->m_node->m_name));
         model->setItem(i, 1, new QStandardItem(formatIntForDisplay(hit->m_node->m_length)));
         model->setItem(i, 2, new QStandardItem(formatIntForDisplay(hit->m_nodeStart)));
         model->setItem(i, 3, new QStandardItem(formatIntForDisplay(hit->m_nodeEnd)));

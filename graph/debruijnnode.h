@@ -34,10 +34,10 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(long long number, int length, double coverage, QByteArray sequence);
+    DeBruijnNode(QString name, bool direction, int length, double coverage, QByteArray sequence);
     ~DeBruijnNode();
 
-    long long m_number;
+    QString m_name;
     int m_length;
     double m_coverage;
     double m_coverageRelativeToMeanDrawnCoverage;
@@ -78,10 +78,11 @@ public:
     bool thisNodeOrReverseComplementHasBlastHits();
     std::vector<BlastHitPart> getBlastHitPartsForThisNode();
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
-    QString getNodeNumberText(bool commas);
     std::vector<DeBruijnNode *> getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths,
                                                          bool includeReverseComplements);
     bool doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement);
+    bool isPositiveNode();
+    bool isNegativeNode();
 };
 
 #endif // DEBRUIJNNODE_H

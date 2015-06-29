@@ -63,16 +63,16 @@ bool DeBruijnEdge::edgeIsVisible()
 
         //If both nodes have a positive number, show this edge, and not
         //the reverse complement where both nodes are negative.
-        if (m_startingNode->m_number > 0 && m_endingNode->m_number > 0)
+        if (m_startingNode->isPositiveNode() && m_endingNode->isPositiveNode())
             return true;
-        if (m_startingNode->m_number < 0 && m_endingNode->m_number < 0)
+        if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode() < 0)
             return false;
 
         //If the code got here, then one node is positive and the other
-        //negative.  In this case, just choose the one with the larger
-        //starting node - an arbitrary choice, but at least it is
+        //negative.  In this case, just choose the one with the first name
+        //alphabetically - an arbitrary choice, but at least it is
         //consistent.
-        return (m_startingNode->m_number > m_reverseComplement->m_startingNode->m_number);
+        return (m_startingNode->m_name > m_reverseComplement->m_startingNode->m_name);
     }
 }
 

@@ -39,7 +39,6 @@ enum GraphFileType {LAST_GRAPH, FASTG, GFA, TRINITY};
 extern Settings * g_settings;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
-extern int g_randomColourFactor;
 extern BlastSearch * g_blastSearch;
 extern QString g_tempDirectory;
 extern AssemblyGraph * g_assemblyGraph;

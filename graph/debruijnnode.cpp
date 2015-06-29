@@ -27,8 +27,7 @@
 #include <set>
 #include <QApplication>
 
-DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteArray sequence) :
-    m_number(number),
+DeBruijnNode::DeBruijnNode(QString name, bool direction, int length, double coverage, QByteArray sequence) :
     m_length(length),
     m_coverage(coverage),
     m_coverageRelativeToMeanDrawnCoverage(1.0),
@@ -42,6 +41,10 @@ DeBruijnNode::DeBruijnNode(long long number, int length, double coverage, QByteA
     m_highestDistanceInNeighbourSearch(0),
     m_customColour(QColor(190, 190, 190))
 {
+    if (direction)
+        m_name = name + "+";
+    else
+        m_name = name + "i";
 }
 
 
@@ -296,28 +299,13 @@ QByteArray DeBruijnNode::getFasta(bool useTrinityNames)
 {
     QByteArray fasta = ">";
 
-    //If the node came from a Trinity graph, create a
-    //FASTA header that matches the Trinity style.
-    //This requires useTrinityNames to be set, because
-    //in some situations (like when making a BLAST db),
-    //we don't want to use the Trinity style.
-    if (g_assemblyGraph->m_graphFileType == TRINITY && useTrinityNames)
-    {
-        fasta += getTrinityNodeNameFromFullNodeNumber(m_number);
-        fasta += "_len=";
-        fasta += QString::number(m_length);
-        fasta += "\n";
-    }
-    else
-    {
-        fasta += "NODE_";
-        fasta += QString::number(m_number);
-        fasta += "_length_";
-        fasta += QString::number(m_length);
-        fasta += "_cov_";
-        fasta += QString::number(m_coverage);
-        fasta += "\n";
-    }
+    fasta += "NODE_";
+    fasta += m_name;
+    fasta += "_length_";
+    fasta += QString::number(m_length);
+    fasta += "_cov_";
+    fasta += QString::number(m_coverage);
+    fasta += "\n";
 
     int charactersOnLine = 0;
     for (int i = 0; i < m_sequence.length(); ++i)
@@ -359,7 +347,7 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
             otherNode->m_drawn = true;
         else //single mode
         {
-            if (otherNode->m_number > 0)
+            if (otherNode->isPositiveNode())
                 otherNode->m_drawn = true;
             else
                 otherNode->m_reverseComplement->m_drawn = true;
@@ -396,7 +384,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 {
     DeBruijnNode * positiveNode = this;
     DeBruijnNode * negativeNode = m_reverseComplement;
-    if (m_number < 0)
+    if (isNegativeNode() < 0)
         std::swap(positiveNode, negativeNode);
 
     //Look for blast hit parts on both the positive and the negative node,
@@ -418,13 +406,15 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 }
 
 
-QString DeBruijnNode::getNodeNumberText(bool commas)
+
+bool DeBruijnNode::isPositiveNode()
 {
-    if (g_assemblyGraph->m_graphFileType == TRINITY)
-        return getTrinityNodeNameFromFullNodeNumber(m_number);
-    else if (commas)
-        return formatIntForDisplay(m_number);
-    else
-        return QString::number(m_number);
+    QChar lastChar = m_name.at(m_name.length() - 1);
+    return lastChar == '+';
 }
 
+bool DeBruijnNode::isNegativeNode()
+{
+    QChar lastChar = m_name.at(m_name.length() - 1);
+    return lastChar == '-';
+}

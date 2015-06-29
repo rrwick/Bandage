@@ -73,7 +73,6 @@ MainWindow::MainWindow(QString filename) :
     ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
 
     srand(time(NULL));
-    setRandomColourFactor();
 
     //Make a temp directory to hold the BLAST files.
     g_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
@@ -742,7 +741,7 @@ void MainWindow::pointEachNodeToItsReverseComplement()
         i.next();
         DeBruijnNode * positiveNode = i.value();
 
-        if (positiveNode->m_number > 0)
+        if (positiveNode->isPositiveNode())
         {
             DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[-(positiveNode->m_number)];
             if (negativeNode != 0)
@@ -766,7 +765,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
 
             //If double mode is off, only positive nodes are drawn.  If it's
             //on, all nodes are drawn.
-            if (i.value()->m_number > 0 || g_settings->doubleMode)
+            if (i.value()->isPositiveNode() || g_settings->doubleMode)
                 i.value()->m_drawn = true;
         }
     }
@@ -786,7 +785,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
             DeBruijnNode * node = startingNodes[i];
 
             //If we are in single mode, make sure that each node is positive.
-            if (!g_settings->doubleMode && node->m_number < 0)
+            if (!g_settings->doubleMode && node->isNegativeNode())
                 node = node->m_reverseComplement;
 
             node->m_drawn = true;
@@ -943,7 +942,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
     for (int i = 0; i < selectedNodeCount; ++i)
     {
-        selectedNodeListText += selectedNodes[i]->getNodeNumberText(false);  //I don't want commas in the numbers - that will mess up comma-delimited lists
+        selectedNodeListText += selectedNodes[i]->m_name;  //I don't want commas in the numbers - that will mess up comma-delimited lists
         if (i != int(selectedNodes.size()) - 1)
             selectedNodeListText += ", ";
 
@@ -985,9 +984,9 @@ QString MainWindow::getSelectedEdgeListText()
     QString edgeText;
     for (size_t i = 0; i < selectedEdges.size(); ++i)
     {
-        edgeText += selectedEdges[i]->m_startingNode->getNodeNumberText(true);
+        edgeText += selectedEdges[i]->m_startingNode->m_name;
         edgeText += " to ";
-        edgeText += selectedEdges[i]->m_endingNode->getNodeNumberText(true);
+        edgeText += selectedEdges[i]->m_endingNode->m_name;
         if (i != selectedEdges.size() - 1)
             edgeText += ", ";
     }
@@ -1060,7 +1059,6 @@ void MainWindow::drawGraph()
 
     g_settings->doubleMode = ui->doubleNodesRadioButton->isChecked();
     resetScene();
-    setRandomColourFactor();
     g_assemblyGraph->clearOgdfGraphAndResetNodes();
     buildOgdfGraphFromNodesAndEdges();
     layoutGraph();
@@ -1377,7 +1375,6 @@ void MainWindow::switchColourScheme()
     switch (ui->coloursComboBox->currentIndex())
     {
     case 0:
-        setRandomColourFactor();
         g_settings->nodeColourScheme = RANDOM_COLOURS;
         ui->contiguityWidget->setVisible(false);
         break;
@@ -1390,7 +1387,6 @@ void MainWindow::switchColourScheme()
         ui->contiguityWidget->setVisible(false);
         break;
     case 3:
-        setRandomColourFactor();
         g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
@@ -1729,17 +1725,6 @@ void MainWindow::selectUserSpecifiedNodes()
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
-}
-
-
-//Choose a random colour factor, but not one too close to a multiple of
-//60, as 360 is used in the random hue mod fuction.
-void MainWindow::setRandomColourFactor()
-{
-    do
-    {
-        g_randomColourFactor = rand() % 1000;
-    } while (g_randomColourFactor % 60 < 15 || g_randomColourFactor % 60 > 45);
 }
 
 
