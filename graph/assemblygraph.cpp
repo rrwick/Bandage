@@ -67,19 +67,22 @@ void AssemblyGraph::cleanUp()
 //This function makes a double edge: in one direction for the given nodes
 //and the opposite direction for their reverse complements.  It adds the
 //new edges to the vector here and to the nodes themselves.
-void AssemblyGraph::createDeBruijnEdge(QString node1Name, long long node2Name)
+void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name)
 {
+    QString node1Opposite = getOppositeNodeName(node1Name);
+    QString node2Opposite = getOppositeNodeName(node2Name);
+
     //Quit if any of the nodes don't exist.
-    if (!m_deBruijnGraphNodes.contains(node1Number) ||
-            !m_deBruijnGraphNodes.contains(node2Number) ||
-            !m_deBruijnGraphNodes.contains(-node1Number) ||
-            !m_deBruijnGraphNodes.contains(-node2Number))
+    if (!m_deBruijnGraphNodes.contains(node1Name) ||
+            !m_deBruijnGraphNodes.contains(node2Name) ||
+            !m_deBruijnGraphNodes.contains(node1Opposite) ||
+            !m_deBruijnGraphNodes.contains(node2Opposite))
         return;
 
-    DeBruijnNode * node1 = m_deBruijnGraphNodes[node1Number];
-    DeBruijnNode * node2 = m_deBruijnGraphNodes[node2Number];
-    DeBruijnNode * negNode1 = m_deBruijnGraphNodes[-node1Number];
-    DeBruijnNode * negNode2 = m_deBruijnGraphNodes[-node2Number];
+    DeBruijnNode * node1 = m_deBruijnGraphNodes[node1Name];
+    DeBruijnNode * node2 = m_deBruijnGraphNodes[node2Name];
+    DeBruijnNode * negNode1 = m_deBruijnGraphNodes[node1Opposite];
+    DeBruijnNode * negNode2 = m_deBruijnGraphNodes[node2Opposite];
 
     //Quit if the edge already exists
     for (size_t i = 0; i < node1->m_edges.size(); ++i)

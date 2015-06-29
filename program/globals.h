@@ -47,6 +47,8 @@ QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay);
 
+QString getOppositeNodeName(QString nodeName);
+
 
 void emptyTempDirectory();
 

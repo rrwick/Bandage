@@ -121,10 +121,10 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
         if (nodeStart > nodeEnd)
             continue;
 
-        long long nodeNumber = getNodeNumberFromString(nodeLabel);
+        QString nodeName = getNodeNameFromString(nodeLabel);
         DeBruijnNode * node;
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
-            node = g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber];
+        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+            node = g_assemblyGraph->m_deBruijnGraphNodes[nodeName];
         else
             return;
 
@@ -133,7 +133,7 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
             return;
 
         g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
-                                                        query, queryStart, queryEnd, eValue));
+                                                 query, queryStart, queryEnd, eValue));
 
         ++(query->m_hits);
     }
@@ -143,10 +143,10 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
 }
 
 
-long long BlastSearchDialog::getNodeNumberFromString(QString nodeString)
+QString BlastSearchDialog::getNodeNameFromString(QString nodeString)
 {
     QStringList nodeStringParts = nodeString.split("_");
-    return nodeStringParts[1].toLongLong();
+    return nodeStringParts[1];
 }
 
 
@@ -262,7 +262,7 @@ void BlastSearchDialog::buildBlastDatabase1()
 
     QApplication::processEvents();
 
-    emit createAllNodesFasta(g_tempDirectory, false, false);
+    emit createAllNodesFasta(g_tempDirectory, false);
 }
 
 

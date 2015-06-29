@@ -922,28 +922,46 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
 bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
 {
-    long long aStart = llabs(a->m_startingNode->m_number);
-    long long bStart = llabs(b->m_startingNode->m_number);
-    long long positiveAStart = llabs(aStart);
-    long long positiveBStart = llabs(bStart);
-    long long aEnd = llabs(a->m_endingNode->m_number);
-    long long bEnd = llabs(b->m_endingNode->m_number);
-    long long positiveAEnd = llabs(aEnd);
-    long long positiveBEnd = llabs(bEnd);
+    QString aStart = a->m_startingNode->m_name;
+    QString bStart = b->m_startingNode->m_name;
+    QString aStartNoSign = aStart;
+    aStartNoSign.chop(1);
+    QString bStartNoSign = bStart;
+    bStartNoSign.chop(1);
+    bool ok1;
+    long long aStartNumber = aStartNoSign.toLongLong(&ok1);
+    bool ok2;
+    long long bStartNumber = bStartNoSign.toLongLong(&ok2);
 
-    if (positiveAStart != positiveBStart)
-        return positiveAStart < positiveBStart;
+    QString aEnd = a->m_endingNode->m_name;
+    QString bEnd = b->m_endingNode->m_name;
+    QString aEndNoSign = aEnd;
+    aEndNoSign.chop(1);
+    QString bEndNoSign = bEnd;
+    bEndNoSign.chop(1);
+    bool ok3;
+    long long aEndNumber = aEndNoSign.toLongLong(&ok3);
+    bool ok4;
+    long long bEndNumber = bEndNoSign.toLongLong(&ok4);
 
-    if (aStart == bStart)
-        return positiveAEnd < positiveBEnd;
 
+    //If the node names are essentially numbers, then sort them as numbers.
+    if (ok1 && ok2 && ok3 && ok4)
+    {
+        if (aStartNumber != bStartNumber)
+            return aStartNumber < bStartNumber;
+
+        if (aStartNumber == bStartNumber)
+            return aEndNumber < bEndNumber;
+    }
+
+    //If the node names are strings, then just sort them as strings.
     return aStart < bStart;
 }
 
 QString MainWindow::getSelectedEdgeListText()
 {
     std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
-
 
     std::sort(selectedEdges.begin(), selectedEdges.end(), compareEdgePointers);
 
@@ -1085,15 +1103,12 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     QStringList nodesList = nodesString.split(",");
     for (int i = 0; i < nodesList.size(); ++i)
     {
-        long long nodeNumber;
-        if (nodesList.at(i) == "")
+        QString nodeName = nodesList.at(i);
+        if (nodeName == "")
             continue;
-        if (g_assemblyGraph->m_graphFileType == TRINITY)
-            nodeNumber = getFullTrinityNodeNumberFromName(nodesList.at(i));
-        else
-            nodeNumber = nodesList.at(i).toLongLong();
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeNumber))
-            returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeNumber]);
+
+        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+            returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
         else if (nodesNotInGraph != 0)
             nodesNotInGraph->push_back(nodesList.at(i).trimmed());
     }
@@ -1632,10 +1647,9 @@ void MainWindow::selectUserSpecifiedNodes()
     std::vector<QString> nodesNotInGraph;
     std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
 
-
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
-    std::vector<int> nodesNotFound;
+    std::vector<QString> nodesNotFound;
     int foundNodes = 0;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
@@ -1652,7 +1666,7 @@ void MainWindow::selectUserSpecifiedNodes()
             ++foundNodes;
         }
         else
-            nodesNotFound.push_back(nodesToSelect[i]->m_number);
+            nodesNotFound.push_back(nodesToSelect[i]->m_name);
     }
 
     if (foundNodes > 0)
@@ -1679,7 +1693,7 @@ void MainWindow::selectUserSpecifiedNodes()
             errorMessage += "The following nodes are in the graph but not currently displayed:\n";
             for (size_t i = 0; i < nodesNotFound.size(); ++i)
             {
-                errorMessage += QString::number(nodesNotFound[i]);
+                errorMessage += nodesNotFound[i];
                 if (i != nodesNotFound.size() - 1)
                     errorMessage += ", ";
             }
@@ -1719,7 +1733,7 @@ void MainWindow::openBlastSearchDialog()
 {
     BlastSearchDialog blastSearchDialog(this);
 
-    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool, bool)), this, SLOT(saveAllNodesToFasta(QString, bool, bool)));
+    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool)), this, SLOT(saveAllNodesToFasta(QString, bool)));
     connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
 
     blastSearchDialog.exec();
@@ -1760,7 +1774,7 @@ void MainWindow::blastTargetChanged()
 
 
 
-void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool useTrinityNames)
+void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
 {
     QFile file(path + "all_nodes.fasta");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -2170,15 +2184,3 @@ void MainWindow::openBandageUrl()
 }
 
 
-//The function returns a node name, replacing "+" at the end with "-" or
-//vice-versa.
-QString MainWindow::getOppositeNodeName(QString nodeName)
-{
-    QChar lastChar = nodeName.at(edgeNode.size() - 1);
-    nodeName.chop(1);
-
-    if (lastChar == '-')
-        return nodeName + "+";
-    else
-        return nodeName + "-";
-}

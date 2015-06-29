@@ -30,13 +30,23 @@ MyGraphicsScene::MyGraphicsScene(QObject *parent) :
 
 bool compareNodePointers(DeBruijnNode * a, DeBruijnNode * b)
 {
-    long long aNum = a->m_number;
-    long long bNum = b->m_number;
+    QString aName = a->m_name;
+    QString bName = b->m_name;
 
-    if (llabs(aNum) != llabs(bNum))
-        return (llabs(aNum) < llabs(bNum));
+    QString aName2 = aName;
+    aName2.chop(1);
+    QString bName2 = aName;
+    bName2.chop(1);
 
-    return aNum > bNum;
+    bool ok1, ok2;
+    long long aNum = aName2.toLongLong(&ok1);
+    long long bNum = bName2.toLongLong(&ok2);
+
+    //If the node names are essentially numbers, then sort them as numbers
+    if (ok1 && ok2 && aNum != bNum)
+        return aNum < bNum;
+
+    return aName > bName;
 }
 
 

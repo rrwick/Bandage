@@ -88,7 +88,6 @@ private:
     void pointEachNodeToItsReverseComplement();
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
     QString convertNormalNumberStringToBandageNodeName(QString number);
-    QString getOppositeNodeName(QString nodeName);
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -114,7 +113,7 @@ private slots:
     void graphLayoutFinished();
     void openBlastSearchDialog();
     void blastTargetChanged();
-    void saveAllNodesToFasta(QString path, bool includeEmptyNodes, bool useTrinityNames);
+    void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
     void showHidePanels();
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();

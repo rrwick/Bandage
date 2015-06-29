@@ -125,3 +125,17 @@ void readFastaFile(QString filename, std::vector<QString> * names, std::vector<Q
         inputFile.close();
     }
 }
+
+
+//The function returns a node name, replacing "+" at the end with "-" or
+//vice-versa.
+QString getOppositeNodeName(QString nodeName)
+{
+    QChar lastChar = nodeName.at(nodeName.size() - 1);
+    nodeName.chop(1);
+
+    if (lastChar == '-')
+        return nodeName + "+";
+    else
+        return nodeName + "-";
+}

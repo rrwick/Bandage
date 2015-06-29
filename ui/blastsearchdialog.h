@@ -42,7 +42,7 @@ private:
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
 
-    long long getNodeNumberFromString(QString nodeString);
+    QString getNodeNameFromString(QString nodeString);
     void setUiStep(int step);
     void clearBlastHits();
     void setInfoTexts();
@@ -60,7 +60,7 @@ private slots:
     void fillHitsTable();
 
 signals:
-    void createAllNodesFasta(QString path, bool includeEmptyNodes, bool useTrinityNames);
+    void createAllNodesFasta(QString path, bool includeEmptyNodes);
 
 };
 
