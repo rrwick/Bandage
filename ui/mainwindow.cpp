@@ -908,7 +908,13 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
     for (int i = 0; i < selectedNodeCount; ++i)
     {
-        selectedNodeListText += selectedNodes[i]->m_name;  //I don't want commas in the numbers - that will mess up comma-delimited lists
+        QString nodeName = selectedNodes[i]->m_name;
+
+        //If we are in single mode, don't include +/i in the node name
+        if (!g_settings->doubleMode)
+            nodeName.chop(1);
+
+        selectedNodeListText += nodeName;
         if (i != int(selectedNodes.size()) - 1)
             selectedNodeListText += ", ";
 
@@ -1107,10 +1113,41 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
         if (nodeName == "")
             continue;
 
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-            returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
-        else if (nodesNotInGraph != 0)
-            nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+        //If the node name ends in +/-, then we assume the user was specifying the exact
+        //node in the pair.  If the node name does not end in +/-, then we assume the
+        //user is asking for either node in the pair.
+        QChar lastChar = nodeName.at(nodeName.length() - 1);
+        if (lastChar == '+' || lastChar == '-')
+        {
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
+            else if (nodesNotInGraph != 0)
+                nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+        }
+        else
+        {
+            QString posNodeName = nodeName + "+";
+            QString negNodeName = nodeName + "-";
+
+            bool posNodeFound = false;
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(posNodeName))
+            {
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[posNodeName]);
+                posNodeFound = true;
+            }
+
+            bool negNodeFound = false;
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(negNodeName))
+            {
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[negNodeName]);
+                negNodeFound = true;
+            }
+
+            if (!posNodeFound && !negNodeFound && nodesNotInGraph != 0)
+                nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+        }
+
+
     }
 
     return returnVector;
