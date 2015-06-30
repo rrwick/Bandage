@@ -268,9 +268,6 @@
                 <property name="text">
                  <string>Scope:</string>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
                </widget>
               </item>
               <item>
@@ -346,9 +343,6 @@
                 <property name="text">
                  <string>Node(s):</string>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
                </widget>
               </item>
               <item row="0" column="2">
@@ -403,6 +397,9 @@
                    <property name="text">
                     <string>Exact</string>
                    </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -422,9 +419,6 @@
                 </property>
                 <property name="text">
                  <string>Match:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -475,9 +469,6 @@
                 </property>
                 <property name="text">
                  <string>Distance:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -541,9 +532,6 @@
                 </property>
                 <property name="text">
                  <string>Style:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
@@ -1300,7 +1288,7 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <layout class="QGridLayout" name="gridLayout_2">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -1313,7 +1301,52 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
+              <item row="1" column="0">
+               <widget class="InfoTextWidget" name="selectionSearchNodesMatchTypeInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QRadioButton" name="selectionSearchNodesExactMatchRadioButton">
+                <property name="text">
+                 <string>Exact</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_12">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Node(s):</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
                <widget class="InfoTextWidget" name="selectionSearchInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1329,26 +1362,24 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="label_12">
+              <item row="1" column="1">
+               <widget class="QLabel" name="label_16">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
                 <property name="text">
-                 <string>Node(s):</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 <string>Match:</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="3">
+               <widget class="QRadioButton" name="selectionSearchNodesPartialMatchRadioButton">
+                <property name="text">
+                 <string>Partial</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2" colspan="2">
                <widget class="QLineEdit" name="selectionSearchNodesLineEdit">
                 <property name="enabled">
                  <bool>true</bool>

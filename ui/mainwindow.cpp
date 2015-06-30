@@ -740,7 +740,7 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
         std::vector<DeBruijnNode *> startingNodes;
 
         if (g_settings->graphScope == AROUND_NODE)
-            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, ui->startingNodesExactMatchRadioButton->isChecked());
         else if (g_settings->graphScope == AROUND_BLAST_HITS)
             startingNodes = getNodesFromBlastHits();
 
@@ -1026,7 +1026,7 @@ void MainWindow::drawGraph()
 {
     if (g_settings->graphScope == AROUND_NODE)
     {
-        std::vector<DeBruijnNode *> startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit);
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, ui->startingNodesExactMatchRadioButton->isChecked());
 
         if (startingNodes.size() == 0)
         {
@@ -1100,13 +1100,26 @@ void MainWindow::resetScene()
 }
 
 
-std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdit, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph)
 {
-    std::vector<DeBruijnNode *> returnVector;
-
     QString nodesString = lineEdit->text();
     nodesString = nodesString.simplified();
     QStringList nodesList = nodesString.split(",");
+
+    if (exactMatch)
+        return getNodesFromListExact(nodesList, nodesNotInGraph);
+    else
+        return getNodesFromListPartial(nodesList, nodesNotInGraph);
+}
+
+
+//Given a list of node names (as strings), this function will return all nodes which match
+//those names exactly.  The last +/- on the end of the node name is optional - if missing
+//both + and - nodes will be returned.
+std::vector<DeBruijnNode *> MainWindow::getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
     for (int i = 0; i < nodesList.size(); ++i)
     {
         QString nodeName = nodesList.at(i);
@@ -1146,8 +1159,37 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
             if (!posNodeFound && !negNodeFound && nodesNotInGraph != 0)
                 nodesNotInGraph->push_back(nodesList.at(i).trimmed());
         }
+    }
 
+    return returnVector;
+}
 
+std::vector<DeBruijnNode *> MainWindow::getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    for (int i = 0; i < nodesList.size(); ++i)
+    {
+        QString queryName = nodesList.at(i);
+        if (queryName == "")
+            continue;
+
+        bool found = false;
+        QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (j.hasNext())
+        {
+            j.next();
+            QString nodeName = j.value()->m_name;
+
+            if (nodeName.contains(queryName))
+            {
+                found = true;
+                returnVector.push_back(j.value());
+            }
+        }
+
+        if (!found && nodesNotInGraph != 0)
+            nodesNotInGraph->push_back(queryName.trimmed());
     }
 
     return returnVector;
@@ -1682,7 +1724,9 @@ void MainWindow::selectUserSpecifiedNodes()
     m_scene->blockSignals(true);
     m_scene->clearSelection();
     std::vector<QString> nodesNotInGraph;
-    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit, &nodesNotInGraph);
+    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
+                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
+                                                                     &nodesNotInGraph);
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
@@ -1854,10 +1898,21 @@ void MainWindow::setInfoTexts()
                                         "<li>'Around BLAST hits': if you have conducted a BLAST search "
                                         "on this graph, this option will draw the region(s) of the graph "
                                         "around nodes that contain hits.</li></ul>");
-    ui->startingNodesInfoText->setInfoText("Enter a comma-delimited list of node numbers here. This will "
-                                           "define which regions of the graph will be drawn.");
-    ui->nodeStyleInfoText->setInfoText("'Single' mode will only draw nodes with positive numbers, not their "
-                                       "complement nodes with negative numbers. This produces a simpler graph visualisation, but "
+    ui->startingNodesInfoText->setInfoText("Enter a comma-delimited list of node names here. This will "
+                                           "define which regions of the graph will be drawn.<br><br>"
+                                           "When in double mode, you can include '+' or '-' at the end "
+                                           "of the node name to specify which strand to draw. If you do "
+                                           "not include '+' or '-', then nodes for both strands will be drawn.");
+    ui->startingNodesMatchTypeInfoText->setInfoText("When 'Exact' match is used, nodes will only be drawn if their name "
+                                                    "exactly matches your input above.<br><br>"
+                                                    "When 'Partial' match is used, nodes will be drawn if any part of "
+                                                    "their name matches your input above.");
+    ui->selectionSearchNodesMatchTypeInfoText->setInfoText("When 'Exact' match is used, nodes will only be selected if "
+                                                           "their name exactly matches your input above.<br><br>"
+                                                           "When 'Partial' match is used, nodes will be selected if any "
+                                                           "part of their name matches your input above.");
+    ui->nodeStyleInfoText->setInfoText("'Single' mode will only one node for each positive/negative pair. "
+                                       "This produces a simpler graph visualisation, but "
                                        "strand-specific sequences and directionality will be less clear.<br><br>"
                                        "'Double' mode will draw both nodes and their complement nodes. The nodes "
                                        "will show directionality with an arrow head. They will initially be "
