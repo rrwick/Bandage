@@ -1,5 +1,7 @@
 #include "image.h"
 #include "command_line/commandcommandlinefunctions.h"
+#include "../program/globals.h"
+#include "../ui/mygraphicsscene.h"
 
 int bandageImage(QApplication * a, QStringList arguments)
 {
@@ -32,8 +34,7 @@ int bandageImage(QApplication * a, QStringList arguments)
     if (!loadSuccess)
         return 1;
 
-
-
+    MyGraphicsScene scene;
 
 
 

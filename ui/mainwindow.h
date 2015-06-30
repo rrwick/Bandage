@@ -74,7 +74,6 @@ private:
     std::vector<DeBruijnNode *> getNodesFromBlastHits();
     void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);
-    void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
     void enableDisableUiElements(UiState uiState);
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);

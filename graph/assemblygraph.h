@@ -78,6 +78,7 @@ public:
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
 
     bool loadGraphFromFile(QString filename);
+    void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

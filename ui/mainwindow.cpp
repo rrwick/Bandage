@@ -308,68 +308,6 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
 
 
 
-
-void MainWindow::buildOgdfGraphFromNodesAndEdges()
-{
-    if (g_settings->graphScope == WHOLE_GRAPH)
-    {
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-
-            //If double mode is off, only positive nodes are drawn.  If it's
-            //on, all nodes are drawn.
-            if (i.value()->isPositiveNode() || g_settings->doubleMode)
-                i.value()->m_drawn = true;
-        }
-    }
-    else //The scope is either around specified nodes or around nodes with BLAST hits
-    {
-        std::vector<DeBruijnNode *> startingNodes;
-
-        if (g_settings->graphScope == AROUND_NODE)
-            startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, ui->startingNodesExactMatchRadioButton->isChecked());
-        else if (g_settings->graphScope == AROUND_BLAST_HITS)
-            startingNodes = getNodesFromBlastHits();
-
-        int nodeDistance = ui->nodeDistanceSpinBox->value();
-
-        for (size_t i = 0; i < startingNodes.size(); ++i)
-        {
-            DeBruijnNode * node = startingNodes[i];
-
-            //If we are in single mode, make sure that each node is positive.
-            if (!g_settings->doubleMode && node->isNegativeNode())
-                node = node->m_reverseComplement;
-
-            node->m_drawn = true;
-            node->m_startingNode = true;
-            node->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
-        }
-    }
-
-    //First loop through each node, adding it to OGDF if it is drawn.
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (i.value()->m_drawn)
-            i.value()->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
-    }
-
-    //Then loop through each determining its drawn status and adding it
-    //to OGDF if it is drawn.
-    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
-    {
-        g_assemblyGraph->m_deBruijnGraphEdges[i]->determineIfDrawn();
-        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
-            g_assemblyGraph->m_deBruijnGraphEdges[i]->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
-    }
-}
-
-
-
 void MainWindow::displayGraphDetails()
 {
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_nodeCount));
@@ -609,7 +547,14 @@ void MainWindow::drawGraph()
     g_settings->doubleMode = ui->doubleNodesRadioButton->isChecked();
     resetScene();
     g_assemblyGraph->clearOgdfGraphAndResetNodes();
-    buildOgdfGraphFromNodesAndEdges();
+
+    std::vector<DeBruijnNode *> startingNodes;
+    if (g_settings->graphScope == AROUND_NODE)
+        startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, ui->startingNodesExactMatchRadioButton->isChecked());
+    else if (g_settings->graphScope == AROUND_BLAST_HITS)
+        startingNodes = getNodesFromBlastHits();
+
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, ui->nodeDistanceSpinBox->value());
     layoutGraph();
 }
 
