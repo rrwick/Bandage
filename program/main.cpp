@@ -19,7 +19,20 @@
 #include "../ui/mainwindow.h"
 #include <QApplication>
 #include <QStringList>
+#include <QString>
 #include <QCommandLineParser>
+#include <QTextStream>
+#include "command_line/load.h"
+#include "command_line/contiguous.h"
+
+void printUsage()
+{
+    QTextStream(stdout) << "" << endl;
+    QTextStream(stdout) << "Usage:   Bandage <command> [options]" << endl << endl;
+    QTextStream(stdout) << "Command: <blank>      launch Bandage GUI" << endl;
+    QTextStream(stdout) << "         load         launch Bandage GUI and load graph file" << endl;
+    QTextStream(stdout) << "         contiguous   extract all sequence contiguous with a target sequence" << endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -27,21 +40,59 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("Bandage");
     QApplication::setApplicationVersion("0.6.0");
 
-    QCommandLineParser parser;
-    parser.setApplicationDescription("Bandage");
-    parser.addHelpOption();
-    parser.addVersionOption();
+    QStringList arguments = QCoreApplication::arguments();
+    arguments.pop_front();
 
-    parser.process(a);
+    //If the user simply called Bandage without any arguments, just run the GUI.
+    if (arguments.size() == 0)
+    {
+        MainWindow w;
+        w.show();
+        return a.exec();
+    }
+
+    QString first = arguments.at(0);
+    arguments.pop_front();
+
+    if (first == "-h" || first == "-help" || first == "--help")
+    {
+        QTextStream(stdout) << "" << endl;
+        QTextStream(stdout) << "Program: Bandage" << endl;
+        QTextStream(stdout) << "Version: " << QApplication::applicationVersion() << endl;
+        printUsage();
+        QTextStream(stdout) << "" << endl;
+        return 0;
+    }
+
+    else if (first == "-v" || first == "-version" || first == "--version")
+    {
+        QTextStream(stdout) << "Version: " << QApplication::applicationVersion() << endl;
+        return 0;
+    }
+
+    else if (first == "load")
+        return launchBandageAndLoadFile(&a, arguments);
+
+    else if (first == "contiguous")
+    {
+
+    }
+
+    else
+    {
+        QTextStream(stdout) << "Unrecognised command: " << first << endl << endl;
+        printUsage();
+        QTextStream(stdout) << "" << endl;
+        return 1;
+    }
 
 
 
 
 
+//    QString filename;
+//    MainWindow w(filename);
+//    w.show();
 
-    QString filename;
-    MainWindow w(filename);
-    w.show();
-
-    return a.exec();
+//    return a.exec();
 }

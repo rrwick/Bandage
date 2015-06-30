@@ -203,7 +203,7 @@ void MainWindow::cleanUp()
 void MainWindow::loadGraph(QString fullFileName)
 {
     GraphFileType graphFileType;
-    QString selectedFileType;
+    QString selectedFileType = "Any supported graph (*)";
     if (fullFileName == "")
         fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_settings->rememberedPath,
                                                     "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta)",

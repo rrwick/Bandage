@@ -103,7 +103,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="aboutLabel_2">
+        <widget class="QLabel" name="versionCopyrightLabel">
          <property name="minimumSize">
           <size>
            <width>300</width>
@@ -117,7 +117,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Version: 0.6.0
+          <string>Version: xxx
 Copyright 2015 Ryan Wick</string>
          </property>
          <property name="wordWrap">

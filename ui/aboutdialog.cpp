@@ -18,12 +18,16 @@
 
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
+#include <QApplication>
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+
+    QString versionCopyrightText = "Version: " + QApplication::applicationVersion() + "\nCopyright 2015 Ryan Wick";
+    ui->versionCopyrightLabel->setText(versionCopyrightText);
 
     layout()->setSizeConstraint(QLayout::SetFixedSize);
 }
