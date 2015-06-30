@@ -117,7 +117,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Version: 0.5.6
+          <string>Version: 0.6.0
 Copyright 2015 Ryan Wick</string>
          </property>
          <property name="wordWrap">
