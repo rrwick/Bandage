@@ -399,6 +399,9 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
     {
+        std::vector<QString> edgeStartingNodeNames;
+        std::vector<QString> edgeEndingNodeNames;
+
         QTextStream in(&inputFile);
         while (!in.atEnd())
         {
@@ -407,12 +410,15 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
 
             QStringList lineParts = line.split(QRegExp("\t"));
 
-            if (lineParts.size() < 3)
+            if (lineParts.size() < 1)
                 continue;
 
             //Lines beginning with "S" are sequence (node) lines
             if (lineParts.at(0) == "S")
             {
+                if (lineParts.size() < 3)
+                    throw "load error";
+
                 QString nodeName = lineParts.at(1);
                 QString posNodeName = nodeName + "+";
                 QString negNodeName = nodeName + "-";
@@ -453,10 +459,28 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
             //Lines beginning with "L" are link (edge) lines
             else if (lineParts.at(0) == "L")
             {
+                //Edges aren't made now, in case their sequence hasn't yet been specified.
+                //Instead, we save the starting and ending nodes and make the edges after
+                //we're done looking at the file.
 
+                if (lineParts.size() < 5)
+                    throw "load error";
+
+                //Parts 1 and 3 hold the node names and parts 2 and 4 hold the corresponding +/-.
+                QString startingNode = lineParts.at(1) + lineParts.at(2);
+                QString endingNode = lineParts.at(3) + lineParts.at(4);
+                edgeStartingNodeNames.push_back(startingNode);
+                edgeEndingNodeNames.push_back(endingNode);
             }
+        }
 
 
+        //Create all of the edges
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
+        {
+            QString node1Name = edgeStartingNodeNames[i];
+            QString node2Name = edgeEndingNodeNames[i];
+            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
         }
     }
 
