@@ -223,7 +223,7 @@ void MainWindow::loadGraph(QString fullFileName)
                 graphFileType = TRINITY;
             else
             {
-                QMessageBox::warning(this, "Graph format not recognised", "Cannot load file. The file' selected's format was not recognised as any supported graph type.");
+                QMessageBox::warning(this, "Graph format not recognised", "Cannot load file. The selected file's format was not recognised as any supported graph type.");
                 return;
             }
         }
@@ -396,20 +396,69 @@ void MainWindow::buildDeBruijnGraphFromGfa(QString fullFileName)
     g_assemblyGraph->m_graphFileType = GFA;
 
 
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
-    //READ GFA FILE HERE!!!!!!!!!!!
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+            QString line = in.readLine();
+
+            QStringList lineParts = line.split(QRegExp("\t"));
+
+            if (lineParts.size() < 3)
+                continue;
+
+            //Lines beginning with "S" are sequence (node) lines
+            if (lineParts.at(0) == "S")
+            {
+                QString nodeName = lineParts.at(1);
+                QString posNodeName = nodeName + "+";
+                QString negNodeName = nodeName + "-";
+
+                QByteArray sequence = lineParts.at(2).toLocal8Bit();
+                QByteArray revCompSequence = g_assemblyGraph->getReverseComplement(sequence);
+
+                //If there is an attribute holding the sequence length, we'll use
+                //that.  If there isn't, then we'll just look at the length of the
+                //sequence string.
+                int nodeLength = sequence.length();
+
+                //If there is an attribute holding the coverage, we'll use that.
+                //If there isn't, then we'll use zero.
+                double nodeCoverage = 0.0;
+
+                for (int i = 3; i < lineParts.size(); ++i)
+                {
+                    QString part = lineParts.at(i);
+                    if (part.size() < 6)
+                        continue;
+                    else if (part.left(5) == "LN:i:")
+                        nodeLength = part.right(part.length() - 5).toInt();
+                    else if (part.left(5) == "KC:f:")
+                        nodeCoverage = part.right(part.length() - 5).toDouble();
+                }
+
+
+
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
+                node->m_reverseComplement = reverseComplementNode;
+                reverseComplementNode->m_reverseComplement = node;
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+            }
+
+            //Lines beginning with "L" are link (edge) lines
+            else if (lineParts.at(0) == "L")
+            {
+
+            }
+
+
+        }
+    }
 
 
 
@@ -795,7 +844,7 @@ bool MainWindow::checkFileIsFastG(QString fullFileName)
 //Cursory look to see if file appears to be a GFA file.
 bool MainWindow::checkFileIsGfa(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, "S\\s+\\d+");
+    return checkFirstLineOfFile(fullFileName, "[SL]\t");
 }
 
 //Cursory look to see if file appears to be a Trinity.fasta file.
