@@ -90,6 +90,9 @@ private:
     void pointEachNodeToItsReverseComplement();
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
     QString convertNormalNumberStringToBandageNodeName(QString number);
+    QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
+    QStringList removeNullStringsFromList(QStringList in);
+    bool checkIfLineEditHasNodes(QLineEdit * lineEdit);
 
 private slots:
     void loadGraph(QString fullFileName = "");
