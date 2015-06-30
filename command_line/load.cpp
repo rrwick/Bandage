@@ -10,11 +10,11 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
     QString filename = arguments.at(0);
     arguments.pop_front();
-    arguments.removeDuplicates();
 
     bool drawGraph = false;
-    QStringList invalidOptions;
 
+    QStringList invalidOptions;
+    arguments.removeDuplicates();
     for (int i = 0; i < arguments.size(); ++i)
     {
         if (arguments.at(i) == "-d")

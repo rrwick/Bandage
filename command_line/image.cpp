@@ -1,18 +1,15 @@
-#include "contiguous.h"
+#include "image.h"
 #include "command_line/commandcommandlinefunctions.h"
 
-int bandageContiguous(QApplication * a, QStringList arguments)
+int bandageImage(QApplication * a, QStringList arguments)
 {
-    if (arguments.size() < 2)
+    if (arguments.size() == 0)
     {
-        printContiguousUsage();
+        printImageUsage();
         return 1;
     }
 
-    QString graphFile = arguments.at(0);
-    arguments.pop_front();
-
-    QString targetFile = arguments.at(0);
+    QString filename = arguments.at(0);
     arguments.pop_front();
 
     QStringList invalidOptions;
@@ -27,14 +24,13 @@ int bandageContiguous(QApplication * a, QStringList arguments)
 
     if (invalidOptions.size() > 0)
     {
-        voidPrintInvalidContiguousOptions(invalidOptions);
+        voidPrintInvalidImageOptions(invalidOptions);
         return 1;
     }
 
-    bool loadSuccess = loadAssemblyGraph(graphFile);
+    bool loadSuccess = loadAssemblyGraph(filename);
     if (!loadSuccess)
         return 1;
-
 
 
 
@@ -47,8 +43,15 @@ int bandageContiguous(QApplication * a, QStringList arguments)
 }
 
 
+void printImageUsage()
+{
+    QTextStream(stdout) << "" << endl;
+    QTextStream(stdout) << "Usage:   Bandage image <graph>" << endl << endl;
+    QTextStream(stdout) << "Options: " << endl << endl;
+}
 
-void voidPrintInvalidContiguousOptions(QStringList invalidOptions)
+
+void voidPrintInvalidImageOptions(QStringList invalidOptions)
 {
     QString invalidOptionText = "Invalid option";
     if (invalidOptions.size() > 1)
@@ -63,14 +66,8 @@ void voidPrintInvalidContiguousOptions(QStringList invalidOptions)
 
     QTextStream(stdout) << "" << endl;
     QTextStream(stdout) << invalidOptionText << endl;
-    printContiguousUsage();
+    printImageUsage();
     QTextStream(stdout) << "" << endl;
 }
 
-void printContiguousUsage()
-{
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage contiguous <graph> <target> [options]" << endl << endl;
-    QTextStream(stdout) << "Options: " << endl << endl;
-}
 

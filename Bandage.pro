@@ -56,7 +56,9 @@ SOURCES += \
     ui/nodewidthvisualaid.cpp \
     ui/verticallabel.cpp \
     command_line/contiguous.cpp \
-    command_line/load.cpp
+    command_line/load.cpp \
+    command_line/commandcommandlinefunctions.cpp \
+    command_line/image.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -87,7 +89,9 @@ HEADERS  += \
     ui/nodewidthvisualaid.h \
     ui/verticallabel.h \
     command_line/contiguous.h \
-    command_line/load.h
+    command_line/load.h \
+    command_line/commandcommandlinefunctions.h \
+    command_line/image.h
 
 FORMS    += \
     ui/mainwindow.ui \

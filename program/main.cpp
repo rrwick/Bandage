@@ -23,6 +23,7 @@
 #include <QCommandLineParser>
 #include <QTextStream>
 #include "command_line/load.h"
+#include "command_line/image.h"
 #include "command_line/contiguous.h"
 
 void printUsage()
@@ -30,7 +31,8 @@ void printUsage()
     QTextStream(stdout) << "" << endl;
     QTextStream(stdout) << "Usage:   Bandage <command> [options]" << endl << endl;
     QTextStream(stdout) << "Command: <blank>      launch Bandage GUI" << endl;
-    QTextStream(stdout) << "         load         launch Bandage GUI and load graph file" << endl;
+    QTextStream(stdout) << "         load         launch Bandage GUI and load a graph file" << endl;
+    QTextStream(stdout) << "         image        generate a PNG image of a graph" << endl;
     QTextStream(stdout) << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
 }
 
@@ -72,6 +74,9 @@ int main(int argc, char *argv[])
 
     else if (first == "load")
         return bandageLoad(&a, arguments);
+
+    else if (first == "image")
+        return bandageImage(&a, arguments);
 
     else if (first == "contiguous")
         return bandageContiguous(&a, arguments);

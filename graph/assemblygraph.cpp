@@ -29,18 +29,20 @@
 #include <QTextStream>
 #include <QApplication>
 
+
 AssemblyGraph::AssemblyGraph() :
     m_contiguitySearchDone(false)
 {
-    m_ogdfGraph = new ogdf::Graph();
-    m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
-                                                  ogdf::GraphAttributes::edgeGraphics);
+        m_ogdfGraph = new ogdf::Graph();
+        m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
+                                                      ogdf::GraphAttributes::edgeGraphics);
+
 }
 
 AssemblyGraph::~AssemblyGraph()
 {
-    delete m_graphAttributes;
-    delete m_ogdfGraph;
+        delete m_graphAttributes;
+        delete m_ogdfGraph;
 }
 
 
@@ -898,4 +900,30 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
 }
 
 
+//Returns true if successful, false if not.
+bool AssemblyGraph::loadGraphFromFile(QString filename)
+{
+    GraphFileType graphFileType = getGraphFileTypeFromFile(filename);
 
+    if (graphFileType == UNKNOWN_FILE_TYPE)
+        return false;
+
+    try
+    {
+        if (graphFileType == LAST_GRAPH)
+            buildDeBruijnGraphFromLastGraph(filename);
+        if (graphFileType == FASTG)
+            buildDeBruijnGraphFromFastg(filename);
+        if (graphFileType == GFA)
+            buildDeBruijnGraphFromGfa(filename);
+        if (graphFileType == TRINITY)
+            buildDeBruijnGraphFromTrinityFasta(filename);
+    }
+
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
