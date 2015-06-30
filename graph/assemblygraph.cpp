@@ -930,6 +930,8 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
 
 
 
+//The startingNodes and nodeDistance parameters are only used if the graph scope
+//is not WHOLE_GRAPH.
 void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance)
 {
     if (g_settings->graphScope == WHOLE_GRAPH)

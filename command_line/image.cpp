@@ -1,7 +1,10 @@
 #include "image.h"
-#include "command_line/commandcommandlinefunctions.h"
+#include "command_line/commoncommandlinefunctions.h"
 #include "../program/globals.h"
 #include "../ui/mygraphicsscene.h"
+#include "../graph/assemblygraph.h"
+#include <vector>
+#include "../program/settings.h"
 
 int bandageImage(QApplication * a, QStringList arguments)
 {
@@ -35,10 +38,23 @@ int bandageImage(QApplication * a, QStringList arguments)
         return 1;
 
     MyGraphicsScene scene;
+    g_settings = new Settings();
+
+    //SET SCOPE HERE, BASED ON OPTIONS
+    g_settings->graphScope == AROUND_NODE;
+
+    //SET DOUBLE MODE HERE, BASED ON OPTIONS
+    g_settings->doubleMode = false;
+
+    //IF WE HAVE A REDUCED SCOPE, WE'LL NEED TO SET THE NODE DISTANCE HERE
+    int nodeDistance = 0;
+
+    //IF WE HAVE A REDUCED SCOPE, PREPARE STARTING NODES HERE
+    std::vector<DeBruijnNode *> startingNodes;
 
 
-
-
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, nodeDistance);
+    layoutGraph();
 
     return 0;
 }

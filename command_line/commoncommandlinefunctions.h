@@ -5,5 +5,6 @@
 #include <QString>
 
 bool loadAssemblyGraph(QString filename);
+void layoutGraph();
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

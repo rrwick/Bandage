@@ -1,5 +1,5 @@
 #include "contiguous.h"
-#include "command_line/commandcommandlinefunctions.h"
+#include "command_line/commoncommandlinefunctions.h"
 
 int bandageContiguous(QApplication * a, QStringList arguments)
 {

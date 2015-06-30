@@ -57,8 +57,8 @@ SOURCES += \
     ui/verticallabel.cpp \
     command_line/contiguous.cpp \
     command_line/load.cpp \
-    command_line/commandcommandlinefunctions.cpp \
-    command_line/image.cpp
+    command_line/image.cpp \
+    command_line/commoncommandlinefunctions.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -90,8 +90,8 @@ HEADERS  += \
     ui/verticallabel.h \
     command_line/contiguous.h \
     command_line/load.h \
-    command_line/commandcommandlinefunctions.h \
-    command_line/image.h
+    command_line/image.h \
+    command_line/commoncommandlinefunctions.h
 
 FORMS    += \
     ui/mainwindow.ui \
