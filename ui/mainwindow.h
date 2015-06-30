@@ -79,17 +79,10 @@ private:
     bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
     void loadGraph2(GraphFileType graphFileType, QString filename);
-    void buildDeBruijnGraphFromLastGraph(QString fullFileName);
-    void buildDeBruijnGraphFromFastg(QString fullFileName);
-    void buildDeBruijnGraphFromGfa(QString fullFileName);
-    void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();
     void enableDisableUiElements(UiState uiState);
-    void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
-    void pointEachNodeToItsReverseComplement();
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
-    QString convertNormalNumberStringToBandageNodeName(QString number);
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
     QStringList removeNullStringsFromList(QStringList in);
     bool checkIfLineEditHasNodes(QLineEdit * lineEdit);

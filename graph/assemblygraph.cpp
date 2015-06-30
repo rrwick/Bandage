@@ -25,6 +25,9 @@
 #include "../graph/debruijnnode.h"
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
+#include <QFile>
+#include <QTextStream>
+#include <QApplication>
 
 AssemblyGraph::AssemblyGraph() :
     m_contiguitySearchDone(false)
@@ -369,3 +372,472 @@ void AssemblyGraph::clearGraphInfo()
     m_medianCoverage = 0.0;
     m_thirdQuartileCoverage = 0.0;
 }
+
+
+
+
+
+
+void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
+{
+    g_assemblyGraph->m_graphFileType = LAST_GRAPH;
+
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+            QString line = in.readLine();
+            if (line.startsWith("NODE"))
+            {
+                QStringList nodeDetails = line.split(QRegExp("\\s+"));
+
+                if (nodeDetails.size() < 4)
+                    throw "load error";
+
+                QString nodeName = nodeDetails.at(1);
+                QString posNodeName = nodeName + "+";
+                QString negNodeName = nodeName + "-";
+
+                int nodeLength = nodeDetails.at(2).toInt();
+
+                double nodeCoverage;
+                if (nodeLength > 0)
+                    nodeCoverage = double(nodeDetails.at(3).toInt()) / nodeLength; //IS THIS COLUMN ($COV_SHORT1) THE BEST ONE TO USE?
+                else
+                    nodeCoverage = double(nodeDetails.at(3).toInt());
+
+                QByteArray sequence = in.readLine().toLocal8Bit();
+                QByteArray revCompSequence = in.readLine().toLocal8Bit();
+
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
+                node->m_reverseComplement = reverseComplementNode;
+                reverseComplementNode->m_reverseComplement = node;
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+            }
+            else if (line.startsWith("ARC"))
+            {
+                QStringList arcDetails = line.split(QRegExp("\\s+"));
+
+                if (arcDetails.size() < 3)
+                    throw "load error";
+
+                QString node1Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(1));
+                QString node2Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(2));
+
+                g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+            }
+        }
+        inputFile.close();
+    }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
+}
+
+
+//This function takes a normal number string like "5" or "-6" and changes
+//it to "5+" or "6-" - the format of Bandage node names.
+QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number)
+{
+    if (number.at(0) == '-')
+    {
+        number.remove(0, 1);
+        return number + "-";
+    }
+    else
+        return number + "+";
+}
+
+
+void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
+{
+    g_assemblyGraph->m_graphFileType = GFA;
+
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        std::vector<QString> edgeStartingNodeNames;
+        std::vector<QString> edgeEndingNodeNames;
+
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+            QString line = in.readLine();
+
+            QStringList lineParts = line.split(QRegExp("\t"));
+
+            if (lineParts.size() < 1)
+                continue;
+
+            //Lines beginning with "S" are sequence (node) lines
+            if (lineParts.at(0) == "S")
+            {
+                if (lineParts.size() < 3)
+                    throw "load error";
+
+                QString nodeName = lineParts.at(1);
+                QString posNodeName = nodeName + "+";
+                QString negNodeName = nodeName + "-";
+
+                QByteArray sequence = lineParts.at(2).toLocal8Bit();
+                QByteArray revCompSequence = g_assemblyGraph->getReverseComplement(sequence);
+
+                //If there is an attribute holding the sequence length, we'll use
+                //that.  If there isn't, then we'll just look at the length of the
+                //sequence string.
+                int nodeLength = sequence.length();
+
+                //If there is an attribute holding the coverage, we'll use that.
+                //If there isn't, then we'll use zero.
+                double nodeCoverage = 0.0;
+
+                for (int i = 3; i < lineParts.size(); ++i)
+                {
+                    QString part = lineParts.at(i);
+                    if (part.size() < 6)
+                        continue;
+                    else if (part.left(5) == "LN:i:")
+                        nodeLength = part.right(part.length() - 5).toInt();
+                    else if (part.left(5) == "KC:f:")
+                        nodeCoverage = part.right(part.length() - 5).toDouble();
+                }
+
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
+                node->m_reverseComplement = reverseComplementNode;
+                reverseComplementNode->m_reverseComplement = node;
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+            }
+
+            //Lines beginning with "L" are link (edge) lines
+            else if (lineParts.at(0) == "L")
+            {
+                //Edges aren't made now, in case their sequence hasn't yet been specified.
+                //Instead, we save the starting and ending nodes and make the edges after
+                //we're done looking at the file.
+
+                if (lineParts.size() < 5)
+                    throw "load error";
+
+                //Parts 1 and 3 hold the node names and parts 2 and 4 hold the corresponding +/-.
+                QString startingNode = lineParts.at(1) + lineParts.at(2);
+                QString endingNode = lineParts.at(3) + lineParts.at(4);
+                edgeStartingNodeNames.push_back(startingNode);
+                edgeEndingNodeNames.push_back(endingNode);
+            }
+        }
+
+        //Create all of the edges
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
+        {
+            QString node1Name = edgeStartingNodeNames[i];
+            QString node2Name = edgeEndingNodeNames[i];
+            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+        }
+    }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
+}
+
+
+
+void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
+{
+    g_assemblyGraph->m_graphFileType = FASTG;
+
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        std::vector<QString> edgeStartingNodeNames;
+        std::vector<QString> edgeEndingNodeNames;
+        DeBruijnNode * node = 0;
+
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+
+            QString nodeName;
+            int nodeLength;
+            double nodeCoverage;
+
+            QString line = in.readLine();
+
+            //If the line starts with a '>', then we are beginning a new node.
+            if (line.startsWith(">"))
+            {
+                line.remove(0, 1); //Remove '>' from start
+                line.chop(1); //Remove ';' from end
+                QStringList nodeDetails = line.split(":");
+
+                QString thisNode = nodeDetails.at(0);
+
+                //A single quote as the last character indicates a negative node.
+                bool negativeNode = thisNode.at(thisNode.size() - 1) == '\'';
+
+                QStringList thisNodeDetails = thisNode.split("_");
+
+                if (thisNodeDetails.size() < 6)
+                    throw "load error";
+
+                nodeName = thisNodeDetails.at(1);
+                if (negativeNode)
+                    nodeName += "-";
+                else
+                    nodeName += "+";
+
+                nodeLength = thisNodeDetails.at(3).toInt();
+
+                QString nodeCoverageString = thisNodeDetails.at(5);
+                if (negativeNode)
+                {
+                    //It may be necessary to remove a single quote from the end of the coverage
+                    if (nodeCoverageString.at(nodeCoverageString.size() - 1) == '\'')
+                        nodeCoverageString.chop(1);
+                }
+                nodeCoverage = nodeCoverageString.toDouble();
+
+                //Make the node
+                node = new DeBruijnNode(nodeName, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
+
+                //The second part of nodeDetails is a comma-delimited list of edge nodes.
+                //Edges aren't made right now (because the other node might not yet exist),
+                //so they are saved into vectors and made after all the nodes have been made.
+                if (nodeDetails.size() == 1)
+                    continue;
+                QStringList edgeNodes = nodeDetails.at(1).split(",");
+                for (int i = 0; i < edgeNodes.size(); ++i)
+                {
+                    QString edgeNode = edgeNodes.at(i);
+
+                    QChar lastChar = edgeNode.at(edgeNode.size() - 1);
+                    bool negativeNode = false;
+                    if (lastChar == '\'')
+                    {
+                        negativeNode = true;
+                        edgeNode.chop(1);
+                    }
+                    QStringList edgeNodeDetails = edgeNode.split("_");
+
+                    if (edgeNodeDetails.size() < 2)
+                        throw "load error";
+
+                    QString edgeNodeName = edgeNodeDetails.at(1);
+                    if (negativeNode)
+                        edgeNodeName += "-";
+                    else
+                        edgeNodeName += "+";
+
+                    edgeStartingNodeNames.push_back(nodeName);
+                    edgeEndingNodeNames.push_back(edgeNodeName);
+                }
+            }
+
+            //If the line does not start with a '>', then this line is part of the
+            //sequence for the last node.
+            else
+            {
+                QByteArray sequenceLine = line.simplified().toLocal8Bit();
+                if (node != 0)
+                    node->m_sequence.append(sequenceLine);
+            }
+        }
+
+        inputFile.close();
+
+        //If all went well, each node will have a reverse complement and the code
+        //will never get here.  However, I have noticed that some SPAdes fastg files
+        //have, for some reason, negative nodes with no positive counterpart.  For
+        //that reason, we will now make any reverse complement nodes for nodes that
+        //lack them.
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            makeReverseComplementNodeIfNecessary(node);
+        }
+        pointEachNodeToItsReverseComplement();
+
+
+        //Create all of the edges
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
+        {
+            QString node1Name = edgeStartingNodeNames[i];
+            QString node2Name = edgeEndingNodeNames[i];
+            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+        }
+    }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
+}
+
+
+void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
+{
+    QString reverseComplementName = getOppositeNodeName(node->m_name);
+
+    DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementName];
+    if (reverseComplementNode == 0)
+    {
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_length, node->m_coverage,
+                                                  g_assemblyGraph->getReverseComplement(node->m_sequence));
+        g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
+    }
+}
+
+
+void AssemblyGraph::pointEachNodeToItsReverseComplement()
+{
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * positiveNode = i.value();
+
+        if (positiveNode->isPositiveNode())
+        {
+            DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->m_name)];
+            if (negativeNode != 0)
+            {
+                positiveNode->m_reverseComplement = negativeNode;
+                negativeNode->m_reverseComplement = positiveNode;
+            }
+        }
+    }
+}
+
+
+
+
+void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
+{
+    g_assemblyGraph->m_graphFileType = TRINITY;
+
+    std::vector<QString> names;
+    std::vector<QString> sequences;
+    readFastaFile(fullFileName, &names, &sequences);
+
+    std::vector<QString> edgeStartingNodeNames;
+    std::vector<QString> edgeEndingNodeNames;
+
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        QString name = names[i];
+        QString sequence = sequences[i];
+
+        //The header can come in a couple of different formats:
+        // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
+        // GG1|c0_g1_i1 len=302 path=[1:0-301]
+        // comp0_c0_seq1 len=286 path=[6:0-285]
+        // c0_g1_i1 len=363 path=[119:0-185 43:186-244 43:245-303 43:304-362]
+
+        //The node names will begin with a string that contains everything
+        //up to the component number (e.g. "c0"), in the same format as it is
+        //in the Trinity.fasta file.
+
+        if (name.length() < 4)
+            throw "load error";
+
+        int componentStartIndex = name.indexOf(QRegExp("c\\d+_"));
+        int componentEndIndex = name.indexOf("_", componentStartIndex);
+
+        if (componentStartIndex < 0 || componentEndIndex < 0)
+            throw "load error";
+
+        QString component = name.left(componentEndIndex);
+
+        if (component.length() < 2)
+            throw "load error";
+
+        int pathStartIndex = name.indexOf("path=[") + 6;
+        int pathEndIndex = name.indexOf("]", pathStartIndex);
+        if (pathStartIndex < 0 || pathEndIndex < 0)
+            throw "load error";
+        int pathLength = pathEndIndex - pathStartIndex;
+        QString path = name.mid(pathStartIndex, pathLength);
+        if (path.size() == 0)
+            throw "load error";
+
+        QStringList pathParts = path.split(" ");
+
+        //Each path part is a node
+        QString previousNodeName;
+        for (int i = 0; i < pathParts.length(); ++i)
+        {
+            QString pathPart = pathParts.at(i);
+            QStringList nodeParts = pathPart.split(":");
+            if (nodeParts.size() < 2)
+                throw "load error";
+
+            //Most node numbers will be formatted simply as the number, but some
+            //(I don't know why) have '@' and the start and '@!' at the end.  In
+            //these cases, we must strip those extra characters off.
+            QString nodeNumberString = nodeParts.at(0);
+            if (nodeNumberString.at(0) == '@')
+                nodeNumberString = nodeNumberString.mid(1, nodeNumberString.length() - 3);
+
+            QString nodeName = component + "_" + nodeNumberString + "+";
+
+            //If the node doesn't yet exist, make it now.
+            if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+            {
+                QString nodeRange = nodeParts.at(1);
+                QStringList nodeRangeParts = nodeRange.split("-");
+
+                if (nodeRangeParts.size() < 2)
+                    throw "load error";
+
+                int nodeRangeStart = nodeRangeParts.at(0).toInt();
+                int nodeRangeEnd = nodeRangeParts.at(1).toInt();
+                int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
+
+                QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeLength, 0.0, nodeSequence);
+                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
+            }
+
+            //Remember to make an edge for the previous node to this one.
+            if (i > 0)
+            {
+                edgeStartingNodeNames.push_back(previousNodeName);
+                edgeEndingNodeNames.push_back(nodeName);
+            }
+            previousNodeName = nodeName;
+        }
+    }
+
+    //Even though the Trinity.fasta file only contains positive nodes, Bandage
+    //expects negative reverse complements nodes, so make them now.
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        makeReverseComplementNodeIfNecessary(node);
+    }
+    pointEachNodeToItsReverseComplement();
+
+    //Create all of the edges.  The createDeBruijnEdge function checks for
+    //duplicates, so it's okay if we try to add the same edge multiple times.
+    for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
+    {
+        QString node1Name = edgeStartingNodeNames[i];
+        QString node2Name = edgeEndingNodeNames[i];
+        g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+    }
+
+    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
+}
+

@@ -65,9 +65,16 @@ public:
     void clearAllBlastHitPointers();
     void determineGraphInfo();
     void clearGraphInfo();
+    void buildDeBruijnGraphFromLastGraph(QString fullFileName);
+    void buildDeBruijnGraphFromGfa(QString fullFileName);
+    void buildDeBruijnGraphFromFastg(QString fullFileName);
+    void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
+    QString convertNormalNumberStringToBandageNodeName(QString number);
+    void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
+    void pointEachNodeToItsReverseComplement();
 };
 
 #endif // ASSEMBLYGRAPH_H
