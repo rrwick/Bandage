@@ -1993,10 +1993,10 @@ void MainWindow::setInfoTexts()
                                            "When in double mode, you can include '+' or '-' at the end "
                                            "of the node name to specify which strand to draw. If you do "
                                            "not include '+' or '-', then nodes for both strands will be drawn.");
-    ui->startingNodesMatchTypeInfoText->setInfoText("When 'Exact' match is used, nodes will only be drawn if their name "
-                                                    "exactly matches your input above.<br><br>"
-                                                    "When 'Partial' match is used, nodes will be drawn if any part of "
-                                                    "their name matches your input above.");
+    ui->startingNodesMatchTypeInfoText->setInfoText("When 'Exact' match is used, the graph will only be drawn around nodes "
+                                                    "that exactly match your above input.<br><br>"
+                                                    "When 'Partial' match is used, the graph will be drawn around "
+                                                    "nodes where any part of their name matches your above input.");
     ui->selectionSearchNodesMatchTypeInfoText->setInfoText("When 'Exact' match is used, nodes will only be selected if "
                                                            "their name exactly matches your input above.<br><br>"
                                                            "When 'Partial' match is used, nodes will be selected if any "
