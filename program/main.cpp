@@ -19,16 +19,27 @@
 #include "../ui/mainwindow.h"
 #include <QApplication>
 #include <QStringList>
+#include <QCommandLineParser>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QApplication::setApplicationName("Bandage");
+    QApplication::setApplicationVersion("0.6.0");
 
-    QStringList arguments = QCoreApplication::arguments();
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Bandage");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    parser.process(a);
+
+
+
+
+
+
     QString filename;
-    if (arguments.size() > 1)
-         filename = arguments.at(1);
-
     MainWindow w(filename);
     w.show();
 
