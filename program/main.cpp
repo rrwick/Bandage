@@ -80,7 +80,8 @@ int main(int argc, char *argv[])
 
     else
     {
-        QTextStream(stdout) << "Unrecognised command: " << first << endl << endl;
+        QTextStream(stdout) << "" << endl;
+        QTextStream(stdout) << "Invalid command: " << first << endl;
         printUsage();
         QTextStream(stdout) << "" << endl;
         return 1;

@@ -380,7 +380,7 @@ void AssemblyGraph::clearGraphInfo()
 
 void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
-    g_assemblyGraph->m_graphFileType = LAST_GRAPH;
+    m_graphFileType = LAST_GRAPH;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -416,8 +416,8 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+                m_deBruijnGraphNodes.insert(posNodeName, node);
+                m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
             else if (line.startsWith("ARC"))
             {
@@ -429,13 +429,13 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 QString node1Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(1));
                 QString node2Name = convertNormalNumberStringToBandageNodeName(arcDetails.at(2));
 
-                g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+                createDeBruijnEdge(node1Name, node2Name);
             }
         }
         inputFile.close();
     }
 
-    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+    if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 }
 
@@ -456,7 +456,7 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 
 void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 {
-    g_assemblyGraph->m_graphFileType = GFA;
+    m_graphFileType = GFA;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -486,7 +486,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 QString negNodeName = nodeName + "-";
 
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
-                QByteArray revCompSequence = g_assemblyGraph->getReverseComplement(sequence);
+                QByteArray revCompSequence = getReverseComplement(sequence);
 
                 //If there is an attribute holding the sequence length, we'll use
                 //that.  If there isn't, then we'll just look at the length of the
@@ -512,8 +512,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(posNodeName, node);
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+                m_deBruijnGraphNodes.insert(posNodeName, node);
+                m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
 
             //Lines beginning with "L" are link (edge) lines
@@ -539,11 +539,11 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
         {
             QString node1Name = edgeStartingNodeNames[i];
             QString node2Name = edgeEndingNodeNames[i];
-            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+            createDeBruijnEdge(node1Name, node2Name);
         }
     }
 
-    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+    if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 }
 
@@ -551,7 +551,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
 void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
-    g_assemblyGraph->m_graphFileType = FASTG;
+    m_graphFileType = FASTG;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -607,7 +607,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
 
                 //Make the node
                 node = new DeBruijnNode(nodeName, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
+                m_deBruijnGraphNodes.insert(nodeName, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
                 //Edges aren't made right now (because the other node might not yet exist),
@@ -659,7 +659,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
         //have, for some reason, negative nodes with no positive counterpart.  For
         //that reason, we will now make any reverse complement nodes for nodes that
         //lack them.
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -674,11 +674,11 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
         {
             QString node1Name = edgeStartingNodeNames[i];
             QString node2Name = edgeEndingNodeNames[i];
-            g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+            createDeBruijnEdge(node1Name, node2Name);
         }
     }
 
-    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+    if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 }
 
@@ -687,19 +687,19 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 {
     QString reverseComplementName = getOppositeNodeName(node->m_name);
 
-    DeBruijnNode * reverseComplementNode = g_assemblyGraph->m_deBruijnGraphNodes[reverseComplementName];
+    DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
         DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_length, node->m_coverage,
-                                                  g_assemblyGraph->getReverseComplement(node->m_sequence));
-        g_assemblyGraph->m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
+                                                  getReverseComplement(node->m_sequence));
+        m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
 }
 
 
 void AssemblyGraph::pointEachNodeToItsReverseComplement()
 {
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -707,7 +707,7 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
 
         if (positiveNode->isPositiveNode())
         {
-            DeBruijnNode * negativeNode = g_assemblyGraph->m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->m_name)];
+            DeBruijnNode * negativeNode = m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->m_name)];
             if (negativeNode != 0)
             {
                 positiveNode->m_reverseComplement = negativeNode;
@@ -722,7 +722,7 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
 
 void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 {
-    g_assemblyGraph->m_graphFileType = TRINITY;
+    m_graphFileType = TRINITY;
 
     std::vector<QString> names;
     std::vector<QString> sequences;
@@ -790,7 +790,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             QString nodeName = component + "_" + nodeNumberString + "+";
 
             //If the node doesn't yet exist, make it now.
-            if (!g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+            if (!m_deBruijnGraphNodes.contains(nodeName))
             {
                 QString nodeRange = nodeParts.at(1);
                 QStringList nodeRangeParts = nodeRange.split("-");
@@ -804,7 +804,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
                 DeBruijnNode * node = new DeBruijnNode(nodeName, nodeLength, 0.0, nodeSequence);
-                g_assemblyGraph->m_deBruijnGraphNodes.insert(nodeName, node);
+                m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
             //Remember to make an edge for the previous node to this one.
@@ -819,7 +819,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
     //Even though the Trinity.fasta file only contains positive nodes, Bandage
     //expects negative reverse complements nodes, so make them now.
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -834,10 +834,10 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     {
         QString node1Name = edgeStartingNodeNames[i];
         QString node2Name = edgeEndingNodeNames[i];
-        g_assemblyGraph->createDeBruijnEdge(node1Name, node2Name);
+        createDeBruijnEdge(node1Name, node2Name);
     }
 
-    if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
+    if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 }
 

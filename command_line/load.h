@@ -7,5 +7,6 @@
 #include <QApplication>
 
 int launchBandageAndLoadFile(QApplication * a, QStringList arguments);
+void printLoadUsage();
 
 #endif // LOAD_H

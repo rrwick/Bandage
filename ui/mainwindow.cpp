@@ -60,7 +60,7 @@
 #include <limits>
 #include <QDesktopServices>
 
-MainWindow::MainWindow(QString filename) :
+MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0)
 {
@@ -174,7 +174,14 @@ MainWindow::MainWindow(QString filename) :
 
     //If the user passed a filename as a command line argument, try to open it now.
     if (filename != "")
+    {
         loadGraph(filename);
+
+        //If the draw option was used and the graph appears to have loaded (i.e. there
+        //is at least one node), then draw the graph.
+        if (drawGraphAfterLoad && g_assemblyGraph->m_deBruijnGraphNodes.size() > 0)
+            drawGraph();
+    }
 }
 
 MainWindow::~MainWindow()

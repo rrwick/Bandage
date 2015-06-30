@@ -43,7 +43,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString filename = "");
+    explicit MainWindow(QString filename = "", bool drawGraphAfterLoad = false);
     ~MainWindow();
 
 private:
