@@ -34,7 +34,7 @@ enum NodeDragging {ONE_PIECE, NEARBY_PIECES, ALL_PIECES};
 enum ZoomSource {MOUSE_WHEEL, SPIN_BOX, KEYBOARD};
 enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN};
 enum NodeLengthMode {AUTO_NODE_LENGTH, MANUAL_NODE_LENGTH};
-enum GraphFileType {LAST_GRAPH, FASTG, GFA, TRINITY};
+enum GraphFileType {LAST_GRAPH, FASTG, GFA, TRINITY, ANY_FILE_TYPE, UNKNOWN_FILE_TYPE};
 
 extern Settings * g_settings;
 extern MyGraphicsView * g_graphicsView;
@@ -53,5 +53,6 @@ QString getOppositeNodeName(QString nodeName);
 void emptyTempDirectory();
 
 void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
+QString convertGraphFileTypeToString(GraphFileType graphFileType);
 
 #endif // GLOBALS_H

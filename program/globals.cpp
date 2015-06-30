@@ -139,3 +139,18 @@ QString getOppositeNodeName(QString nodeName)
     else
         return nodeName + "-";
 }
+
+
+QString convertGraphFileTypeToString(GraphFileType graphFileType)
+{
+    QString graphFileTypeString;
+    switch (graphFileType)
+    {
+    case LAST_GRAPH: graphFileTypeString = "LastGraph"; break;
+    case FASTG: graphFileTypeString = "FASTG"; break;
+    case GFA: graphFileTypeString = "GFA"; break;
+    case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
+    }
+    return graphFileTypeString;
+}
+

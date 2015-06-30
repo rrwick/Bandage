@@ -841,3 +841,61 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         throw "load error";
 }
 
+
+GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
+{
+    if (checkFileIsLastGraph(fullFileName))
+        return LAST_GRAPH;
+    if (g_assemblyGraph->checkFileIsFastG(fullFileName))
+        return FASTG;
+    if (g_assemblyGraph->checkFileIsGfa(fullFileName))
+        return GFA;
+    if (g_assemblyGraph->checkFileIsTrinityFasta(fullFileName))
+        return TRINITY;
+    return UNKNOWN_FILE_TYPE;
+}
+
+
+//Cursory look to see if file appears to be a LastGraph file.
+bool AssemblyGraph::checkFileIsLastGraph(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
+}
+
+//Cursory look to see if file appears to be a FASTG file.
+bool AssemblyGraph::checkFileIsFastG(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, ">NODE");
+}
+
+//Cursory look to see if file appears to be a GFA file.
+bool AssemblyGraph::checkFileIsGfa(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "[SL]\t");
+}
+
+//Cursory look to see if file appears to be a Trinity.fasta file.
+bool AssemblyGraph::checkFileIsTrinityFasta(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "path=\\[");
+}
+
+
+bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
+{
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        if (in.atEnd())
+            return false;
+        QRegExp rx(regExp);
+        QString line = in.readLine();
+        if (rx.indexIn(line) != -1)
+            return true;
+    }
+    return false;
+}
+
+
+

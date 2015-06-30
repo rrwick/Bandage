@@ -31,7 +31,7 @@ void printUsage()
     QTextStream(stdout) << "Usage:   Bandage <command> [options]" << endl << endl;
     QTextStream(stdout) << "Command: <blank>      launch Bandage GUI" << endl;
     QTextStream(stdout) << "         load         launch Bandage GUI and load graph file" << endl;
-    QTextStream(stdout) << "         contiguous   extract all sequence contiguous with a target sequence" << endl;
+    QTextStream(stdout) << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -71,12 +71,10 @@ int main(int argc, char *argv[])
     }
 
     else if (first == "load")
-        return launchBandageAndLoadFile(&a, arguments);
+        return bandageLoad(&a, arguments);
 
     else if (first == "contiguous")
-    {
-
-    }
+        return bandageContiguous(&a, arguments);
 
     else
     {

@@ -209,77 +209,70 @@ void MainWindow::cleanUp()
 
 void MainWindow::loadGraph(QString fullFileName)
 {
-    GraphFileType graphFileType;
-    QString selectedFileType = "Any supported graph (*)";
+    QString selectedFilter = "Any supported graph (*)";
     if (fullFileName == "")
         fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_settings->rememberedPath,
                                                     "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta)",
-                                                    &selectedFileType);
+                                                    &selectedFilter);
 
     if (fullFileName != "") //User did not hit cancel
     {
-        if (selectedFileType == "Any supported graph (*)")
+        GraphFileType detectedFileType = g_assemblyGraph->getGraphFileTypeFromFile(fullFileName);
+
+        GraphFileType selectedFileType;
+        if (selectedFilter == "Any supported graph (*)")
+            selectedFileType = ANY_FILE_TYPE;
+        else if (selectedFilter == "LastGraph (*LastGraph*)")
+            selectedFileType = LAST_GRAPH;
+        else if (selectedFilter == "FASTG (*.fastg)")
+            selectedFileType = FASTG;
+        else if (selectedFilter == "GFA (*.gfa)")
+            selectedFileType = GFA;
+        else if (selectedFilter == "Trinity.fasta (*.fasta)")
+            selectedFileType = TRINITY;
+
+        if (selectedFileType == ANY_FILE_TYPE)
         {
-            if (checkFileIsLastGraph(fullFileName))
-                graphFileType = LAST_GRAPH;
-            else if (checkFileIsFastG(fullFileName))
-                graphFileType = FASTG;
-            else if (checkFileIsGfa(fullFileName))
-                graphFileType = GFA;
-            else if (checkFileIsTrinityFasta(fullFileName))
-                graphFileType = TRINITY;
-            else
+            //If the user chose any file type but it can't be determined, show an error and quit.
+            if (detectedFileType == UNKNOWN_FILE_TYPE)
             {
                 QMessageBox::warning(this, "Graph format not recognised", "Cannot load file. The selected file's format was not recognised as any supported graph type.");
                 return;
             }
-        }
-        else if (selectedFileType == "LastGraph (*LastGraph*)")
-            graphFileType = LAST_GRAPH;
-        else if (selectedFileType == "FASTG (*.fastg)")
-            graphFileType = FASTG;
-        else if (selectedFileType == "GFA (*.gfa)")
-            graphFileType = GFA;
-        else if (selectedFileType == "Trinity.fasta (*.fasta)")
-            graphFileType = TRINITY;
 
-        loadGraph2(graphFileType, fullFileName);
+            //If the user chose any file type and it can be determined, then use that type.
+            else
+                selectedFileType = detectedFileType;
+        }
+
+        //If there is a discrepancy between the selected and detected file types, make sure the
+        //user wants to continue.
+        if (selectedFileType != detectedFileType)
+        {
+            QString graphFileTypeString = convertGraphFileTypeToString(selectedFileType);
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, graphFileTypeString + " file?",
+                                          "This file does not appear to be a " + graphFileTypeString + " file."
+                                          "\nDo you want to load it as a " + graphFileTypeString + " file anyway?",
+                                          QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No)
+                return;
+        }
+
+        loadGraph2(selectedFileType, fullFileName);
     }
 }
 
 
 void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
 {
-    QString graphFileTypeString;
-    switch (graphFileType)
-    {
-    case LAST_GRAPH: graphFileTypeString = "LastGraph"; break;
-    case FASTG: graphFileTypeString = "FASTG"; break;
-    case GFA: graphFileTypeString = "GFA"; break;
-    case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
-    }
-
-    if ( (graphFileType == LAST_GRAPH && !checkFileIsLastGraph(fullFileName)) ||
-         (graphFileType == FASTG && !checkFileIsFastG(fullFileName)) ||
-         (graphFileType == GFA && !checkFileIsGfa(fullFileName)) ||
-         (graphFileType == TRINITY && !checkFileIsTrinityFasta(fullFileName)) )
-    {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, graphFileType + " file?",
-                                      "This file does not appear to be a " + graphFileTypeString + " file."
-                                      "\nDo you want to load it as a " + graphFileTypeString + " file anyway?",
-                                      QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::No)
-            return;
-    }
-
     resetScene();
     cleanUp();
     ui->selectionSearchNodesLineEdit->clear();
 
     try
     {
-        MyProgressDialog progress(this, "Loading " + graphFileTypeString + " file...", false);
+        MyProgressDialog progress(this, "Loading " + convertGraphFileTypeToString(graphFileType) + " file...", false);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
@@ -373,49 +366,6 @@ void MainWindow::buildOgdfGraphFromNodesAndEdges()
         if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
             g_assemblyGraph->m_deBruijnGraphEdges[i]->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
     }
-}
-
-
-
-//Cursory look to see if file appears to be a LastGraph file.
-bool MainWindow::checkFileIsLastGraph(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, "\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
-}
-
-//Cursory look to see if file appears to be a FASTG file.
-bool MainWindow::checkFileIsFastG(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, ">NODE");
-}
-
-//Cursory look to see if file appears to be a GFA file.
-bool MainWindow::checkFileIsGfa(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, "[SL]\t");
-}
-
-//Cursory look to see if file appears to be a Trinity.fasta file.
-bool MainWindow::checkFileIsTrinityFasta(QString fullFileName)
-{
-    return checkFirstLineOfFile(fullFileName, "path=\\[");
-}
-
-
-bool MainWindow::checkFirstLineOfFile(QString fullFileName, QString regExp)
-{
-    QFile inputFile(fullFileName);
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-        QTextStream in(&inputFile);
-        if (in.atEnd())
-            return false;
-        QRegExp rx(regExp);
-        QString line = in.readLine();
-        if (rx.indexIn(line) != -1)
-            return true;
-    }
-    return false;
 }
 
 

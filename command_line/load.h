@@ -6,7 +6,8 @@
 #include <QTextStream>
 #include <QApplication>
 
-int launchBandageAndLoadFile(QApplication * a, QStringList arguments);
+int bandageLoad(QApplication * a, QStringList arguments);
 void printLoadUsage();
+void voidPrintInvalidLoadOptions(QStringList invalidOptions);
 
 #endif // LOAD_H

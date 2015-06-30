@@ -73,11 +73,6 @@ private:
     std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromBlastHits();
     void setSceneRectangle();
-    bool checkFileIsLastGraph(QString fullFileName);
-    bool checkFileIsFastG(QString fullFileName);
-    bool checkFileIsGfa(QString fullFileName);
-    bool checkFileIsTrinityFasta(QString fullFileName);
-    bool checkFirstLineOfFile(QString fullFileName, QString regExp);
     void loadGraph2(GraphFileType graphFileType, QString filename);
     void buildOgdfGraphFromNodesAndEdges();
     void setInfoTexts();

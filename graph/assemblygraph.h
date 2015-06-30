@@ -70,6 +70,13 @@ public:
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
 
+    GraphFileType getGraphFileTypeFromFile(QString fullFileName);
+    bool checkFileIsLastGraph(QString fullFileName);
+    bool checkFileIsFastG(QString fullFileName);
+    bool checkFileIsGfa(QString fullFileName);
+    bool checkFileIsTrinityFasta(QString fullFileName);
+    bool checkFirstLineOfFile(QString fullFileName, QString regExp);
+
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
     QString convertNormalNumberStringToBandageNodeName(QString number);

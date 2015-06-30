@@ -1,6 +1,6 @@
 #include "load.h"
 
-int launchBandageAndLoadFile(QApplication * a, QStringList arguments)
+int bandageLoad(QApplication * a, QStringList arguments)
 {
     if (arguments.size() == 0)
     {
@@ -25,21 +25,7 @@ int launchBandageAndLoadFile(QApplication * a, QStringList arguments)
 
     if (invalidOptions.size() > 0)
     {
-        QString invalidOptionText = "Invalid option";
-        if (invalidOptions.size() > 1)
-            invalidOptionText += "s";
-        invalidOptionText += ": ";
-        for (int i = 0; i < invalidOptions.size(); ++i)
-        {
-            invalidOptionText += invalidOptions.at(i);
-            if (i < invalidOptions.size() - 1)
-                invalidOptionText += ", ";
-        }
-
-        QTextStream(stdout) << "" << endl;
-        QTextStream(stdout) << invalidOptionText << endl;
-        printLoadUsage();
-        QTextStream(stdout) << "" << endl;
+        voidPrintInvalidLoadOptions(invalidOptions);
         return 1;
     }
 
@@ -52,6 +38,26 @@ int launchBandageAndLoadFile(QApplication * a, QStringList arguments)
 void printLoadUsage()
 {
     QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage load <filename>" << endl << endl;
+    QTextStream(stdout) << "Usage:   Bandage load <graph>" << endl << endl;
     QTextStream(stdout) << "Options: -d    draw graph after loading" << endl << endl;
+}
+
+
+void voidPrintInvalidLoadOptions(QStringList invalidOptions)
+{
+    QString invalidOptionText = "Invalid option";
+    if (invalidOptions.size() > 1)
+        invalidOptionText += "s";
+    invalidOptionText += ": ";
+    for (int i = 0; i < invalidOptions.size(); ++i)
+    {
+        invalidOptionText += invalidOptions.at(i);
+        if (i < invalidOptions.size() - 1)
+            invalidOptionText += ", ";
+    }
+
+    QTextStream(stdout) << "" << endl;
+    QTextStream(stdout) << invalidOptionText << endl;
+    printLoadUsage();
+    QTextStream(stdout) << "" << endl;
 }
