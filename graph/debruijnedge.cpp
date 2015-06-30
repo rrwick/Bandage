@@ -65,7 +65,7 @@ bool DeBruijnEdge::edgeIsVisible()
         //the reverse complement where both nodes are negative.
         if (m_startingNode->isPositiveNode() && m_endingNode->isPositiveNode())
             return true;
-        if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode() < 0)
+        if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode())
             return false;
 
         //If the code got here, then one node is positive and the other
