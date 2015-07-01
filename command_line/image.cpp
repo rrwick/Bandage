@@ -50,9 +50,10 @@ int bandageImage(QStringList arguments)
     g_settings->graphScope = WHOLE_GRAPH;
 
     //SET DOUBLE MODE HERE, BASED ON OPTIONS
-    g_settings->doubleMode = false;
+    int doubleIndex = arguments.indexOf("-d");
+    g_settings->doubleMode = (doubleIndex > -1);
 
-    //SET IMAGE SIZE HERE, BASED ON OPTIONS
+    //Set image size, based on options
     int width = 0;
     int height = 0;
     int heightIndex = arguments.indexOf("-h") + 1;
@@ -84,26 +85,11 @@ int bandageImage(QStringList arguments)
     if (height == 0 && width == 0)
         height = 1000;
 
-    //If only height or width is set, set that one dimension and scale the
-    //other to fit.
+    //If only height or width is set, scale the other to fit.
     if (height > 0 && width == 0)
         width = height * sceneRectAspectRatio;
     else if (height == 0 && width > 0)
         height = width / sceneRectAspectRatio;
-
-//    //If both are set, scale the scene to fit in an image of exactly that
-//    //size.
-//    else
-//    {
-//        double widthFromHeight = height * sceneRectAspectRatio;
-//        if (widthFromHeight > width)
-//            width = widthFromHeight;
-//        else
-//        {
-//            double heightFromWidth = width / sceneRectAspectRatio;
-//            height = heightFromWidth;
-//        }
-//    }
 
     //Quit if width or height are bad values.
     if (width <= 0 || height <= 0 || width > 32767 || height > 32767)
@@ -124,11 +110,12 @@ void printImageUsage()
 {
     QTextStream(stdout) << "" << endl;
     QTextStream(stdout) << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
-    QTextStream(stdout) << "Options: -h  image height (default: 1000)" << endl;
-    QTextStream(stdout) << "         -w  image width (default: not set)" << endl;
-    QTextStream(stdout) << "             If only height or width is set, the other will be determined" << endl;
-    QTextStream(stdout) << "             automatically. If both are set, the image will be exactly that" << endl;
-    QTextStream(stdout) << "             size." << endl;
+    QTextStream(stdout) << "Options: -h <int> image height (default: 1000)" << endl;
+    QTextStream(stdout) << "         -w <int> image width (default: not set)" << endl;
+    QTextStream(stdout) << "                  If only height or width is set, the other will be determined" << endl;
+    QTextStream(stdout) << "                  automatically. If both are set, the image will be exactly that" << endl;
+    QTextStream(stdout) << "                  size." << endl;
+    QTextStream(stdout) << "Options: -d       draw graph in double mode" << endl;
     QTextStream(stdout) << "--------------------------------------------------------------------------------" << endl;
     QTextStream(stdout) << "" << endl;
 }
