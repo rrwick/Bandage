@@ -49,7 +49,7 @@ int bandageImage(QStringList arguments)
     //SET SCOPE HERE, BASED ON OPTIONS
     g_settings->graphScope = WHOLE_GRAPH;
 
-    //SET DOUBLE MODE HERE, BASED ON OPTIONS
+    //Set double mode, based on option
     int doubleIndex = arguments.indexOf("-d");
     g_settings->doubleMode = (doubleIndex > -1);
 
@@ -63,7 +63,13 @@ int bandageImage(QStringList arguments)
     if (widthIndex != 0 && widthIndex < arguments.size())
         width = arguments.at(widthIndex).toInt();
 
-    //SET BASE PAIRS PER SEGMENT HERE, BASED ON OPTIONS
+    //Set base pairs per segment, based on option
+    int basePairsPerSegmentIndex = arguments.indexOf("-b") + 1;
+    if (basePairsPerSegmentIndex != 0 && basePairsPerSegmentIndex < arguments.size())
+    {
+        g_settings->manualBasePairsPerSegment = arguments.at(basePairsPerSegmentIndex).toInt();
+        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+    }
 
 
     //IF WE HAVE A REDUCED SCOPE, WE'LL NEED TO SET THE NODE DISTANCE HERE
@@ -115,7 +121,10 @@ void printImageUsage()
     QTextStream(stdout) << "                  If only height or width is set, the other will be determined" << endl;
     QTextStream(stdout) << "                  automatically. If both are set, the image will be exactly that" << endl;
     QTextStream(stdout) << "                  size." << endl;
-    QTextStream(stdout) << "Options: -d       draw graph in double mode" << endl;
+    QTextStream(stdout) << "         -d       draw graph in double mode (default: off)" << endl;
+    QTextStream(stdout) << "         -b <int> base pairs per segment (default: auto)" << endl;
+    QTextStream(stdout) << "                  High values result in longer nodes, small values in shorter" << endl;
+    QTextStream(stdout) << "                  nodes." << endl;
     QTextStream(stdout) << "--------------------------------------------------------------------------------" << endl;
     QTextStream(stdout) << "" << endl;
 }
