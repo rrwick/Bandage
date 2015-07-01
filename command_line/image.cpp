@@ -5,16 +5,20 @@
 #include "../graph/assemblygraph.h"
 #include <vector>
 #include "../program/settings.h"
+#include <QPainter>
 
-int bandageImage(QApplication * a, QStringList arguments)
+int bandageImage(QStringList arguments)
 {
-    if (arguments.size() == 0)
+    if (arguments.size() < 2)
     {
         printImageUsage();
         return 1;
     }
 
-    QString filename = arguments.at(0);
+    QString graphFilename = arguments.at(0);
+    arguments.pop_front();
+
+    QString imageSaveFilename = arguments.at(0);
     arguments.pop_front();
 
     QStringList invalidOptions;
@@ -33,18 +37,28 @@ int bandageImage(QApplication * a, QStringList arguments)
         return 1;
     }
 
-    bool loadSuccess = loadAssemblyGraph(filename);
+    g_settings = new Settings();
+
+    bool loadSuccess = loadAssemblyGraph(graphFilename);
     if (!loadSuccess)
         return 1;
 
+    AssemblyGraph * test = g_assemblyGraph;
+
     MyGraphicsScene scene;
-    g_settings = new Settings();
 
     //SET SCOPE HERE, BASED ON OPTIONS
-    g_settings->graphScope == AROUND_NODE;
+    g_settings->graphScope = WHOLE_GRAPH;
 
     //SET DOUBLE MODE HERE, BASED ON OPTIONS
     g_settings->doubleMode = false;
+
+    //SET IMAGE SIZE HERE, BASED ON OPTIONS
+    int width = 0;
+    int height = 0;
+
+    //SET BASE PAIRS PER SEGMENT HERE, BASED ON OPTIONS
+
 
     //IF WE HAVE A REDUCED SCOPE, WE'LL NEED TO SET THE NODE DISTANCE HERE
     int nodeDistance = 0;
@@ -56,6 +70,47 @@ int bandageImage(QApplication * a, QStringList arguments)
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, nodeDistance);
     layoutGraph();
 
+    g_assemblyGraph->addGraphicsItemsToScene(&scene);
+    scene.setSceneRectangle();
+    double sceneRectAspectRatio = scene.sceneRect().width() / scene.sceneRect().height();
+
+    //Determine image size
+    //If neither height nor width set, use a default of height = 1000.
+    if (height == 0 && width == 0)
+        height = 1000;
+
+    //If only height or width is set, set that one dimension and scale the
+    //other to fit.
+    if (height > 0 && width == 0)
+        width = height * sceneRectAspectRatio;
+    else if (height == 0 && width > 0)
+        height = width / sceneRectAspectRatio;
+
+    //If both are set, scale the scene to fit in an image of exactly that
+    //size.
+    else
+    {
+        double widthFromHeight = height * sceneRectAspectRatio;
+        if (widthFromHeight > width)
+            width = widthFromHeight;
+        else
+        {
+            double heightFromWidth = width / sceneRectAspectRatio;
+            height = heightFromWidth;
+        }
+    }
+
+    //Quit if width or height are bad values.
+    if (width <= 0 || height <= 0 || width > 32767 || height > 32767)
+        return 1;
+
+    QImage image(width, height, QImage::Format_ARGB32);
+    image.fill(Qt::white);
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    scene.render(&painter);
+    image.save(imageSaveFilename);
+
     return 0;
 }
 
@@ -63,7 +118,7 @@ int bandageImage(QApplication * a, QStringList arguments)
 void printImageUsage()
 {
     QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage image <graph>" << endl << endl;
+    QTextStream(stdout) << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
     QTextStream(stdout) << "Options: " << endl << endl;
 }
 

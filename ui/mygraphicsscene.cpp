@@ -143,3 +143,19 @@ double MyGraphicsScene::getTopZValue()
 
     return topZ;
 }
+
+
+//Expands the scene rectangle a bit beyond the items so they aren't drawn right to the edge.
+void MyGraphicsScene::setSceneRectangle()
+{
+    QRectF boundingRect = itemsBoundingRect();
+    double width = boundingRect.width();
+    double height = boundingRect.height();
+    double larger = std::max(width, height);
+
+    double margin = larger * 0.05; //5% margin
+
+    setSceneRect(boundingRect.left() - margin, boundingRect.top() - margin,
+                 width + 2 * margin, height + 2 * margin);
+}
+

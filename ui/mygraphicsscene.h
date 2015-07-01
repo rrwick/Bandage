@@ -37,6 +37,7 @@ public:
     DeBruijnNode * getOneSelectedNode();
     DeBruijnEdge * getOneSelectedEdge();
     double getTopZValue();
+    void setSceneRectangle();
 
 signals:
 

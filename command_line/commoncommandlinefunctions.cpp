@@ -18,6 +18,5 @@ void layoutGraph()
     ogdf::FMMMLayout fmmm;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_settings->graphLayoutQuality, g_settings->segmentLength);
-
     graphLayoutWorker->layoutGraph();
 }

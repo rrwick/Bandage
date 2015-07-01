@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include "../graph/graphicsitemedge.h"
 
 
 AssemblyGraph::AssemblyGraph() :
@@ -925,6 +926,7 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
         return false;
     }
 
+    determineGraphInfo();
     return true;
 }
 
@@ -979,6 +981,61 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         g_assemblyGraph->m_deBruijnGraphEdges[i]->determineIfDrawn();
         if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
             g_assemblyGraph->m_deBruijnGraphEdges[i]->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
+    }
+}
+
+
+
+void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
+{
+    scene->clear();
+
+    double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
+
+    //First make the GraphicsItemNode objects
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        if (node->m_drawn)
+        {
+            if (meanDrawnCoverage == 0)
+                node->m_coverageRelativeToMeanDrawnCoverage = 1.0;
+            else
+                node->m_coverageRelativeToMeanDrawnCoverage = node->m_coverage / meanDrawnCoverage;
+            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, g_assemblyGraph->m_graphAttributes);
+            node->m_graphicsItemNode = graphicsItemNode;
+            graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
+            graphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
+        }
+    }
+
+    g_assemblyGraph->resetAllNodeColours();
+
+    //Then make the GraphicsItemEdge objects and add them to the scene first
+    //so they are drawn underneath
+    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+    {
+        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
+        {
+            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(g_assemblyGraph->m_deBruijnGraphEdges[i]);
+            g_assemblyGraph->m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
+            graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
+            scene->addItem(graphicsItemEdge);
+        }
+    }
+
+    //Now add the GraphicsItemNode objects to the scene so they are drawn
+    //on top
+    QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnNode * node = j.value();
+        if (node->hasGraphicsItem())
+            scene->addItem(node->m_graphicsItemNode);
     }
 }
 

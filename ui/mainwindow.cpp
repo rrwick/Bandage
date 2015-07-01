@@ -563,8 +563,8 @@ void MainWindow::graphLayoutFinished()
 {
     delete m_fmmm;
     m_layoutThread = 0;
-    addGraphicsItemsToScene();
-    setSceneRectangle();
+    g_assemblyGraph->addGraphicsItemsToScene(m_scene);
+    m_scene->setSceneRectangle();
     zoomToFitScene();
     selectionChanged();
 
@@ -742,61 +742,6 @@ void MainWindow::layoutGraph()
     m_layoutThread->start();
 }
 
-
-
-
-void MainWindow::addGraphicsItemsToScene()
-{
-    m_scene->clear();
-
-    double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
-
-    //First make the GraphicsItemNode objects
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (i.value()->m_drawn)
-        {
-            DeBruijnNode * node = i.value();
-            if (meanDrawnCoverage == 0)
-                node->m_coverageRelativeToMeanDrawnCoverage = 1.0;
-            else
-                node->m_coverageRelativeToMeanDrawnCoverage = node->m_coverage / meanDrawnCoverage;
-            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, g_assemblyGraph->m_graphAttributes);
-            node->m_graphicsItemNode = graphicsItemNode;
-            graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
-            graphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
-        }
-    }
-
-    g_assemblyGraph->resetAllNodeColours();
-
-    //Then make the GraphicsItemEdge objects and add them to the scene first
-    //so they are drawn underneath
-    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
-    {
-        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
-        {
-            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(g_assemblyGraph->m_deBruijnGraphEdges[i]);
-            g_assemblyGraph->m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
-            graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
-            m_scene->addItem(graphicsItemEdge);
-        }
-    }
-
-    //Now add the GraphicsItemNode objects to the scene so they are drawn
-    //on top
-    QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
-    while (j.hasNext())
-    {
-        j.next();
-        DeBruijnNode * node = j.value();
-        if (node->hasGraphicsItem())
-            m_scene->addItem(node->m_graphicsItemNode);
-    }
-
-}
 
 
 
@@ -1027,7 +972,7 @@ void MainWindow::saveImageEntireScene()
         image.fill(Qt::white);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
-        setSceneRectangle();
+        m_scene->setSceneRectangle();
         m_scene->render(&painter);
         image.save(fullFileName);
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
@@ -1297,20 +1242,6 @@ void MainWindow::selectUserSpecifiedNodes()
     selectionChanged();
 }
 
-
-//Expands the scene rectangle a bit beyond the items so they aren't drawn right to the edge.
-void MainWindow::setSceneRectangle()
-{
-    QRectF itemsBoundingRect = m_scene->itemsBoundingRect();
-    double width = itemsBoundingRect.width();
-    double height = itemsBoundingRect.height();
-    double larger = std::max(width, height);
-
-    double margin = larger * 0.05; //5% margin
-
-    m_scene->setSceneRect(itemsBoundingRect.left() - margin, itemsBoundingRect.top() - margin,
-                          width + 2 * margin, height + 2 * margin);
-}
 
 void MainWindow::openAboutDialog()
 {

@@ -1,7 +1,7 @@
 #include "contiguous.h"
 #include "command_line/commoncommandlinefunctions.h"
 
-int bandageContiguous(QApplication * a, QStringList arguments)
+int bandageContiguous(QStringList arguments)
 {
     if (arguments.size() < 2)
     {

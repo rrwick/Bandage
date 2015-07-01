@@ -6,7 +6,7 @@
 #include <QTextStream>
 #include <QApplication>
 
-int bandageContiguous(QApplication * a, QStringList arguments);
+int bandageContiguous(QStringList arguments);
 void printContiguousUsage();
 void voidPrintInvalidContiguousOptions(QStringList invalidOptions);
 

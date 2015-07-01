@@ -25,6 +25,7 @@
 #include <QString>
 #include <QMap>
 #include "../program/globals.h"
+#include "../ui/mygraphicsscene.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;
@@ -79,6 +80,7 @@ public:
 
     bool loadGraphFromFile(QString filename);
     void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
+    void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

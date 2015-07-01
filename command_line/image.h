@@ -7,7 +7,7 @@
 #include <QTextStream>
 #include <QApplication>
 
-int bandageImage(QApplication * a, QStringList arguments);
+int bandageImage(QStringList arguments);
 void printImageUsage();
 void voidPrintInvalidImageOptions(QStringList invalidOptions);
 

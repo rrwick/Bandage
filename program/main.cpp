@@ -76,10 +76,10 @@ int main(int argc, char *argv[])
         return bandageLoad(&a, arguments);
 
     else if (first == "image")
-        return bandageImage(&a, arguments);
+        return bandageImage(arguments);
 
     else if (first == "contiguous")
-        return bandageContiguous(&a, arguments);
+        return bandageContiguous(arguments);
 
     else
     {
