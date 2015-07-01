@@ -6,5 +6,6 @@
 
 bool loadAssemblyGraph(QString filename);
 void layoutGraph();
+QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

@@ -9,6 +9,7 @@
 
 int bandageImage(QStringList arguments);
 void printImageUsage();
-void voidPrintInvalidImageOptions(QStringList invalidOptions);
+QString checkForInvalidOptions(QStringList arguments);
+void parseOptions(QStringList arguments, int * width, int * height);
 
 #endif // IMAGE_H

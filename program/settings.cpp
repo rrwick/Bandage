@@ -60,7 +60,7 @@ Settings::Settings()
 
     nodeDragging = NEARBY_PIECES;
 
-    nodeColourScheme = ONE_COLOUR;
+    nodeColourScheme = RANDOM_COLOURS;
     uniformPositiveNodeColour = QColor(225, 125, 125);
     setNegativeNodeColour();
     uniformNodeSpecialColour = QColor(0, 255, 0);
