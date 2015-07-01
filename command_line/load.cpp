@@ -3,6 +3,12 @@
 
 int bandageLoad(QApplication * a, QStringList arguments)
 {
+    if (checkForHelp(arguments))
+    {
+        printLoadUsage();
+        return 0;
+    }
+
     if (arguments.size() == 0)
     {
         printLoadUsage();

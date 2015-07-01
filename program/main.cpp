@@ -22,9 +22,10 @@
 #include <QString>
 #include <QCommandLineParser>
 #include <QTextStream>
-#include "command_line/load.h"
-#include "command_line/image.h"
-#include "command_line/contiguous.h"
+#include "../command_line/load.h"
+#include "../command_line/image.h"
+#include "../command_line/contiguous.h"
+#include "../command_line/commoncommandlinefunctions.h"
 
 void printUsage()
 {

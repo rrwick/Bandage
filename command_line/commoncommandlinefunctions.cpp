@@ -21,6 +21,15 @@ void layoutGraph()
     graphLayoutWorker->layoutGraph();
 }
 
+bool checkForHelp(QStringList arguments)
+{
+    int h1 = arguments.indexOf("-h");
+    int h2 = arguments.indexOf("-help");
+    int h3 = arguments.indexOf("--help");
+
+    return (h1 != -1 || h2 != -1 || h3 != -1);
+}
+
 
 
 //Returns empty string if everything is okay and an error

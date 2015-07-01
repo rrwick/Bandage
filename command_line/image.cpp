@@ -9,6 +9,12 @@
 
 int bandageImage(QStringList arguments)
 {
+    if (checkForHelp(arguments))
+    {
+        printImageUsage();
+        return 0;
+    }
+
     if (arguments.size() < 2)
     {
         printImageUsage();

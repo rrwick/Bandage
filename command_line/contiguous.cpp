@@ -4,6 +4,12 @@
 
 int bandageContiguous(QStringList arguments)
 {
+    if (checkForHelp(arguments))
+    {
+        printContiguousUsage();
+        return 0;
+    }
+
     if (arguments.size() < 2)
     {
         printContiguousUsage();
