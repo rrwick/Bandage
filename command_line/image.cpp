@@ -22,7 +22,6 @@ int bandageImage(QStringList arguments)
     arguments.pop_front();
 
     QStringList invalidOptions;
-    arguments.removeDuplicates();
     for (int i = 0; i < arguments.size(); ++i)
     {
 //        if (arguments.at(i) == "-d")
@@ -56,6 +55,12 @@ int bandageImage(QStringList arguments)
     //SET IMAGE SIZE HERE, BASED ON OPTIONS
     int width = 0;
     int height = 0;
+    int heightIndex = arguments.indexOf("-h") + 1;
+    if (heightIndex != 0 && heightIndex < arguments.size())
+        height = arguments.at(heightIndex).toInt();
+    int widthIndex = arguments.indexOf("-w") + 1;
+    if (widthIndex != 0 && widthIndex < arguments.size())
+        width = arguments.at(widthIndex).toInt();
 
     //SET BASE PAIRS PER SEGMENT HERE, BASED ON OPTIONS
 
@@ -86,19 +91,19 @@ int bandageImage(QStringList arguments)
     else if (height == 0 && width > 0)
         height = width / sceneRectAspectRatio;
 
-    //If both are set, scale the scene to fit in an image of exactly that
-    //size.
-    else
-    {
-        double widthFromHeight = height * sceneRectAspectRatio;
-        if (widthFromHeight > width)
-            width = widthFromHeight;
-        else
-        {
-            double heightFromWidth = width / sceneRectAspectRatio;
-            height = heightFromWidth;
-        }
-    }
+//    //If both are set, scale the scene to fit in an image of exactly that
+//    //size.
+//    else
+//    {
+//        double widthFromHeight = height * sceneRectAspectRatio;
+//        if (widthFromHeight > width)
+//            width = widthFromHeight;
+//        else
+//        {
+//            double heightFromWidth = width / sceneRectAspectRatio;
+//            height = heightFromWidth;
+//        }
+//    }
 
     //Quit if width or height are bad values.
     if (width <= 0 || height <= 0 || width > 32767 || height > 32767)
@@ -119,7 +124,13 @@ void printImageUsage()
 {
     QTextStream(stdout) << "" << endl;
     QTextStream(stdout) << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
-    QTextStream(stdout) << "Options: " << endl << endl;
+    QTextStream(stdout) << "Options: -h  image height (default: 1000)" << endl;
+    QTextStream(stdout) << "         -w  image width (default: not set)" << endl;
+    QTextStream(stdout) << "             If only height or width is set, the other will be determined" << endl;
+    QTextStream(stdout) << "             automatically. If both are set, the image will be exactly that" << endl;
+    QTextStream(stdout) << "             size." << endl;
+    QTextStream(stdout) << "--------------------------------------------------------------------------------" << endl;
+    QTextStream(stdout) << "" << endl;
 }
 
 
