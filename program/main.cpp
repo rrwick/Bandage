@@ -90,14 +90,4 @@ int main(int argc, char *argv[])
         QTextStream(stdout) << "" << endl;
         return 1;
     }
-
-
-
-
-
-//    QString filename;
-//    MainWindow w(filename);
-//    w.show();
-
-//    return a.exec();
 }
