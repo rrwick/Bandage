@@ -1,5 +1,5 @@
 #include "image.h"
-#include "command_line/commoncommandlinefunctions.h"
+#include "commoncommandlinefunctions.h"
 #include "../program/globals.h"
 #include "../ui/mygraphicsscene.h"
 #include "../graph/assemblygraph.h"
@@ -24,17 +24,16 @@ int bandageImage(QStringList arguments)
     QString imageFileExtension = imageSaveFilename.right(4);
     if (imageFileExtension != ".png" && imageFileExtension != ".jpg")
     {
-        QTextStream(stdout) << "Error: the image filename must end in .png or .jpg" << endl;
+        QTextStream(stdout) << "" << endl << "Error: the output filename must end in .png or .jpg" << endl;
+        printImageUsage();
         return 1;
     }
 
-    QString error = checkForInvalidOptions(arguments);
+    QString error = checkForInvalidImageOptions(arguments);
     if (error.length() > 0)
     {
-        QTextStream(stdout) << "" << endl;
-        QTextStream(stdout) << "Error: " << error << endl;
+        QTextStream(stdout) << "" << endl << "Error: " << error << endl;
         printImageUsage();
-        QTextStream(stdout) << "" << endl;
         return 1;
     }
 
@@ -48,7 +47,7 @@ int bandageImage(QStringList arguments)
 
     int width = 0;
     int height = 0;
-    parseOptions(arguments, &width, &height);
+    parseImageOptions(arguments, &width, &height);
 
     //CURRENTLY FIXED AS WHOLE_GRAPH, THOUGH I WOULD LIKE TO ADD
     //SUPPORT FOR AROUND_BLAST_HITS
@@ -103,12 +102,11 @@ void printImageUsage()
     QTextStream(stdout) << "         -b <int> base pairs per segment (default: auto)" << endl;
     QTextStream(stdout) << "                  High values result in longer nodes, small values in shorter" << endl;
     QTextStream(stdout) << "                  nodes." << endl;
-    QTextStream(stdout) << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl;
-    QTextStream(stdout) << "--------------------------------------------------------------------------------" << endl;
-    QTextStream(stdout) << "" << endl;
+    QTextStream(stdout) << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
+//                          --------------------------------------------------------------------------------  //80 character guide
 }
 
-QString checkForInvalidOptions(QStringList arguments)
+QString checkForInvalidImageOptions(QStringList arguments)
 {
     QString error = "";
 
@@ -131,7 +129,7 @@ QString checkForInvalidOptions(QStringList arguments)
 
 
 
-void parseOptions(QStringList arguments, int * width, int * height)
+void parseImageOptions(QStringList arguments, int * width, int * height)
 {
     int heightIndex = arguments.indexOf("-h") + 1;
     if (heightIndex != 0 && heightIndex < arguments.size())

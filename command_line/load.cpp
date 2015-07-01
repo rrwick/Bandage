@@ -1,4 +1,5 @@
 #include "load.h"
+#include "commoncommandlinefunctions.h"
 
 int bandageLoad(QApplication * a, QStringList arguments)
 {
@@ -11,23 +12,17 @@ int bandageLoad(QApplication * a, QStringList arguments)
     QString filename = arguments.at(0);
     arguments.pop_front();
 
-    bool drawGraph = false;
 
-    QStringList invalidOptions;
-    arguments.removeDuplicates();
-    for (int i = 0; i < arguments.size(); ++i)
+    QString error = checkForInvalidLoadOptions(arguments);
+    if (error.length() > 0)
     {
-        if (arguments.at(i) == "-d")
-            drawGraph = true;
-        else
-            invalidOptions.push_back(arguments.at(i));
-    }
-
-    if (invalidOptions.size() > 0)
-    {
-        voidPrintInvalidLoadOptions(invalidOptions);
+        QTextStream(stdout) << "" << endl << "Error: " << error << endl;
+        printLoadUsage();
         return 1;
     }
+
+    bool drawGraph;
+    parseLoadOptions(arguments, &drawGraph);
 
     MainWindow w(filename, drawGraph);
     w.show();
@@ -43,21 +38,18 @@ void printLoadUsage()
 }
 
 
-void voidPrintInvalidLoadOptions(QStringList invalidOptions)
-{
-    QString invalidOptionText = "Invalid option";
-    if (invalidOptions.size() > 1)
-        invalidOptionText += "s";
-    invalidOptionText += ": ";
-    for (int i = 0; i < invalidOptions.size(); ++i)
-    {
-        invalidOptionText += invalidOptions.at(i);
-        if (i < invalidOptions.size() - 1)
-            invalidOptionText += ", ";
-    }
 
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << invalidOptionText << endl;
-    printLoadUsage();
-    QTextStream(stdout) << "" << endl;
+QString checkForInvalidLoadOptions(QStringList arguments)
+{
+    checkOptionWithoutValue("-d", &arguments);
+
+    return checkForExcessArguments(arguments);
+}
+
+
+
+void parseLoadOptions(QStringList arguments, bool * drawGraph)
+{
+    int drawIndex = arguments.indexOf("-d");
+    *drawGraph = (drawIndex > -1);
 }

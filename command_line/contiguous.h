@@ -8,6 +8,7 @@
 
 int bandageContiguous(QStringList arguments);
 void printContiguousUsage();
-void voidPrintInvalidContiguousOptions(QStringList invalidOptions);
+QString checkForInvalidContiguousOptions(QStringList arguments);
+void parseContiguousOptions(QStringList arguments);
 
 #endif // CONTIGUOUS_H

@@ -8,6 +8,7 @@
 
 int bandageLoad(QApplication * a, QStringList arguments);
 void printLoadUsage();
-void voidPrintInvalidLoadOptions(QStringList invalidOptions);
+QString checkForInvalidLoadOptions(QStringList arguments);
+void parseLoadOptions(QStringList arguments, bool *drawGraph);
 
 #endif // LOAD_H
