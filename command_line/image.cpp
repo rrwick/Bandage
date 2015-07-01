@@ -46,9 +46,6 @@ int bandageImage(QStringList arguments)
 
     MyGraphicsScene scene;
 
-    //SET SCOPE HERE, BASED ON OPTIONS
-    g_settings->graphScope = WHOLE_GRAPH;
-
     //Set double mode, based on option
     int doubleIndex = arguments.indexOf("-d");
     g_settings->doubleMode = (doubleIndex > -1);
@@ -71,6 +68,21 @@ int bandageImage(QStringList arguments)
         g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
     }
 
+    //Set graph layout iterations
+    int qualityIndex = arguments.indexOf("-q") + 1;
+    if (qualityIndex != 0 && qualityIndex < arguments.size())
+    {
+        int quality = arguments.at(qualityIndex).toInt() - 1;
+        if (quality < 0)
+            quality = 0;
+        if (quality > 4)
+            quality = 4;
+        g_settings->graphLayoutQuality = quality;
+    }
+
+
+    //SET SCOPE HERE, BASED ON OPTIONS
+    g_settings->graphScope = WHOLE_GRAPH;
 
     //IF WE HAVE A REDUCED SCOPE, WE'LL NEED TO SET THE NODE DISTANCE HERE
     int nodeDistance = 0;
@@ -125,6 +137,7 @@ void printImageUsage()
     QTextStream(stdout) << "         -b <int> base pairs per segment (default: auto)" << endl;
     QTextStream(stdout) << "                  High values result in longer nodes, small values in shorter" << endl;
     QTextStream(stdout) << "                  nodes." << endl;
+    QTextStream(stdout) << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl;
     QTextStream(stdout) << "--------------------------------------------------------------------------------" << endl;
     QTextStream(stdout) << "" << endl;
 }
