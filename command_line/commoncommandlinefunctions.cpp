@@ -24,7 +24,8 @@ void layoutGraph()
 
 
 //Returns empty string if everything is okay and an error
-//message if there's a problem.
+//message if there's a problem.  If everything is okay, it
+//also removes the option and its value from arguments.
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max)
 {
     int optionIndex = arguments->indexOf(option);
@@ -57,4 +58,40 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min, int 
     arguments->removeAt(optionIndex);
 
     return "";
+}
+
+//This function simply removes an option from arguments if it is found.
+void checkOptionWithoutValue(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return ;
+
+    //If the code got here, the option is okay.
+    //Remove it from the arguments.
+    arguments->removeAt(optionIndex);
+}
+
+
+//This function generates an error if excess arguments are left after
+//parsing.
+QString checkForExcessArguments(QStringList arguments)
+{
+    if (arguments.size() == 0)
+        return "";
+
+    QString invalidOptionText = "Invalid option";
+    if (arguments.size() > 1)
+        invalidOptionText += "s";
+    invalidOptionText += ": ";
+    for (int i = 0; i < arguments.size(); ++i)
+    {
+        invalidOptionText += arguments.at(i);
+        if (i < arguments.size() - 1)
+            invalidOptionText += ", ";
+    }
+
+    return invalidOptionText;
 }

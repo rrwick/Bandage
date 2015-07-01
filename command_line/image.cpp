@@ -31,6 +31,7 @@ int bandageImage(QStringList arguments)
     QString error = checkForInvalidOptions(arguments);
     if (error.length() > 0)
     {
+        QTextStream(stdout) << "" << endl;
         QTextStream(stdout) << "Error: " << error << endl;
         printImageUsage();
         QTextStream(stdout) << "" << endl;
@@ -110,24 +111,22 @@ void printImageUsage()
 QString checkForInvalidOptions(QStringList arguments)
 {
     QString error = "";
+
     error = checkOptionForInt("-h", &arguments, 1, 32767);
-    if (error.length() > 0)
-        return error;
+    if (error.length() > 0) return error;
 
     error = checkOptionForInt("-w", &arguments, 1, 32767);
-    if (error.length() > 0)
-        return error;
+    if (error.length() > 0) return error;
 
     error = checkOptionForInt("-b", &arguments, 1, std::numeric_limits<int>::max());
-    if (error.length() > 0)
-        return error;
+    if (error.length() > 0) return error;
 
     error = checkOptionForInt("-q", &arguments, 1, 5);
-    if (error.length() > 0)
-        return error;
+    if (error.length() > 0) return error;
 
+    checkOptionWithoutValue("-d", &arguments);
 
-    return "";
+    return checkForExcessArguments(arguments);
 }
 
 
