@@ -27,14 +27,14 @@
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 
-void printUsage()
+void printUsage(QTextStream * out)
 {
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage <command> [options]" << endl << endl;
-    QTextStream(stdout) << "Command: <blank>      launch Bandage GUI" << endl;
-    QTextStream(stdout) << "         load         launch Bandage GUI and load a graph file" << endl;
-    QTextStream(stdout) << "         image        generate a PNG image of a graph" << endl;
-    QTextStream(stdout) << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
+    *out << "" << endl;
+    *out << "Usage:   Bandage <command> [options]" << endl << endl;
+    *out << "Command: <blank>      launch Bandage GUI" << endl;
+    *out << "         load         launch Bandage GUI and load a graph file" << endl;
+    *out << "         image        generate a PNG image of a graph" << endl;
+    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -42,6 +42,9 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QApplication::setApplicationName("Bandage");
     QApplication::setApplicationVersion("0.6.0");
+
+    QTextStream out(stdout);
+    QTextStream err(stdout);
 
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();
@@ -59,17 +62,17 @@ int main(int argc, char *argv[])
 
     if (first == "-h" || first == "-help" || first == "--help")
     {
-        QTextStream(stdout) << "" << endl;
-        QTextStream(stdout) << "Program: Bandage" << endl;
-        QTextStream(stdout) << "Version: " << QApplication::applicationVersion() << endl;
-        printUsage();
-        QTextStream(stdout) << "" << endl;
+        out << "" << endl;
+        out << "Program: Bandage" << endl;
+        out << "Version: " << QApplication::applicationVersion() << endl;
+        printUsage(&out);
+        out << "" << endl;
         return 0;
     }
 
     else if (first == "-v" || first == "-version" || first == "--version")
     {
-        QTextStream(stdout) << "Version: " << QApplication::applicationVersion() << endl;
+        out << "Version: " << QApplication::applicationVersion() << endl;
         return 0;
     }
 
@@ -84,10 +87,9 @@ int main(int argc, char *argv[])
 
     else
     {
-        QTextStream(stdout) << "" << endl;
-        QTextStream(stdout) << "Invalid command: " << first << endl;
-        printUsage();
-        QTextStream(stdout) << "" << endl;
+        err << "" << endl << "Invalid command: " << first << endl;
+        printUsage(&err);
+        err << "" << endl;
         return 1;
     }
 }

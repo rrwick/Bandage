@@ -21,15 +21,18 @@
 
 int bandageLoad(QApplication * a, QStringList arguments)
 {
+    QTextStream out(stdout);
+    QTextStream err(stdout);
+
     if (checkForHelp(arguments))
     {
-        printLoadUsage();
+        printLoadUsage(&out);
         return 0;
     }
 
     if (arguments.size() == 0)
     {
-        printLoadUsage();
+        printLoadUsage(&err);
         return 1;
     }
 
@@ -40,8 +43,8 @@ int bandageLoad(QApplication * a, QStringList arguments)
     QString error = checkForInvalidLoadOptions(arguments);
     if (error.length() > 0)
     {
-        QTextStream(stdout) << "" << endl << "Error: " << error << endl;
-        printLoadUsage();
+        err << "" << endl << "Error: " << error << endl;
+        printLoadUsage(&err);
         return 1;
     }
 
@@ -54,11 +57,11 @@ int bandageLoad(QApplication * a, QStringList arguments)
 }
 
 
-void printLoadUsage()
+void printLoadUsage(QTextStream * out)
 {
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage load <graph>" << endl << endl;
-    QTextStream(stdout) << "Options: -d    draw graph after loading" << endl << endl;
+    *out << "" << endl;
+    *out << "Usage:   Bandage load <graph>" << endl << endl;
+    *out << "Options: -d    draw graph after loading" << endl << endl;
 }
 
 

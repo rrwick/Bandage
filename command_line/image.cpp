@@ -27,15 +27,18 @@
 
 int bandageImage(QStringList arguments)
 {
+    QTextStream out(stdout);
+    QTextStream err(stdout);
+
     if (checkForHelp(arguments))
     {
-        printImageUsage();
+        printImageUsage(&out);
         return 0;
     }
 
     if (arguments.size() < 2)
     {
-        printImageUsage();
+        printImageUsage(&err);
         return 1;
     }
 
@@ -48,16 +51,16 @@ int bandageImage(QStringList arguments)
     QString imageFileExtension = imageSaveFilename.right(4);
     if (imageFileExtension != ".png" && imageFileExtension != ".jpg")
     {
-        QTextStream(stdout) << "" << endl << "Error: the output filename must end in .png or .jpg" << endl;
-        printImageUsage();
+        err << "" << endl << "Error: the output filename must end in .png or .jpg" << endl;
+        printImageUsage(&err);
         return 1;
     }
 
     QString error = checkForInvalidImageOptions(arguments);
     if (error.length() > 0)
     {
-        QTextStream(stdout) << "" << endl << "Error: " << error << endl;
-        printImageUsage();
+        err << "" << endl << "Error: " << error << endl;
+        printImageUsage(&err);
         return 1;
     }
 
@@ -106,28 +109,28 @@ int bandageImage(QStringList arguments)
     bool success = image.save(imageSaveFilename);
     if (!success)
     {
-        QTextStream(stdout) << "There was an error writing the image to file." << endl;
+        out << "There was an error writing the image to file." << endl;
         return 1;
     }
     return 0;
 }
 
 
-void printImageUsage()
+void printImageUsage(QTextStream * out)
 {
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
-    QTextStream(stdout) << "Options: -h <int> image height (default: 1000)" << endl;
-    QTextStream(stdout) << "         -w <int> image width (default: not set)" << endl;
-    QTextStream(stdout) << "                  If only height or width is set, the other will be determined" << endl;
-    QTextStream(stdout) << "                  automatically. If both are set, the image will be exactly that" << endl;
-    QTextStream(stdout) << "                  size." << endl;
-    QTextStream(stdout) << "         -d       draw graph in double mode (default: off)" << endl;
-    QTextStream(stdout) << "         -b <int> base pairs per segment (default: auto)" << endl;
-    QTextStream(stdout) << "                  High values result in longer nodes, small values in shorter" << endl;
-    QTextStream(stdout) << "                  nodes." << endl;
-    QTextStream(stdout) << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
-//                          --------------------------------------------------------------------------------  //80 character guide
+    *out << "" << endl;
+    *out << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
+    *out << "Options: -h <int> image height (default: 1000)" << endl;
+    *out << "         -w <int> image width (default: not set)" << endl;
+    *out << "                  If only height or width is set, the other will be determined" << endl;
+    *out << "                  automatically. If both are set, the image will be exactly that" << endl;
+    *out << "                  size." << endl;
+    *out << "         -d       draw graph in double mode (default: off)" << endl;
+    *out << "         -b <int> base pairs per segment (default: auto)" << endl;
+    *out << "                  High values result in longer nodes, small values in shorter" << endl;
+    *out << "                  nodes." << endl;
+    *out << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)

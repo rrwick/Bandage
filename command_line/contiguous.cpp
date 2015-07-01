@@ -22,15 +22,18 @@
 
 int bandageContiguous(QStringList arguments)
 {
+    QTextStream out(stdout);
+    QTextStream err(stdout);
+
     if (checkForHelp(arguments))
     {
-        printContiguousUsage();
+        printContiguousUsage(&out);
         return 0;
     }
 
     if (arguments.size() < 2)
     {
-        printContiguousUsage();
+        printContiguousUsage(&err);
         return 1;
     }
 
@@ -43,8 +46,8 @@ int bandageContiguous(QStringList arguments)
     QString error = checkForInvalidContiguousOptions(arguments);
     if (error.length() > 0)
     {
-        QTextStream(stdout) << "" << endl << "Error: " << error << endl;
-        printContiguousUsage();
+        err << "" << endl << "Error: " << error << endl;
+        printContiguousUsage(&err);
         return 1;
     }
 
@@ -59,21 +62,16 @@ int bandageContiguous(QStringList arguments)
 
 
 
-
-
-
-
-
     return 0;
 }
 
 
 
-void printContiguousUsage()
+void printContiguousUsage(QTextStream * out)
 {
-    QTextStream(stdout) << "" << endl;
-    QTextStream(stdout) << "Usage:   Bandage contiguous <graph> <target> [options]" << endl << endl;
-    QTextStream(stdout) << "Options: " << endl << endl;
+    *out << "" << endl;
+    *out << "Usage:   Bandage contiguous <graph> <target> [options]" << endl << endl;
+    *out << "Options: " << endl << endl;
 }
 
 
