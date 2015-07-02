@@ -158,7 +158,7 @@ void printImageUsage(QTextStream * out)
     *out << "         --names             Label nodes with name" << endl;
     *out << "         --lengths           Label nodes with length" << endl;
     *out << "         --coverages         Label nodes with coverage" << endl;
-    *out << "         --fontsize <int>    Font size for node labels" << endl;
+    *out << "         --fontsize <int>    Font size for node labels (1 to 100, default: 10)" << endl;
     *out << "         --toutline <float>  Surround text with a white outline with this thickness" << endl;
     *out << "                             (default: 0.3))" << endl;
     *out << "" << endl;
@@ -194,7 +194,7 @@ QString checkForInvalidImageOptions(QStringList arguments)
     checkOptionWithoutValue("--names", &arguments);
     checkOptionWithoutValue("--lengths", &arguments);
     checkOptionWithoutValue("--coverages", &arguments);
-    error = checkOptionForInt("--fontsize", &arguments, 1, 5);
+    error = checkOptionForInt("--fontsize", &arguments, 1, 100);
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--toutline", &arguments, 0.0, 2.0);
     if (error.length() > 0) return error;
@@ -252,6 +252,13 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
     g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
 
     g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+
+    QFont font = g_settings->labelFont;
+    int fontsize = 10;
+    if (isOptionPresent("--fontsize", &arguments))
+        fontsize = getIntOption("--fontsize", &arguments);
+    font.setPointSize(fontsize);
+    g_settings->labelFont = font;
 
     if (isOptionPresent("--toutline", &arguments))
     {
