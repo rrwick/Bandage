@@ -61,14 +61,14 @@ void printLoadUsage(QTextStream * out)
 {
     *out << "" << endl;
     *out << "Usage:   Bandage load <graph>" << endl << endl;
-    *out << "Options: -d    draw graph after loading" << endl << endl;
+    *out << "Options: --draw    draw graph after loading" << endl << endl;
 }
 
 
 
 QString checkForInvalidLoadOptions(QStringList arguments)
 {
-    checkOptionWithoutValue("-d", &arguments);
+    checkOptionWithoutValue("--draw", &arguments);
 
     return checkForExcessArguments(arguments);
 }
@@ -77,6 +77,6 @@ QString checkForInvalidLoadOptions(QStringList arguments)
 
 void parseLoadOptions(QStringList arguments, bool * drawGraph)
 {
-    int drawIndex = arguments.indexOf("-d");
+    int drawIndex = arguments.indexOf("--draw");
     *drawGraph = (drawIndex > -1);
 }

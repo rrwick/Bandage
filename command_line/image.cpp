@@ -120,16 +120,17 @@ void printImageUsage(QTextStream * out)
 {
     *out << "" << endl;
     *out << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
-    *out << "Options: -h <int> image height (default: 1000)" << endl;
-    *out << "         -w <int> image width (default: not set)" << endl;
-    *out << "                  If only height or width is set, the other will be determined" << endl;
-    *out << "                  automatically. If both are set, the image will be exactly that" << endl;
-    *out << "                  size." << endl;
-    *out << "         -d       draw graph in double mode (default: off)" << endl;
-    *out << "         -b <int> base pairs per segment (default: auto)" << endl;
-    *out << "                  High values result in longer nodes, small values in shorter" << endl;
-    *out << "                  nodes." << endl;
-    *out << "         -q <int> graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
+    *out << "Options: --height <int> image height (default: 1000)" << endl;
+    *out << "         --width <int>  image width (default: not set)" << endl;
+    *out << "                        If only height or width is set, the other will be" << endl;
+    *out << "                        determined automatically. If both are set, the image" << endl;
+    *out << "                        will be exactly that size." << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --double       draw graph in double mode (default: off)" << endl;
+    *out << "         --bases <int>  base pairs per segment (default: auto)" << endl;
+    *out << "                        High values result in longer nodes, small values in" << endl;
+    *out << "                        shorter nodes." << endl;
+    *out << "         --qual <int>   graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
 }
 
@@ -137,19 +138,19 @@ QString checkForInvalidImageOptions(QStringList arguments)
 {
     QString error = "";
 
-    error = checkOptionForInt("-h", &arguments, 1, 32767);
+    error = checkOptionForInt("--height", &arguments, 1, 32767);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("-w", &arguments, 1, 32767);
+    error = checkOptionForInt("--width", &arguments, 1, 32767);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("-b", &arguments, 1, std::numeric_limits<int>::max());
+    error = checkOptionForInt("--bases", &arguments, 1, std::numeric_limits<int>::max());
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("-q", &arguments, 1, 5);
+    error = checkOptionForInt("--qual", &arguments, 1, 5);
     if (error.length() > 0) return error;
 
-    checkOptionWithoutValue("-d", &arguments);
+    checkOptionWithoutValue("--double", &arguments);
 
     return checkForExcessArguments(arguments);
 }
@@ -158,21 +159,21 @@ QString checkForInvalidImageOptions(QStringList arguments)
 
 void parseImageOptions(QStringList arguments, int * width, int * height)
 {
-    int heightIndex = arguments.indexOf("-h") + 1;
+    int heightIndex = arguments.indexOf("--height") + 1;
     if (heightIndex != 0 && heightIndex < arguments.size())
         *height = arguments.at(heightIndex).toInt();
-    int widthIndex = arguments.indexOf("-w") + 1;
+    int widthIndex = arguments.indexOf("--width") + 1;
     if (widthIndex != 0 && widthIndex < arguments.size())
         *width = arguments.at(widthIndex).toInt();
 
-    int basePairsPerSegmentIndex = arguments.indexOf("-b") + 1;
+    int basePairsPerSegmentIndex = arguments.indexOf("--bases") + 1;
     if (basePairsPerSegmentIndex != 0 && basePairsPerSegmentIndex < arguments.size())
     {
         g_settings->manualBasePairsPerSegment = arguments.at(basePairsPerSegmentIndex).toInt();
         g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
     }
 
-    int qualityIndex = arguments.indexOf("-q") + 1;
+    int qualityIndex = arguments.indexOf("--qual") + 1;
     if (qualityIndex != 0 && qualityIndex < arguments.size())
     {
         int quality = arguments.at(qualityIndex).toInt() - 1;
@@ -183,7 +184,7 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
         g_settings->graphLayoutQuality = quality;
     }
 
-    int doubleIndex = arguments.indexOf("-d");
+    int doubleIndex = arguments.indexOf("--double");
     g_settings->doubleMode = (doubleIndex > -1);
 }
 
