@@ -20,6 +20,7 @@
 #include "commoncommandlinefunctions.h"
 #include "../program/globals.h"
 #include "../ui/mygraphicsscene.h"
+#include "../ui/mygraphicsview.h"
 #include "../graph/assemblygraph.h"
 #include <vector>
 #include "../program/settings.h"
@@ -65,6 +66,7 @@ int bandageImage(QStringList arguments)
     }
 
     g_settings = new Settings();
+    g_graphicsView = new MyGraphicsView();
 
     bool loadSuccess = loadAssemblyGraph(graphFilename);
     if (!loadSuccess)
@@ -104,6 +106,7 @@ int bandageImage(QStringList arguments)
     image.fill(Qt::white);
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
     scene.render(&painter);
 
     bool success = image.save(imageSaveFilename);
@@ -136,7 +139,7 @@ void printImageUsage(QTextStream * out)
     *out << "" << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
-    *out << "         --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5) " << endl;
+    *out << "         --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5)" << endl;
     *out << "         --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
     *out << "                             default: 0.5)" << endl;
     *out << "                             Node widths are determined using the following" << endl;
@@ -151,7 +154,13 @@ void printImageUsage(QTextStream * out)
     *out << "         --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
     *out << "         --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
     *out << "" << endl;
-//           --------------------------------------------------------------------------------  //80 character guide
+    //           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --names             Label nodes with name" << endl;
+    *out << "         --lengths           Label nodes with length" << endl;
+    *out << "         --coverages         Label nodes with coverage" << endl;
+    *out << "         --fontsize <int>    Font size for node labels" << endl;
+    *out << "         --toutline <float>  Surround text with a white outline with this thickness" << endl;
+    *out << "                             (default: 0.3))" << endl;
     *out << "" << endl;
 }
 
@@ -180,6 +189,14 @@ QString checkForInvalidImageOptions(QStringList arguments)
     error = checkOptionForFloat("--edgewidth", &arguments, 0.1, 1000.0);
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--outline", &arguments, 0.0, 1000.0);
+    if (error.length() > 0) return error;
+
+    checkOptionWithoutValue("--names", &arguments);
+    checkOptionWithoutValue("--lengths", &arguments);
+    checkOptionWithoutValue("--coverages", &arguments);
+    error = checkOptionForInt("--fontsize", &arguments, 1, 5);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--toutline", &arguments, 0.0, 2.0);
     if (error.length() > 0) return error;
 
     return checkForExcessArguments(arguments);
@@ -229,5 +246,29 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
         g_settings->outlineThickness = getFloatOption("--outline", &arguments);
     else
         g_settings->outlineThickness = 0.5;
+
+    g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
+
+    g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
+
+    g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+
+    if (isOptionPresent("--toutline", &arguments))
+    {
+        double textOutlineThickness = getFloatOption("--toutline", &arguments);
+        if (textOutlineThickness == 0.0)
+            g_settings->textOutline = false;
+        else
+        {
+            g_settings->textOutline = true;
+            g_settings->textOutlineThickness = textOutlineThickness;
+        }
+    }
+    else
+    {
+        g_settings->textOutline = true;
+        g_settings->textOutlineThickness = 0.3;
+    }
+
 }
 

@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>432</width>
-        <height>1758</height>
+        <height>1757</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1101,7 +1101,7 @@
           </sizepolicy>
          </property>
          <property name="maximum">
-          <double>1000.000000000000000</double>
+          <double>2.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.500000000000000</double>
