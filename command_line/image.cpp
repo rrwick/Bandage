@@ -120,18 +120,39 @@ void printImageUsage(QTextStream * out)
 {
     *out << "" << endl;
     *out << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
-    *out << "Options: --height <int> image height (default: 1000)" << endl;
-    *out << "         --width <int>  image width (default: not set)" << endl;
-    *out << "                        If only height or width is set, the other will be" << endl;
-    *out << "                        determined automatically. If both are set, the image" << endl;
-    *out << "                        will be exactly that size." << endl;
+    *out << "Options: --height <int>      image height (default: 1000)" << endl;
+    *out << "         --width <int>       image width (default: not set)" << endl;
+    *out << "                             If only height or width is set, the other will be" << endl;
+    *out << "                             determined automatically. If both are set, the" << endl;
+    *out << "                             image will be exactly that size." << endl;
+    *out << "" << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
-    *out << "         --double       draw graph in double mode (default: off)" << endl;
-    *out << "         --bases <int>  base pairs per segment (default: auto)" << endl;
-    *out << "                        High values result in longer nodes, small values in" << endl;
-    *out << "                        shorter nodes." << endl;
-    *out << "         --qual <int>   graph layout quality, 1 (low) to 5 (high) (default: 3)" << endl << endl;
+    *out << "         --double            draw graph in double mode (default: off)" << endl;
+    *out << "         --bases <int>       base pairs per segment (default: auto)" << endl;
+    *out << "                             High values result in longer nodes, small values in" << endl;
+    *out << "                             shorter nodes." << endl;
+    *out << "         --quality <int>     graph layout quality, 1 (low) to 5 (high)" << endl;
+    *out << "                             (default: 3)" << endl;
+    *out << "" << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
+    *out << "         --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5) " << endl;
+    *out << "         --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
+    *out << "                             default: 0.5)" << endl;
+    *out << "                             Node widths are determined using the following" << endl;
+    *out << "                             formula: a*b*((c/d)^e-1)+1" << endl;
+    *out << "                                      a = average node width" << endl;
+    *out << "                                      b = coverage effect on width" << endl;
+    *out << "                                      c = node coverage" << endl;
+    *out << "                                      d = mean coverage" << endl;
+    *out << "                                      e = power of coverage effect on width" << endl;
+    *out << "" << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
+    *out << "         --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
+    *out << "" << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
+    *out << "" << endl;
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)
@@ -140,17 +161,26 @@ QString checkForInvalidImageOptions(QStringList arguments)
 
     error = checkOptionForInt("--height", &arguments, 1, 32767);
     if (error.length() > 0) return error;
-
     error = checkOptionForInt("--width", &arguments, 1, 32767);
     if (error.length() > 0) return error;
 
+    checkOptionWithoutValue("--double", &arguments);
     error = checkOptionForInt("--bases", &arguments, 1, std::numeric_limits<int>::max());
     if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--qual", &arguments, 1, 5);
+    error = checkOptionForInt("--quality", &arguments, 1, 5);
     if (error.length() > 0) return error;
 
-    checkOptionWithoutValue("--double", &arguments);
+    error = checkOptionForFloat("--nodewidth", &arguments, 0.5, 1000);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covwidth", &arguments, 0.0, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covpower", &arguments, 0.1, 1.0);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--edgewidth", &arguments, 0.1, 1000.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--outline", &arguments, 0.0, 1000.0);
+    if (error.length() > 0) return error;
 
     return checkForExcessArguments(arguments);
 }
@@ -159,24 +189,23 @@ QString checkForInvalidImageOptions(QStringList arguments)
 
 void parseImageOptions(QStringList arguments, int * width, int * height)
 {
-    int heightIndex = arguments.indexOf("--height") + 1;
-    if (heightIndex != 0 && heightIndex < arguments.size())
-        *height = arguments.at(heightIndex).toInt();
-    int widthIndex = arguments.indexOf("--width") + 1;
-    if (widthIndex != 0 && widthIndex < arguments.size())
-        *width = arguments.at(widthIndex).toInt();
+    if (isOptionPresent("--height", &arguments))
+        *height = getIntOption("--height", &arguments);
 
-    int basePairsPerSegmentIndex = arguments.indexOf("--bases") + 1;
-    if (basePairsPerSegmentIndex != 0 && basePairsPerSegmentIndex < arguments.size())
+    if (isOptionPresent("--width", &arguments))
+        *width = getIntOption("--width", &arguments);
+
+    g_settings->doubleMode = isOptionPresent("--double", &arguments);
+
+    if (isOptionPresent("--bases", &arguments))
     {
-        g_settings->manualBasePairsPerSegment = arguments.at(basePairsPerSegmentIndex).toInt();
+        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
         g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
     }
 
-    int qualityIndex = arguments.indexOf("--qual") + 1;
-    if (qualityIndex != 0 && qualityIndex < arguments.size())
+    if (isOptionPresent("--quality", &arguments))
     {
-        int quality = arguments.at(qualityIndex).toInt() - 1;
+        int quality = getIntOption("--quality", &arguments);
         if (quality < 0)
             quality = 0;
         if (quality > 4)
@@ -184,7 +213,21 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
         g_settings->graphLayoutQuality = quality;
     }
 
-    int doubleIndex = arguments.indexOf("--double");
-    g_settings->doubleMode = (doubleIndex > -1);
+    if (isOptionPresent("--nodewidth", &arguments))
+        g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
+
+    if (isOptionPresent("--covwidth", &arguments))
+        g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
+
+    if (isOptionPresent("--covpower", &arguments))
+        g_settings->coveragePower = getFloatOption("--covpower", &arguments);
+
+    if (isOptionPresent("--edgewidth", &arguments))
+        g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
+
+    if (isOptionPresent("--outline", &arguments))
+        g_settings->outlineThickness = getFloatOption("--outline", &arguments);
+    else
+        g_settings->outlineThickness = 0.5;
 }
 

@@ -87,6 +87,46 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min, int 
     return "";
 }
 
+
+//Returns empty string if everything is okay and an error
+//message if there's a problem.  If everything is okay, it
+//also removes the option and its value from arguments.
+QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return "";
+
+    int floatIndex = optionIndex + 1;
+
+    //If nothing follows the option, that's a problem.
+    if (floatIndex >= arguments->size())
+        return option + " must be followed by a number";
+
+    //If the thing following the option isn't a number, that's a problem.
+    bool optionIsFloat;
+    double optionFloat = arguments->at(floatIndex).toDouble(&optionIsFloat);
+    if (!optionIsFloat)
+        return option + " must be followed by a number";
+
+    //Check the range of the option.
+    if (optionFloat < min || optionFloat > max)
+        return "Value of " + option + " must be between "
+                + QString::number(min) + " and " + QString::number(max) +
+                " (inclusive)";
+
+    //If the code got here, the option and its integer are okay.
+    //Remove them from the arguments.
+    arguments->removeAt(floatIndex);
+    arguments->removeAt(optionIndex);
+
+    return "";
+}
+
+
+
 //This function simply removes an option from arguments if it is found.
 void checkOptionWithoutValue(QString option, QStringList * arguments)
 {
@@ -100,6 +140,44 @@ void checkOptionWithoutValue(QString option, QStringList * arguments)
     //Remove it from the arguments.
     arguments->removeAt(optionIndex);
 }
+
+
+
+bool isOptionPresent(QString option, QStringList * arguments)
+{
+    return (arguments->indexOf(option) > -1);
+}
+
+
+
+int getIntOption(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return 0;
+
+    int integerIndex = optionIndex + 1;
+    if (integerIndex >= arguments->size())
+        return 0;
+
+    return arguments->at(integerIndex).toInt();
+}
+
+double getFloatOption(QString option, QStringList * arguments)
+{
+     int optionIndex = arguments->indexOf(option);
+     if (optionIndex == -1)
+         return 0;
+
+     int floatIndex = optionIndex + 1;
+     if (floatIndex >= arguments->size())
+         return 0;
+
+     return arguments->at(floatIndex).toDouble();
+}
+
+
+
 
 
 //This function generates an error if excess arguments are left after

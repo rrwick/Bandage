@@ -25,8 +25,16 @@
 bool loadAssemblyGraph(QString filename);
 void layoutGraph();
 bool checkForHelp(QStringList arguments);
+
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
+QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
+
+bool isOptionPresent(QString option, QStringList * arguments);
+
+int getIntOption(QString option, QStringList * arguments);
+double getFloatOption(QString option, QStringList * arguments);
+
 QString checkForExcessArguments(QStringList arguments);
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H
