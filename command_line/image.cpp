@@ -162,6 +162,10 @@ void printImageUsage(QTextStream * out)
     *out << "         --toutline <float>  Surround text with a white outline with this thickness" << endl;
     *out << "                             (default: 0.3))" << endl;
     *out << "" << endl;
+    //           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --colour <scheme>   Node colouring scheme, choose one of the following" << endl;
+    *out << "                             options: random, uniform or coverage (default: random)" << endl;
+    *out << "" << endl;
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)
@@ -199,11 +203,19 @@ QString checkForInvalidImageOptions(QStringList arguments)
     error = checkOptionForFloat("--toutline", &arguments, 0.0, 2.0);
     if (error.length() > 0) return error;
 
+    QStringList validColourOptions;
+    validColourOptions << "random" << "uniform" << "coverage";
+    error = checkOptionForString("--colour", &arguments, validColourOptions);
+    if (error.length() > 0) return error;
+
     return checkForExcessArguments(arguments);
 }
 
 
 
+
+//This function parses the command line options.  It assumes that the options
+//have already been checked for correctness.
 void parseImageOptions(QStringList arguments, int * width, int * height)
 {
     if (isOptionPresent("--height", &arguments))
@@ -277,5 +289,7 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
         g_settings->textOutlineThickness = 0.3;
     }
 
+    if (isOptionPresent("--colour", &arguments))
+        g_settings->nodeColourScheme = getColourOption("--colour", &arguments);
 }
 

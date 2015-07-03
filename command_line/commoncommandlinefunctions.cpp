@@ -126,6 +126,47 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
 }
 
 
+//Returns empty string if everything is okay and an error
+//message if there's a problem.  If everything is okay, it
+//also removes the option and its value from arguments.
+QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return "";
+
+    int stringIndex = optionIndex + 1;
+
+    QString validOptions;
+    for (int i = 0; i < validOptionsList.size(); ++i)
+    {
+        validOptions += validOptionsList.at(i);
+        if (i == validOptionsList.size() - 2)
+            validOptions += " or ";
+        else if (i < validOptionsList.size() - 2)
+            validOptions += ", ";
+    }
+
+    //If nothing follows the option, that's a problem.
+    if (stringIndex >= arguments->size())
+        return option + " must be followed by " + validOptions;
+
+    //If the thing following the option isn't a valid choice, that's a problem.
+    QString value = arguments->at(stringIndex);
+    if (!validOptionsList.contains(value, Qt::CaseInsensitive))
+        return option + " must be followed by " + validOptions;
+
+    //If the code got here, the option and its integer are okay.
+    //Remove them from the arguments.
+    arguments->removeAt(stringIndex);
+    arguments->removeAt(optionIndex);
+
+    return "";
+}
+
+
 
 //This function simply removes an option from arguments if it is found.
 void checkOptionWithoutValue(QString option, QStringList * arguments)
@@ -174,6 +215,28 @@ double getFloatOption(QString option, QStringList * arguments)
          return 0;
 
      return arguments->at(floatIndex).toDouble();
+}
+
+NodeColourScheme getColourOption(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return RANDOM_COLOURS;
+
+    int colourIndex = optionIndex + 1;
+    if (colourIndex >= arguments->size())
+        return RANDOM_COLOURS;
+
+    QString colourString = arguments->at(colourIndex).toLower();
+    if (colourString == "random")
+        return RANDOM_COLOURS;
+    else if (colourString == "uniform")
+        return ONE_COLOUR;
+    else if (colourString == "coverage")
+        return COVERAGE_COLOUR;
+
+    //Random colours is the default
+    return RANDOM_COLOURS;
 }
 
 
