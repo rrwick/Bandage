@@ -59,6 +59,7 @@
 #include "myprogressdialog.h"
 #include <limits>
 #include <QDesktopServices>
+#include <QSvgGenerator>
 
 MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -946,39 +947,110 @@ void MainWindow::determineContiguityFromSelectedNode()
 
 void MainWindow::saveImageCurrentView()
 {
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph.png";
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph";
 
-    QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)", defaultFileNameAndPath, "PNG image (*.png)");
+    QString selectedFilter = "Any supported graph (*)";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)",
+                                                        defaultFileNameAndPath,
+                                                        "PNG (*.png);;JPEG (*.jpg);;SVG (*.svg)",
+                                                        &selectedFilter);
+
+    bool pixelImage = true;
+    if (selectedFilter == "PNG (*.png)" && fullFileName.right(4) != ".png")
+        fullFileName += ".png";
+    else if (selectedFilter == "JPEG (*.jpg)" && fullFileName.right(4) != ".jpg")
+        fullFileName += ".jpg";
+    else if (selectedFilter == "SVG (*.svg)" && fullFileName.right(4) != ".svg")
+    {
+        fullFileName += ".svg";
+        pixelImage = false;
+    }
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QImage image(g_graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
-        image.fill(Qt::white);
-        QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        g_graphicsView->render(&painter);
-        image.save(fullFileName);
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        QPainter painter;
+        if (pixelImage)
+        {
+            QImage image(g_graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
+            image.fill(Qt::white);
+            painter.begin(&image);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::TextAntialiasing);
+            g_graphicsView->render(&painter);
+            image.save(fullFileName);
+            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+            painter.end();
+        }
+        else //SVG
+        {
+            QSvgGenerator generator;
+            generator.setFileName(fullFileName);
+            QSize size = g_graphicsView->viewport()->rect().size();
+            generator.setSize(size);
+            generator.setViewBox(QRect(0, 0, size.width(), size.height()));
+            painter.begin(&generator);
+            painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::TextAntialiasing);
+            g_graphicsView->render(&painter);
+            painter.end();
+        }
     }
 }
 
 void MainWindow::saveImageEntireScene()
 {
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph.png";
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph";
 
-    QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (entire scene)", defaultFileNameAndPath, "PNG image (*.png)");
+    QString selectedFilter = "Any supported graph (*)";
+    QString fullFileName = QFileDialog::getSaveFileName(this,
+                                                        "Save graph image (entire scene)",
+                                                        defaultFileNameAndPath,
+                                                        "PNG (*.png);;JPEG (*.jpg);;SVG (*.svg)",
+                                                        &selectedFilter);
+
+    bool pixelImage = true;
+    if (selectedFilter == "PNG (*.png)" && fullFileName.right(4) != ".png")
+        fullFileName += ".png";
+    else if (selectedFilter == "JPEG (*.jpg)" && fullFileName.right(4) != ".jpg")
+        fullFileName += ".jpg";
+    else if (selectedFilter == "SVG (*.svg)" && fullFileName.right(4) != ".svg")
+    {
+        fullFileName += ".svg";
+        pixelImage = false;
+    }
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QImage image(g_absoluteZoom * m_scene->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
-        image.fill(Qt::white);
-        QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
-        m_scene->setSceneRectangle();
-        m_scene->render(&painter);
-        image.save(fullFileName);
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        QPainter painter;
+        if (pixelImage)
+        {
+            QImage image(g_absoluteZoom * m_scene->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
+            image.fill(Qt::white);
+            painter.begin(&image);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::TextAntialiasing);
+            m_scene->setSceneRectangle();
+            m_scene->render(&painter);
+            image.save(fullFileName);
+            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+            painter.end();
+        }
+        else //SVG
+        {
+            QSvgGenerator generator;
+            generator.setFileName(fullFileName);
+            QSize size = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+            generator.setSize(size);
+            generator.setViewBox(QRect(0, 0, size.width(), size.height()));
+            painter.begin(&generator);
+            painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.setRenderHint(QPainter::TextAntialiasing);
+            m_scene->setSceneRectangle();
+            m_scene->render(&painter);
+            painter.end();
+        }
     }
 }
 

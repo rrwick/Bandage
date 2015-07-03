@@ -25,6 +25,7 @@
 #include <vector>
 #include "../program/settings.h"
 #include <QPainter>
+#include <QSvgGenerator>
 
 int bandageImage(QStringList arguments)
 {
@@ -56,9 +57,14 @@ int bandageImage(QStringList arguments)
     arguments.pop_front();
 
     QString imageFileExtension = imageSaveFilename.right(4);
-    if (imageFileExtension != ".png" && imageFileExtension != ".jpg")
+    bool pixelImage;
+    if (imageFileExtension == ".png" || imageFileExtension == ".jpg")
+        pixelImage = true;
+    else if (imageFileExtension == ".svg")
+        pixelImage = false;
+    else
     {
-        err << "Bandage error: the output filename must end in .png or .jpg" << endl;
+        err << "Bandage error: the output filename must end in .png, .jpg or .svg" << endl;
         return 1;
     }
 
@@ -103,20 +109,40 @@ int bandageImage(QStringList arguments)
     else if (height == 0 && width > 0)
         height = width / sceneRectAspectRatio;
 
-    QImage image(width, height, QImage::Format_ARGB32);
-    image.fill(Qt::white);
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::TextAntialiasing);
-    scene.render(&painter);
+    bool success = true;
+    QPainter painter;
+    if (pixelImage)
+    {
+        QImage image(width, height, QImage::Format_ARGB32);
+        image.fill(Qt::white);
+        painter.begin(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::TextAntialiasing);
+        scene.render(&painter);
+        success = image.save(imageSaveFilename);
+        painter.end();
+    }
+    else //SVG
+    {
+        QSvgGenerator generator;
+        generator.setFileName(imageSaveFilename);
+        generator.setSize(QSize(width, height));
+        generator.setViewBox(QRect(0, 0, width, height));
+        painter.begin(&generator);
+        painter.fillRect(0, 0, width, height, Qt::white);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::TextAntialiasing);
+        scene.render(&painter);
+        painter.end();
+    }
 
-    bool success = image.save(imageSaveFilename);
     if (!success)
     {
         out << "There was an error writing the image to file." << endl;
         return 1;
     }
-    return 0;
+    else
+        return 0;
 }
 
 
