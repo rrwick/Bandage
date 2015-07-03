@@ -69,7 +69,7 @@ int bandageContiguous(QStringList arguments)
 
 void printContiguousUsage(QTextStream * out)
 {
-    *out << "" << endl;
+    *out << endl;
     *out << "Usage:   Bandage contiguous <graph> <target> [options]" << endl << endl;
     *out << "Options: " << endl << endl;
 }

@@ -117,7 +117,7 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
                 + QString::number(min) + " and " + QString::number(max) +
                 " (inclusive)";
 
-    //If the code got here, the option and its integer are okay.
+    //If the code got here, the option and its number are okay.
     //Remove them from the arguments.
     arguments->removeAt(floatIndex);
     arguments->removeAt(optionIndex);
@@ -158,7 +158,7 @@ QString checkOptionForString(QString option, QStringList * arguments, QStringLis
     if (!validOptionsList.contains(value, Qt::CaseInsensitive))
         return option + " must be followed by " + validOptions;
 
-    //If the code got here, the option and its integer are okay.
+    //If the code got here, the option and its string are okay.
     //Remove them from the arguments.
     arguments->removeAt(stringIndex);
     arguments->removeAt(optionIndex);
@@ -166,6 +166,34 @@ QString checkOptionForString(QString option, QStringList * arguments, QStringLis
     return "";
 }
 
+
+QString checkOptionForHexColour(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return "";
+
+    int hexIndex = optionIndex + 1;
+
+    //If nothing follows the option, that's a problem.
+    if (hexIndex >= arguments->size())
+        return option + " must be followed by a 6 character HTML-style hex colour";
+
+    //If the thing following the option isn't a hex colour, that's a problem.
+    QString hexName = "#" + arguments->at(hexIndex);
+    QColor colour(hexName);
+    if (!colour.isValid())
+        return option + " must be followed by a 6 character HTML-style hex colour";
+
+    //If the code got here, the option and its hex colour are okay.
+    //Remove them from the arguments.
+    arguments->removeAt(hexIndex);
+    arguments->removeAt(optionIndex);
+
+    return "";
+}
 
 
 //This function simply removes an option from arguments if it is found.
@@ -217,7 +245,7 @@ double getFloatOption(QString option, QStringList * arguments)
      return arguments->at(floatIndex).toDouble();
 }
 
-NodeColourScheme getColourOption(QString option, QStringList * arguments)
+NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
 {
     int optionIndex = arguments->indexOf(option);
     if (optionIndex == -1)
@@ -237,6 +265,20 @@ NodeColourScheme getColourOption(QString option, QStringList * arguments)
 
     //Random colours is the default
     return RANDOM_COLOURS;
+}
+
+
+QColor getHexColourOption(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return QColor();
+
+    int hexIndex = optionIndex + 1;
+    if (hexIndex >= arguments->size())
+        return QColor();
+
+    return QColor("#" + arguments->at(hexIndex));
 }
 
 

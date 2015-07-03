@@ -29,7 +29,7 @@
 
 void printUsage(QTextStream * out)
 {
-    *out << "" << endl;
+    *out << endl;
     *out << "Usage:   Bandage <command> [options]" << endl << endl;
     *out << "Command: <blank>      launch Bandage GUI" << endl;
     *out << "         load         launch Bandage GUI and load a graph file" << endl;

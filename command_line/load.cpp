@@ -59,7 +59,7 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
 void printLoadUsage(QTextStream * out)
 {
-    *out << "" << endl;
+    *out << endl;
     *out << "Usage:   Bandage load <graph>" << endl << endl;
     *out << "Options: --draw    draw graph after loading" << endl << endl;
 }

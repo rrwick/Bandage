@@ -28,6 +28,9 @@
 
 int bandageImage(QStringList arguments)
 {
+    g_settings = new Settings();
+    g_graphicsView = new MyGraphicsView();
+
     QTextStream out(stdout);
     QTextStream err(stdout);
 
@@ -64,9 +67,6 @@ int bandageImage(QStringList arguments)
         printImageUsage(&err);
         return 1;
     }
-
-    g_settings = new Settings();
-    g_graphicsView = new MyGraphicsView();
 
     bool loadSuccess = loadAssemblyGraph(graphFilename);
     if (!loadSuccess)
@@ -121,14 +121,15 @@ int bandageImage(QStringList arguments)
 
 void printImageUsage(QTextStream * out)
 {
-    *out << "" << endl;
-    *out << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl << endl;
+    *out << endl;
+    *out << "Usage:   Bandage image <graphfile> <outputfile> [options]" << endl;
+    *out << endl;
     *out << "Options: --height <int>      image height (default: 1000)" << endl;
     *out << "         --width <int>       image width (default: not set)" << endl;
     *out << "                             If only height or width is set, the other will be" << endl;
     *out << "                             determined automatically. If both are set, the" << endl;
     *out << "                             image will be exactly that size." << endl;
-    *out << "" << endl;
+    *out << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --double            draw graph in double mode (default: off)" << endl;
     *out << "         --bases <int>       base pairs per segment (default: auto)" << endl;
@@ -136,7 +137,7 @@ void printImageUsage(QTextStream * out)
     *out << "                             shorter nodes." << endl;
     *out << "         --quality <int>     graph layout quality, 1 (low) to 5 (high)" << endl;
     *out << "                             (default: 3)" << endl;
-    *out << "" << endl;
+    *out << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
     *out << "         --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5)" << endl;
@@ -149,23 +150,32 @@ void printImageUsage(QTextStream * out)
     *out << "                                      c = node coverage" << endl;
     *out << "                                      d = mean coverage" << endl;
     *out << "                                      e = power of coverage effect on width" << endl;
-    *out << "" << endl;
+    *out << endl;
 //           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
     *out << "         --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
-    *out << "" << endl;
-    //           --------------------------------------------------------------------------------  //80 character guide
+    *out << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --names             Label nodes with name" << endl;
     *out << "         --lengths           Label nodes with length" << endl;
     *out << "         --coverages         Label nodes with coverage" << endl;
     *out << "         --fontsize <int>    Font size for node labels (1 to 100, default: 10)" << endl;
-    *out << "         --toutline <float>  Surround text with a white outline with this thickness" << endl;
-    *out << "                             (default: 0.3))" << endl;
-    *out << "" << endl;
-    //           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --toutline <float>  Surround text with a white outline with this" << endl;
+    *out << "                             thickness (default: 0.3))" << endl;
+    *out << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
     *out << "         --colour <scheme>   Node colouring scheme, choose one of the following" << endl;
-    *out << "                             options: random, uniform or coverage (default: random)" << endl;
-    *out << "" << endl;
+    *out << "                             options: random, uniform or coverage (default:" << endl;
+    *out << "                             random)" << endl;
+    *out << "                             Specific colours can be set using HTML-style" << endl;
+    *out << "                             hexidemical values." << endl;
+    *out << "         --unicolpos <hex>   Node colour for positive nodes under the uniform" << endl;
+    *out << "                             colouring scheme (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
+    *out << "         --unicolneg <hex>   Node colour for negative nodes under the uniform" << endl;
+    *out << "                             colouring scheme (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
+    *out << "         --unicolspe <hex>   Node colour for special nodes under the uniform" << endl;
+    *out << "                             colouring scheme (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << endl;
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)
@@ -206,6 +216,13 @@ QString checkForInvalidImageOptions(QStringList arguments)
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "coverage";
     error = checkOptionForString("--colour", &arguments, validColourOptions);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForHexColour("--unicolpos", &arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--unicolneg", &arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--unicolspe", &arguments);
     if (error.length() > 0) return error;
 
     return checkForExcessArguments(arguments);
@@ -290,6 +307,16 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
     }
 
     if (isOptionPresent("--colour", &arguments))
-        g_settings->nodeColourScheme = getColourOption("--colour", &arguments);
+        g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
+
+    if (isOptionPresent("--unicolpos", &arguments))
+        g_settings->uniformPositiveNodeColour = getHexColourOption("--unicolpos", &arguments);
+
+    if (isOptionPresent("--unicolneg", &arguments))
+        g_settings->uniformNegativeNodeColour = getHexColourOption("--unicolneg", &arguments);
+
+    if (isOptionPresent("--unicolspe", &arguments))
+        g_settings->uniformNodeSpecialColour = getHexColourOption("--unicolspe", &arguments);
+
 }
 
