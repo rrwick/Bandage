@@ -54,6 +54,7 @@ private:
     double m_previousZoomSpinBoxValue;
     QThread * m_layoutThread;
     ogdf::FMMMLayout * m_fmmm;
+    QString m_imageFilter;
 
     void cleanUp();
     void displayGraphDetails();
@@ -81,6 +82,7 @@ private:
     QStringList removeNullStringsFromList(QStringList in);
     bool checkIfLineEditHasNodes(QLineEdit * lineEdit);
     void setWidgetsFromSettings();
+    QString getDefaultImageFileName();
 
 private slots:
     void loadGraph(QString fullFileName = "");

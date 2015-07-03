@@ -63,7 +63,7 @@
 
 MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     QMainWindow(0),
-    ui(new Ui::MainWindow), m_layoutThread(0)
+    ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)")
 {
     ui->setupUi(this);
 
@@ -944,30 +944,43 @@ void MainWindow::determineContiguityFromSelectedNode()
 }
 
 
+QString MainWindow::getDefaultImageFileName()
+{
+    QString fileNameAndPath = g_settings->rememberedPath + "/graph";
+
+    if (m_imageFilter == "PNG (*.png)")
+        fileNameAndPath += ".png";
+    else if (m_imageFilter == "JPEG (*.jpg)")
+        fileNameAndPath += ".jpg";
+    else if (m_imageFilter == "SVG (*.svg)")
+        fileNameAndPath += ".svg";
+    else
+        fileNameAndPath += ".png";
+
+    return fileNameAndPath;
+}
+
 
 void MainWindow::saveImageCurrentView()
 {
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph";
+    QString defaultFileNameAndPath = getDefaultImageFileName();
 
-    QString selectedFilter = "Any supported graph (*)";
+    QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)",
                                                         defaultFileNameAndPath,
                                                         "PNG (*.png);;JPEG (*.jpg);;SVG (*.svg)",
                                                         &selectedFilter);
 
     bool pixelImage = true;
-    if (selectedFilter == "PNG (*.png)" && fullFileName.right(4) != ".png")
-        fullFileName += ".png";
-    else if (selectedFilter == "JPEG (*.jpg)" && fullFileName.right(4) != ".jpg")
-        fullFileName += ".jpg";
-    else if (selectedFilter == "SVG (*.svg)" && fullFileName.right(4) != ".svg")
-    {
-        fullFileName += ".svg";
+    if (selectedFilter == "PNG (*.png)" || selectedFilter == "JPEG (*.jpg)")
+        pixelImage = true;
+    else if (selectedFilter == "SVG (*.svg)")
         pixelImage = false;
-    }
 
     if (fullFileName != "") //User did not hit cancel
     {
+        m_imageFilter = selectedFilter;
+
         QPainter painter;
         if (pixelImage)
         {
@@ -1000,9 +1013,9 @@ void MainWindow::saveImageCurrentView()
 
 void MainWindow::saveImageEntireScene()
 {
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/graph";
+    QString defaultFileNameAndPath = getDefaultImageFileName();
 
-    QString selectedFilter = "Any supported graph (*)";
+    QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this,
                                                         "Save graph image (entire scene)",
                                                         defaultFileNameAndPath,
@@ -1010,18 +1023,15 @@ void MainWindow::saveImageEntireScene()
                                                         &selectedFilter);
 
     bool pixelImage = true;
-    if (selectedFilter == "PNG (*.png)" && fullFileName.right(4) != ".png")
-        fullFileName += ".png";
-    else if (selectedFilter == "JPEG (*.jpg)" && fullFileName.right(4) != ".jpg")
-        fullFileName += ".jpg";
-    else if (selectedFilter == "SVG (*.svg)" && fullFileName.right(4) != ".svg")
-    {
-        fullFileName += ".svg";
+    if (selectedFilter == "PNG (*.png)" || selectedFilter == "JPEG (*.jpg)")
+        pixelImage = true;
+    else if (selectedFilter == "SVG (*.svg)")
         pixelImage = false;
-    }
 
     if (fullFileName != "") //User did not hit cancel
     {
+        m_imageFilter = selectedFilter;
+
         QPainter painter;
         if (pixelImage)
         {
