@@ -32,6 +32,9 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
 QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList);
 QString checkOptionForHexColour(QString option, QStringList * arguments);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
+QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
+                                 double min1, double max1, double min2, double max2,
+                                 bool secondMustBeEqualOrLarger = false);
 
 bool isOptionPresent(QString option, QStringList * arguments);
 

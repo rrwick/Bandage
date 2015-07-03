@@ -169,12 +169,22 @@ void printImageUsage(QTextStream * out)
     *out << "                             random)" << endl;
     *out << "                             Specific colours can be set using HTML-style" << endl;
     *out << "                             hexidemical values." << endl;
-    *out << "         --unicolpos <hex>   Node colour for positive nodes under the uniform" << endl;
+    *out << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --unicolpos <hex>   Colour for positive nodes under the uniform" << endl;
     *out << "                             colouring scheme (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
-    *out << "         --unicolneg <hex>   Node colour for negative nodes under the uniform" << endl;
+    *out << "         --unicolneg <hex>   Colour for negative nodes under the uniform" << endl;
     *out << "                             colouring scheme (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
-    *out << "         --unicolspe <hex>   Node colour for special nodes under the uniform" << endl;
+    *out << "         --unicolspe <hex>   Colour for special nodes under the uniform" << endl;
     *out << "                             colouring scheme (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << endl;
+//           --------------------------------------------------------------------------------  //80 character guide
+    *out << "         --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
+    *out << "                             coverage colour value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
+    *out << "         --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
+    *out << "                             coverage colour value (default: " + g_settings->highCoverageColour.name().right(6) + ")" << endl;
+    *out << "         --covvallow <float> Low coverage colour value (default: auto)" << endl;
+    *out << "         --covvalhi <float>  High coverage colour value (default: auto)" << endl;
     *out << endl;
 }
 
@@ -223,6 +233,14 @@ QString checkForInvalidImageOptions(QStringList arguments)
     error = checkOptionForHexColour("--unicolneg", &arguments);
     if (error.length() > 0) return error;
     error = checkOptionForHexColour("--unicolspe", &arguments);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForHexColour("--covcollow", &arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--covcolhi", &arguments);
+    if (error.length() > 0) return error;
+
+    error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", &arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
     if (error.length() > 0) return error;
 
     return checkForExcessArguments(arguments);
@@ -318,5 +336,22 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
     if (isOptionPresent("--unicolspe", &arguments))
         g_settings->uniformNodeSpecialColour = getHexColourOption("--unicolspe", &arguments);
 
+    if (isOptionPresent("--covcollow", &arguments))
+        g_settings->lowCoverageColour = getHexColourOption("--covcollow", &arguments);
+
+    if (isOptionPresent("--covcolhi", &arguments))
+        g_settings->highCoverageColour = getHexColourOption("--covcolhi", &arguments);
+
+    if (isOptionPresent("--covvallow", &arguments))
+    {
+        g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
+
+    if (isOptionPresent("--covvalhi", &arguments))
+    {
+        g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
 }
 

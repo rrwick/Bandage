@@ -211,6 +211,39 @@ void checkOptionWithoutValue(QString option, QStringList * arguments)
 }
 
 
+//This function checks to make sure either both or neither of the options
+//are used.  It can also optionally check to make sure the second is larger
+//than the first.
+QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
+                                 double min1, double max1, double min2, double max2,
+                                 bool secondMustBeEqualOrLarger)
+{
+    //First check each option independently
+    QStringList argumentsCopy = *arguments;
+    QString option1Error = checkOptionForFloat(option1, &argumentsCopy, min1, max1);
+    if (option1Error != "")
+        return option1Error;
+    QString option2Error = checkOptionForFloat(option2, &argumentsCopy, min2, max2);
+    if (option2Error != "")
+        return option2Error;
+
+    //Now make sure either both or neither are present.
+    if (isOptionPresent(option1, arguments) != isOptionPresent(option2, arguments))
+        return option1 + " and " + option2 + " must be used together";
+
+    if (secondMustBeEqualOrLarger)
+    {
+        if (getFloatOption(option2, arguments) < getFloatOption(option1, arguments))
+            return option2 + " must be greater than or equal to " + option1;
+    }
+
+    //Now remove the options from the arguments before finishing.
+    checkOptionForFloat(option1, arguments, min1, max1);
+    checkOptionForFloat(option2, arguments, min2, max2);
+    return "";
+}
+
+
 
 bool isOptionPresent(QString option, QStringList * arguments)
 {
