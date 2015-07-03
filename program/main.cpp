@@ -26,15 +26,23 @@
 #include "../command_line/image.h"
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
+#include "../program/settings.h"
 
-void printUsage(QTextStream * out)
+void printUsage(QTextStream * out, bool all)
 {
     *out << endl;
-    *out << "Usage:   Bandage <command> [options]" << endl << endl;
+    *out << "Usage:   Bandage <command> [options]" << endl;
+    *out << endl;
     *out << "Command: <blank>      launch Bandage GUI" << endl;
     *out << "         load         launch Bandage GUI and load a graph file" << endl;
-    *out << "         image        generate a PNG image of a graph" << endl;
+    *out << "         image        generate an image file of a graph" << endl;
     *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
+    *out << endl;
+    *out << "Options: --help       view this help message" << endl;
+    *out << "         --helpall    view all command line settings" << endl;
+    *out << endl;
+    if (all)
+        printSettingsUsage(out);
 }
 
 int main(int argc, char *argv[])
@@ -46,50 +54,72 @@ int main(int argc, char *argv[])
     QTextStream out(stdout);
     QTextStream err(stdout);
 
+    g_settings = new Settings();
+
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();
 
-    //If the user simply called Bandage without any arguments, just run the GUI.
-    if (arguments.size() == 0)
+    //If the first argument was a recognised command, move to that command's function.
+    if (arguments.size() > 0)
     {
-        MainWindow w;
-        w.show();
-        return a.exec();
+        QString first = arguments.at(0);
+        if (first == "load")
+        {
+            arguments.pop_front();
+            return bandageLoad(&a, arguments);
+        }
+        else if (first == "image")
+        {
+            arguments.pop_front();
+            return bandageImage(arguments);
+        }
+        else if (first == "contiguous")
+        {
+            arguments.pop_front();
+            return bandageContiguous(arguments);
+        }
     }
 
-    QString first = arguments.at(0);
-    arguments.pop_front();
-
-    if (first == "-h" || first == "-help" || first == "--help")
+    //Since a recognised command was not seen, we now check to see if the user
+    //was looking for help or version information.
+    if (checkForHelp(arguments))
     {
         out << "" << endl;
         out << "Program: Bandage" << endl;
         out << "Version: " << QApplication::applicationVersion() << endl;
-        printUsage(&out);
-        out << "" << endl;
+        printUsage(&out, false);
         return 0;
     }
-
-    else if (first == "-v" || first == "-version" || first == "--version")
+    if (checkForHelpAll(arguments))
+    {
+        out << "" << endl;
+        out << "Program: Bandage" << endl;
+        out << "Version: " << QApplication::applicationVersion() << endl;
+        printUsage(&out, true);
+        return 0;
+    }
+    if (checkForVersion(arguments))
     {
         out << "Version: " << QApplication::applicationVersion() << endl;
         return 0;
     }
 
-    else if (first == "load")
-        return bandageLoad(&a, arguments);
+    //If the code got here, we assume the user is simply launching Bandage,
+    //with or without some options to specify settings.
 
-    else if (first == "image")
-        return bandageImage(arguments);
-
-    else if (first == "contiguous")
-        return bandageContiguous(arguments);
-
-    else
+    //Check the settings.
+    QStringList argumentsCopy = arguments;
+    QString error = checkForInvalidOrExcessSettings(&argumentsCopy);
+    if (error.length() > 0)
     {
-        err << "" << endl << "Invalid command: " << first << endl;
-        printUsage(&err);
-        err << "" << endl;
+        err << "Bandage error: " + error << endl;
         return 1;
     }
+
+    //If the code got here, then the settings are good.  Parse them now and
+    //run the program.
+    parseSettings(arguments);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }

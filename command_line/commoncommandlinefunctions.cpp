@@ -48,6 +48,21 @@ bool checkForHelp(QStringList arguments)
     return (h1 != -1 || h2 != -1 || h3 != -1);
 }
 
+bool checkForHelpAll(QStringList arguments)
+{
+    return (arguments.indexOf("--helpall") != -1);
+}
+
+bool checkForVersion(QStringList arguments)
+{
+    int v1 = arguments.indexOf("-v");
+    int v2 = arguments.indexOf("-version");
+    int v3 = arguments.indexOf("--version");
+
+    return (v1 != -1 || v2 != -1 || v3 != -1);
+}
+
+
 
 
 //Returns empty string if everything is okay and an error
@@ -316,6 +331,60 @@ QColor getHexColourOption(QString option, QStringList * arguments)
 
 
 
+//This function checks the values of the Bandage settings.
+//If everything is fine, it removes the good arguments/values and returns
+//a null string.  If there's a problem, it returns an error message.
+QString checkForInvalidOrExcessSettings(QStringList * arguments)
+{
+    checkOptionWithoutValue("--double", arguments);
+    QString error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--quality", arguments, 1, 5);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covwidth", arguments, 0.0, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covpower", arguments, 0.1, 1.0);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0);
+    if (error.length() > 0) return error;
+
+    checkOptionWithoutValue("--names", arguments);
+    checkOptionWithoutValue("--lengths", arguments);
+    checkOptionWithoutValue("--coverages", arguments);
+    error = checkOptionForInt("--fontsize", arguments, 1, 100);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
+    if (error.length() > 0) return error;
+
+    QStringList validColourOptions;
+    validColourOptions << "random" << "uniform" << "coverage";
+    error = checkOptionForString("--colour", arguments, validColourOptions);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForHexColour("--unicolpos", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--unicolneg", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--unicolspe", arguments);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForHexColour("--covcollow", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--covcolhi", arguments);
+    if (error.length() > 0) return error;
+
+    error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
+    if (error.length() > 0) return error;
+
+    return checkForExcessArguments(*arguments);
+}
+
 
 
 //This function generates an error if excess arguments are left after
@@ -337,4 +406,171 @@ QString checkForExcessArguments(QStringList arguments)
     }
 
     return invalidOptionText;
+}
+
+
+void printCommonHelp(QTextStream * out)
+{
+    *out << "          --help              view this help message" << endl;
+    *out << "          --helpall           view all command line settings" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+}
+
+void printSettingsUsage(QTextStream * out)
+{
+    *out << "Settings: --double            draw graph in double mode (default: off)" << endl;
+    *out << "          --bases <int>       base pairs per segment (default: auto)" << endl;
+    *out << "                              High values result in longer nodes, small values" << endl;
+    *out << "                              in shorter nodes." << endl;
+    *out << "          --quality <int>     graph layout quality, 1 (low) to 5 (high)" << endl;
+    *out << "                              (default: 3)" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
+    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5)" << endl;
+    *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
+    *out << "                              default: 0.5)" << endl;
+    *out << "                              Node widths are determined using the following" << endl;
+    *out << "                              formula: a*b*((c/d)^e-1)+1" << endl;
+    *out << "                                       a = average node width" << endl;
+    *out << "                                       b = coverage effect on width" << endl;
+    *out << "                                       c = node coverage" << endl;
+    *out << "                                       d = mean coverage" << endl;
+    *out << "                                       e = power of coverage effect on width" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
+    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --names             Label nodes with name" << endl;
+    *out << "          --lengths           Label nodes with length" << endl;
+    *out << "          --coverages         Label nodes with coverage" << endl;
+    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: 10)" << endl;
+    *out << "          --toutline <float>  Surround text with a white outline with this" << endl;
+    *out << "                              thickness (default: 0.3))" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --colour <scheme>   Node colouring scheme, choose one of the" << endl;
+    *out << "                              following options: random, uniform or coverage" << endl;
+    *out << "                              (default: random)" << endl;
+    *out << "                              Specific colours can be set using HTML-style" << endl;
+    *out << "                              hexidemical values." << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --unicolpos <hex>   Colour for positive nodes under the uniform" << endl;
+    *out << "                              colouring scheme (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolneg <hex>   Colour for negative nodes under the uniform" << endl;
+    *out << "                              colouring scheme (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolspe <hex>   Colour for special nodes under the uniform" << endl;
+    *out << "                              colouring scheme (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
+    *out << "                              coverage colour value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
+    *out << "          --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
+    *out << "                              coverage colour value (default: " + g_settings->highCoverageColour.name().right(6) + ")" << endl;
+    *out << "          --covvallow <float> Low coverage colour value (default: auto)" << endl;
+    *out << "          --covvalhi <float>  High coverage colour value (default: auto)" << endl;
+    *out << endl;
+}
+
+
+void parseSettings(QStringList arguments)
+{
+    g_settings->doubleMode = isOptionPresent("--double", &arguments);
+
+    if (isOptionPresent("--bases", &arguments))
+    {
+        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
+        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+    }
+
+    if (isOptionPresent("--quality", &arguments))
+    {
+        int quality = getIntOption("--quality", &arguments);
+        if (quality < 0)
+            quality = 0;
+        if (quality > 4)
+            quality = 4;
+        g_settings->graphLayoutQuality = quality;
+    }
+
+    if (isOptionPresent("--nodewidth", &arguments))
+        g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
+
+    if (isOptionPresent("--covwidth", &arguments))
+        g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
+
+    if (isOptionPresent("--covpower", &arguments))
+        g_settings->coveragePower = getFloatOption("--covpower", &arguments);
+
+    if (isOptionPresent("--edgewidth", &arguments))
+        g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
+
+    if (isOptionPresent("--outline", &arguments))
+        g_settings->outlineThickness = getFloatOption("--outline", &arguments);
+    else
+        g_settings->outlineThickness = 0.5;
+
+    g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
+
+    g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
+
+    g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+
+    QFont font = g_settings->labelFont;
+    int fontsize = 10;
+    if (isOptionPresent("--fontsize", &arguments))
+        fontsize = getIntOption("--fontsize", &arguments);
+    font.setPointSize(fontsize);
+    g_settings->labelFont = font;
+
+    if (isOptionPresent("--toutline", &arguments))
+    {
+        double textOutlineThickness = getFloatOption("--toutline", &arguments);
+        if (textOutlineThickness == 0.0)
+            g_settings->textOutline = false;
+        else
+        {
+            g_settings->textOutline = true;
+            g_settings->textOutlineThickness = textOutlineThickness;
+        }
+    }
+    else
+    {
+        g_settings->textOutline = true;
+        g_settings->textOutlineThickness = 0.3;
+    }
+
+    if (isOptionPresent("--colour", &arguments))
+        g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
+
+    if (isOptionPresent("--unicolpos", &arguments))
+        g_settings->uniformPositiveNodeColour = getHexColourOption("--unicolpos", &arguments);
+
+    if (isOptionPresent("--unicolneg", &arguments))
+        g_settings->uniformNegativeNodeColour = getHexColourOption("--unicolneg", &arguments);
+
+    if (isOptionPresent("--unicolspe", &arguments))
+        g_settings->uniformNodeSpecialColour = getHexColourOption("--unicolspe", &arguments);
+
+    if (isOptionPresent("--covcollow", &arguments))
+        g_settings->lowCoverageColour = getHexColourOption("--covcollow", &arguments);
+
+    if (isOptionPresent("--covcolhi", &arguments))
+        g_settings->highCoverageColour = getHexColourOption("--covcolhi", &arguments);
+
+    if (isOptionPresent("--covvallow", &arguments))
+    {
+        g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
+
+    if (isOptionPresent("--covvalhi", &arguments))
+    {
+        g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
 }

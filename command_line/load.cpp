@@ -26,13 +26,19 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
     if (checkForHelp(arguments))
     {
-        printLoadUsage(&out);
+        printLoadUsage(&out, false);
+        return 0;
+    }
+
+    if (isOptionPresent("--helpall", &arguments))
+    {
+        printLoadUsage(&out, true);
         return 0;
     }
 
     if (arguments.size() == 0)
     {
-        printLoadUsage(&err);
+        printLoadUsage(&err, false);
         return 1;
     }
 
@@ -43,8 +49,7 @@ int bandageLoad(QApplication * a, QStringList arguments)
     QString error = checkForInvalidLoadOptions(arguments);
     if (error.length() > 0)
     {
-        err << "" << endl << "Error: " << error << endl;
-        printLoadUsage(&err);
+        err << "Bandage error: " << error << endl;
         return 1;
     }
 
@@ -57,11 +62,16 @@ int bandageLoad(QApplication * a, QStringList arguments)
 }
 
 
-void printLoadUsage(QTextStream * out)
+void printLoadUsage(QTextStream * out, bool all)
 {
     *out << endl;
-    *out << "Usage:   Bandage load <graph>" << endl << endl;
-    *out << "Options: --draw    draw graph after loading" << endl << endl;
+    *out << "Usage:    Bandage load <graph>" << endl << endl;
+    *out << "Options:  --draw              draw graph after loading" << endl;
+    *out << endl;
+//           ------------------------------|------------------------------------------------|  //80 character guide
+    printCommonHelp(out);
+    if (all)
+        printSettingsUsage(out);
 }
 
 
@@ -70,7 +80,10 @@ QString checkForInvalidLoadOptions(QStringList arguments)
 {
     checkOptionWithoutValue("--draw", &arguments);
 
-    return checkForExcessArguments(arguments);
+    QString error = checkForInvalidOrExcessSettings(&arguments);
+    if (error.length() > 0) return error;
+
+    return checkForInvalidOrExcessSettings(&arguments);
 }
 
 
@@ -79,4 +92,6 @@ void parseLoadOptions(QStringList arguments, bool * drawGraph)
 {
     int drawIndex = arguments.indexOf("--draw");
     *drawGraph = (drawIndex > -1);
+
+    parseSettings(arguments);
 }

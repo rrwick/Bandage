@@ -80,6 +80,7 @@ private:
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
     QStringList removeNullStringsFromList(QStringList in);
     bool checkIfLineEditHasNodes(QLineEdit * lineEdit);
+    void setWidgetsFromSettings();
 
 private slots:
     void loadGraph(QString fullFileName = "");

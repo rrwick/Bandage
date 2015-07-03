@@ -53,8 +53,6 @@ int bandageContiguous(QStringList arguments)
 
     parseContiguousOptions(arguments);
 
-    g_settings = new Settings();
-
     bool loadSuccess = loadAssemblyGraph(graphFile);
     if (!loadSuccess)
         return 1;

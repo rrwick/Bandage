@@ -82,7 +82,6 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
         return;
     }
 
-    g_settings = new Settings();
     m_previousZoomSpinBoxValue = ui->zoomSpinBox->value();
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
@@ -110,6 +109,10 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     g_blastSearch = new BlastSearch();
 
     setInfoTexts();
+
+    //The user may have specified settings on the command line, so it is now
+    //necessary to update the UI to match these settings.
+    setWidgetsFromSettings();
 
     selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
     graphScopeChanged();
@@ -1757,4 +1760,26 @@ bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
     QStringList nodesList = nodesString.split(",");
     nodesList = removeNullStringsFromList(nodesList);
     return (nodesList.size() == 0);
+}
+
+
+void MainWindow::setWidgetsFromSettings()
+{
+    ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
+    ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
+
+    ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
+    ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
+    ui->nodeCoveragesCheckBox->setChecked(g_settings->displayNodeCoverages);
+    ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
+
+    switch (g_settings->nodeColourScheme)
+    {
+    case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
+    case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
+    case COVERAGE_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
+    case BLAST_HITS_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
+    case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
+    case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(5); break;
+    }
 }

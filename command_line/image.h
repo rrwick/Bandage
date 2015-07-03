@@ -25,7 +25,7 @@
 #include <QApplication>
 
 int bandageImage(QStringList arguments);
-void printImageUsage(QTextStream * out);
+void printImageUsage(QTextStream * out, bool all);
 QString checkForInvalidImageOptions(QStringList arguments);
 void parseImageOptions(QStringList arguments, int * width, int * height);
 

@@ -22,10 +22,14 @@
 #include "../program/globals.h"
 #include <QString>
 #include <QColor>
+#include <QTextStream>
 
 bool loadAssemblyGraph(QString filename);
 void layoutGraph();
+
 bool checkForHelp(QStringList arguments);
+bool checkForHelpAll(QStringList arguments);
+bool checkForVersion(QStringList arguments);
 
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
 QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
@@ -43,6 +47,12 @@ double getFloatOption(QString option, QStringList * arguments);
 QColor getHexColourOption(QString option, QStringList * arguments);
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments);
 
+QString checkForInvalidOrExcessSettings(QStringList * arguments);
 QString checkForExcessArguments(QStringList arguments);
+
+void parseSettings(QStringList arguments);
+
+void printCommonHelp(QTextStream * out);
+void printSettingsUsage(QTextStream * out);
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H
