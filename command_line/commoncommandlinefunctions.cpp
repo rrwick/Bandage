@@ -414,19 +414,21 @@ void printCommonHelp(QTextStream * out)
     *out << "          --help              view this help message" << endl;
     *out << "          --helpall           view all command line settings" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
 }
 
 void printSettingsUsage(QTextStream * out)
 {
-    *out << "Settings: --double            draw graph in double mode (default: off)" << endl;
+    *out << "Settings: Graph layout" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --double            draw graph in double mode (default: off)" << endl;
     *out << "          --bases <int>       base pairs per segment (default: auto)" << endl;
     *out << "                              High values result in longer nodes, small values" << endl;
     *out << "                              in shorter nodes." << endl;
     *out << "          --quality <int>     graph layout quality, 1 (low) to 5 (high)" << endl;
     *out << "                              (default: 3)" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          Node width" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
     *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5)" << endl;
     *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
@@ -439,34 +441,45 @@ void printSettingsUsage(QTextStream * out)
     *out << "                                       d = mean coverage" << endl;
     *out << "                                       e = power of coverage effect on width" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
-    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
-    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
-    *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          Node labels" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --names             Label nodes with name" << endl;
     *out << "          --lengths           Label nodes with length" << endl;
     *out << "          --coverages         Label nodes with coverage" << endl;
     *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: 10)" << endl;
+    *out << endl;
+    *out << "          General colours" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          Specific colours are set using HTML-style hexidemical RGB values" << endl;
+    *out << "          (without the leading #)." << endl;
+    *out << "          --edgecol <hex>     Colour for edges (default: " + g_settings->edgeColour.name().right(6) + ")" << endl;
+    *out << "          --outcol <hex>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
+    *out << "          --selcol <hex>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
+    *out << "          --textcol <hex>     Colour for label text (default: " + g_settings->textColour.name().right(6) + ")" << endl;
+    *out << endl;
+    *out << "          Graph appearance" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
+    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
     *out << "          --toutline <float>  Surround text with a white outline with this" << endl;
     *out << "                              thickness (default: 0.3))" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          Node colours" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --colour <scheme>   Node colouring scheme, choose one of the" << endl;
     *out << "                              following options: random, uniform or coverage" << endl;
     *out << "                              (default: random)" << endl;
-    *out << "                              Specific colours can be set using HTML-style" << endl;
-    *out << "                              hexidemical values." << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
-    *out << "          --unicolpos <hex>   Colour for positive nodes under the uniform" << endl;
-    *out << "                              colouring scheme (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolneg <hex>   Colour for negative nodes under the uniform" << endl;
-    *out << "                              colouring scheme (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolspe <hex>   Colour for special nodes under the uniform" << endl;
-    *out << "                              colouring scheme (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << "          Uniform colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the uniform colour scheme is used" << endl;
+    *out << "          --unicolpos <hex>   Colour for positive nodes (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolneg <hex>   Colour for negative nodes (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolspe <hex>   Colour for special nodes (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
+    *out << "          Coverage colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the coverage colour scheme is used" << endl;
     *out << "          --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
     *out << "                              coverage colour value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
     *out << "          --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
