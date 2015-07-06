@@ -594,23 +594,42 @@ std::vector<QPointF> GraphicsItemNode::getCentres() const
 }
 
 
+
+//This function finds the centre point on the path defined by linePoints.
 QPointF GraphicsItemNode::getCentre(std::vector<QPointF> linePoints) const
 {
-    //If there are an odd number of points, return the
-    //centre one.
-    if (linePoints.size() % 2 == 1)
-        return linePoints[(linePoints.size() - 1) / 2];
+    if (linePoints.size() == 0)
+        return QPointF();
+    if (linePoints.size() == 1)
+        return linePoints[0];
 
-    //If there are an even number of points, return the
-    //mean location of the centre two.
-    else
+    double pathLength = 0.0;
+    for (size_t i = 0; i < linePoints.size() - 1; ++i)
+        pathLength += distance(linePoints[i], linePoints[i+1]);
+
+    double endToCentre = pathLength / 2.0;
+
+    double lengthSoFar = 0.0;
+    for (size_t i = 0; i < linePoints.size() - 1; ++i)
     {
-        QPointF centre1 = linePoints[linePoints.size() / 2 - 1];
-        QPointF centre2 = linePoints[linePoints.size() / 2];
+        QPointF a = linePoints[i];
+        QPointF b = linePoints[i+1];
+        double segmentLength = distance(a, b);
 
-        return QPointF((centre1.x() + centre2.x()) / 2.0,
-                       (centre1.y() + centre2.y()) / 2.0);
+        //If this segment will push the distance over halfway, then it
+        //contains the centre point.
+        if (lengthSoFar + segmentLength >= endToCentre)
+        {
+            double additionalLengthNeeded = endToCentre - lengthSoFar;
+            double fractionOfCurrentSegment = additionalLengthNeeded / segmentLength;
+            return (b - a) * fractionOfCurrentSegment + a;
+        }
+
+        lengthSoFar += segmentLength;
     }
+
+    //Code should never get here.
+    return QPointF();
 }
 
 

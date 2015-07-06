@@ -361,6 +361,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
     if (error.length() > 0) return error;
+    checkOptionWithoutValue("--centre", arguments);
 
     error = checkOptionForHexColour("--edgecol", arguments);
     if (error.length() > 0) return error;
@@ -486,6 +487,9 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --toutcol <hex>     Colour for text outline (default: " + g_settings->textOutlineColour.name().right(6) + ")" << endl;
     *out << "          --toutline <float>  Surround text with an outline with this" << endl;
     *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
+    *out << "          --centre            Node labels appear at the centre of the node" << endl;
+    *out << "                              (default: off, node labels appear over visible" << endl;
+    *out << "                              parts of nodes)" << endl;
     *out << endl;
     *out << "          Node colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -565,6 +569,7 @@ void parseSettings(QStringList arguments)
         g_settings->textColour = getHexColourOption("--textcol", &arguments);
     if (isOptionPresent("--toutcol", &arguments))
         g_settings->textOutlineColour = getHexColourOption("--toutcol", &arguments);
+    g_settings->positionTextNodeCentre = isOptionPresent("--centre", &arguments);
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
 
