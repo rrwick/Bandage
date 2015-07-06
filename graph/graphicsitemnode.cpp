@@ -165,7 +165,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         double textWidth = textSize.width();
         double textHeight = textSize.height();
 
-        //The text outline is made by drawing the text first in white at a slight offset
+        //The text outline is made by drawing the text first at a slight offset
         //at many angles.  The larger the text outline, the more angles are needed to
         //make the outline look nice.
         if (g_settings->textOutline)
@@ -189,7 +189,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
                 QRectF shadowTextRectangle(-textWidth / 2.0 + xOffset,
                                            -textHeight / 2.0 + yOffset,
                                            textWidth, textHeight);
-                painter->setPen(Qt::white);
+                painter->setPen(g_settings->textOutlineColour);
                 painter->drawText(shadowTextRectangle, Qt::AlignCenter, displayText);
             }
 

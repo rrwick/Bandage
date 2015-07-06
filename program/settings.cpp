@@ -76,6 +76,7 @@ Settings::Settings()
     outlineColour = QColor(0, 0, 0);
     selectionColour = QColor(0, 0, 255);
     textColour = QColor(0, 0, 0);
+    textOutlineColour = QColor(255, 255, 255);
 
     contiguitySearchSteps = 15;
     contiguousStrandSpecificColour = QColor(0, 155, 0);

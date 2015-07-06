@@ -72,6 +72,7 @@ public:
     QColor outlineColour;
     QColor selectionColour;
     QColor textColour;
+    QColor textOutlineColour;
 
     NodeColourScheme nodeColourScheme;
     QColor uniformPositiveNodeColour;

@@ -370,6 +370,8 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForHexColour("--textcol", arguments);
     if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--toutcol", arguments);
+    if (error.length() > 0) return error;
 
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "coverage";
@@ -468,21 +470,22 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
     *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
     *out << endl;
-    *out << "          General colours" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          Specific colours are set using HTML-style hexidemical RGB values" << endl;
-    *out << "          (without the leading #)." << endl;
-    *out << "          --edgecol <hex>     Colour for edges (default: " + g_settings->edgeColour.name().right(6) + ")" << endl;
-    *out << "          --outcol <hex>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
-    *out << "          --selcol <hex>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
-    *out << "          --textcol <hex>     Colour for label text (default: " + g_settings->textColour.name().right(6) + ")" << endl;
-    *out << endl;
     *out << "          Graph appearance" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          Colours are set using HTML-style hexidemical RGB values (without the" << endl;
+    *out << "          leading #)." << endl;
+    *out << "          --edgecol <hex>     Colour for edges (default: " + g_settings->edgeColour.name().right(6) + ")" << endl;
     *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
+    *out << "          --outcol <hex>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
     *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
-    *out << "          --toutline <float>  Surround text with a white outline with this" << endl;
-    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + "))" << endl;
+    *out << "          --selcol <hex>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
+    *out << endl;
+    *out << "          Text appearance" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --textcol <hex>     Colour for label text (default: " + g_settings->textColour.name().right(6) + ")" << endl;
+    *out << "          --toutcol <hex>     Colour for text outline (default: " + g_settings->textOutlineColour.name().right(6) + ")" << endl;
+    *out << "          --toutline <float>  Surround text with an outline with this" << endl;
+    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
     *out << endl;
     *out << "          Node colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -560,6 +563,8 @@ void parseSettings(QStringList arguments)
         g_settings->selectionColour = getHexColourOption("--selcol", &arguments);
     if (isOptionPresent("--textcol", &arguments))
         g_settings->textColour = getHexColourOption("--textcol", &arguments);
+    if (isOptionPresent("--toutcol", &arguments))
+        g_settings->textOutlineColour = getHexColourOption("--toutcol", &arguments);
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
 

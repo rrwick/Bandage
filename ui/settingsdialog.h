@@ -45,6 +45,7 @@ private:
     QColor m_outlineColour;
     QColor m_selectionColour;
     QColor m_textColour;
+    QColor m_textOutlineColour;
     QColor m_uniformPositiveNodeColour;
     QColor m_uniformNegativeNodeColour;
     QColor m_uniformNodeSpecialColour;
@@ -67,6 +68,7 @@ private slots:
     void outlineColourClicked();
     void selectionColourClicked();
     void textColourClicked();
+    void textOutlineColourClicked();
     void uniformPositiveNodeColourClicked();
     void uniformNegativeNodeColourClicked();
     void uniformNodeSpecialColourClicked();

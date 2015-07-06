@@ -34,6 +34,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->outlineColourButton, SIGNAL(clicked()), this, SLOT(outlineColourClicked()));
     connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
     connect(ui->textColourButton, SIGNAL(clicked()), this, SLOT(textColourClicked()));
+    connect(ui->textOutlineColourButton, SIGNAL(clicked()), this, SLOT(textOutlineColourClicked()));
     connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
     connect(ui->uniformNegativeNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformNegativeNodeColourClicked()));
     connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
@@ -132,6 +133,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->outlineColour, &m_outlineColour);
     colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
     colourFunctionPointer(&settings->textColour, &m_textColour);
+    colourFunctionPointer(&settings->textOutlineColour, &m_textOutlineColour);
     intFunctionPointer(&settings->randomColourPositiveSaturation, ui->randomColourPositiveSaturationSpinBox);
     intFunctionPointer(&settings->randomColourNegativeSaturation, ui->randomColourNegativeSaturationSpinBox);
     intFunctionPointer(&settings->randomColourPositiveLightness, ui->randomColourPositiveLightnessSpinBox);
@@ -221,6 +223,15 @@ void SettingsDialog::textColourClicked()
     if (chosenColor.isValid())
     {
         m_textColour = chosenColor;
+        setButtonColours();
+    }
+}
+void SettingsDialog::textOutlineColourClicked()
+{
+    QColor chosenColor = QColorDialog::getColor(m_textOutlineColour, this, "Text colour", QColorDialog::ShowAlphaChannel);
+    if (chosenColor.isValid())
+    {
+        m_textOutlineColour = chosenColor;
         setButtonColours();
     }
 }
@@ -332,6 +343,7 @@ void SettingsDialog::setButtonColours()
     ui->outlineColourButton->setStyleSheet(COLOR_STYLE.arg(m_outlineColour.name()));
     ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
     ui->textColourButton->setStyleSheet(COLOR_STYLE.arg(m_textColour.name()));
+    ui->textOutlineColourButton->setStyleSheet(COLOR_STYLE.arg(m_textOutlineColour.name()));
     ui->uniformPositiveNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformPositiveNodeColour.name()));
     ui->uniformNegativeNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNegativeNodeColour.name()));
     ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
@@ -397,6 +409,8 @@ void SettingsDialog::setInfoTexts()
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
     ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
+    ui->textOutlineColourInfoText->setInfoText("If the text outline thickness setting has a nonzero value, then a text outline "
+                                               "will be displayed with this colour.");
 
     ui->randomColourPositiveSaturationInfoText->setInfoText("This controls the colour saturation of the positive nodes when the "
                                                             "'Random colours' option is used.<br><br>"
