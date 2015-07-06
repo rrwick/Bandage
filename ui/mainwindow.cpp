@@ -114,6 +114,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     //The user may have specified settings on the command line, so it is now
     //necessary to update the UI to match these settings.
     setWidgetsFromSettings();
+    setTextDisplaySettings();
 
     selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
     graphScopeChanged();
