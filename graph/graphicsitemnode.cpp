@@ -229,18 +229,17 @@ void GraphicsItemNode::setNodeColour()
         //Make a colour with a random hue.  Assign a colour to both this node and
         //it complement so their hue matches.
         int hue = rand() % 360;
-
-        int posSaturation = 200;
-        int posValue = 190;
         QColor posColour;
-        posColour.setHsv(hue, posSaturation, posValue);
-        posColour.setAlpha(g_settings->randomColourOpacity);
+        posColour.setHsl(hue,
+                         g_settings->randomColourPositiveSaturation,
+                         g_settings->randomColourPositiveLightness);
+        posColour.setAlpha(g_settings->randomColourPositiveOpacity);
 
-        int negSaturation = 130;
-        int negValue = 150;
         QColor negColour;
-        negColour.setHsv(hue, negSaturation, negValue);
-        negColour.setAlpha(g_settings->randomColourOpacity);
+        negColour.setHsl(hue,
+                         g_settings->randomColourNegativeSaturation,
+                         g_settings->randomColourNegativeLightness);
+        negColour.setAlpha(g_settings->randomColourNegativeOpacity);
 
         QColor colour1, colour2;
         if (m_deBruijnNode->isPositiveNode())

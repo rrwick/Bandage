@@ -50,6 +50,18 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->coveragePowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->coverageEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->averageNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
+    connect(ui->randomColourPositiveOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourNegativeOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourPositiveSaturationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourNegativeSaturationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourPositiveLightnessSpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourNegativeLightnessSpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
+    connect(ui->randomColourPositiveOpacitySlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
+    connect(ui->randomColourNegativeOpacitySlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
+    connect(ui->randomColourPositiveSaturationSlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
+    connect(ui->randomColourNegativeSaturationSlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
+    connect(ui->randomColourPositiveLightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
+    connect(ui->randomColourNegativeLightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(colourSliderChanged()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -120,6 +132,12 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->outlineColour, &m_outlineColour);
     colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
     colourFunctionPointer(&settings->textColour, &m_textColour);
+    intFunctionPointer(&settings->randomColourPositiveSaturation, ui->randomColourPositiveSaturationSpinBox);
+    intFunctionPointer(&settings->randomColourNegativeSaturation, ui->randomColourNegativeSaturationSpinBox);
+    intFunctionPointer(&settings->randomColourPositiveLightness, ui->randomColourPositiveLightnessSpinBox);
+    intFunctionPointer(&settings->randomColourNegativeLightness, ui->randomColourNegativeLightnessSpinBox);
+    intFunctionPointer(&settings->randomColourPositiveOpacity, ui->randomColourPositiveOpacitySpinBox);
+    intFunctionPointer(&settings->randomColourNegativeOpacity, ui->randomColourNegativeOpacitySpinBox);
     colourFunctionPointer(&settings->uniformPositiveNodeColour, &m_uniformPositiveNodeColour);
     colourFunctionPointer(&settings->uniformNegativeNodeColour, &m_uniformNegativeNodeColour);
     colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
@@ -142,7 +160,6 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
-        ui->randomColourOpacitySlider->setValue(settings->randomColourOpacity);
         ui->coverageValueAutoRadioButton->setChecked(settings->autoCoverageValue);
         ui->coverageValueManualRadioButton->setChecked(!settings->autoCoverageValue);
         basePairsPerSegmentManualChanged();
@@ -153,7 +170,6 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     else
     {
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
-        settings->randomColourOpacity = ui->randomColourOpacitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
         settings->autoCoverageValue = ui->coverageValueAutoRadioButton->isChecked();
         if (ui->basePairsPerSegmentAutoRadioButton->isChecked())
@@ -381,10 +397,38 @@ void SettingsDialog::setInfoTexts()
     ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
                                              "Selected edges will also be displayed in this colour.");
     ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
-    ui->randomColourOpacityInfoText->setInfoText("This controls how opaque the nodes are when the 'Random colours' option is "
-                                                 "used.<br><br>"
-                                                 "Set to the minimum value (left) for fully transparent nodes.  Set to the "
-                                                 "maximum value (right) for completely opaque nodes.");
+
+    ui->randomColourPositiveSaturationInfoText->setInfoText("This controls the colour saturation of the positive nodes when the "
+                                                            "'Random colours' option is used.<br><br>"
+                                                            "The minimum value will result in colourless (grey) nodes "
+                                                            "while high values will result in brightly coloured nodes.");
+    ui->randomColourNegativeSaturationInfoText->setInfoText("This controls the colour saturation of the negative nodes when the "
+                                                            "'Random colours' option is used.<br><br>"
+                                                            "The minimum value will result in colourless (grey) nodes "
+                                                            "while high values will result in brightly coloured nodes.<br><br>"
+                                                            "Note that negative nodes are only visible when the graph is drawn "
+                                                            "in double mode.");
+    ui->randomColourPositiveLightnessInfoText->setInfoText("This controls the colour lightness of the positive nodes when the "
+                                                           "'Random colours' option is used.<br><br>"
+                                                           "Low values will result in dark nodes while high values result in "
+                                                           "light nodes");
+    ui->randomColourNegativeLightnessInfoText->setInfoText("This controls the colour lightness of the negative nodes when the "
+                                                           "'Random colours' option is used.<br><br>"
+                                                           "Low values will result in dark nodes while high values result in "
+                                                           "light nodes<br><br>"
+                                                           "Note that negative nodes are only visible when the graph is drawn "
+                                                           "in double mode.");
+    ui->randomColourPositiveOpacityInfoText->setInfoText("This controls how opaque the positive nodes are when the 'Random colours' "
+                                                         "option is used.<br><br>"
+                                                         "Set to the minimum value for fully transparent nodes.  Set to the "
+                                                         "maximum value for completely opaque nodes.");
+    ui->randomColourNegativeOpacityInfoText->setInfoText("This controls how opaque the negative nodes are when the 'Random colours' "
+                                                         "option is used.<br><br>"
+                                                         "Set to the minimum value for fully transparent nodes.  Set to the "
+                                                         "maximum value for completely opaque nodes.<br><br>"
+                                                         "Note that negative nodes are only visible when the graph is drawn "
+                                                         "in double mode.");
+
     ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
                                                "nodes with coverage at or below the low coverage value.<br><br>"
                                                "Nodes with coverage between the low and high coverage values will get an "
@@ -460,4 +504,24 @@ void SettingsDialog::updateNodeWidthVisualAid()
     ui->nodeWidthVisualAid->m_coveragePower = ui->coveragePowerSpinBox->value();
 
     ui->nodeWidthVisualAid->update();
+}
+
+
+void SettingsDialog::colourSliderChanged()
+{
+    ui->randomColourPositiveOpacitySpinBox->setValue(ui->randomColourPositiveOpacitySlider->value());
+    ui->randomColourNegativeOpacitySpinBox->setValue(ui->randomColourNegativeOpacitySlider->value());
+    ui->randomColourPositiveSaturationSpinBox->setValue(ui->randomColourPositiveSaturationSlider->value());
+    ui->randomColourNegativeSaturationSpinBox->setValue(ui->randomColourNegativeSaturationSlider->value());
+    ui->randomColourPositiveLightnessSpinBox->setValue(ui->randomColourPositiveLightnessSlider->value());
+    ui->randomColourNegativeLightnessSpinBox->setValue(ui->randomColourNegativeLightnessSlider->value());
+}
+void SettingsDialog::colourSpinBoxChanged()
+{
+    ui->randomColourPositiveOpacitySlider->setValue(ui->randomColourPositiveOpacitySpinBox->value());
+    ui->randomColourNegativeOpacitySlider->setValue(ui->randomColourNegativeOpacitySpinBox->value());
+    ui->randomColourPositiveSaturationSlider->setValue(ui->randomColourPositiveSaturationSpinBox->value());
+    ui->randomColourNegativeSaturationSlider->setValue(ui->randomColourNegativeSaturationSpinBox->value());
+    ui->randomColourPositiveLightnessSlider->setValue(ui->randomColourPositiveLightnessSpinBox->value());
+    ui->randomColourNegativeLightnessSlider->setValue(ui->randomColourNegativeLightnessSpinBox->value());
 }

@@ -81,6 +81,8 @@ private slots:
     void enableDisableCoverageValueSpinBoxes();
     void basePairsPerSegmentManualChanged();
     void updateNodeWidthVisualAid();
+    void colourSliderChanged();
+    void colourSpinBoxChanged();
 
 public slots:
     void accept();

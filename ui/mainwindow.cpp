@@ -1237,7 +1237,12 @@ void MainWindow::openSettingsDialog()
                 settingsBefore.notContiguousColour != g_settings->notContiguousColour ||
                 settingsBefore.maybeContiguousColour != g_settings->maybeContiguousColour ||
                 settingsBefore.contiguityStartingColour != g_settings->contiguityStartingColour ||
-                settingsBefore.randomColourOpacity != g_settings->randomColourOpacity)
+                settingsBefore.randomColourPositiveOpacity != g_settings->randomColourPositiveOpacity ||
+                settingsBefore.randomColourNegativeOpacity != g_settings->randomColourNegativeOpacity ||
+                settingsBefore.randomColourPositiveSaturation != g_settings->randomColourPositiveSaturation ||
+                settingsBefore.randomColourNegativeSaturation != g_settings->randomColourNegativeSaturation ||
+                settingsBefore.randomColourPositiveLightness != g_settings->randomColourPositiveLightness ||
+                settingsBefore.randomColourNegativeLightness != g_settings->randomColourNegativeLightness)
         {
             g_assemblyGraph->resetAllNodeColours();
         }

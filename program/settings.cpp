@@ -65,7 +65,12 @@ Settings::Settings()
     setNegativeNodeColour();
     uniformNodeSpecialColour = QColor(0, 255, 0);
 
-    randomColourOpacity = 255;
+    randomColourPositiveOpacity = 255;
+    randomColourNegativeOpacity = 255;
+    randomColourPositiveSaturation = 127;
+    randomColourNegativeSaturation = 127;
+    randomColourPositiveLightness = 127;
+    randomColourNegativeLightness = 63;
 
     edgeColour = QColor(0, 0, 0, 180);
     outlineColour = QColor(0, 0, 0);
