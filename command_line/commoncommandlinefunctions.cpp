@@ -367,6 +367,19 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForString("--colour", arguments, validColourOptions);
     if (error.length() > 0) return error;
 
+    error = checkOptionForInt("--ransatpos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ransatneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligpos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopapos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopaneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+
     error = checkOptionForHexColour("--unicolpos", arguments);
     if (error.length() > 0) return error;
     error = checkOptionForHexColour("--unicolneg", arguments);
@@ -470,16 +483,26 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              following options: random, uniform or coverage" << endl;
     *out << "                              (default: random)" << endl;
     *out << endl;
+    *out << "          Random colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the random colour scheme is used." << endl;
+    *out << "          --ransatpos <int>   Positive node saturation (0-255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
+    *out << "          --ransatneg <int>   Negative node saturation (0-255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
+    *out << "          --ranligpos <int>   Positive node lightness (0-255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
+    *out << "          --ranligneg <int>   Negative node lightness (0-255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
+    *out << "          --ranopapos <int>   Positive node opacity (0-255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
+    *out << "          --ranopaneg <int>   Negative node opacity (0-255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
+    *out << endl;
     *out << "          Uniform colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the uniform colour scheme is used" << endl;
-    *out << "          --unicolpos <hex>   Colour for positive nodes (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolneg <hex>   Colour for negative nodes (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolspe <hex>   Colour for special nodes (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << "          These settings only apply when the uniform colour scheme is used." << endl;
+    *out << "          --unicolpos <hex>   Positive node colour (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolneg <hex>   Negative node colour (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolspe <hex>   Special node colour (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
     *out << endl;
     *out << "          Coverage colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the coverage colour scheme is used" << endl;
+    *out << "          These settings only apply when the coverage colour scheme is used." << endl;
     *out << "          --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
     *out << "                              coverage colour value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
     *out << "          --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
@@ -560,27 +583,35 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--colour", &arguments))
         g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
 
+    if (isOptionPresent("--ransatpos", &arguments))
+        g_settings->randomColourPositiveSaturation = getIntOption("--ransatpos", &arguments);
+    if (isOptionPresent("--ransatneg", &arguments))
+        g_settings->randomColourNegativeSaturation = getIntOption("--ransatneg", &arguments);
+    if (isOptionPresent("--ranligpos", &arguments))
+        g_settings->randomColourPositiveLightness = getIntOption("--ranligpos", &arguments);
+    if (isOptionPresent("--ranligneg", &arguments))
+        g_settings->randomColourNegativeLightness = getIntOption("--ranligneg", &arguments);
+    if (isOptionPresent("--ranopapos", &arguments))
+        g_settings->randomColourPositiveOpacity = getIntOption("--ranopapos", &arguments);
+    if (isOptionPresent("--ranopaneg", &arguments))
+        g_settings->randomColourNegativeOpacity = getIntOption("--ranopaneg", &arguments);
+
     if (isOptionPresent("--unicolpos", &arguments))
         g_settings->uniformPositiveNodeColour = getHexColourOption("--unicolpos", &arguments);
-
     if (isOptionPresent("--unicolneg", &arguments))
         g_settings->uniformNegativeNodeColour = getHexColourOption("--unicolneg", &arguments);
-
     if (isOptionPresent("--unicolspe", &arguments))
         g_settings->uniformNodeSpecialColour = getHexColourOption("--unicolspe", &arguments);
 
     if (isOptionPresent("--covcollow", &arguments))
         g_settings->lowCoverageColour = getHexColourOption("--covcollow", &arguments);
-
     if (isOptionPresent("--covcolhi", &arguments))
         g_settings->highCoverageColour = getHexColourOption("--covcolhi", &arguments);
-
     if (isOptionPresent("--covvallow", &arguments))
     {
         g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
         g_settings->autoCoverageValue = false;
     }
-
     if (isOptionPresent("--covvalhi", &arguments))
     {
         g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
