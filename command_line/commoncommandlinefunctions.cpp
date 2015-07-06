@@ -437,29 +437,27 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --bases <int>       base pairs per segment (default: auto)" << endl;
     *out << "                              High values result in longer nodes, small values" << endl;
     *out << "                              in shorter nodes." << endl;
-    *out << "          --quality <int>     graph layout quality, 1 (low) to 5 (high)" << endl;
-    *out << "                              (default: 3)" << endl;
+    *out << "          --quality <int>     graph layout quality, 0 (low) to 4 (high)" << endl;
+    *out << "                              (default: " + QString::number(g_settings->graphLayoutQuality) + ")" << endl;
     *out << endl;
     *out << "          Node width" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: 5.0)" << endl;
-    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: 0.5)" << endl;
+    *out << "          Node widths are determined using the following formula:" << endl;
+    *out << "              a*b*((c/d)^e-1)+1" << endl;
+    *out << "                 a = average node width, b = coverage effect on width" << endl;
+    *out << "                 c = node coverage, d = mean coverage" << endl;
+    *out << "                 e = power of coverage effect on width" << endl;
+    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
+    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: " + QString::number(g_settings->coverageEffectOnWidth) + ")" << endl;
     *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
-    *out << "                              default: 0.5)" << endl;
-    *out << "                              Node widths are determined using the following" << endl;
-    *out << "                              formula: a*b*((c/d)^e-1)+1" << endl;
-    *out << "                                       a = average node width" << endl;
-    *out << "                                       b = coverage effect on width" << endl;
-    *out << "                                       c = node coverage" << endl;
-    *out << "                                       d = mean coverage" << endl;
-    *out << "                                       e = power of coverage effect on width" << endl;
+    *out << "                              default: " + QString::number(g_settings->coveragePower) + ")" << endl;
     *out << endl;
     *out << "          Node labels" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --names             Label nodes with name" << endl;
-    *out << "          --lengths           Label nodes with length" << endl;
-    *out << "          --coverages         Label nodes with coverage" << endl;
-    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: 10)" << endl;
+    *out << "          --names             Label nodes with name (default: off)" << endl;
+    *out << "          --lengths           Label nodes with length (default: off)" << endl;
+    *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
+    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
     *out << endl;
     *out << "          General colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -472,16 +470,16 @@ void printSettingsUsage(QTextStream * out)
     *out << endl;
     *out << "          Graph appearance" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: 2.0)" << endl;
-    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: 0.5) " << endl;
+    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
+    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
     *out << "          --toutline <float>  Surround text with a white outline with this" << endl;
-    *out << "                              thickness (default: 0.3))" << endl;
+    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + "))" << endl;
     *out << endl;
     *out << "          Node colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --colour <scheme>   Node colouring scheme, choose one of the" << endl;
-    *out << "                              following options: random, uniform or coverage" << endl;
-    *out << "                              (default: random)" << endl;
+    *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
+    *out << "                              options: random, uniform or coverage (default: " << endl;
+    *out << "                              random)" << endl;
     *out << endl;
     *out << "          Random colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -504,11 +502,11 @@ void printSettingsUsage(QTextStream * out)
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          These settings only apply when the coverage colour scheme is used." << endl;
     *out << "          --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
-    *out << "                              coverage colour value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
+    *out << "                              coverage value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
     *out << "          --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
-    *out << "                              coverage colour value (default: " + g_settings->highCoverageColour.name().right(6) + ")" << endl;
-    *out << "          --covvallow <float> Low coverage colour value (default: auto)" << endl;
-    *out << "          --covvalhi <float>  High coverage colour value (default: auto)" << endl;
+    *out << "                              coverage value (default: " + g_settings->highCoverageColour.name().right(6) + ")" << endl;
+    *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
+    *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
     *out << endl;
 }
 
@@ -547,8 +545,6 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--outline", &arguments))
         g_settings->outlineThickness = getFloatOption("--outline", &arguments);
-    else
-        g_settings->outlineThickness = 0.5;
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
 
@@ -556,12 +552,13 @@ void parseSettings(QStringList arguments)
 
     g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
 
-    QFont font = g_settings->labelFont;
-    int fontsize = 10;
     if (isOptionPresent("--fontsize", &arguments))
-        fontsize = getIntOption("--fontsize", &arguments);
-    font.setPointSize(fontsize);
-    g_settings->labelFont = font;
+    {
+        int fontsize = getIntOption("--fontsize", &arguments);
+        QFont font = g_settings->labelFont;
+        font.setPointSize(fontsize);
+        g_settings->labelFont = font;
+    }
 
     if (isOptionPresent("--toutline", &arguments))
     {

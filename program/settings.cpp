@@ -55,7 +55,7 @@ Settings::Settings()
     displayNodeLengths = false;
     displayNodeCoverages = false;
     labelFont = QFont();
-    textOutline = false;
+    textOutline = true;
     antialiasing = true;
 
     nodeDragging = NEARBY_PIECES;

@@ -29,6 +29,10 @@
 
 int bandageImage(QStringList arguments)
 {
+    //Since frame rate performance doesn't matter for a fixed image, set the
+    //default node outline to a nonzero value.
+    g_settings->outlineThickness = 0.3;
+
     QTextStream out(stdout);
     QTextStream err(stdout);
 
