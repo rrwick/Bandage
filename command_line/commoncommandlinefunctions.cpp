@@ -362,6 +362,15 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
     if (error.length() > 0) return error;
 
+    error = checkOptionForHexColour("--edgecol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--outcol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--selcol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForHexColour("--textcol", arguments);
+    if (error.length() > 0) return error;
+
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "coverage";
     error = checkOptionForString("--colour", arguments, validColourOptions);
@@ -533,18 +542,24 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--nodewidth", &arguments))
         g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
-
     if (isOptionPresent("--covwidth", &arguments))
         g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
-
     if (isOptionPresent("--covpower", &arguments))
         g_settings->coveragePower = getFloatOption("--covpower", &arguments);
 
     if (isOptionPresent("--edgewidth", &arguments))
         g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
-
     if (isOptionPresent("--outline", &arguments))
         g_settings->outlineThickness = getFloatOption("--outline", &arguments);
+
+    if (isOptionPresent("--edgecol", &arguments))
+        g_settings->edgeColour = getHexColourOption("--edgecol", &arguments);
+    if (isOptionPresent("--outcol", &arguments))
+        g_settings->outlineColour = getHexColourOption("--outcol", &arguments);
+    if (isOptionPresent("--selcol", &arguments))
+        g_settings->selectionColour = getHexColourOption("--selcol", &arguments);
+    if (isOptionPresent("--textcol", &arguments))
+        g_settings->textColour = getHexColourOption("--textcol", &arguments);
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
 
