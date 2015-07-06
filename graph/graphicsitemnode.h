@@ -28,6 +28,7 @@
 #include <QFont>
 #include <QString>
 #include <QPainterPath>
+#include <QStringList>
 
 class DeBruijnNode;
 
@@ -60,7 +61,7 @@ public:
     QPointF getSecondLast() const {return m_linePoints[m_linePoints.size()-2];}
     QPointF getCentre() const;
     void setNodeColour();
-    QString getNodeText();
+    QStringList getNodeText();
     QSize getNodeTextSize(QString text);
     QColor getCoverageColour();
     void setWidth();

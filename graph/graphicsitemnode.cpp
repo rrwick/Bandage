@@ -40,6 +40,7 @@
 #include "../blast/blasthitpart.h"
 #include "assemblygraph.h"
 #include <cmath>
+#include <QFontMetrics>
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -154,58 +155,43 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     //Draw text if there is any to display.
     if (g_settings->anyNodeDisplayText())
     {
-        //The text should always be displayed upright, so
-        //counter the view's rotation here.
+        QStringList nodeText = getNodeText();
+        QPainterPath textPath;
 
-        painter->setRenderHint(QPainter::TextAntialiasing, true);
-        painter->setFont(g_settings->labelFont);
-        QString displayText = getNodeText();
-        QSize textSize = getNodeTextSize(displayText);
+        QFontMetrics metrics(g_settings->labelFont);
+        double fontHeight = metrics.ascent();
 
-        double textWidth = textSize.width();
-        double textHeight = textSize.height();
-
-        //The text outline is made by drawing the text first at a slight offset
-        //at many angles.  The larger the text outline, the more angles are needed to
-        //make the outline look nice.
-        if (g_settings->textOutline)
+        for (int i = 0; i < nodeText.size(); ++i)
         {
-            int offsetSteps = 8;
-            if (g_settings->textOutlineThickness > 0.5)
-                offsetSteps = 16;
-            if (g_settings->textOutlineThickness > 1.0)
-                offsetSteps = 32;
-
-            double offsetDistance = g_settings->textOutlineThickness;
-
-            painter->translate(getCentre());
-            painter->rotate(-g_graphicsView->m_rotation);
-
-            for (int i = 0; i < offsetSteps; ++i)
-            {
-                double offsetAngle = 6.2832 * (double(i) / offsetSteps);
-                double xOffset = offsetDistance * cos(offsetAngle);
-                double yOffset = offsetDistance * sin(offsetAngle);
-                QRectF shadowTextRectangle(-textWidth / 2.0 + xOffset,
-                                           -textHeight / 2.0 + yOffset,
-                                           textWidth, textHeight);
-                painter->setPen(g_settings->textOutlineColour);
-                painter->drawText(shadowTextRectangle, Qt::AlignCenter, displayText);
-            }
-
-            painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-1.0 * getCentre());
+            QString text = nodeText.at(i);
+            int stepsUntilLast = nodeText.size() - 1 - i;
+            double shiftLeft = -metrics.width(text) / 2.0;
+            textPath.addText(shiftLeft, -stepsUntilLast * fontHeight, g_settings->labelFont, text);
         }
 
-        QRectF textRectangle(-textWidth / 2.0, -textHeight / 2.0,
-                             textWidth, textHeight);
-        painter->setPen(g_settings->textColour);
+        QRectF textBoundingRect = textPath.boundingRect();
 
-        painter->translate(getCentre());
+        double textHeight = textBoundingRect.height();
+        QPointF offset(0.0, textHeight / 2.0);
+        QPointF translation = getCentre() + offset;
+
+        painter->translate(translation);
         painter->rotate(-g_graphicsView->m_rotation);
-        painter->drawText(textRectangle, Qt::AlignCenter, displayText);
+
+        if (g_settings->textOutline)
+        {
+            painter->setPen(QPen(g_settings->textOutlineColour,
+                                 g_settings->textOutlineThickness * 2.0,
+                                 Qt::SolidLine,
+                                 Qt::RoundCap,
+                                 Qt::RoundJoin));
+            painter->drawPath(textPath);
+        }
+
+        painter->fillPath(textPath, QBrush(g_settings->textColour));
+
         painter->rotate(g_graphicsView->m_rotation);
-        painter->translate(-1.0 * getCentre());
+        painter->translate(-1.0 * translation);
     }
 }
 
@@ -581,26 +567,25 @@ QPointF GraphicsItemNode::getCentre() const
 
 
 
-QString GraphicsItemNode::getNodeText()
+QStringList GraphicsItemNode::getNodeText()
 {
-    QString nodeText;
+    QStringList nodeText;
 
     if (g_settings->displayNodeCustomLabels && m_deBruijnNode->m_customLabel.length() > 0)
-        nodeText += m_deBruijnNode->m_customLabel + "\n";
+        nodeText << m_deBruijnNode->m_customLabel;
     if (g_settings->displayNodeNames)
     {
         QString nodeName = m_deBruijnNode->m_name;
         if (!g_settings->doubleMode)
             nodeName.chop(1);
-        nodeText += nodeName + "\n";
+        nodeText << nodeName;
     }
     if (g_settings->displayNodeLengths)
-        nodeText += formatIntForDisplay(m_deBruijnNode->m_length) + " bp\n";
+        nodeText << formatIntForDisplay(m_deBruijnNode->m_length) + " bp";
     if (g_settings->displayNodeCoverages)
-        nodeText += formatDoubleForDisplay(m_deBruijnNode->m_coverage, 1) + "x\n";
+        nodeText << formatDoubleForDisplay(m_deBruijnNode->m_coverage, 1) + "x";
 
-    //Remove last newline before returning
-    return nodeText.left(nodeText.size()-1);
+    return nodeText;
 }
 
 
