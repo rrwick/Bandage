@@ -171,27 +171,32 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
         QRectF textBoundingRect = textPath.boundingRect();
 
-        double textHeight = textBoundingRect.height();
-        QPointF offset(0.0, textHeight / 2.0);
-        QPointF translation = getCentre() + offset;
+        std::vector<QPointF> centres = getCentres();
 
-        painter->translate(translation);
         painter->rotate(-g_graphicsView->m_rotation);
-
-        if (g_settings->textOutline)
+        for (size_t i = 0; i < centres.size(); ++i)
         {
-            painter->setPen(QPen(g_settings->textOutlineColour,
-                                 g_settings->textOutlineThickness * 2.0,
-                                 Qt::SolidLine,
-                                 Qt::RoundCap,
-                                 Qt::RoundJoin));
-            painter->drawPath(textPath);
+            double textHeight = textBoundingRect.height();
+            QPointF offset(0.0, textHeight / 2.0);
+            QPointF translation = centres[i] + offset;
+
+            painter->translate(translation);
+
+
+            if (g_settings->textOutline)
+            {
+                painter->setPen(QPen(g_settings->textOutlineColour,
+                                     g_settings->textOutlineThickness * 2.0,
+                                     Qt::SolidLine,
+                                     Qt::RoundCap,
+                                     Qt::RoundJoin));
+                painter->drawPath(textPath);
+            }
+
+            painter->fillPath(textPath, QBrush(g_settings->textColour));
+            painter->translate(-1.0 * translation);
         }
-
-        painter->fillPath(textPath, QBrush(g_settings->textColour));
-
         painter->rotate(g_graphicsView->m_rotation);
-        painter->translate(-1.0 * translation);
     }
 }
 
@@ -546,24 +551,64 @@ bool GraphicsItemNode::usePositiveNodeColour()
 
 
 
-QPointF GraphicsItemNode::getCentre() const
+
+//This function returns the nodes' visible centres.  If the entire node is visible,
+//then there is just one visible centre.  If none of the node is visible, then
+//there are no visible centres.  If multiple parts of the node are visible, then there
+//are multiple visible centres.
+std::vector<QPointF> GraphicsItemNode::getCentres() const
+{
+    std::vector<QPointF> centres;
+
+    bool lastPointVisible = false;
+    std::vector<QPointF> currentRun;
+
+    for (size_t i = 0; i < m_linePoints.size(); ++i)
+    {
+        QPointF p = m_linePoints[i];
+        bool pVisible = g_graphicsView->isPointVisible(p);
+
+        //If this point is visible, add it to the current run.
+        if (pVisible)
+            currentRun.push_back(p);
+
+        //If the last point was visible and this one isn't, then a run has ended.
+        else if (!pVisible && lastPointVisible)
+        {
+            centres.push_back(getCentre(currentRun));
+            currentRun.clear();
+        }
+
+        lastPointVisible = pVisible;
+    }
+
+    //If there is a current run, add its centre
+    if (currentRun.size() > 0)
+        centres.push_back(getCentre(currentRun));
+
+    return centres;
+}
+
+
+QPointF GraphicsItemNode::getCentre(std::vector<QPointF> linePoints) const
 {
     //If there are an odd number of points, return the
     //centre one.
-    if (m_linePoints.size() % 2 == 1)
-        return m_linePoints[(m_linePoints.size() - 1) / 2];
+    if (linePoints.size() % 2 == 1)
+        return linePoints[(linePoints.size() - 1) / 2];
 
     //If there are an even number of points, return the
     //mean location of the centre two.
     else
     {
-        QPointF centre1 = m_linePoints[m_linePoints.size() / 2 - 1];
-        QPointF centre2 = m_linePoints[m_linePoints.size() / 2];
+        QPointF centre1 = linePoints[linePoints.size() / 2 - 1];
+        QPointF centre2 = linePoints[linePoints.size() / 2];
 
         return QPointF((centre1.x() + centre2.x()) / 2.0,
                        (centre1.y() + centre2.y()) / 2.0);
     }
 }
+
 
 
 

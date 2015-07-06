@@ -35,6 +35,7 @@ public:
     double m_rotation;
 
     void setAntialiasing(bool antialiasingOn);
+    bool isPointVisible(QPointF p);
 
 protected:
     void mousePressEvent(QMouseEvent * event);

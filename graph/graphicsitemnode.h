@@ -59,7 +59,8 @@ public:
     QPointF getSecond() const {return m_linePoints[1];}
     QPointF getLast() const {return m_linePoints[m_linePoints.size()-1];}
     QPointF getSecondLast() const {return m_linePoints[m_linePoints.size()-2];}
-    QPointF getCentre() const;
+    std::vector<QPointF> getCentres() const;
+    QPointF getCentre(std::vector<QPointF> linePoints) const;
     void setNodeColour();
     QStringList getNodeText();
     QSize getNodeTextSize(QString text);

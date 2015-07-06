@@ -155,3 +155,10 @@ void MyGraphicsView::setAntialiasing(bool antialiasingOn)
         g_settings->labelFont.setStyleStrategy(QFont::NoAntialias);
     }
 }
+
+bool MyGraphicsView::isPointVisible(QPointF p)
+{
+    QPointF mappedPoint = mapFromScene(p);
+    return (mappedPoint.x() > 0.0 && mappedPoint.y() > 0.0 &&
+            mappedPoint.x() < viewport()->width() && mappedPoint.y() < viewport()->height());
+}
