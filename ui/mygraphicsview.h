@@ -21,6 +21,7 @@
 
 #include <QGraphicsView>
 #include <QPoint>
+#include <QLineF>
 
 class GraphicsViewZoom;
 
@@ -36,6 +37,7 @@ public:
 
     void setAntialiasing(bool antialiasingOn);
     bool isPointVisible(QPointF p);
+    QPointF findIntersectionWithViewportBoundary(QLineF line);
 
 protected:
     void mousePressEvent(QMouseEvent * event);

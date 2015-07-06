@@ -563,27 +563,42 @@ bool GraphicsItemNode::usePositiveNodeColour()
 std::vector<QPointF> GraphicsItemNode::getCentres() const
 {
     std::vector<QPointF> centres;
-
-    bool lastPointVisible = false;
     std::vector<QPointF> currentRun;
+
+    QPointF lastP;
+    bool lastPointVisible = false;
 
     for (size_t i = 0; i < m_linePoints.size(); ++i)
     {
         QPointF p = m_linePoints[i];
         bool pVisible = g_graphicsView->isPointVisible(p);
 
+        //If this point is visible, but the last wasn't, a new run is started.
+        if (pVisible && !lastPointVisible)
+        {
+            //If this is not the first point, then we need to find the intermediate
+            //point that lies on the visible boundary and start the path with that.
+            if (i > 0)
+                currentRun.push_back(g_graphicsView->findIntersectionWithViewportBoundary(QLineF(p, lastP)));
+            currentRun.push_back(p);
+        }
+
         //If this point is visible, add it to the current run.
-        if (pVisible)
+        if (pVisible && lastPointVisible)
             currentRun.push_back(p);
 
         //If the last point was visible and this one isn't, then a run has ended.
         else if (!pVisible && lastPointVisible)
         {
+            //We need to find the intermediate point that is on the visible boundary.
+            currentRun.push_back(g_graphicsView->findIntersectionWithViewportBoundary(QLineF(p, lastP)));
+
             centres.push_back(getCentre(currentRun));
             currentRun.clear();
         }
 
         lastPointVisible = pVisible;
+        lastP = p;
     }
 
     //If there is a current run, add its centre

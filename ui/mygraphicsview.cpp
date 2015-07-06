@@ -158,7 +158,49 @@ void MyGraphicsView::setAntialiasing(bool antialiasingOn)
 
 bool MyGraphicsView::isPointVisible(QPointF p)
 {
-    QPointF mappedPoint = mapFromScene(p);
-    return (mappedPoint.x() > 0.0 && mappedPoint.y() > 0.0 &&
-            mappedPoint.x() < viewport()->width() && mappedPoint.y() < viewport()->height());
+    QPointF topLeftCorner = mapToScene(QPoint(0, 0));
+    QPointF bottomRightCorner = mapToScene(QPoint(viewport()->width(), viewport()->height()));
+
+    double left = topLeftCorner.x();
+    double right = bottomRightCorner.x();
+    double top = topLeftCorner.y();
+    double bottom = bottomRightCorner.y();
+
+    return (p.x() > left &&
+            p.y() > top &&
+            p.x() < right &&
+            p.y() < bottom);
+}
+
+
+//This function assumes that the line does intersect with the viewport
+//boundary - i.e. one end of the line is in the viewport and one is not.
+QPointF MyGraphicsView::findIntersectionWithViewportBoundary(QLineF line)
+{
+    //There are four viewport boundaries, which I need to translate into
+    //scene coordinates.
+    QPointF p1 = mapToScene(QPoint(0, 0));
+    QPointF p2 = mapToScene(QPoint(viewport()->width(), 0));
+    QPointF p3 = mapToScene(QPoint(viewport()->width(), viewport()->height()));
+    QPointF p4 = mapToScene(QPoint(0, viewport()->height()));
+
+    QLineF b1(p1, p2);
+    QLineF b2(p2, p3);
+    QLineF b3(p3, p4);
+    QLineF b4(p4, p1);
+
+    QPointF intersectionPoint;
+
+    if (line.intersect(b1, &intersectionPoint) == QLineF::BoundedIntersection)
+        return intersectionPoint;
+    if (line.intersect(b2, &intersectionPoint) == QLineF::BoundedIntersection)
+        return intersectionPoint;
+    if (line.intersect(b3, &intersectionPoint) == QLineF::BoundedIntersection)
+        return intersectionPoint;
+    if (line.intersect(b4, &intersectionPoint) == QLineF::BoundedIntersection)
+        return intersectionPoint;
+
+    //The code should not get here, as the line should intersect with one of
+    //the boundaries.
+    return intersectionPoint;
 }
