@@ -65,6 +65,7 @@ public:
     QFont labelFont;
     bool textOutline;
     bool antialiasing;
+    bool positionTextNodeCentre;
 
     NodeDragging nodeDragging;
 

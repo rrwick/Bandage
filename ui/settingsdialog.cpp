@@ -168,6 +168,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->basePairsPerSegmentAutoLabel->setText(QString::number(settings->autoBasePairsPerSegment));
         ui->basePairsPerSegmentAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
         ui->basePairsPerSegmentManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
+        ui->positionVisibleRadioButton->setChecked(!settings->positionTextNodeCentre);
+        ui->positionCentreRadioButton->setChecked(settings->positionTextNodeCentre);
     }
     else
     {
@@ -178,6 +180,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
             settings->nodeLengthMode = AUTO_NODE_LENGTH;
         else
             settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+        settings->positionTextNodeCentre = ui->positionCentreRadioButton->isChecked();
     }
 }
 

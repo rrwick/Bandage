@@ -57,6 +57,7 @@ Settings::Settings()
     labelFont = QFont();
     textOutline = true;
     antialiasing = true;
+    positionTextNodeCentre = false;
 
     nodeDragging = NEARBY_PIECES;
 

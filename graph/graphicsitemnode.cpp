@@ -171,7 +171,11 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
         QRectF textBoundingRect = textPath.boundingRect();
 
-        std::vector<QPointF> centres = getCentres();
+        std::vector<QPointF> centres;
+        if (g_settings->positionTextNodeCentre)
+            centres.push_back(getCentre(m_linePoints));
+        else
+            centres = getCentres();
 
         painter->rotate(-g_graphicsView->m_rotation);
         for (size_t i = 0; i < centres.size(); ++i)
