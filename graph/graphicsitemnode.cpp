@@ -177,7 +177,6 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         else
             centres = getCentres();
 
-        painter->rotate(-g_graphicsView->m_rotation);
         for (size_t i = 0; i < centres.size(); ++i)
         {
             double textHeight = textBoundingRect.height();
@@ -185,6 +184,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             QPointF translation = centres[i] + offset;
 
             painter->translate(translation);
+            painter->rotate(-g_graphicsView->m_rotation);
 
 
             if (g_settings->textOutline)
@@ -198,9 +198,9 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             }
 
             painter->fillPath(textPath, QBrush(g_settings->textColour));
+            painter->rotate(g_graphicsView->m_rotation);
             painter->translate(-1.0 * translation);
         }
-        painter->rotate(g_graphicsView->m_rotation);
     }
 }
 
