@@ -1335,7 +1335,7 @@ void MainWindow::selectUserSpecifiedNodes()
                 if (i != nodesNotFound.size() - 1)
                     errorMessage += ", ";
             }
-            errorMessage += "\nRedraw the graph with an increased scope to see these nodes.\n";
+            errorMessage += "\n\nRedraw the graph with an increased scope to see these nodes.\n";
         }
         QMessageBox::information(this, "Nodes not found", errorMessage);
     }
