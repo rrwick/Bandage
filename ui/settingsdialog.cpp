@@ -369,16 +369,16 @@ void SettingsDialog::setInfoTexts()
                                                  "equal to this value will be drawn with a single line segment.<br><br>"
                                                  "Guidelines for this setting:<ul>"
                                                  "<li>Large values will result in shorter nodes. Very large values will result "
-                                                 "in all nodes being a similar size (one line segment).  This can make the graph "
+                                                 "in all nodes being a similar size (one line segment). This can make the graph "
                                                  "layout faster for large assembly graphs.</li>"
                                                  "<li>Small values will result in longer nodes and a stronger correlation between "
-                                                 "sequence length and node length.  Longer nodes can slow the graph layout "
+                                                 "sequence length and node length. Longer nodes can slow the graph layout "
                                                  "process.</li></ul><br>"
                                                  "When a graph is loaded, Bandage calculates an appropriate value and uses this "
-                                                 "for the 'Auto' option.  Switch to 'Manual' if you want to specify this setting "
+                                                 "for the 'Auto' option. Switch to 'Manual' if you want to specify this setting "
                                                  "yourself.");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
-                                                "positioning the graph components. Low settings are faster and "
+                                                "positioning the graph components.<br><br>Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
                                                 "more pleasing layouts.");
     ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
@@ -389,11 +389,16 @@ void SettingsDialog::setInfoTexts()
     ui->nodeWidthPlotInfoText->setInfoText("This is a plot of the function that will be used to set node widths.<br><br>"
                                            "The centre point on the plot is the average coverage and average node width.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
-    ui->outlineThicknessInfoText->setInfoText("This is the thickness of the black outline drawn around each node.");
-    ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the white outline drawn around node labels "
+    ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.");
+    ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around node labels "
                                                   "when the 'Text outline' option is ticked.<br><br>"
                                                   "Large values can make text easier to read, but may "
                                                   "obscure more of the graph.");
+    ui->positionTextInfoText->setInfoText("When 'Over visible regions' is selected, node labels will move based on the position "
+                                          "of the view to stay visible.<br><br>"
+                                          "When 'On node centre' is selected, node labels will always be displayed at the centre "
+                                          "of each node, regardless of the view's position.");
+
     ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing "
                                           "if you are experiencing slow performance when viewing large graphs.");
     ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the "
@@ -432,16 +437,16 @@ void SettingsDialog::setInfoTexts()
     ui->randomColourNegativeLightnessInfoText->setInfoText("This controls the colour lightness of the negative nodes when the "
                                                            "'Random colours' option is used.<br><br>"
                                                            "Low values will result in dark nodes while high values result in "
-                                                           "light nodes<br><br>"
+                                                           "light nodes.<br><br>"
                                                            "Note that negative nodes are only visible when the graph is drawn "
                                                            "in double mode.");
     ui->randomColourPositiveOpacityInfoText->setInfoText("This controls how opaque the positive nodes are when the 'Random colours' "
                                                          "option is used.<br><br>"
-                                                         "Set to the minimum value for fully transparent nodes.  Set to the "
+                                                         "Set to the minimum value for fully transparent nodes. Set to the "
                                                          "maximum value for completely opaque nodes.");
     ui->randomColourNegativeOpacityInfoText->setInfoText("This controls how opaque the negative nodes are when the 'Random colours' "
                                                          "option is used.<br><br>"
-                                                         "Set to the minimum value for fully transparent nodes.  Set to the "
+                                                         "Set to the minimum value for fully transparent nodes. Set to the "
                                                          "maximum value for completely opaque nodes.<br><br>"
                                                          "Note that negative nodes are only visible when the graph is drawn "
                                                          "in double mode.");
@@ -458,17 +463,17 @@ void SettingsDialog::setInfoTexts()
                                             "coverage value is set to the third quartile.<br><br>"
                                             "When set to 'Manual', you can specify the values used for coverage colouring.");
     ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is "
-                                               "used for nodes that do not have any BLAST hits.  It is also used for any region "
+                                               "used for nodes that do not have any BLAST hits. It is also used for any region "
                                                "of a node without BLAST hits, even if there are BLAST hits in other regions of "
                                                "that node.");
-    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take.  Larger "
+    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take. Larger "
                                                    "values will find more distant contiguous nodes, at a performance cost.<br><br>"
                                                    "The time taken to complete the search can grow rapidly as values increase, "
                                                    "so use values above 20 with caution.");
     ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
                                                             "nodes that are determined to be contiguous with the starting "
                                                             "node(s).<br><br>"
-                                                            "This colour is used for strand-specific matches.  It is only used "
+                                                            "This colour is used for strand-specific matches. It is only used "
                                                             "for nodes that are determined to be on the same strand as the "
                                                             "starting node");
     ui->contiguousEitherStrandColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "

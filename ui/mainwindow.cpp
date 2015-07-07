@@ -1478,7 +1478,7 @@ void MainWindow::setInfoTexts()
                                         "to define their colour.</li></ul>"
                                         "See the 'Colours' section of the Bandage settings to control various "
                                         "colouring options.");
-    ui->contiguityInfoText->setInfoText("Select one or more nodes and then click this button.  Bandage will "
+    ui->contiguityInfoText->setInfoText("Select one or more nodes and then click this button. Bandage will "
                                         "then colour which other nodes in the graph are likely to be contiguous "
                                         "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
@@ -1486,7 +1486,7 @@ void MainWindow::setInfoTexts()
                                         "'Number', 'Length' and 'Coverage' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.");
-    ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels.  The "
+    ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels. The "
                                       "colour of the font is configurable in Bandage's settings.<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
                                       "This can help to make text more readable, but will obscure more of the "

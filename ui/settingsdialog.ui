@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-498</y>
+        <y>0</y>
         <width>432</width>
         <height>2047</height>
        </rect>
@@ -1962,7 +1962,7 @@
           <double>2.000000000000000</double>
          </property>
          <property name="singleStep">
-          <double>0.500000000000000</double>
+          <double>0.100000000000000</double>
          </property>
         </widget>
        </item>

@@ -598,7 +598,7 @@ void BlastSearchDialog::setInfoTexts()
     ui->timeoutInfoText->setInfoText("This is the number of seconds Bandage will wait for the BLAST database "
                                      "to build and for the BLAST search to complete. If the processes do not "
                                      "finish in this time, they will be halted.");
-    ui->loadQueriesFromFastaInfoText->setInfoText("Click this button to load a FASTA file.  Each "
+    ui->loadQueriesFromFastaInfoText->setInfoText("Click this button to load a FASTA file. Each "
                                                   "sequence in the FASTA file will be a separate "
                                                   "query.");
     ui->enterQueryManuallyInfoText->setInfoText("Click this button to type or paste a single query sequence.");
