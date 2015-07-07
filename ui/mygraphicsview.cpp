@@ -30,7 +30,7 @@ MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
     QGraphicsView(), m_rotation(0.0)
 {
     setDragMode(QGraphicsView::RubberBandDrag);
-    setRenderHints(QPainter::Antialiasing);
+    setAntialiasing(g_settings->antialiasing);
     setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
 }
 
@@ -146,12 +146,14 @@ void MyGraphicsView::setAntialiasing(bool antialiasingOn)
 {
     if (antialiasingOn)
     {
-        setRenderHints(QPainter::Antialiasing);
+        setRenderHint(QPainter::Antialiasing, true);
+        setRenderHint(QPainter::TextAntialiasing, true);
         g_settings->labelFont.setStyleStrategy(QFont::PreferDefault);
     }
     else
     {
-        setRenderHints(0);
+        setRenderHint(QPainter::Antialiasing, false);
+        setRenderHint(QPainter::TextAntialiasing, false);
         g_settings->labelFont.setStyleStrategy(QFont::NoAntialias);
     }
 }

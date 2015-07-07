@@ -36,7 +36,7 @@ void printUsage(QTextStream * out, bool all)
     *out << "Command: <blank>      launch Bandage GUI" << endl;
     *out << "         load         launch Bandage GUI and load a graph file" << endl;
     *out << "         image        generate an image file of a graph" << endl;
-    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
+//    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
     *out << endl;
     *out << "Options: --help       view this help message" << endl;
     *out << "         --helpall    view all command line settings" << endl;
@@ -73,11 +73,11 @@ int main(int argc, char *argv[])
             arguments.pop_front();
             return bandageImage(arguments);
         }
-        else if (first == "contiguous")
-        {
-            arguments.pop_front();
-            return bandageContiguous(arguments);
-        }
+//        else if (first == "contiguous")
+//        {
+//            arguments.pop_front();
+//            return bandageContiguous(arguments);
+//        }
     }
 
     //Since a recognised command was not seen, we now check to see if the user

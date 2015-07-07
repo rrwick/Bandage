@@ -373,6 +373,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForHexColour("--toutcol", arguments);
     if (error.length() > 0) return error;
+    checkOptionWithoutValue("--noaa", arguments);
 
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "coverage";
@@ -480,6 +481,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --outcol <hex>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
     *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
     *out << "          --selcol <hex>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
+    *out << "          --noaa              Disable antialiasing (default: antialiasing on)" << endl;
     *out << endl;
     *out << "          Text appearance" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -558,6 +560,7 @@ void parseSettings(QStringList arguments)
         g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
     if (isOptionPresent("--outline", &arguments))
         g_settings->outlineThickness = getFloatOption("--outline", &arguments);
+    g_settings->antialiasing = !isOptionPresent("--noaa", &arguments);
 
     if (isOptionPresent("--edgecol", &arguments))
         g_settings->edgeColour = getHexColourOption("--edgecol", &arguments);

@@ -146,7 +146,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     if (outlineThickness > 0.0)
     {
         outlinePath = outlinePath.simplified();
-        QPen outlinePen(QBrush(outlineColour), outlineThickness, Qt::SolidLine, Qt::FlatCap, Qt::RoundJoin);
+        QPen outlinePen(QBrush(outlineColour), outlineThickness, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
         painter->setPen(outlinePen);
         painter->drawPath(outlinePath);
     }
