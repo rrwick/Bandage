@@ -444,7 +444,10 @@ void printCommonHelp(QTextStream * out)
 
 void printSettingsUsage(QTextStream * out)
 {
-    *out << "Settings: Graph layout" << endl;
+    *out << "Settings: The following options configure the Bandage settings that are" << endl;
+    *out << "          available in the Bandage GUI." << endl;
+    *out << endl;
+    *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --double            draw graph in double mode (default: off)" << endl;
     *out << "          --bases <int>       base pairs per segment (default: auto)" << endl;

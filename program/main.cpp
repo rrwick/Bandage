@@ -60,6 +60,12 @@ int main(int argc, char *argv[])
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();
 
+    if (checkForVersion(arguments))
+    {
+        out << "Version: " << QApplication::applicationVersion() << endl;
+        return 0;
+    }
+
     //If the first argument was a recognised command, move to that command's function.
     if (arguments.size() > 0)
     {
@@ -97,11 +103,6 @@ int main(int argc, char *argv[])
         out << "Program: Bandage" << endl;
         out << "Version: " << QApplication::applicationVersion() << endl;
         printUsage(&out, true);
-        return 0;
-    }
-    if (checkForVersion(arguments))
-    {
-        out << "Version: " << QApplication::applicationVersion() << endl;
         return 0;
     }
 

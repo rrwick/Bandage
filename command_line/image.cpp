@@ -161,7 +161,6 @@ void printImageUsage(QTextStream * out, bool all)
     *out << "                              determined automatically. If both are set, the" << endl;
     *out << "                              image will be exactly that size." << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);

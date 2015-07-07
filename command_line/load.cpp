@@ -68,7 +68,6 @@ void printLoadUsage(QTextStream * out, bool all)
     *out << "Usage:    Bandage load <graph>" << endl << endl;
     *out << "Options:  --draw              draw graph after loading" << endl;
     *out << endl;
-//           ------------------------------|------------------------------------------------|  //80 character guide
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);
