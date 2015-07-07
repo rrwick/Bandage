@@ -181,25 +181,25 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         {
             double textHeight = textBoundingRect.height();
             QPointF offset(0.0, textHeight / 2.0);
-            QPointF translation = centres[i] + offset;
 
-            painter->translate(translation);
+            painter->translate(centres[i]);
             painter->rotate(-g_graphicsView->m_rotation);
-
+            painter->translate(offset);
 
             if (g_settings->textOutline)
             {
                 painter->setPen(QPen(g_settings->textOutlineColour,
                                      g_settings->textOutlineThickness * 2.0,
                                      Qt::SolidLine,
-                                     Qt::RoundCap,
+                                     Qt::SquareCap,
                                      Qt::RoundJoin));
                 painter->drawPath(textPath);
             }
 
             painter->fillPath(textPath, QBrush(g_settings->textColour));
+            painter->translate(-offset);
             painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-1.0 * translation);
+            painter->translate(-centres[i]);
         }
     }
 }
