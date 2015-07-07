@@ -34,7 +34,7 @@ bool checkForVersion(QStringList arguments);
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
 QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
 QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList);
-QString checkOptionForHexColour(QString option, QStringList * arguments);
+QString checkOptionForColour(QString option, QStringList * arguments);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
 QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
                                  double min1, double max1, double min2, double max2,
@@ -44,7 +44,7 @@ bool isOptionPresent(QString option, QStringList * arguments);
 
 int getIntOption(QString option, QStringList * arguments);
 double getFloatOption(QString option, QStringList * arguments);
-QColor getHexColourOption(QString option, QStringList * arguments);
+QColor getColourOption(QString option, QStringList * arguments);
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments);
 
 QString checkForInvalidOrExcessSettings(QStringList * arguments);

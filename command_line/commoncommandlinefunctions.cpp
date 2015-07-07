@@ -182,7 +182,7 @@ QString checkOptionForString(QString option, QStringList * arguments, QStringLis
 }
 
 
-QString checkOptionForHexColour(QString option, QStringList * arguments)
+QString checkOptionForColour(QString option, QStringList * arguments)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -190,21 +190,20 @@ QString checkOptionForHexColour(QString option, QStringList * arguments)
     if (optionIndex == -1)
         return "";
 
-    int hexIndex = optionIndex + 1;
+    int colIndex = optionIndex + 1;
 
     //If nothing follows the option, that's a problem.
-    if (hexIndex >= arguments->size())
-        return option + " must be followed by a 6 character HTML-style hex colour";
+    if (colIndex >= arguments->size())
+        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #F0D2B48C) or a standard colour name (e.g. skyblue)";
 
-    //If the thing following the option isn't a hex colour, that's a problem.
-    QString hexName = "#" + arguments->at(hexIndex);
-    QColor colour(hexName);
+    //If the thing following the option isn't a colour, that's a problem.
+    QColor colour(arguments->at(colIndex));
     if (!colour.isValid())
-        return option + " must be followed by a 6 character HTML-style hex colour";
+        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #F0D2B48C) or a standard colour name (e.g. skyblue)";
 
-    //If the code got here, the option and its hex colour are okay.
+    //If the code got here, the option and its colour are okay.
     //Remove them from the arguments.
-    arguments->removeAt(hexIndex);
+    arguments->removeAt(colIndex);
     arguments->removeAt(optionIndex);
 
     return "";
@@ -316,17 +315,17 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
 }
 
 
-QColor getHexColourOption(QString option, QStringList * arguments)
+QColor getColourOption(QString option, QStringList * arguments)
 {
     int optionIndex = arguments->indexOf(option);
     if (optionIndex == -1)
         return QColor();
 
-    int hexIndex = optionIndex + 1;
-    if (hexIndex >= arguments->size())
+    int colIndex = optionIndex + 1;
+    if (colIndex >= arguments->size())
         return QColor();
 
-    return QColor("#" + arguments->at(hexIndex));
+    return QColor(arguments->at(colIndex));
 }
 
 
@@ -363,15 +362,15 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     checkOptionWithoutValue("--centre", arguments);
 
-    error = checkOptionForHexColour("--edgecol", arguments);
+    error = checkOptionForColour("--edgecol", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--outcol", arguments);
+    error = checkOptionForColour("--outcol", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--selcol", arguments);
+    error = checkOptionForColour("--selcol", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--textcol", arguments);
+    error = checkOptionForColour("--textcol", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--toutcol", arguments);
+    error = checkOptionForColour("--toutcol", arguments);
     if (error.length() > 0) return error;
     checkOptionWithoutValue("--noaa", arguments);
 
@@ -393,16 +392,16 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--ranopaneg", arguments, 0, 255);
     if (error.length() > 0) return error;
 
-    error = checkOptionForHexColour("--unicolpos", arguments);
+    error = checkOptionForColour("--unicolpos", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--unicolneg", arguments);
+    error = checkOptionForColour("--unicolneg", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--unicolspe", arguments);
+    error = checkOptionForColour("--unicolspe", arguments);
     if (error.length() > 0) return error;
 
-    error = checkOptionForHexColour("--covcollow", arguments);
+    error = checkOptionForColour("--covcollow", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForHexColour("--covcolhi", arguments);
+    error = checkOptionForColour("--covcolhi", arguments);
     if (error.length() > 0) return error;
 
     error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
@@ -447,6 +446,12 @@ void printSettingsUsage(QTextStream * out)
     *out << "Settings: The following options configure the Bandage settings that are" << endl;
     *out << "          available in the Bandage GUI." << endl;
     *out << endl;
+    *out << "          Colours can be specified using hex values, with or without an alpha " << endl;
+    *out << "          channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names" << endl;
+    *out << "          (e.g. red, yellowgreen or skyblue).  Note that hex colour names will" << endl;
+    *out << "          either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the" << endl;
+    *out << "          hash symbol escaped (e.g. \\#FFB6C1)." << endl;
+    *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --double            draw graph in double mode (default: off)" << endl;
@@ -477,19 +482,17 @@ void printSettingsUsage(QTextStream * out)
     *out << endl;
     *out << "          Graph appearance" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          Colours are set using HTML-style hexidemical RGB values (without the" << endl;
-    *out << "          leading #)." << endl;
-    *out << "          --edgecol <hex>     Colour for edges (default: " + g_settings->edgeColour.name().right(6) + ")" << endl;
+    *out << "          --edgecol <col>     Colour for edges (default: " + g_settings->edgeColour.name().right(6) + ")" << endl;
     *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
-    *out << "          --outcol <hex>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
+    *out << "          --outcol <col>      Colour for node outlines (default: " + g_settings->outlineColour.name().right(6) + ")" << endl;
     *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
-    *out << "          --selcol <hex>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
+    *out << "          --selcol <col>      Colour for selections (default: " + g_settings->selectionColour.name().right(6) + ")" << endl;
     *out << "          --noaa              Disable antialiasing (default: antialiasing on)" << endl;
     *out << endl;
     *out << "          Text appearance" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --textcol <hex>     Colour for label text (default: " + g_settings->textColour.name().right(6) + ")" << endl;
-    *out << "          --toutcol <hex>     Colour for text outline (default: " + g_settings->textOutlineColour.name().right(6) + ")" << endl;
+    *out << "          --textcol <col>     Colour for label text (default: " + g_settings->textColour.name().right(6) + ")" << endl;
+    *out << "          --toutcol <col>     Colour for text outline (default: " + g_settings->textOutlineColour.name().right(6) + ")" << endl;
     *out << "          --toutline <float>  Surround text with an outline with this" << endl;
     *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
     *out << "          --centre            Node labels appear at the centre of the node" << endl;
@@ -515,16 +518,16 @@ void printSettingsUsage(QTextStream * out)
     *out << "          Uniform colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          These settings only apply when the uniform colour scheme is used." << endl;
-    *out << "          --unicolpos <hex>   Positive node colour (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolneg <hex>   Negative node colour (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
-    *out << "          --unicolspe <hex>   Special node colour (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
+    *out << "          --unicolpos <col>   Positive node colour (default: " + g_settings->uniformPositiveNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolneg <col>   Negative node colour (default: " + g_settings->uniformNegativeNodeColour.name().right(6) + ")" << endl;
+    *out << "          --unicolspe <col>   Special node colour (default: " + g_settings->uniformNodeSpecialColour.name().right(6) + ")" << endl;
     *out << endl;
     *out << "          Coverage colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          These settings only apply when the coverage colour scheme is used." << endl;
-    *out << "          --covcollow <hex>   Colour for nodes with coverage below the low" << endl;
+    *out << "          --covcollow <col>   Colour for nodes with coverage below the low" << endl;
     *out << "                              coverage value (default: " + g_settings->lowCoverageColour.name().right(6) + ")" << endl;
-    *out << "          --covcolhi <hex>    Colour for nodes with coverage above the high" << endl;
+    *out << "          --covcolhi <col>    Colour for nodes with coverage above the high" << endl;
     *out << "                              coverage value (default: " + g_settings->highCoverageColour.name().right(6) + ")" << endl;
     *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
     *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
@@ -566,15 +569,15 @@ void parseSettings(QStringList arguments)
     g_settings->antialiasing = !isOptionPresent("--noaa", &arguments);
 
     if (isOptionPresent("--edgecol", &arguments))
-        g_settings->edgeColour = getHexColourOption("--edgecol", &arguments);
+        g_settings->edgeColour = getColourOption("--edgecol", &arguments);
     if (isOptionPresent("--outcol", &arguments))
-        g_settings->outlineColour = getHexColourOption("--outcol", &arguments);
+        g_settings->outlineColour = getColourOption("--outcol", &arguments);
     if (isOptionPresent("--selcol", &arguments))
-        g_settings->selectionColour = getHexColourOption("--selcol", &arguments);
+        g_settings->selectionColour = getColourOption("--selcol", &arguments);
     if (isOptionPresent("--textcol", &arguments))
-        g_settings->textColour = getHexColourOption("--textcol", &arguments);
+        g_settings->textColour = getColourOption("--textcol", &arguments);
     if (isOptionPresent("--toutcol", &arguments))
-        g_settings->textOutlineColour = getHexColourOption("--toutcol", &arguments);
+        g_settings->textOutlineColour = getColourOption("--toutcol", &arguments);
     g_settings->positionTextNodeCentre = isOptionPresent("--centre", &arguments);
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
@@ -625,16 +628,16 @@ void parseSettings(QStringList arguments)
         g_settings->randomColourNegativeOpacity = getIntOption("--ranopaneg", &arguments);
 
     if (isOptionPresent("--unicolpos", &arguments))
-        g_settings->uniformPositiveNodeColour = getHexColourOption("--unicolpos", &arguments);
+        g_settings->uniformPositiveNodeColour = getColourOption("--unicolpos", &arguments);
     if (isOptionPresent("--unicolneg", &arguments))
-        g_settings->uniformNegativeNodeColour = getHexColourOption("--unicolneg", &arguments);
+        g_settings->uniformNegativeNodeColour = getColourOption("--unicolneg", &arguments);
     if (isOptionPresent("--unicolspe", &arguments))
-        g_settings->uniformNodeSpecialColour = getHexColourOption("--unicolspe", &arguments);
+        g_settings->uniformNodeSpecialColour = getColourOption("--unicolspe", &arguments);
 
     if (isOptionPresent("--covcollow", &arguments))
-        g_settings->lowCoverageColour = getHexColourOption("--covcollow", &arguments);
+        g_settings->lowCoverageColour = getColourOption("--covcollow", &arguments);
     if (isOptionPresent("--covcolhi", &arguments))
-        g_settings->highCoverageColour = getHexColourOption("--covcolhi", &arguments);
+        g_settings->highCoverageColour = getColourOption("--covcolhi", &arguments);
     if (isOptionPresent("--covvallow", &arguments))
     {
         g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
