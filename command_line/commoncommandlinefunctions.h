@@ -55,4 +55,6 @@ void parseSettings(QStringList arguments);
 void printCommonHelp(QTextStream * out);
 void printSettingsUsage(QTextStream * out);
 
+QString getColourName(QColor colour);
+
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

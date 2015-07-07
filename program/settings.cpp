@@ -62,9 +62,9 @@ Settings::Settings()
     nodeDragging = NEARBY_PIECES;
 
     nodeColourScheme = RANDOM_COLOURS;
-    uniformPositiveNodeColour = QColor(225, 125, 125);
-    setNegativeNodeColour();
-    uniformNodeSpecialColour = QColor(0, 255, 0);
+    uniformPositiveNodeColour = QColor(178, 34, 34);
+    uniformNegativeNodeColour = QColor(128, 0, 0);
+    uniformNodeSpecialColour = QColor(0, 128, 0);
 
     randomColourPositiveOpacity = 255;
     randomColourNegativeOpacity = 255;
@@ -92,22 +92,12 @@ Settings::Settings()
     lowCoverageValue = 5.0;
     lowCoverageColour = QColor(0, 0, 0);
     highCoverageValue = 50.0;
-    highCoverageColour = QColor(255, 20, 20);
+    highCoverageColour = QColor(255, 0, 0);
 
     blastSearchParameters = "";
     blastTimeoutSeconds = 30;
 
     rememberedPath = QDir::homePath();
-}
-
-
-//The negative node colour is a bit darker than the positive colour.
-//It is only used when double graphs are drawn.
-//The number in the darker function controls how much darker this
-//colour is.
-void Settings::setNegativeNodeColour()
-{
-    uniformNegativeNodeColour = uniformPositiveNodeColour.darker(120);
 }
 
 

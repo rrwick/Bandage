@@ -108,7 +108,6 @@ public:
 
     QString rememberedPath;
 
-    void setNegativeNodeColour();
     bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
     int getBasePairsPerSegment();
 };
