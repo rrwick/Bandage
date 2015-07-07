@@ -389,7 +389,9 @@ void SettingsDialog::setInfoTexts()
     ui->nodeWidthPlotInfoText->setInfoText("This is a plot of the function that will be used to set node widths.<br><br>"
                                            "The centre point on the plot is the average coverage and average node width.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
-    ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.");
+    ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.<br><br>"
+                                              "Drawing outlines can result in slow performance, so set this to zero "
+                                              "to improve performance.");
     ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around node labels "
                                                   "when the 'Text outline' option is ticked.<br><br>"
                                                   "Large values can make text easier to read, but may "

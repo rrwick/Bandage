@@ -1031,6 +1031,11 @@ void MainWindow::saveImageEntireScene()
 
     if (fullFileName != "") //User did not hit cancel
     {
+        //The positionTextNodeCentre setting must be used for the entire scene
+        //or else only the labels in the current viewport will be shown.
+        bool positionTextNodeCentreSettingBefore = g_settings->positionTextNodeCentre;
+        g_settings->positionTextNodeCentre = true;
+
         m_imageFilter = selectedFilter;
 
         QPainter painter;
@@ -1062,6 +1067,8 @@ void MainWindow::saveImageEntireScene()
             m_scene->render(&painter);
             painter.end();
         }
+
+        g_settings->positionTextNodeCentre = positionTextNodeCentreSettingBefore;
     }
 }
 
