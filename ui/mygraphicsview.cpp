@@ -158,18 +158,25 @@ void MyGraphicsView::setAntialiasing(bool antialiasingOn)
 
 bool MyGraphicsView::isPointVisible(QPointF p)
 {
-    QPointF topLeftCorner = mapToScene(QPoint(0, 0));
-    QPointF bottomRightCorner = mapToScene(QPoint(viewport()->width(), viewport()->height()));
+    QPointF corner1, corner2, corner3, corner4;
+    getFourViewportCornersInSceneCoordinates(&corner1, &corner2, &corner3, &corner4);
+    QLineF boundary1(corner1, corner2);
+    QLineF boundary2(corner2, corner3);
+    QLineF boundary3(corner3, corner4);
+    QLineF boundary4(corner4, corner1);
 
-    double left = topLeftCorner.x();
-    double right = bottomRightCorner.x();
-    double top = topLeftCorner.y();
-    double bottom = bottomRightCorner.y();
+    return !(differentSidesOfLine(p, corner3, boundary1) || differentSidesOfLine(p, corner4, boundary2) ||
+             differentSidesOfLine(p, corner1, boundary3) || differentSidesOfLine(p, corner2, boundary4));
+}
 
-    return (p.x() > left &&
-            p.y() > top &&
-            p.x() < right &&
-            p.y() < bottom);
+
+//This function tests to see if two given points, p1 and p2, are on different sides of a line.
+bool MyGraphicsView::differentSidesOfLine(QPointF p1, QPointF p2, QLineF line)
+{
+    bool testPoint1Side = ((p1.y() - line.p1().y() - (p1.x() - line.p1().x())*(line.p2().y() - line.p1().y())/(line.p2().x() - line.p1().x())) > 0);
+    bool testPoint2Side = ((p2.y() - line.p1().y() - (p2.x() - line.p1().x())*(line.p2().y() - line.p1().y())/(line.p2().x() - line.p1().x())) > 0);
+
+    return (testPoint1Side != testPoint2Side);
 }
 
 
@@ -177,30 +184,33 @@ bool MyGraphicsView::isPointVisible(QPointF p)
 //boundary - i.e. one end of the line is in the viewport and one is not.
 QPointF MyGraphicsView::findIntersectionWithViewportBoundary(QLineF line)
 {
-    //There are four viewport boundaries, which I need to translate into
-    //scene coordinates.
-    QPointF p1 = mapToScene(QPoint(0, 0));
-    QPointF p2 = mapToScene(QPoint(viewport()->width(), 0));
-    QPointF p3 = mapToScene(QPoint(viewport()->width(), viewport()->height()));
-    QPointF p4 = mapToScene(QPoint(0, viewport()->height()));
+    QPointF c1, c2, c3, c4;
+    getFourViewportCornersInSceneCoordinates(&c1, &c2, &c3, &c4);
+    QLineF boundary1(c1, c2);
+    QLineF boundary2(c2, c3);
+    QLineF boundary3(c3, c4);
+    QLineF boundary4(c4, c1);
 
-    QLineF b1(p1, p2);
-    QLineF b2(p2, p3);
-    QLineF b3(p3, p4);
-    QLineF b4(p4, p1);
+    QPointF intersection;
 
-    QPointF intersectionPoint;
-
-    if (line.intersect(b1, &intersectionPoint) == QLineF::BoundedIntersection)
-        return intersectionPoint;
-    if (line.intersect(b2, &intersectionPoint) == QLineF::BoundedIntersection)
-        return intersectionPoint;
-    if (line.intersect(b3, &intersectionPoint) == QLineF::BoundedIntersection)
-        return intersectionPoint;
-    if (line.intersect(b4, &intersectionPoint) == QLineF::BoundedIntersection)
-        return intersectionPoint;
+    if (line.intersect(boundary1, &intersection) == QLineF::BoundedIntersection)
+        return intersection;
+    if (line.intersect(boundary2, &intersection) == QLineF::BoundedIntersection)
+        return intersection;
+    if (line.intersect(boundary3, &intersection) == QLineF::BoundedIntersection)
+        return intersection;
+    if (line.intersect(boundary4, &intersection) == QLineF::BoundedIntersection)
+        return intersection;
 
     //The code should not get here, as the line should intersect with one of
     //the boundaries.
-    return intersectionPoint;
+    return intersection;
 }
+
+
+void MyGraphicsView::getFourViewportCornersInSceneCoordinates(QPointF * c1, QPointF * c2, QPointF * c3, QPointF * c4)
+{
+    *c1 = mapToScene(QPoint(0, 0));
+    *c2 = mapToScene(QPoint(viewport()->width(), 0));
+    *c3 = mapToScene(QPoint(viewport()->width(), viewport()->height()));
+    *c4 = mapToScene(QPoint(0, viewport()->height()));}

@@ -48,6 +48,8 @@ protected:
 private:
     double distance(double x1, double y1, double x2, double y2);
     double angleBetweenTwoLines(QPointF line1Start, QPointF line1End, QPointF line2Start, QPointF line2End);
+    void getFourViewportCornersInSceneCoordinates(QPointF * c1, QPointF * c2, QPointF * c3, QPointF * c4);
+    bool differentSidesOfLine(QPointF p1, QPointF p2, QLineF line);
 };
 
 #endif // MYGRAPHICSVIEW_H
