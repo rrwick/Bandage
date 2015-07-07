@@ -188,6 +188,11 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
 void SettingsDialog::restoreDefaults()
 {
     Settings defaultSettings;
+
+    //The auto base pairs per segment is the only setting we don't want to
+    //restore, as it is calculated from the graph.
+    defaultSettings.autoBasePairsPerSegment = g_settings->autoBasePairsPerSegment;
+
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
     setButtonColours();
 }
