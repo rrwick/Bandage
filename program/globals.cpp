@@ -150,6 +150,8 @@ QString convertGraphFileTypeToString(GraphFileType graphFileType)
     case FASTG: graphFileTypeString = "FASTG"; break;
     case GFA: graphFileTypeString = "GFA"; break;
     case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
+    case ANY_FILE_TYPE: graphFileTypeString = "any"; break;
+    case UNKNOWN_FILE_TYPE: graphFileTypeString = "unknown"; break;
     }
     return graphFileTypeString;
 }

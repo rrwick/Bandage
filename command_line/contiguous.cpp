@@ -81,7 +81,7 @@ QString checkForInvalidContiguousOptions(QStringList arguments)
 
 
 
-void parseContiguousOptions(QStringList arguments)
+void parseContiguousOptions(QStringList /*arguments*/)
 {
 
 
