@@ -165,14 +165,12 @@ void MyGraphicsScene::setSceneRectangle()
 //if the nodes were moved out of the existing rectangle.
 void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes)
 {
-    std::vector<GraphicsItemNode *> selectedNodes = getSelectedGraphicsItemNodes();
-
     QRectF currentSceneRect = sceneRect();
     QRectF newSceneRect = currentSceneRect;
 
-    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    for (size_t i = 0; i < movedNodes->size(); ++i)
     {
-        GraphicsItemNode * node = selectedNodes[i];
+        GraphicsItemNode * node = (*movedNodes)[i];
         QRectF nodeRect = node->boundingRect();
         newSceneRect = newSceneRect.united(nodeRect);
     }
