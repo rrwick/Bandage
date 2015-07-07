@@ -40,6 +40,7 @@ void printUsage(QTextStream * out, bool all)
     *out << endl;
     *out << "Options: --help       view this help message" << endl;
     *out << "         --helpall    view all command line settings" << endl;
+    *out << "         --version    print Bandage version number" << endl;
     *out << endl;
     if (all)
         printSettingsUsage(out);
