@@ -398,11 +398,9 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     //If this node is selected, then move all of the other selected nodes too.
     //If it is not selected, then only move this node.
     std::vector<GraphicsItemNode *> nodesToMove;
+    MyGraphicsScene * graphicsScene = dynamic_cast<MyGraphicsScene *>(scene());
     if (isSelected())
-    {
-        MyGraphicsScene * graphicsScene = dynamic_cast<MyGraphicsScene *>(scene());
         nodesToMove = graphicsScene->getSelectedGraphicsItemNodes();
-    }
     else
         nodesToMove.push_back(this);
 
@@ -411,6 +409,7 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         nodesToMove[i]->shiftPoints(difference);
         nodesToMove[i]->remakePath();
     }
+    graphicsScene->possiblyExpandSceneRectangle(&nodesToMove);
 
     //It is now necessary to remake the paths for each edge that is connected
     //to a moved node.

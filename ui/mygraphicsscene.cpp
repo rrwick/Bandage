@@ -21,6 +21,7 @@
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
+#include <QMarginsF>
 
 MyGraphicsScene::MyGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -151,11 +152,32 @@ void MyGraphicsScene::setSceneRectangle()
     QRectF boundingRect = itemsBoundingRect();
     double width = boundingRect.width();
     double height = boundingRect.height();
-    double larger = std::max(width, height);
-
-    double margin = larger * 0.05; //5% margin
+    double margin = std::max(width, height);
+    margin *= 0.05; //5% margin
 
     setSceneRect(boundingRect.left() - margin, boundingRect.top() - margin,
                  width + 2 * margin, height + 2 * margin);
+}
+
+
+
+//After the user drags nodes, it may be necessary to expand the scene rectangle
+//if the nodes were moved out of the existing rectangle.
+void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes)
+{
+    std::vector<GraphicsItemNode *> selectedNodes = getSelectedGraphicsItemNodes();
+
+    QRectF currentSceneRect = sceneRect();
+    QRectF newSceneRect = currentSceneRect;
+
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        GraphicsItemNode * node = selectedNodes[i];
+        QRectF nodeRect = node->boundingRect();
+        newSceneRect = newSceneRect.united(nodeRect);
+    }
+
+    if (newSceneRect != currentSceneRect)
+        setSceneRect(newSceneRect);
 }
 

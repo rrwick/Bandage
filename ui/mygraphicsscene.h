@@ -38,10 +38,7 @@ public:
     DeBruijnEdge * getOneSelectedEdge();
     double getTopZValue();
     void setSceneRectangle();
-
-signals:
-
-public slots:
+    void possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes);
 
 };
 
