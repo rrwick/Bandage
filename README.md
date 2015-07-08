@@ -132,6 +132,22 @@ New contributors are welcome!  If you're interested or have ideas, please contac
 
 ## History
 
+Version 0.6.0 - new features, including command line functionality
+
+Version 0.5.6 - bug fixes
+
+Version 0.5.5 - bug fixes
+
+Version 0.5.4 - bug fixes
+
+Version 0.5.3 - bug fixes
+
+Version 0.5.2 - performance improvements
+
+Version 0.5.1 - bug fixes
+
+Version 0.5.0 - new features, including Trinity support
+
 Version 0.4.2 - bug fixes
 
 Version 0.4.1 - bug fixes
