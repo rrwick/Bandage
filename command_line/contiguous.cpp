@@ -17,7 +17,7 @@
 
 
 #include "contiguous.h"
-#include "command_line/commoncommandlinefunctions.h"
+#include "commoncommandlinefunctions.h"
 #include "../program/settings.h"
 
 int bandageContiguous(QStringList arguments)
