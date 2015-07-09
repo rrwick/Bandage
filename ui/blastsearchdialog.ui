@@ -606,7 +606,28 @@
     </spacer>
    </item>
    <item row="4" column="2">
-    <widget class="MyTableWidget" name="blastQueriesTableWidget"/>
+    <widget class="MyTableWidget" name="blastQueriesTableWidget">
+     <column>
+      <property name="text">
+       <string>Query name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Hits</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Colour</string>
+      </property>
+     </column>
+    </widget>
    </item>
   </layout>
  </widget>

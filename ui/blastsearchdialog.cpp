@@ -153,21 +153,11 @@ QString BlastSearchDialog::getNodeNameFromString(QString nodeString)
 
 void BlastSearchDialog::fillQueriesTable()
 {
-    ui->blastQueriesTableWidget->clear();
-    while (ui->blastQueriesTableWidget->columnCount() > 0)
-        ui->blastQueriesTableWidget->removeColumn(0);
+    ui->blastQueriesTableWidget->clearContents();
 
     int queryCount = int(g_blastSearch->m_blastQueries.m_queries.size());
     if (queryCount == 0)
         return;
-
-    ui->blastQueriesTableWidget->insertColumn(0);
-    ui->blastQueriesTableWidget->insertColumn(0);
-    ui->blastQueriesTableWidget->insertColumn(0);
-    ui->blastQueriesTableWidget->insertColumn(0);
-    QStringList headerNames;
-    headerNames << "Query name" << "Query length" << "Hits" << "Colour";
-    ui->blastQueriesTableWidget->setHorizontalHeaderLabels(headerNames);
 
     ui->blastQueriesTableWidget->setRowCount(queryCount);
 
@@ -190,6 +180,8 @@ void BlastSearchDialog::fillQueriesTable()
         ui->blastQueriesTableWidget->setItem(i, 1, length);
         ui->blastQueriesTableWidget->setItem(i, 2, hits);
     }
+
+    ui->blastQueriesTableWidget->resizeColumns();
 
     setUiStep(3);
 }
@@ -222,7 +214,6 @@ void BlastSearchDialog::fillHitsTable()
         model->setItem(i, 7, new QStandardItem(hit->m_eValue));
     }
     ui->blastHitsTableView->setModel(model);
-    ui->blastHitsTableView->resizeColumnsToContents();
 
     ui->blastHitsTableView->setEnabled(true);
 }
@@ -367,13 +358,11 @@ void BlastSearchDialog::enterQueryManually()
 void BlastSearchDialog::clearQueries()
 {
     g_blastSearch->m_blastQueries.clearQueries();
-    ui->blastQueriesTableWidget->clear();
+    ui->blastQueriesTableWidget->clearContents();
     ui->clearQueriesButton->setEnabled(false);
 
     while (ui->blastQueriesTableWidget->rowCount() > 0)
         ui->blastQueriesTableWidget->removeRow(0);
-    while (ui->blastQueriesTableWidget->columnCount() > 0)
-        ui->blastQueriesTableWidget->removeColumn(0);
 
 
     clearBlastHits();

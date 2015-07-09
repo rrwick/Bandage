@@ -2,11 +2,12 @@
 
 #include <vector>
 #include <QHeaderView>
+#include <QScrollBar>
 
 MyTableWidget::MyTableWidget(QWidget * parent) :
     QTableWidget(parent)
 {
-
+    verticalHeader ()->hide();
 }
 
 
@@ -15,8 +16,12 @@ MyTableWidget::MyTableWidget(QWidget * parent) :
 void MyTableWidget::resizeEvent(QResizeEvent * event)
 {
     QTableWidget::resizeEvent(event);
+    resizeColumns();
+}
 
 
+void MyTableWidget::resizeColumns()
+{
     resizeColumnsToContents();
 
     std::vector<int> columnWidths;
@@ -28,10 +33,11 @@ void MyTableWidget::resizeEvent(QResizeEvent * event)
         totalColumnWidth += columnWidth;
     }
 
-
-
     //If the total column width exceeds the size of the table, just leave things alone.
-    int tableWidth = width() - 20; //Subtract 20 as a bit of a buffer
+    int tableWidth = width() - 2;  //Subtract 2 as a bit of a buffer
+    if (verticalScrollBar()->isVisible())
+        tableWidth -= verticalScrollBar()->width();
+
     if (totalColumnWidth > tableWidth)
         return;
 

@@ -10,6 +10,8 @@ class MyTableWidget : public QTableWidget
 public:
     explicit MyTableWidget(QWidget *parent = 0);
 
+    void resizeColumns();
+
 protected:
     void resizeEvent(QResizeEvent * event);
 };
