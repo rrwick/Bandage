@@ -31,12 +31,14 @@ EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
     delete ui;
 }
 
-
-
 QString EnterOneBlastQueryDialog::getName()
 {
-    return ui->nameLineEdit->text().simplified();
+    QString name = ui->nameLineEdit->text().simplified();
+    if (name == "")
+        name = "unnamed";
+    return name;
 }
+
 QString EnterOneBlastQueryDialog::getSequence()
 {
     return ui->sequenceTextEdit->toPlainText().simplified();
