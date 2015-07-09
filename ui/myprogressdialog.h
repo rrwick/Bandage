@@ -20,6 +20,7 @@
 #define MYPROGRESSDIALOG_H
 
 #include <QDialog>
+#include <QString>
 
 namespace Ui {
 class MyProgressDialog;
@@ -30,17 +31,19 @@ class MyProgressDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MyProgressDialog(QWidget * parent, QString message, bool showCancelButton);
+    explicit MyProgressDialog(QWidget * parent, QString message, bool showCancelButton,
+                              QString cancelButtonText = "", QString cancelMessage = "", QString cancelInfoText = "");
     ~MyProgressDialog();
 
 private:
     Ui::MyProgressDialog *ui;
+    QString m_cancelMessage;
 
 private slots:
-    void cancelLayout();
+    void cancel();
 
 signals:
-    void haltLayout();
+    void halt();
 };
 
 #endif // MYPROGRESSDIALOG_H

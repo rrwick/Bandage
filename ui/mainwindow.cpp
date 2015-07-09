@@ -726,7 +726,17 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
-    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true, "Cancel layout", "Cancelling layout...",
+                                                       "Clicking this button will halt the graph layout and display "
+                                                       "the graph in its current, incomplete state.<br><br>"
+                                                       "Layout can take a long time for very large graphs.  There are "
+                                                       "three strategies to reduce the amount of time required:<ul>"
+                                                       "<li>Change the scope of the graph from 'Entire graph' to either "
+                                                       "'Around nodes' or 'Around BLAST hits'.  This will reduce the "
+                                                       "number of nodes that are drawn to the screen.</li>"
+                                                       "<li>Increase the 'Base pairs per segment' setting.  This will "
+                                                       "result in shorter contigs which take less time to lay out.</li>"
+                                                       "<li>Reduce the 'Graph layout iterations' setting.</li></ul>");
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
@@ -737,7 +747,7 @@ void MainWindow::layoutGraph()
                                                                   g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
-    connect(progress, SIGNAL(haltLayout()), this, SLOT(graphLayoutCancelled()));
+    connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));
     connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
