@@ -95,7 +95,6 @@ Settings::Settings()
     highCoverageColour = QColor(255, 0, 0);
 
     blastSearchParameters = "";
-    blastTimeoutSeconds = 30;
 
     rememberedPath = QDir::homePath();
 }

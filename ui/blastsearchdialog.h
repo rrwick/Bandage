@@ -21,6 +21,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QThread>
 
 class DeBruijnNode;
 
@@ -41,6 +42,7 @@ private:
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
+    QThread * m_buildBlastDatabaseThread;
 
     QString getNodeNameFromString(QString nodeString);
     void setUiStep(int step);
@@ -58,6 +60,8 @@ private slots:
     void loadBlastHits(QString blastHits);
     void fillQueriesTable();
     void fillHitsTable();
+    void blastDatabaseBuildFinished(QString error);
+    void buildBlastDatabaseCancelled();
 
 signals:
     void createAllNodesFasta(QString path, bool includeEmptyNodes);

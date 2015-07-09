@@ -1,0 +1,32 @@
+#include "buildblastdatabaseworker.h"
+#include <QProcess>
+#include "../program/globals.h"
+#include "../program/settings.h"
+
+BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
+    m_makeblastdbCommand(makeblastdbCommand), m_makeblastdb(0)
+{
+}
+
+void BuildBlastDatabaseWorker::buildBlastDatabase()
+{
+    m_makeblastdb = new QProcess();
+    m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
+
+    bool finished = m_makeblastdb->waitForFinished(-1);
+
+    if (m_makeblastdb->exitCode() != 0)
+        emit finishedBuild("There was a problem building the BLAST database.");
+    else if (!finished)
+        emit finishedBuild("The BLAST database did not build in the allotted time.\n\n"
+                           "Increase the 'Allowed time' setting and try again.");
+    else
+        emit finishedBuild("");
+}
+
+
+void BuildBlastDatabaseWorker::cancelBuild()
+{
+    if (m_makeblastdb != 0)
+        m_makeblastdb->kill();
+}
