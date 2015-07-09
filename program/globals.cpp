@@ -30,6 +30,7 @@ double g_absoluteZoom;
 BlastSearch * g_blastSearch;
 QString g_tempDirectory;
 AssemblyGraph * g_assemblyGraph;
+bool g_cancelBuildBlastDatabase;
 
 
 QString formatIntForDisplay(int num)

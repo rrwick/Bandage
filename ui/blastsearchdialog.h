@@ -22,6 +22,7 @@
 #include <QDialog>
 #include <QMap>
 #include <QThread>
+#include <QProcess>
 
 class DeBruijnNode;
 
@@ -40,6 +41,7 @@ public:
 private:
     Ui::BlastSearchDialog *ui;
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
+    QProcess * m_makeblastdb;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
     QThread * m_buildBlastDatabaseThread;
@@ -61,7 +63,6 @@ private slots:
     void fillHitsTable();
     void blastDatabaseBuildFinished(QString error);
     void buildBlastDatabaseCancelled();
-
 };
 
 #endif // BLASTSEARCHDIALOG_H

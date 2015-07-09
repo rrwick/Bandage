@@ -273,6 +273,7 @@ void BlastSearchDialog::buildBlastDatabase()
         return;
     }
 
+    g_cancelBuildBlastDatabase = false;
     ui->buildBlastDatabaseButton->setEnabled(false);
     ui->buildBlastDatabaseInfoText->setEnabled(false);
 
@@ -285,11 +286,11 @@ void BlastSearchDialog::buildBlastDatabase()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
+    m_makeblastdb = new QProcess();
     m_buildBlastDatabaseThread = new QThread;
-    BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
+    BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand, m_makeblastdb);
     buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
 
-    connect(progress, SIGNAL(halt()), buildBlastDatabaseWorker, SLOT(cancelBuild()));
     connect(progress, SIGNAL(halt()), this, SLOT(buildBlastDatabaseCancelled()));
     connect(m_buildBlastDatabaseThread, SIGNAL(started()), buildBlastDatabaseWorker, SLOT(buildBlastDatabase()));
     connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), m_buildBlastDatabaseThread, SLOT(quit()));
@@ -316,7 +317,8 @@ void BlastSearchDialog::blastDatabaseBuildFinished(QString error)
 
 void BlastSearchDialog::buildBlastDatabaseCancelled()
 {
-    setUiStep(1);
+    g_cancelBuildBlastDatabase = true;
+    m_makeblastdb->kill();
 }
 
 

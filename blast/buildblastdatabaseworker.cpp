@@ -8,8 +8,8 @@
 #include "../graph/debruijnnode.h"
 #include "../graph/assemblygraph.h"
 
-BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
-    m_makeblastdbCommand(makeblastdbCommand), m_makeblastdb(0)
+BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand, QProcess * makeblastdb) :
+    m_makeblastdbCommand(makeblastdbCommand), m_makeblastdb(makeblastdb)
 {
 }
 
@@ -22,6 +22,12 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
+        if (g_cancelBuildBlastDatabase)
+        {
+            emit finishedBuild("Build cancelled.");
+            return;
+        }
+
         i.next();
         if (i.value()->m_length > 0)
         {
@@ -31,8 +37,6 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     }
     file.close();
 
-
-    m_makeblastdb = new QProcess();
     m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
 
     bool finished = m_makeblastdb->waitForFinished(-1);
@@ -42,13 +46,8 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     else if (!finished)
         emit finishedBuild("The BLAST database did not build in the allotted time.\n\n"
                            "Increase the 'Allowed time' setting and try again.");
+    else if (g_cancelBuildBlastDatabase)
+        emit finishedBuild("Build cancelled.");
     else
         emit finishedBuild("");
-}
-
-
-void BuildBlastDatabaseWorker::cancelBuild()
-{
-    if (m_makeblastdb != 0)
-        m_makeblastdb->kill();
 }
