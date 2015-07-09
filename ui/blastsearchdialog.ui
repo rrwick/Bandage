@@ -24,16 +24,6 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="2" rowspan="2">
-    <widget class="QTableView" name="blastHitsTableView">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="2">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -199,7 +189,7 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="2">
+   <item row="14" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -209,7 +199,7 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="2">
+   <item row="13" column="2">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -592,19 +582,6 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="4" column="2">
     <widget class="MyTableWidget" name="blastQueriesTableWidget">
      <column>
@@ -625,6 +602,63 @@
      <column>
       <property name="text">
        <string>Colour</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="11" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="10" column="2" rowspan="2">
+    <widget class="MyTableWidget" name="blastHitsTableWidget">
+     <column>
+      <property name="text">
+       <string>Node name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node start</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node end</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query start</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query end</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>E-value</string>
       </property>
      </column>
     </widget>

@@ -63,11 +63,11 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
         setUiStep(3);
     }
 
-    //If results already exist, display them and move to step 3.
+    //If results already exist, display them and move to step 4.
     if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
-        setUiStep(3);
+        setUiStep(4);
     }
 
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
@@ -91,7 +91,9 @@ void BlastSearchDialog::clearBlastHits()
 {
     g_blastSearch->m_hits.clear();
     g_blastSearch->m_blastQueries.clearSearchResults();
-    ui->blastHitsTableView->setModel(0);
+    ui->blastHitsTableWidget->clearContents();
+    while (ui->blastHitsTableWidget->rowCount() > 0)
+        ui->blastHitsTableWidget->removeRow(0);
 }
 
 void BlastSearchDialog::loadBlastHits(QString blastHits)
@@ -175,7 +177,6 @@ void BlastSearchDialog::fillQueriesTable()
         else
             hits = new QTableWidgetItem("-");
 
-
         ui->blastQueriesTableWidget->setItem(i, 0, name);
         ui->blastQueriesTableWidget->setItem(i, 1, length);
         ui->blastQueriesTableWidget->setItem(i, 2, hits);
@@ -189,33 +190,40 @@ void BlastSearchDialog::fillQueriesTable()
 
 void BlastSearchDialog::fillHitsTable()
 {
-    int hitCount = int(g_blastSearch->m_hits.size());
+    ui->blastHitsTableWidget->clearContents();
 
-    QStandardItemModel * model = new QStandardItemModel(hitCount, 8, this); //8 Columns
-    model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
-    model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
-    model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
-    model->setHorizontalHeaderItem(3, new QStandardItem("Node end"));
-    model->setHorizontalHeaderItem(4, new QStandardItem("Query name"));
-    model->setHorizontalHeaderItem(5, new QStandardItem("Query start"));
-    model->setHorizontalHeaderItem(6, new QStandardItem("Query end"));
-    model->setHorizontalHeaderItem(7, new QStandardItem("E-value"));
+    int hitCount = int(g_blastSearch->m_hits.size());
+    if (hitCount == 0)
+        return;
+
+    ui->blastHitsTableWidget->setRowCount(hitCount);
 
     for (int i = 0; i < hitCount; ++i)
     {
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
-        model->setItem(i, 0, new QStandardItem(hit->m_node->m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(hit->m_node->m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(hit->m_nodeStart)));
-        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(hit->m_nodeEnd)));
-        model->setItem(i, 4, new QStandardItem(hit->m_query->m_name));
-        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(hit->m_queryStart)));
-        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(hit->m_queryEnd)));
-        model->setItem(i, 7, new QStandardItem(hit->m_eValue));
-    }
-    ui->blastHitsTableView->setModel(model);
 
-    ui->blastHitsTableView->setEnabled(true);
+
+        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
+        QTableWidgetItem * nodeLength = new QTableWidgetItem(formatIntForDisplay(hit->m_node->m_length));
+        QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
+        QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
+        QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
+        QTableWidgetItem * queryStart = new QTableWidgetItem(formatIntForDisplay(hit->m_queryStart));
+        QTableWidgetItem * queryEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_queryEnd));
+        QTableWidgetItem * eValue = new QTableWidgetItem(hit->m_eValue);
+
+        ui->blastHitsTableWidget->setItem(i, 0, nodeName);
+        ui->blastHitsTableWidget->setItem(i, 1, nodeLength);
+        ui->blastHitsTableWidget->setItem(i, 2, nodeStart);
+        ui->blastHitsTableWidget->setItem(i, 3, nodeEnd);
+        ui->blastHitsTableWidget->setItem(i, 4, queryName);
+        ui->blastHitsTableWidget->setItem(i, 5, queryStart);
+        ui->blastHitsTableWidget->setItem(i, 6, queryEnd);
+        ui->blastHitsTableWidget->setItem(i, 7, eValue);
+    }
+
+    ui->blastHitsTableWidget->resizeColumns();
+    ui->blastHitsTableWidget->setEnabled(true);
 }
 
 
@@ -509,6 +517,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
         ui->clearQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
     //Step 2 is for loading queries
@@ -537,6 +546,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
         ui->clearQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
     //Step 3 is for running the BLAST search
@@ -565,6 +575,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
         ui->clearQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
     //Step 4 is after the BLAST search has been run.
@@ -593,6 +604,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
         ui->clearQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(true);
         break;
     }
 }
