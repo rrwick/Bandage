@@ -46,7 +46,13 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 
 void BlastQueries::addQuery(BlastQuery newQuery)
 {
-    //POSSIBLE CODE HERE TO CHECK FOR DUPLICATE QUERY NAMES?
+    //Add a suffix to the new query name if it not unique.
+    QString newQueryName = newQuery.m_name;
+    int queryNumber = 2;
+    QString finalName = newQueryName;
+    while (getQueryFromName(finalName) != 0)
+        finalName = newQueryName + "_" + QString::number(queryNumber++);
+    newQuery.m_name = finalName;
 
     m_queries.push_back(newQuery);
     updateTempFile();
