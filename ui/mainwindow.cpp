@@ -1367,9 +1367,6 @@ void MainWindow::openBlastSearchDialog()
 {
     BlastSearchDialog blastSearchDialog(this);
 
-    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool)), this, SLOT(saveAllNodesToFasta(QString, bool)));
-    connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
-
     blastSearchDialog.exec();
 
     //Fill in the blast results combo box
@@ -1405,30 +1402,6 @@ void MainWindow::blastTargetChanged()
 
     g_graphicsView->viewport()->update();
 }
-
-
-
-void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
-{
-    QFile file(path + "all_nodes.fasta");
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QTextStream out(&file);
-
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (includeEmptyNodes || i.value()->m_length > 0)
-        {
-            out << i.value()->getFasta();
-            out << "\n";
-        }
-    }
-    file.close();
-
-    emit saveAllNodesToFastaFinished();
-}
-
 
 
 void MainWindow::setInfoTexts()

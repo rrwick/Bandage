@@ -76,7 +76,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
     setInfoTexts();
 
-    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
+    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase()));
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
@@ -229,7 +229,7 @@ void BlastSearchDialog::fillHitsTable()
 }
 
 
-void BlastSearchDialog::buildBlastDatabase1()
+void BlastSearchDialog::buildBlastDatabase()
 {
     QString findMakeblastdbCommand = "which makeblastdb";
 #ifdef Q_OS_WIN32
@@ -278,12 +278,6 @@ void BlastSearchDialog::buildBlastDatabase1()
 
     QApplication::processEvents();
 
-    emit createAllNodesFasta(g_tempDirectory, false);
-}
-
-
-void BlastSearchDialog::buildBlastDatabase2()
-{
     //The actual build is done in a different thread so the UI will stay responsive.
     MyProgressDialog * progress = new MyProgressDialog(this, "Building BLAST database...", true, "Cancel build", "Cancelling build...",
                                                        "Clicking this button will stop the BLAST database from being "

@@ -108,7 +108,6 @@ private slots:
     void graphLayoutFinished();
     void openBlastSearchDialog();
     void blastTargetChanged();
-    void saveAllNodesToFasta(QString path, bool includeEmptyNodes);
     void showHidePanels();
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();
@@ -121,9 +120,6 @@ private slots:
     void selectMaybeContiguous();
     void selectNotContiguous();
     void openBandageUrl();
-
-signals:
-    void saveAllNodesToFastaFinished();
 };
 
 #endif // MAINWINDOW_H

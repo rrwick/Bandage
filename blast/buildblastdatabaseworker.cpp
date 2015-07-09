@@ -2,6 +2,11 @@
 #include <QProcess>
 #include "../program/globals.h"
 #include "../program/settings.h"
+#include <QFile>
+#include <QTextStream>
+#include <QMapIterator>
+#include "../graph/debruijnnode.h"
+#include "../graph/assemblygraph.h"
 
 BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
     m_makeblastdbCommand(makeblastdbCommand), m_makeblastdb(0)
@@ -10,6 +15,23 @@ BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
 
 void BuildBlastDatabaseWorker::buildBlastDatabase()
 {
+    QFile file(g_tempDirectory + "all_nodes.fasta");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        if (i.value()->m_length > 0)
+        {
+            out << i.value()->getFasta();
+            out << "\n";
+        }
+    }
+    file.close();
+
+
     m_makeblastdb = new QProcess();
     m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
 

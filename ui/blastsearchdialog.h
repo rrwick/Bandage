@@ -51,8 +51,7 @@ private:
     QString cleanQueryName(QString queryName);
 
 private slots:
-    void buildBlastDatabase1();
-    void buildBlastDatabase2();
+    void buildBlastDatabase();
     void loadBlastQueriesFromFastaFile();
     void enterQueryManually();
     void clearQueries();
@@ -62,9 +61,6 @@ private slots:
     void fillHitsTable();
     void blastDatabaseBuildFinished(QString error);
     void buildBlastDatabaseCancelled();
-
-signals:
-    void createAllNodesFasta(QString path, bool includeEmptyNodes);
 
 };
 
