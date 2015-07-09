@@ -153,28 +153,43 @@ QString BlastSearchDialog::getNodeNameFromString(QString nodeString)
 
 void BlastSearchDialog::fillQueriesTable()
 {
+    ui->blastQueriesTableWidget->clear();
+    while (ui->blastQueriesTableWidget->columnCount() > 0)
+        ui->blastQueriesTableWidget->removeColumn(0);
+
     int queryCount = int(g_blastSearch->m_blastQueries.m_queries.size());
     if (queryCount == 0)
         return;
 
-    QStandardItemModel * model = new QStandardItemModel(queryCount, 3, this); //3 Columns
-    model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
-    model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
-    model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
+    ui->blastQueriesTableWidget->insertColumn(0);
+    ui->blastQueriesTableWidget->insertColumn(0);
+    ui->blastQueriesTableWidget->insertColumn(0);
+    ui->blastQueriesTableWidget->insertColumn(0);
+    QStringList headerNames;
+    headerNames << "Query name" << "Query length" << "Hits" << "Colour";
+    ui->blastQueriesTableWidget->setHorizontalHeaderLabels(headerNames);
+
+    ui->blastQueriesTableWidget->setRowCount(queryCount);
+
     for (int i = 0; i < queryCount; ++i)
     {
         BlastQuery * query = &(g_blastSearch->m_blastQueries.m_queries[i]);
-        model->setItem(i, 0, new QStandardItem(query->m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(query->m_length)));
+
+        QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+        QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
 
         //If the search hasn't yet been run, don't put a number in the hits column.
+        QTableWidgetItem * hits;
         if (query->m_searchedFor)
-            model->setItem(i, 2, new QStandardItem(formatIntForDisplay(query->m_hits)));
+            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits));
         else
-            model->setItem(i, 2, new QStandardItem("-"));
+            hits = new QTableWidgetItem("-");
+
+
+        ui->blastQueriesTableWidget->setItem(i, 0, name);
+        ui->blastQueriesTableWidget->setItem(i, 1, length);
+        ui->blastQueriesTableWidget->setItem(i, 2, hits);
     }
-    ui->blastQueriesTableView->setModel(model);
-    ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     setUiStep(3);
 }
@@ -207,7 +222,7 @@ void BlastSearchDialog::fillHitsTable()
         model->setItem(i, 7, new QStandardItem(hit->m_eValue));
     }
     ui->blastHitsTableView->setModel(model);
-    ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->blastHitsTableView->resizeColumnsToContents();
 
     ui->blastHitsTableView->setEnabled(true);
 }
@@ -352,8 +367,14 @@ void BlastSearchDialog::enterQueryManually()
 void BlastSearchDialog::clearQueries()
 {
     g_blastSearch->m_blastQueries.clearQueries();
-    ui->blastQueriesTableView->setModel(0);
+    ui->blastQueriesTableWidget->clear();
     ui->clearQueriesButton->setEnabled(false);
+
+    while (ui->blastQueriesTableWidget->rowCount() > 0)
+        ui->blastQueriesTableWidget->removeRow(0);
+    while (ui->blastQueriesTableWidget->columnCount() > 0)
+        ui->blastQueriesTableWidget->removeColumn(0);
+
 
     clearBlastHits();
     setUiStep(2);
@@ -483,7 +504,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step2Label->setEnabled(false);
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
-        ui->blastQueriesTableView->setEnabled(false);
+        ui->blastQueriesTableWidget->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -511,7 +532,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -539,7 +560,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -567,7 +588,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -613,3 +634,5 @@ void BlastSearchDialog::setInfoTexts()
                                               "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01");
     ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }
+
+

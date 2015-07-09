@@ -14,7 +14,7 @@
    <string>Load BLAST results</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="9" column="1">
+   <item row="6" column="1">
     <widget class="QLabel" name="step3Label">
      <property name="enabled">
       <bool>false</bool>
@@ -24,7 +24,7 @@
      </property>
     </widget>
    </item>
-   <item row="13" column="2" rowspan="2">
+   <item row="10" column="2" rowspan="2">
     <widget class="QTableView" name="blastHitsTableView">
      <property name="enabled">
       <bool>false</bool>
@@ -156,22 +156,6 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="2" rowspan="4">
-    <widget class="QTableView" name="blastQueriesTableView">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="1">
     <widget class="QLabel" name="step1Label">
      <property name="font">
@@ -185,14 +169,14 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="1" colspan="2">
+   <item row="5" column="1" colspan="2">
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="10" column="1">
     <widget class="QLabel" name="hitsLabel">
      <property name="enabled">
       <bool>false</bool>
@@ -208,14 +192,14 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1" colspan="2">
+   <item row="9" column="1" colspan="2">
     <widget class="Line" name="line_4">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="16" column="2">
+   <item row="13" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -225,7 +209,7 @@
      </property>
     </widget>
    </item>
-   <item row="15" column="2">
+   <item row="12" column="2">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -254,7 +238,7 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="2">
+   <item row="7" column="2">
     <widget class="QWidget" name="widget_5" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="leftMargin">
@@ -496,7 +480,14 @@
      </layout>
     </widget>
    </item>
-   <item row="9" column="2">
+   <item row="1" column="0" colspan="3">
+    <widget class="Line" name="line_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2">
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="leftMargin">
@@ -547,36 +538,6 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="step2Label">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 2: &lt;/span&gt;enter BLAST queries&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="1">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="3" column="0">
     <widget class="QLabel" name="step2TickLabel">
      <property name="sizePolicy">
@@ -599,7 +560,17 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="3" column="1">
+    <widget class="QLabel" name="step2Label">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 2: &lt;/span&gt;enter BLAST queries&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
     <widget class="QLabel" name="step3TickLabel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -621,6 +592,22 @@
      </property>
     </widget>
    </item>
+   <item row="11" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="2">
+    <widget class="MyTableWidget" name="blastQueriesTableWidget"/>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -629,6 +616,11 @@
    <extends>QWidget</extends>
    <header>infotextwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MyTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>mytablewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -58,7 +58,8 @@ SOURCES += \
     command_line/contiguous.cpp \
     command_line/load.cpp \
     command_line/image.cpp \
-    command_line/commoncommandlinefunctions.cpp
+    command_line/commoncommandlinefunctions.cpp \
+    ui/mytablewidget.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -91,7 +92,8 @@ HEADERS  += \
     command_line/contiguous.h \
     command_line/load.h \
     command_line/image.h \
-    command_line/commoncommandlinefunctions.h
+    command_line/commoncommandlinefunctions.h \
+    ui/mytablewidget.h
 
 FORMS    += \
     ui/mainwindow.ui \
