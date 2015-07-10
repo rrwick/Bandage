@@ -47,11 +47,13 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 
 void BlastQueries::addQuery(BlastQuery * newQuery)
 {
-    //Add a suffix to the new query name if it not unique.
+    //Add a suffix to the new query name if it not unique.  Also make
+    //sure it's not "all", as that will conflict with viewing all
+    //queries at once.
     QString newQueryName = newQuery->m_name;
     int queryNumber = 2;
     QString finalName = newQueryName;
-    while (getQueryFromName(finalName) != 0)
+    while (getQueryFromName(finalName) != 0 || finalName == "all")
         finalName = newQueryName + "_" + QString::number(queryNumber++);
     newQuery->m_name = finalName;
 
