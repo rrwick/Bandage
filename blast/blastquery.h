@@ -19,11 +19,14 @@
 #ifndef BLASTQUERY_H
 #define BLASTQUERY_H
 
+#include <QObject>
 #include <QString>
 #include <QColor>
 
-class BlastQuery
+class BlastQuery : public QObject
 {
+    Q_OBJECT
+
 public:
     BlastQuery() {}
     BlastQuery(QString name, QString sequence) : m_name(name), m_sequence(sequence),
@@ -36,6 +39,9 @@ public:
     int m_hits;
     bool m_searchedFor;
     QColor m_colour;
+
+public slots:
+    void setColour(QColor newColour) {m_colour = newColour;}
 };
 
 #endif // BLASTQUERY_H

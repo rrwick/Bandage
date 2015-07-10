@@ -29,7 +29,7 @@ BlastQueries::BlastQueries() :
 
 BlastQueries::~BlastQueries()
 {
-    deleteTempFile();
+    clearQueries();
 }
 
 
@@ -37,28 +37,28 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        if (m_queries[i].m_name == queryName)
-            return &(m_queries[i]);
+        if (m_queries[i]->m_name == queryName)
+            return m_queries[i];
     }
     return 0;
 }
 
 
 
-void BlastQueries::addQuery(BlastQuery newQuery)
+void BlastQueries::addQuery(BlastQuery * newQuery)
 {
     //Add a suffix to the new query name if it not unique.
-    QString newQueryName = newQuery.m_name;
+    QString newQueryName = newQuery->m_name;
     int queryNumber = 2;
     QString finalName = newQueryName;
     while (getQueryFromName(finalName) != 0)
         finalName = newQueryName + "_" + QString::number(queryNumber++);
-    newQuery.m_name = finalName;
+    newQuery->m_name = finalName;
 
     //Give the new query a colour
     int colourIndex = m_queries.size();
     colourIndex %= presetColours.size();
-    newQuery.m_colour = presetColours[colourIndex];
+    newQuery->m_colour = presetColours[colourIndex];
 
     m_queries.push_back(newQuery);
     updateTempFile();
@@ -66,6 +66,8 @@ void BlastQueries::addQuery(BlastQuery newQuery)
 
 void BlastQueries::clearQueries()
 {
+    for (size_t i = 0; i < m_queries.size(); ++i)
+        delete m_queries[i];
     m_queries.clear();
     deleteTempFile();
 }
@@ -90,8 +92,8 @@ void BlastQueries::updateTempFile()
     QTextStream out(&m_tempFile);
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        out << ">" << m_queries[i].m_name << "\n";
-        out << m_queries[i].m_sequence;
+        out << ">" << m_queries[i]->m_name << "\n";
+        out << m_queries[i]->m_sequence;
 
         if (i + 1 != m_queries.size())
             out << "\n";
@@ -104,7 +106,7 @@ void BlastQueries::updateTempFile()
 void BlastQueries::searchOccurred()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
-        m_queries[i].m_searchedFor = true;
+        m_queries[i]->m_searchedFor = true;
 }
 
 
@@ -112,8 +114,8 @@ void BlastQueries::clearSearchResults()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        m_queries[i].m_searchedFor = false;
-        m_queries[i].m_hits = 0;
+        m_queries[i]->m_searchedFor = false;
+        m_queries[i]->m_hits = 0;
     }
 }
 

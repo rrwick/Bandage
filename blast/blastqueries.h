@@ -30,11 +30,11 @@ public:
     BlastQueries();
     ~BlastQueries();
 
-    std::vector<BlastQuery> m_queries;
+    std::vector<BlastQuery *> m_queries;
 
     BlastQuery * getQueryFromName(QString queryName);
 
-    void addQuery(BlastQuery newQuery);
+    void addQuery(BlastQuery * newQuery);
     void clearQueries();
     void searchOccurred();
     void clearSearchResults();

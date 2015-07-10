@@ -711,7 +711,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
     if (g_blastSearch->m_blastQueries.m_queries.size() == 0)
         return returnVector;
 
-    BlastQuery * currentQuery = &(g_blastSearch->m_blastQueries.m_queries[ui->blastQueryComboBox->currentIndex()]);
+    BlastQuery * currentQuery = g_blastSearch->m_blastQueries.m_queries[ui->blastQueryComboBox->currentIndex()];
 
     for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
     {
@@ -1373,8 +1373,8 @@ void MainWindow::openBlastSearchDialog()
     ui->blastQueryComboBox->clear();
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i].m_hits > 0)
-            ui->blastQueryComboBox->addItem(g_blastSearch->m_blastQueries.m_queries[i].m_name);
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+            ui->blastQueryComboBox->addItem(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
     }
 
     if (ui->blastQueryComboBox->count() > 0)

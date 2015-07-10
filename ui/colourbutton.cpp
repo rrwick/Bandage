@@ -20,7 +20,10 @@ void ColourButton::setColour(QColor newColour)
 
 void ColourButton::chooseColour()
 {
-    QColor chosenColor = QColorDialog::getColor(m_colour, this, m_name, QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-        setColour(chosenColor);
+    QColor chosenColour = QColorDialog::getColor(m_colour, this, m_name, QColorDialog::ShowAlphaChannel);
+    if (chosenColour.isValid())
+    {
+        setColour(chosenColour);
+        emit colourChosen(chosenColour);
+    }
 }

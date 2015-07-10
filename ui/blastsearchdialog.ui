@@ -537,6 +537,11 @@
     <widget class="MyTableWidget" name="blastQueriesTableWidget">
      <column>
       <property name="text">
+       <string/>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Query name</string>
       </property>
      </column>
@@ -548,11 +553,6 @@
      <column>
       <property name="text">
        <string>Hits</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Colour</string>
       </property>
      </column>
     </widget>

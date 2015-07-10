@@ -39,6 +39,7 @@
 #include <QThread>
 #include "../blast/buildblastdatabaseworker.h"
 #include "myprogressdialog.h"
+#include "colourbutton.h"
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
@@ -167,7 +168,7 @@ void BlastSearchDialog::fillQueriesTable()
 
     for (int i = 0; i < queryCount; ++i)
     {
-        BlastQuery * query = &(g_blastSearch->m_blastQueries.m_queries[i]);
+        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
 
         QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
         QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
@@ -179,9 +180,14 @@ void BlastSearchDialog::fillQueriesTable()
         else
             hits = new QTableWidgetItem("-");
 
-        ui->blastQueriesTableWidget->setItem(i, 0, name);
-        ui->blastQueriesTableWidget->setItem(i, 1, length);
-        ui->blastQueriesTableWidget->setItem(i, 2, hits);
+        ColourButton * colourButton = new ColourButton();
+        colourButton->setColour(query->m_colour);
+        connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
+
+        ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
+        ui->blastQueriesTableWidget->setItem(i, 1, name);
+        ui->blastQueriesTableWidget->setItem(i, 2, length);
+        ui->blastQueriesTableWidget->setItem(i, 3, hits);
     }
 
     ui->blastQueriesTableWidget->resizeColumns();
@@ -336,8 +342,8 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
         for (size_t i = 0; i < queryNames.size(); ++i)
         {
             QString queryName = cleanQueryName(queryNames[i]);
-            g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
-                                                              querySequences[i]));
+            g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                                  querySequences[i]));
         }
 
         fillQueriesTable();
@@ -370,8 +376,8 @@ void BlastSearchDialog::enterQueryManually()
     if (enterOneBlastQueryDialog.exec())
     {
         QString queryName = cleanQueryName(enterOneBlastQueryDialog.getName());
-        g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
-                                                          enterOneBlastQueryDialog.getSequence()));
+        g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                              enterOneBlastQueryDialog.getSequence()));
         fillQueriesTable();
         clearBlastHits();
     }
