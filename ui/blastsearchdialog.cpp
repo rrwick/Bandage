@@ -59,6 +59,9 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     font.setBold(true);
     ui->blastQueriesTableWidget->horizontalHeader()->setFont(font);
     ui->blastHitsTableWidget->horizontalHeader()->setFont(font);
+    ui->blastQueriesTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->blastHitsTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+
 
     //If a BLAST database already exists, move to step 2.
     QFile databaseFile(g_tempDirectory + "all_nodes.fasta");
