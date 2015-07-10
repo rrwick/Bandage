@@ -574,6 +574,11 @@
     <widget class="MyTableWidget" name="blastHitsTableWidget">
      <column>
       <property name="text">
+       <string/>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Node name</string>
       </property>
      </column>
