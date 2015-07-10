@@ -525,15 +525,16 @@ void MainWindow::drawGraph()
 
         //Make sure the nodes the user typed in are actually in the graph.
         std::vector<QString> nodesNotInGraph;
-        getNodesFromLineEdit(ui->startingNodesLineEdit,
-                             ui->startingNodesExactMatchRadioButton->isChecked(),
-                             &nodesNotInGraph);
+        std::vector<DeBruijnNode *> nodesInGraph = getNodesFromLineEdit(ui->startingNodesLineEdit,
+                                                                        ui->startingNodesExactMatchRadioButton->isChecked(),
+                                                                        &nodesNotInGraph);
         if (nodesNotInGraph.size() > 0)
         {
             QString errorMessage = generateNodesNotFoundErrorMessage(nodesNotInGraph, ui->startingNodesExactMatchRadioButton->isChecked());
 
             QMessageBox::information(this, "Nodes not found", errorMessage);
-            return;
+            if (nodesInGraph.size() == 0)
+                return;
         }
     }
 
@@ -631,7 +632,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromListExact(QStringList nodesL
 
     for (int i = 0; i < nodesList.size(); ++i)
     {
-        QString nodeName = nodesList.at(i);
+        QString nodeName = nodesList.at(i).simplified();
         if (nodeName == "")
             continue;
 
@@ -679,7 +680,7 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromListPartial(QStringList node
 
     for (int i = 0; i < nodesList.size(); ++i)
     {
-        QString queryName = nodesList.at(i);
+        QString queryName = nodesList.at(i).simplified();
         if (queryName == "")
             continue;
 
