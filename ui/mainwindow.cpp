@@ -713,12 +713,27 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
     if (g_blastSearch->m_blastQueries.m_queries.size() == 0)
         return returnVector;
 
-    BlastQuery * currentQuery = g_blastSearch->m_blastQueries.m_queries[ui->blastQueryComboBox->currentIndex()];
+    std::vector<BlastQuery *> queries;
 
-    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
+    //If "all" is selected, then we'll display nodes with hits from any query
+    if (ui->blastQueryComboBox->currentIndex() == 0 &&
+            ui->blastQueryComboBox->currentText() == "all")
+        queries = g_blastSearch->m_blastQueries.m_queries;
+
+    //If only one query is selected, then we just display nodes with hits from that query
+    else
+        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText()));
+
+    //Add the blast hit pointers to nodes that have a hit for
+    //the selected target(s).
+    for (size_t i = 0; i < queries.size(); ++i)
     {
-        if (g_blastSearch->m_hits[i].m_query == currentQuery)
-            returnVector.push_back(g_blastSearch->m_hits[i].m_node);
+        BlastQuery * currentQuery = queries[i];
+        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        {
+            if (g_blastSearch->m_hits[j].m_query == currentQuery)
+                returnVector.push_back(g_blastSearch->m_hits[j].m_node);
+        }
     }
 
     return returnVector;
