@@ -173,7 +173,9 @@ void BlastSearchDialog::fillQueriesTable()
         BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
 
         QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
+        length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         //If the search hasn't yet been run, don't put a number in the hits column.
         QTableWidgetItem * hits;
@@ -181,6 +183,7 @@ void BlastSearchDialog::fillQueriesTable()
             hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits));
         else
             hits = new QTableWidgetItem("-");
+        hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ColourButton * colourButton = new ColourButton();
         colourButton->setColour(query->m_colour);
@@ -213,14 +216,22 @@ void BlastSearchDialog::fillHitsTable()
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
 
         QTableWidgetItem * queryColour = new QTableWidgetItem();
+        queryColour->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         queryColour->setBackground(hit->m_query->m_colour);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
+        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
+        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
+        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
+        queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryStart = new QTableWidgetItem(formatIntForDisplay(hit->m_queryStart));
+        queryStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_queryEnd));
+        queryEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * eValue = new QTableWidgetItem(hit->m_eValue);
+        eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
         ui->blastHitsTableWidget->setItem(i, 1, queryName);
