@@ -41,7 +41,6 @@ public:
 private:
     Ui::BlastSearchDialog *ui;
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
-    QProcess * m_makeblastdb;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
     QThread * m_buildBlastDatabaseThread;

@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QProcess>
 
 Settings * g_settings;
 MyGraphicsView * g_graphicsView;
@@ -31,6 +32,7 @@ BlastSearch * g_blastSearch;
 QString g_tempDirectory;
 AssemblyGraph * g_assemblyGraph;
 bool g_cancelBuildBlastDatabase;
+QProcess * g_makeblastdb;
 
 
 QString formatIntForDisplay(int num)

@@ -9,11 +9,10 @@ class BuildBlastDatabaseWorker : public QObject
     Q_OBJECT
 
 public:
-    BuildBlastDatabaseWorker(QString makeblastdbCommand, QProcess * makeblastdb);
+    BuildBlastDatabaseWorker(QString makeblastdbCommand);
 
 private:
     QString m_makeblastdbCommand;
-    QProcess * m_makeblastdb;
 
 public slots:
     void buildBlastDatabase();

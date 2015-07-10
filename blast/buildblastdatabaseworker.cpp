@@ -8,8 +8,8 @@
 #include "../graph/debruijnnode.h"
 #include "../graph/assemblygraph.h"
 
-BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand, QProcess * makeblastdb) :
-    m_makeblastdbCommand(makeblastdbCommand), m_makeblastdb(makeblastdb)
+BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
+    m_makeblastdbCommand(makeblastdbCommand)
 {
 }
 
@@ -37,11 +37,12 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     }
     file.close();
 
-    m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
+    g_makeblastdb = new QProcess();
+    g_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
 
-    bool finished = m_makeblastdb->waitForFinished(-1);
+    bool finished = g_makeblastdb->waitForFinished(-1);
 
-    if (m_makeblastdb->exitCode() != 0)
+    if (g_makeblastdb->exitCode() != 0)
         emit finishedBuild("There was a problem building the BLAST database.");
     else if (!finished)
         emit finishedBuild("The BLAST database did not build in the allotted time.\n\n"

@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <QString>
+#include <QProcess>
 
 class Settings;
 class MyGraphicsView;
@@ -43,6 +44,7 @@ extern BlastSearch * g_blastSearch;
 extern QString g_tempDirectory;
 extern AssemblyGraph * g_assemblyGraph;
 extern bool g_cancelBuildBlastDatabase;
+extern QProcess * g_makeblastdb;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
