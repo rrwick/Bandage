@@ -24,6 +24,11 @@ void MyTableWidget::resizeColumns()
 {
     resizeColumnsToContents();
 
+    //Set the first column to a minimum size, as it will hold the colour
+    //for both queries and hits.
+    int minColumnWidth = horizontalHeader()->minimumSectionSize();
+    horizontalHeader()->resizeSection(0, minColumnWidth);
+
     std::vector<int> columnWidths;
     int oldTotalColumnWidth = 0;
     for (int i = 0; i < columnCount(); ++i)
@@ -40,8 +45,11 @@ void MyTableWidget::resizeColumns()
 
     //If the code got here, then there is width to spare in the table.  Resize each column to
     //take up the whole width, keeping their relative size.
-    int newTotalColumnWidth = 0;
-    for (int i = 0; i < columnCount() - 1; ++i)
+
+    oldTotalColumnWidth -= minColumnWidth;
+    int newTotalColumnWidth = minColumnWidth;
+
+    for (int i = 1; i < columnCount() - 1; ++i)
     {
         int oldColumnWidth = columnWidths[i];
         double fraction = double(oldColumnWidth) / oldTotalColumnWidth;
