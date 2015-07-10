@@ -40,19 +40,6 @@
        <number>0</number>
       </property>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="InfoTextWidget" name="buildBlastDatabaseInfoText" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -80,19 +67,6 @@
          <string>Build BLAST database</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
@@ -195,19 +169,6 @@
        <number>0</number>
       </property>
       <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="InfoTextWidget" name="startBlastSearchInfoText" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -239,19 +200,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
     </widget>
    </item>
@@ -270,19 +218,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item>
        <widget class="InfoTextWidget" name="loadQueriesFromFastaInfoText" native="true">
         <property name="sizePolicy">
@@ -319,6 +254,9 @@
        <spacer name="horizontalSpacer_7">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -365,6 +303,9 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
@@ -404,19 +345,6 @@
          <string>Clear all</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
@@ -579,27 +507,12 @@
      </column>
      <column>
       <property name="text">
-       <string>Node name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Node length</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Node start</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Node end</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>Query name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node name</string>
       </property>
      </column>
      <column>
@@ -610,6 +523,16 @@
      <column>
       <property name="text">
        <string>Query end</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node start</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node end</string>
       </property>
      </column>
      <column>

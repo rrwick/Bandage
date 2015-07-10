@@ -43,12 +43,10 @@ void MyTableWidget::resizeColumns()
     if (oldTotalColumnWidth > tableWidth)
         return;
 
-    //If the code got here, then there is width to spare in the table.  Resize each column to
-    //take up the whole width, keeping their relative size.
+    //If the code got here, then there is width to spare in the table.  Resize each column
+    //(except for the first) to take up the whole width, keeping their relative size.
 
-    oldTotalColumnWidth -= minColumnWidth;
     int newTotalColumnWidth = minColumnWidth;
-
     for (int i = 1; i < columnCount() - 1; ++i)
     {
         int oldColumnWidth = columnWidths[i];

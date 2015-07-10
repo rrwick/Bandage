@@ -215,7 +215,6 @@ void BlastSearchDialog::fillHitsTable()
         QTableWidgetItem * queryColour = new QTableWidgetItem();
         queryColour->setBackground(hit->m_query->m_colour);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
-        QTableWidgetItem * nodeLength = new QTableWidgetItem(formatIntForDisplay(hit->m_node->m_length));
         QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
         QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
         QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
@@ -224,14 +223,13 @@ void BlastSearchDialog::fillHitsTable()
         QTableWidgetItem * eValue = new QTableWidgetItem(hit->m_eValue);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
-        ui->blastHitsTableWidget->setItem(i, 1, nodeName);
-        ui->blastHitsTableWidget->setItem(i, 2, nodeLength);
-        ui->blastHitsTableWidget->setItem(i, 3, nodeStart);
-        ui->blastHitsTableWidget->setItem(i, 4, nodeEnd);
-        ui->blastHitsTableWidget->setItem(i, 5, queryName);
-        ui->blastHitsTableWidget->setItem(i, 6, queryStart);
-        ui->blastHitsTableWidget->setItem(i, 7, queryEnd);
-        ui->blastHitsTableWidget->setItem(i, 8, eValue);
+        ui->blastHitsTableWidget->setItem(i, 1, queryName);
+        ui->blastHitsTableWidget->setItem(i, 2, nodeName);
+        ui->blastHitsTableWidget->setItem(i, 3, queryStart);
+        ui->blastHitsTableWidget->setItem(i, 4, queryEnd);
+        ui->blastHitsTableWidget->setItem(i, 5, nodeStart);
+        ui->blastHitsTableWidget->setItem(i, 6, nodeEnd);
+        ui->blastHitsTableWidget->setItem(i, 7, eValue);
     }
 
     ui->blastHitsTableWidget->resizeColumns();
