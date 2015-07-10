@@ -47,7 +47,7 @@ QString formatIntForDisplay(long long num)
     return locale.toString(num);
 }
 
-QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay)
+QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
 {
     QLocale locale;
     QString withCommas = locale.toString(num, 'f');

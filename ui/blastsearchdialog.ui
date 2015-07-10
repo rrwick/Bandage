@@ -517,6 +517,26 @@
      </column>
      <column>
       <property name="text">
+       <string>Percent identity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Alignment length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Mismatches</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Gap opens</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Query start</string>
       </property>
      </column>
@@ -538,6 +558,11 @@
      <column>
       <property name="text">
        <string>E-value</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Bit score</string>
       </property>
      </column>
     </widget>

@@ -49,6 +49,17 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->blastHitsTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    ui->blastQueriesTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    ui->blastHitsTableWidget->setHorizontalHeaderLabels(QStringList() << "" << "Query\nname" << "Node\nname" <<
+                                                        "Percent\nidentity" << "Alignment\nlength" << "Mis-\nmatches" <<
+                                                        "Gap\nopens" << "Query\nstart" << "Query\nend" << "Node\nstart" <<
+                                                        "Node\nend" <<"E-\nvalue" << "Bit\nscore");
+    QFont font = ui->blastQueriesTableWidget->horizontalHeader()->font();
+    font.setBold(true);
+    ui->blastQueriesTableWidget->horizontalHeader()->setFont(font);
+    ui->blastHitsTableWidget->horizontalHeader()->setFont(font);
+
     //If a BLAST database already exists, move to step 2.
     QFile databaseFile(g_tempDirectory + "all_nodes.fasta");
     if (databaseFile.exists())
@@ -116,13 +127,21 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
         QString hit = blastHitList[i];
         QStringList alignmentParts = hit.split('\t');
 
+        if (alignmentParts.size() < 12)
+            return;
+
         QString queryName = alignmentParts[0];
         QString nodeLabel = alignmentParts[1];
+        double percentIdentity = alignmentParts[2].toDouble();
+        int alignmentLength = alignmentParts[3].toInt();
+        int numberMismatches = alignmentParts[4].toInt();
+        int numberGapOpens = alignmentParts[5].toInt();
         int queryStart = alignmentParts[6].toInt();
         int queryEnd = alignmentParts[7].toInt();
         int nodeStart = alignmentParts[8].toInt();
         int nodeEnd = alignmentParts[9].toInt();
-        QString eValue = alignmentParts[10];
+        double eValue = alignmentParts[10].toDouble();
+        int bitScore = alignmentParts[11].toInt();
 
         //Only save BLAST hits that are on forward strands.
         if (nodeStart > nodeEnd)
@@ -139,8 +158,9 @@ void BlastSearchDialog::loadBlastHits(QString blastHits)
         if (query == 0)
             return;
 
-        g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
-                                                 query, queryStart, queryEnd, eValue));
+        g_blastSearch->m_hits.push_back(BlastHit(query, node, percentIdentity, alignmentLength,
+                                                 numberMismatches, numberGapOpens, queryStart, queryEnd,
+                                                 nodeStart, nodeEnd, eValue, bitScore));
 
         ++(query->m_hits);
     }
@@ -218,29 +238,44 @@ void BlastSearchDialog::fillHitsTable()
         QTableWidgetItem * queryColour = new QTableWidgetItem();
         queryColour->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         queryColour->setBackground(hit->m_query->m_colour);
-        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
-        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
-        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
-        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
         queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
+        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * percentIdentity = new QTableWidgetItem(QString::number(hit->m_percentIdentity) + "%");
+        percentIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * alignmentLength = new QTableWidgetItem(formatIntForDisplay(hit->m_alignmentLength));
+        alignmentLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * numberMismatches = new QTableWidgetItem(formatIntForDisplay(hit->m_numberMismatches));
+        numberMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * numberGapOpens = new QTableWidgetItem(formatIntForDisplay(hit->m_numberGapOpens));
+        numberGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryStart = new QTableWidgetItem(formatIntForDisplay(hit->m_queryStart));
         queryStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * queryEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_queryEnd));
         queryEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        QTableWidgetItem * eValue = new QTableWidgetItem(hit->m_eValue);
+        QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
+        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
+        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * eValue = new QTableWidgetItem(QString::number(hit->m_eValue));
         eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * bitScore = new QTableWidgetItem(formatIntForDisplay(hit->m_bitScore));
+        bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
         ui->blastHitsTableWidget->setItem(i, 1, queryName);
         ui->blastHitsTableWidget->setItem(i, 2, nodeName);
-        ui->blastHitsTableWidget->setItem(i, 3, queryStart);
-        ui->blastHitsTableWidget->setItem(i, 4, queryEnd);
-        ui->blastHitsTableWidget->setItem(i, 5, nodeStart);
-        ui->blastHitsTableWidget->setItem(i, 6, nodeEnd);
-        ui->blastHitsTableWidget->setItem(i, 7, eValue);
+        ui->blastHitsTableWidget->setItem(i, 3, percentIdentity);
+        ui->blastHitsTableWidget->setItem(i, 4, alignmentLength);
+        ui->blastHitsTableWidget->setItem(i, 5, numberMismatches);
+        ui->blastHitsTableWidget->setItem(i, 6, numberGapOpens);
+        ui->blastHitsTableWidget->setItem(i, 7, queryStart);
+        ui->blastHitsTableWidget->setItem(i, 8, queryEnd);
+        ui->blastHitsTableWidget->setItem(i, 9, nodeStart);
+        ui->blastHitsTableWidget->setItem(i, 10, nodeEnd);
+        ui->blastHitsTableWidget->setItem(i, 11, eValue);
+        ui->blastHitsTableWidget->setItem(i, 12, bitScore);
     }
 
     ui->blastHitsTableWidget->resizeColumns();

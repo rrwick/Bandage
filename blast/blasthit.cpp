@@ -24,12 +24,18 @@
 #include "../program/globals.h"
 #include <math.h>
 
-BlastHit::BlastHit(DeBruijnNode * node, int nodeStart, int nodeEnd,
-                   BlastQuery * query, int queryStart, int queryEnd,
-                   QString eValue) :
-    m_node(node), m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
-    m_query(query), m_queryStart(queryStart), m_queryEnd(queryEnd),
-    m_eValue(eValue)
+BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
+                   double percentIdentity, int alignmentLength,
+                   int numberMismatches, int numberGapOpens,
+                   int queryStart, int queryEnd,
+                   int nodeStart, int nodeEnd,
+                   double eValue, int bitScore) :
+    m_query(query), m_node(node),
+    m_percentIdentity(percentIdentity), m_alignmentLength(alignmentLength),
+    m_numberMismatches(numberMismatches), m_numberGapOpens(numberGapOpens),
+    m_queryStart(queryStart), m_queryEnd(queryEnd),
+    m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
+    m_eValue(eValue), m_bitScore(bitScore)
 {
     m_nodeStartFraction = double(nodeStart) / m_node->m_length;
     m_nodeEndFraction = double(nodeEnd) / m_node->m_length;

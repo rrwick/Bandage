@@ -48,7 +48,7 @@ extern QProcess * g_makeblastdb;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
-QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay);
+QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
 QString getOppositeNodeName(QString nodeName);
 
