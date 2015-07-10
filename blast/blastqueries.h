@@ -39,6 +39,8 @@ public:
     void searchOccurred();
     void clearSearchResults();
 
+    std::vector<QColor> presetColours;
+
 private:
     QFile m_tempFile;
 
@@ -46,6 +48,7 @@ private:
     void updateTempFile();
     bool tempFileExists() {return m_tempFile.exists();}
     bool tempFileDoesNotExist() {return !tempFileExists();}
+    void createPresetColours();
 
 };
 

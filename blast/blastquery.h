@@ -20,6 +20,7 @@
 #define BLASTQUERY_H
 
 #include <QString>
+#include <QColor>
 
 class BlastQuery
 {
@@ -34,6 +35,7 @@ public:
     int m_length;
     int m_hits;
     bool m_searchedFor;
+    QColor m_colour;
 };
 
 #endif // BLASTQUERY_H
