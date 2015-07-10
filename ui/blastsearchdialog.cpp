@@ -208,6 +208,7 @@ void BlastSearchDialog::fillQueriesTable()
         ColourButton * colourButton = new ColourButton();
         colourButton->setColour(query->m_colour);
         connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
+        connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
 
         ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
         ui->blastQueriesTableWidget->setItem(i, 1, name);
