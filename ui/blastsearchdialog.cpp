@@ -45,7 +45,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
     m_blastSearchConducted(false),
     ui(new Ui::BlastSearchDialog),
-    m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn")
+    m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"), m_tblastnCommand("tblastn")
 
 {
     ui->setupUi(this);
@@ -98,7 +98,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
-    connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearch()));
+    connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -293,43 +293,7 @@ void BlastSearchDialog::fillHitsTable()
 
 void BlastSearchDialog::buildBlastDatabase()
 {
-    QString findMakeblastdbCommand = "which makeblastdb";
-#ifdef Q_OS_WIN32
-    findMakeblastdbCommand = "WHERE makeblastdb";
-#endif
-
-    QProcess findMakeblastdb;
-
-    //On Mac, it's necessary to do some stuff with the PATH variable in order
-    //for which to work.
-#ifdef Q_OS_MAC
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QStringList envlist = env.toStringList();
-
-    //Add some paths to the process environment
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
-                                                                   "/usr/bin:"
-                                                                   "/bin:"
-                                                                   "/usr/sbin:"
-                                                                   "/sbin:"
-                                                                   "/opt/local/bin:"
-                                                                   "/usr/local/bin:"
-                                                                   "$HOME/bin:"
-                                                                   "/usr/local/ncbi/blast/bin:"
-                                                                   "\\1");
-
-    findMakeblastdb.setEnvironment(envlist);
-#endif
-
-    findMakeblastdb.start(findMakeblastdbCommand);
-    findMakeblastdb.waitForFinished();
-
-    //On Mac, the command for makeblastdb needs to be the absolute path.
-#ifdef Q_OS_MAC
-    m_makeblastdbCommand = QString(findMakeblastdb.readAll()).simplified();
-#endif
-
-    if (findMakeblastdb.exitCode() != 0)
+    if (!findProgram("makeblastdb", &m_makeblastdbCommand))
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
         return;
@@ -457,14 +421,104 @@ void BlastSearchDialog::clearQueries()
 
 
 
-void BlastSearchDialog::runBlastSearch()
-{    
-    QString findBlastnCommand = "which blastn";
+void BlastSearchDialog::runBlastSearches()
+{
+    ui->startBlastSearchButton->setEnabled(false);
+    ui->parametersInfoText->setEnabled(false);
+    ui->parametersLineEdit->setEnabled(false);
+    ui->parametersLabel->setEnabled(false);
+
+    QApplication::processEvents();
+
+    bool success;
+    QString blastHits;
+
+    if (g_blastSearch->m_blastQueries.nuclQueryCount() > 0)
+    {
+        if (!findProgram("blastn", &m_blastnCommand))
+        {
+            QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
+            setUiStep(3);
+            return;
+        }
+
+        blastHits += runOneBlastSearch(NUCLEOTIDE, &success);
+        if (!success)
+        {
+            setUiStep(3);
+            return;
+        }
+    }
+
+    QApplication::processEvents();
+
+    if (g_blastSearch->m_blastQueries.protQueryCount() > 0)
+    {
+        if (!findProgram("tblastn", &m_tblastnCommand))
+        {
+            QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
+            setUiStep(3);
+            return;
+        }
+
+        blastHits += runOneBlastSearch(PROTEIN, &success);
+        if (!success)
+        {
+            setUiStep(3);
+            return;
+        }
+    }
+
+    //If the code got here, then the search programs ran successfully,
+    //through did not necessarily find any hits.
+
+    m_blastSearchConducted = true;
+    clearBlastHits();
+    g_blastSearch->m_blastQueries.searchOccurred();
+    loadBlastHits(blastHits);
+    g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
+    setUiStep(4);
+}
+
+
+QString BlastSearchDialog::runOneBlastSearch(SequenceType sequenceType, bool * success)
+{
+    QString fullBlastCommand;
+    if (sequenceType == NUCLEOTIDE)
+        fullBlastCommand = m_blastnCommand + " -query " + g_tempDirectory + "nucl_queries.fasta ";
+    else
+        fullBlastCommand = m_tblastnCommand + " -query " + g_tempDirectory + "prot_queries.fasta ";
+    fullBlastCommand += "-db " + g_tempDirectory + "all_nodes.fasta -outfmt 6";
+
+    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
+    fullBlastCommand += " " + extraCommandLineOptions;
+
+    QProcess blast;
+    blast.start(fullBlastCommand);
+
+    bool finished = blast.waitForFinished(-1);
+
+    if (blast.exitCode() != 0 || !finished)
+    {
+        QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
+        *success = false;
+        return "";
+    }
+
+    *success = true;
+    return blast.readAll();
+}
+
+
+
+bool BlastSearchDialog::findProgram(QString programName, QString * command)
+{
+    QString findCommand = "which " + programName;
 #ifdef Q_OS_WIN32
-    findBlastnCommand = "WHERE blastn";
+    findCommand = "WHERE " + programName;
 #endif
 
-    QProcess findBlastn;
+    QProcess find;
 
     //On Mac, it's necessary to do some stuff with the PATH variable in order
     //for which to work.
@@ -484,71 +538,18 @@ void BlastSearchDialog::runBlastSearch()
                                                                    "/usr/local/ncbi/blast/bin:"
                                                                    "\\1");
 
-    findBlastn.setEnvironment(envlist);
+    find.setEnvironment(envlist);
 #endif
 
-    findBlastn.start(findBlastnCommand);
-    findBlastn.waitForFinished();
+    find.start(findCommand);
+    find.waitForFinished();
 
-    //On Mac, the command for makeblastdb needs to be the absolute path.
+    //On a Mac, we need to use the full path to the program.
 #ifdef Q_OS_MAC
-    m_blastnCommand = QString(findBlastn.readAll()).simplified();
+    *command = QString(find.readAll()).simplified();
 #endif
 
-    if (findBlastn.exitCode() != 0)
-    {
-        QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
-        return;
-    }
-
-    ui->startBlastSearchButton->setEnabled(false);
-    ui->parametersInfoText->setEnabled(false);
-    ui->parametersLineEdit->setEnabled(false);
-    ui->parametersLabel->setEnabled(false);
-
-
-    QApplication::processEvents();
-
-    QProcess blastn;
-    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified() + " ";
-    QString fullBlastnCommand = m_blastnCommand + " -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions;
-
-    blastn.start(fullBlastnCommand);
-
-    bool finished = blastn.waitForFinished(-1);
-
-    QString blastHits = blastn.readAll();
-
-    if (blastn.exitCode() != 0)
-    {
-        QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
-
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->parametersLineEdit->setEnabled(true);
-        ui->parametersLabel->setEnabled(true);
-
-        return;
-    }
-    else if (!finished)
-    {
-        QMessageBox::warning(this, "Error", "The BLAST search did not finish in the allotted time.\n\n"
-                                            "Increase the 'Allowed time' setting and try again.");
-
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->parametersLineEdit->setEnabled(true);
-        ui->parametersLabel->setEnabled(true);
-
-        return;
-    }
-
-    m_blastSearchConducted = true;
-    clearBlastHits();
-    g_blastSearch->m_blastQueries.searchOccurred();
-    loadBlastHits(blastHits);
-    g_settings->blastSearchParameters = extraCommandLineOptions;
-    setUiStep(4);
+    return (find.exitCode() == 0);
 }
 
 

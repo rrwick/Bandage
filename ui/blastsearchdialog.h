@@ -23,6 +23,7 @@
 #include <QMap>
 #include <QThread>
 #include <QProcess>
+#include "../program/globals.h"
 
 class DeBruijnNode;
 
@@ -45,6 +46,7 @@ private:
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
+    QString m_tblastnCommand;
     QThread * m_buildBlastDatabaseThread;
 
     QString getNodeNameFromString(QString nodeString);
@@ -52,13 +54,15 @@ private:
     void clearBlastHits();
     void setInfoTexts();
     QString cleanQueryName(QString queryName);
+    bool findProgram(QString programName, QString * command);
 
 private slots:
     void buildBlastDatabase();
     void loadBlastQueriesFromFastaFile();
     void enterQueryManually();
     void clearQueries();
-    void runBlastSearch();
+    void runBlastSearches();
+    QString runOneBlastSearch(SequenceType sequenceType, bool * success);
     void loadBlastHits(QString blastHits);
     void fillQueriesTable();
     void fillHitsTable();
