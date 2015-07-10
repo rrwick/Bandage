@@ -22,6 +22,7 @@
 #include <vector>
 #include "blastquery.h"
 #include <QFile>
+#include "../program/globals.h"
 
 
 class BlastQueries
@@ -38,17 +39,21 @@ public:
     void clearQueries();
     void searchOccurred();
     void clearSearchResults();
+    int nuclQueryCount();
+    int protQueryCount();
 
     std::vector<QColor> presetColours;
 
 private:
-    QFile m_tempFile;
+    QFile m_tempNuclFile;
+    QFile m_tempProtFile;
 
-    void deleteTempFile();
-    void updateTempFile();
-    bool tempFileExists() {return m_tempFile.exists();}
-    bool tempFileDoesNotExist() {return !tempFileExists();}
+    void deleteTempFiles();
+    void updateTempFiles();
+    bool tempNuclFileExists() {return m_tempNuclFile.exists();}
+    bool tempProtFileExists() {return m_tempProtFile.exists();}
     void createPresetColours();
+    void writeTempFile(QFile * file, SequenceType sequenceType);
 
 };
 

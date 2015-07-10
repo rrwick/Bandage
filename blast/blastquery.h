@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QString>
 #include <QColor>
+#include "../program/globals.h"
 
 class BlastQuery : public QObject
 {
@@ -29,9 +30,7 @@ class BlastQuery : public QObject
 
 public:
     BlastQuery() {}
-    BlastQuery(QString name, QString sequence) : m_name(name), m_sequence(sequence),
-        m_hits(0), m_searchedFor(false)
-    {m_length = sequence.length();}
+    BlastQuery(QString name, QString sequence);
 
     QString m_name;
     QString m_sequence;
@@ -39,9 +38,15 @@ public:
     int m_hits;
     bool m_searchedFor;
     QColor m_colour;
+    SequenceType m_sequenceType;
+
+    QString getTypeString();
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
+
+private:
+    void autoSetSequenceType();
 };
 
 #endif // BLASTQUERY_H

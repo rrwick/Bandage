@@ -21,7 +21,8 @@
 #include <QTextStream>
 
 BlastQueries::BlastQueries() :
-    m_tempFile(g_tempDirectory + "queries.fasta")
+    m_tempNuclFile(g_tempDirectory + "nucl_queries.fasta"),
+    m_tempProtFile(g_tempDirectory + "prot_queries.fasta")
 {
     createPresetColours();
 }
@@ -63,7 +64,7 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
     newQuery->m_colour = presetColours[colourIndex];
 
     m_queries.push_back(newQuery);
-    updateTempFile();
+    updateTempFiles();
 }
 
 void BlastQueries::clearQueries()
@@ -71,37 +72,43 @@ void BlastQueries::clearQueries()
     for (size_t i = 0; i < m_queries.size(); ++i)
         delete m_queries[i];
     m_queries.clear();
-    deleteTempFile();
+    deleteTempFiles();
 }
 
-void BlastQueries::deleteTempFile()
+void BlastQueries::deleteTempFiles()
 {
-    if (tempFileDoesNotExist())
-        return;
-
-    m_tempFile.remove();
+    if (tempNuclFileExists())
+        m_tempNuclFile.remove();
+    if (tempProtFileExists())
+        m_tempProtFile.remove();
 }
 
-void BlastQueries::updateTempFile()
+void BlastQueries::updateTempFiles()
 {
-    deleteTempFile();
+    deleteTempFiles();
 
-    //If there aren't any queries, there's no need for a temp file.
-    if (m_queries.size() == 0)
-        return;
+    if (nuclQueryCount() > 0)
+        writeTempFile(&m_tempNuclFile, NUCLEOTIDE);
 
-    m_tempFile.open(QIODevice::Append | QIODevice::Text);
-    QTextStream out(&m_tempFile);
+    if (protQueryCount() > 0)
+        writeTempFile(&m_tempProtFile, PROTEIN);
+}
+
+
+void BlastQueries::writeTempFile(QFile * file, SequenceType sequenceType)
+{
+    file->open(QIODevice::Append | QIODevice::Text);
+    QTextStream out(file);
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        out << ">" << m_queries[i]->m_name << "\n";
-        out << m_queries[i]->m_sequence;
-
-        if (i + 1 != m_queries.size())
+        if (m_queries[i]->m_sequenceType == sequenceType)
+        {
+            out << ">" << m_queries[i]->m_name << "\n";
+            out << m_queries[i]->m_sequence;
             out << "\n";
+        }
     }
-
-    m_tempFile.close();
+    file->close();
 }
 
 
@@ -325,4 +332,27 @@ void BlastQueries::createPresetColours()
     presetColours.push_back(QColor("#A0ABC4"));
     presetColours.push_back(QColor("#2B6EFE"));
     presetColours.push_back(QColor("#9A9EE7"));
+}
+
+
+int BlastQueries::nuclQueryCount()
+{
+    int count = 0;
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (m_queries[i]->m_sequenceType == NUCLEOTIDE)
+            ++count;
+    }
+    return count;
+}
+
+int BlastQueries::protQueryCount()
+{
+    int count = 0;
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (m_queries[i]->m_sequenceType == PROTEIN)
+            ++count;
+    }
+    return count;
 }

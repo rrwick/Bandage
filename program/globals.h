@@ -36,6 +36,7 @@ enum ZoomSource {MOUSE_WHEEL, SPIN_BOX, KEYBOARD};
 enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN};
 enum NodeLengthMode {AUTO_NODE_LENGTH, MANUAL_NODE_LENGTH};
 enum GraphFileType {LAST_GRAPH, FASTG, GFA, TRINITY, ANY_FILE_TYPE, UNKNOWN_FILE_TYPE};
+enum SequenceType {NUCLEOTIDE, PROTEIN, EITHER_NUCLEOTIDE_OR_PROTEIN};
 
 extern Settings * g_settings;
 extern MyGraphicsView * g_graphicsView;

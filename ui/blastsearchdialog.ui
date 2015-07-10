@@ -475,7 +475,12 @@
      </column>
      <column>
       <property name="text">
-       <string>Query length</string>
+       <string>Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Length</string>
       </property>
      </column>
      <column>

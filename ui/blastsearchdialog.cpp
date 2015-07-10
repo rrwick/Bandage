@@ -198,6 +198,8 @@ void BlastSearchDialog::fillQueriesTable()
 
         QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
         name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
+        type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
         length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
@@ -216,8 +218,9 @@ void BlastSearchDialog::fillQueriesTable()
 
         ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
         ui->blastQueriesTableWidget->setItem(i, 1, name);
-        ui->blastQueriesTableWidget->setItem(i, 2, length);
-        ui->blastQueriesTableWidget->setItem(i, 3, hits);
+        ui->blastQueriesTableWidget->setItem(i, 2, type);
+        ui->blastQueriesTableWidget->setItem(i, 3, length);
+        ui->blastQueriesTableWidget->setItem(i, 4, hits);
     }
 
     ui->blastQueriesTableWidget->resizeColumns();
@@ -675,15 +678,16 @@ void BlastSearchDialog::setInfoTexts()
                                                   "sequence in the FASTA file will be a separate "
                                                   "query.");
     ui->enterQueryManuallyInfoText->setInfoText("Click this button to type or paste a single query sequence.");
-    ui->parametersInfoText->setInfoText("You may add additional blastn parameters here, exactly as they "
+    ui->parametersInfoText->setInfoText("You may add additional blastn/tblastn parameters here, exactly as they "
                                         "would be typed at the command line.");
-    ui->startBlastSearchInfoText->setInfoText("Click this to conduct a blastn search for the above "
+    ui->startBlastSearchInfoText->setInfoText("Click this to conduct search for the above "
                                               "queries on the graph nodes.<br><br>"
                                               "If no parameters were added above, this will run:<br>"
                                               "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6<br><br>"
                                               "If, for example, '-evalue 0.01' was entered in the above "
                                               "parameters field, then this will run:<br>"
-                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01");
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01<br><br>"
+                                              "For protein queries, tblastn will be used instead of blastn.");
     ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }
 
