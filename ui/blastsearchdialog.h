@@ -38,6 +38,8 @@ public:
     explicit BlastSearchDialog(QWidget *parent = 0);
     ~BlastSearchDialog();
 
+    bool m_blastSearchConducted;
+
 private:
     Ui::BlastSearchDialog *ui;
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;

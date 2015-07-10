@@ -1375,28 +1375,36 @@ void MainWindow::openBlastSearchDialog()
 
     blastSearchDialog.exec();
 
-    //Fill in the blast results combo box
-    ui->blastQueryComboBox->clear();
-    QStringList comboBoxItems;
-    for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
+    if (blastSearchDialog.m_blastSearchConducted)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
-            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
+        //Fill in the blast results combo box
+        ui->blastQueryComboBox->clear();
+        QStringList comboBoxItems;
+        for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
+        {
+            if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+                comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
+        }
+
+        if (comboBoxItems.size() > 1)
+            comboBoxItems.push_front("all");
+
+        if (comboBoxItems.size() > 0)
+            ui->blastQueryComboBox->addItems(comboBoxItems);
+
+        if (ui->blastQueryComboBox->count() > 0)
+        {
+            //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
+            if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
+                    g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
+                setNodeColourSchemeComboBox(BLAST_HITS_RAINBOW_COLOUR);
+        }
     }
 
-    if (comboBoxItems.size() > 1)
-        comboBoxItems.push_front("all");
-
-    if (comboBoxItems.size() > 0)
-        ui->blastQueryComboBox->addItems(comboBoxItems);
-
-    if (ui->blastQueryComboBox->count() > 0)
-    {
-        //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
-        if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
-                g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
-            setNodeColourSchemeComboBox(BLAST_HITS_RAINBOW_COLOUR);
-    }
+    //If the user didn't run a BLAST search, we still want to update the GUI
+    //in case they changed a colour or something.
+    else
+        g_graphicsView->viewport()->update();
 }
 
 
