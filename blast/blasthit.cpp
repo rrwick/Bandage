@@ -78,7 +78,12 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
     //If the colour scheme is Blast solid, then this function generates only one
     //BlastHitPart with a colour dependent on the Blast query.
     else
-        returnVector.push_back(BlastHitPart(m_query->m_colour, m_nodeStartFraction, m_nodeEndFraction));
+    {
+        if (reverse)
+            returnVector.push_back(BlastHitPart(m_query->m_colour, 1.0 - m_nodeStartFraction, 1.0 - m_nodeEndFraction));
+        else
+            returnVector.push_back(BlastHitPart(m_query->m_colour, m_nodeStartFraction, m_nodeEndFraction));
+    }
 
     return returnVector;
 }
