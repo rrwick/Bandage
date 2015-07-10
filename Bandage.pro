@@ -60,7 +60,8 @@ SOURCES += \
     command_line/image.cpp \
     command_line/commoncommandlinefunctions.cpp \
     ui/mytablewidget.cpp \
-    blast/buildblastdatabaseworker.cpp
+    blast/buildblastdatabaseworker.cpp \
+    ui/colourbutton.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -95,7 +96,8 @@ HEADERS  += \
     command_line/image.h \
     command_line/commoncommandlinefunctions.h \
     ui/mytablewidget.h \
-    blast/buildblastdatabaseworker.h
+    blast/buildblastdatabaseworker.h \
+    ui/colourbutton.h
 
 FORMS    += \
     ui/mainwindow.ui \

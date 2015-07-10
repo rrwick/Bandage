@@ -21,6 +21,7 @@
 #include <QColorDialog>
 #include <QMessageBox>
 #include "../program/settings.h"
+#include "colourbutton.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -29,23 +30,24 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
     setInfoTexts();
 
+    ui->edgeColourButton->m_name = "Edge colour";
+    ui->outlineColourButton->m_name = "Outline colour";
+    ui->selectionColourButton->m_name = "Selection colour";
+    ui->textColourButton->m_name = "Text colour";
+    ui->textOutlineColourButton->m_name = "Text outline colour";
+    ui->uniformPositiveNodeColourButton->m_name = "Uniform positive node colour";
+    ui->uniformNegativeNodeColourButton->m_name = "Uniform negative node colour";
+    ui->uniformNodeSpecialColourButton->m_name = "Uniform special node colour";
+    ui->lowCoverageColourButton->m_name = "Low coverage colour";
+    ui->highCoverageColourButton->m_name = "High coverage colour";
+    ui->noBlastHitsColourButton->m_name = "No BLAST hits colour";
+    ui->contiguousStrandSpecificColourButton->m_name = "Contiguous (strand-specific) colour";
+    ui->contiguousEitherStrandColourButton->m_name = "Contiguous (either strand) colour";
+    ui->maybeContiguousColourButton->m_name = "Maybe contiguous colour";
+    ui->notContiguousColourButton->m_name = "Not contiguous colour";
+    ui->contiguityStartingColourButton->m_name = "Contiguity starting colour";
+
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
-    connect(ui->edgeColourButton, SIGNAL(clicked()), this, SLOT(edgeColourClicked()));
-    connect(ui->outlineColourButton, SIGNAL(clicked()), this, SLOT(outlineColourClicked()));
-    connect(ui->selectionColourButton, SIGNAL(clicked()), this, SLOT(selectionColourClicked()));
-    connect(ui->textColourButton, SIGNAL(clicked()), this, SLOT(textColourClicked()));
-    connect(ui->textOutlineColourButton, SIGNAL(clicked()), this, SLOT(textOutlineColourClicked()));
-    connect(ui->uniformPositiveNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformPositiveNodeColourClicked()));
-    connect(ui->uniformNegativeNodeColourButton, SIGNAL(clicked()), this, SLOT(uniformNegativeNodeColourClicked()));
-    connect(ui->uniformNodeSpecialColourButton, SIGNAL(clicked()), this, SLOT(uniformNodeSpecialColourClicked()));
-    connect(ui->lowCoverageColourButton, SIGNAL(clicked()), this, SLOT(lowCoverageColourClicked()));
-    connect(ui->highCoverageColourButton, SIGNAL(clicked()), this, SLOT(highCoverageColourClicked()));
-    connect(ui->noBlastHitsColourButton, SIGNAL(clicked()), this, SLOT(noBlastHitsColourClicked()));
-    connect(ui->contiguousStrandSpecificColourButton, SIGNAL(clicked()), this, SLOT(contiguousStrandSpecificColourClicked()));
-    connect(ui->contiguousEitherStrandColourButton, SIGNAL(clicked()), this, SLOT(contiguousEitherStrandColourClicked()));
-    connect(ui->maybeContiguousColourButton, SIGNAL(clicked()), this, SLOT(maybeContiguousColourClicked()));
-    connect(ui->notContiguousColourButton, SIGNAL(clicked()), this, SLOT(notContiguousColourClicked()));
-    connect(ui->contiguityStartingColourButton, SIGNAL(clicked()), this, SLOT(contiguityStartingColourClicked()));
     connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
     connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
     connect(ui->coveragePowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
@@ -71,15 +73,15 @@ SettingsDialog::~SettingsDialog()
 }
 
 
-//These functions either set a spin box to a value or set the value to the spin box.  Pointers to
+//These functions either set a widget to a value or set the value to the widget.  Pointers to
 //these functions will be passed to loadOrSaveSettingsToOrFromWidgets, so that one function can
 //take care of both save and load functionality.
 void setOneSettingFromWidget(double * setting, QDoubleSpinBox * widget, bool percentage) {*setting = widget->value() / (percentage ? 100.0 : 1.0);}
 void setOneSettingFromWidget(int * setting, QSpinBox * widget) {*setting = widget->value();}
-void setOneSettingFromWidget(QColor * setting, QColor * widget) {*setting = *widget;}
+void setOneSettingFromWidget(QColor * setting, ColourButton * widget) {*setting = widget->m_colour;}
 void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * widget, bool percentage) {widget->setValue(*setting * (percentage ? 100.0 : 1.0));}
 void setOneWidgetFromSetting(int * setting, QSpinBox * widget) {widget->setValue(*setting);}
-void setOneWidgetFromSetting(QColor * setting, QColor * widget) {*widget = *setting;}
+void setOneWidgetFromSetting(QColor * setting, ColourButton * widget) {widget->setColour(*setting);}
 
 
 
@@ -87,7 +89,6 @@ void SettingsDialog::setWidgetsFromSettings()
 {
     loadOrSaveSettingsToOrFromWidgets(true, g_settings);
 
-    setButtonColours();
     enableDisableCoverageValueSpinBoxes();
 }
 
@@ -107,7 +108,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
 {
     void (*doubleFunctionPointer)(double *, QDoubleSpinBox *, bool);
     void (*intFunctionPointer)(int *, QSpinBox *);
-    void (*colourFunctionPointer)(QColor *, QColor *);
+    void (*colourFunctionPointer)(QColor *, ColourButton *);
 
     if (setWidgets)
     {
@@ -129,31 +130,31 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
-    colourFunctionPointer(&settings->edgeColour, &m_edgeColour);
-    colourFunctionPointer(&settings->outlineColour, &m_outlineColour);
-    colourFunctionPointer(&settings->selectionColour, &m_selectionColour);
-    colourFunctionPointer(&settings->textColour, &m_textColour);
-    colourFunctionPointer(&settings->textOutlineColour, &m_textOutlineColour);
+    colourFunctionPointer(&settings->edgeColour, ui->edgeColourButton);
+    colourFunctionPointer(&settings->outlineColour, ui->outlineColourButton);
+    colourFunctionPointer(&settings->selectionColour, ui->selectionColourButton);
+    colourFunctionPointer(&settings->textColour, ui->textColourButton);
+    colourFunctionPointer(&settings->textOutlineColour, ui->textOutlineColourButton);
     intFunctionPointer(&settings->randomColourPositiveSaturation, ui->randomColourPositiveSaturationSpinBox);
     intFunctionPointer(&settings->randomColourNegativeSaturation, ui->randomColourNegativeSaturationSpinBox);
     intFunctionPointer(&settings->randomColourPositiveLightness, ui->randomColourPositiveLightnessSpinBox);
     intFunctionPointer(&settings->randomColourNegativeLightness, ui->randomColourNegativeLightnessSpinBox);
     intFunctionPointer(&settings->randomColourPositiveOpacity, ui->randomColourPositiveOpacitySpinBox);
     intFunctionPointer(&settings->randomColourNegativeOpacity, ui->randomColourNegativeOpacitySpinBox);
-    colourFunctionPointer(&settings->uniformPositiveNodeColour, &m_uniformPositiveNodeColour);
-    colourFunctionPointer(&settings->uniformNegativeNodeColour, &m_uniformNegativeNodeColour);
-    colourFunctionPointer(&settings->uniformNodeSpecialColour, &m_uniformNodeSpecialColour);
-    colourFunctionPointer(&settings->lowCoverageColour, &m_lowCoverageColour);
-    colourFunctionPointer(&settings->highCoverageColour, &m_highCoverageColour);
+    colourFunctionPointer(&settings->uniformPositiveNodeColour, ui->uniformPositiveNodeColourButton);
+    colourFunctionPointer(&settings->uniformNegativeNodeColour, ui->uniformNegativeNodeColourButton);
+    colourFunctionPointer(&settings->uniformNodeSpecialColour, ui->uniformNodeSpecialColourButton);
+    colourFunctionPointer(&settings->lowCoverageColour, ui->lowCoverageColourButton);
+    colourFunctionPointer(&settings->highCoverageColour, ui->highCoverageColourButton);
     doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
     doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
-    colourFunctionPointer(&settings->noBlastHitsColour, &m_noBlastHitsColour);
+    colourFunctionPointer(&settings->noBlastHitsColour, ui->noBlastHitsColourButton);
     intFunctionPointer(&settings->contiguitySearchSteps, ui->contiguitySearchDepthSpinBox);
-    colourFunctionPointer(&settings->contiguousStrandSpecificColour, &m_contiguousStrandSpecificColour);
-    colourFunctionPointer(&settings->contiguousEitherStrandColour, &m_contiguousEitherStrandColour);
-    colourFunctionPointer(&settings->maybeContiguousColour, &m_maybeContiguousColour);
-    colourFunctionPointer(&settings->notContiguousColour, &m_notContiguousColour);
-    colourFunctionPointer(&settings->contiguityStartingColour, &m_contiguityStartingColour);
+    colourFunctionPointer(&settings->contiguousStrandSpecificColour, ui->contiguousStrandSpecificColourButton);
+    colourFunctionPointer(&settings->contiguousEitherStrandColour, ui->contiguousEitherStrandColourButton);
+    colourFunctionPointer(&settings->maybeContiguousColour, ui->maybeContiguousColourButton);
+    colourFunctionPointer(&settings->notContiguousColour, ui->notContiguousColourButton);
+    colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -194,175 +195,6 @@ void SettingsDialog::restoreDefaults()
     defaultSettings.autoBasePairsPerSegment = g_settings->autoBasePairsPerSegment;
 
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
-    setButtonColours();
-}
-
-
-void SettingsDialog::edgeColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_edgeColour, this, "Edge colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_edgeColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::outlineColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_outlineColour, this, "Outline colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_outlineColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::selectionColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_selectionColour, this, "Selection colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_selectionColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::textColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_textColour, this, "Text colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_textColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::textOutlineColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_textOutlineColour, this, "Text colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_textOutlineColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::uniformPositiveNodeColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_uniformPositiveNodeColour, this, "Uniform positive node colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_uniformPositiveNodeColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::uniformNegativeNodeColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_uniformNegativeNodeColour, this, "Uniform negative node colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_uniformNegativeNodeColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::uniformNodeSpecialColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_uniformNodeSpecialColour, this, "Uniform node special colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_uniformNodeSpecialColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::lowCoverageColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_lowCoverageColour, this, "Low coverage colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_lowCoverageColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::highCoverageColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_highCoverageColour, this, "High coverage colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_highCoverageColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::noBlastHitsColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_noBlastHitsColour, this, "No BLAST hits colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_noBlastHitsColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::contiguousStrandSpecificColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_contiguousStrandSpecificColour, this, "Contiguous (strand-specific) colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_contiguousStrandSpecificColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::contiguousEitherStrandColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_contiguousEitherStrandColour, this, "Contiguous (either strand) colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_contiguousEitherStrandColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::maybeContiguousColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_maybeContiguousColour, this, "Maybe contiguous colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_maybeContiguousColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::notContiguousColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_notContiguousColour, this, "Not contiguous colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_notContiguousColour = chosenColor;
-        setButtonColours();
-    }
-}
-void SettingsDialog::contiguityStartingColourClicked()
-{
-    QColor chosenColor = QColorDialog::getColor(m_contiguityStartingColour, this, "Contiguity starting colour", QColorDialog::ShowAlphaChannel);
-    if (chosenColor.isValid())
-    {
-        m_contiguityStartingColour = chosenColor;
-        setButtonColours();
-    }
-}
-
-
-void SettingsDialog::setButtonColours()
-{
-    const QString COLOR_STYLE("QPushButton { background-color : %1 }");
-    ui->edgeColourButton->setStyleSheet(COLOR_STYLE.arg(m_edgeColour.name()));
-    ui->outlineColourButton->setStyleSheet(COLOR_STYLE.arg(m_outlineColour.name()));
-    ui->selectionColourButton->setStyleSheet(COLOR_STYLE.arg(m_selectionColour.name()));
-    ui->textColourButton->setStyleSheet(COLOR_STYLE.arg(m_textColour.name()));
-    ui->textOutlineColourButton->setStyleSheet(COLOR_STYLE.arg(m_textOutlineColour.name()));
-    ui->uniformPositiveNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformPositiveNodeColour.name()));
-    ui->uniformNegativeNodeColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNegativeNodeColour.name()));
-    ui->uniformNodeSpecialColourButton->setStyleSheet(COLOR_STYLE.arg(m_uniformNodeSpecialColour.name()));
-    ui->lowCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_lowCoverageColour.name()));
-    ui->highCoverageColourButton->setStyleSheet(COLOR_STYLE.arg(m_highCoverageColour.name()));
-    ui->noBlastHitsColourButton->setStyleSheet(COLOR_STYLE.arg(m_noBlastHitsColour.name()));
-    ui->contiguousStrandSpecificColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousStrandSpecificColour.name()));
-    ui->contiguousEitherStrandColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguousEitherStrandColour.name()));
-    ui->maybeContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_maybeContiguousColour.name()));
-    ui->notContiguousColourButton->setStyleSheet(COLOR_STYLE.arg(m_notContiguousColour.name()));
-    ui->contiguityStartingColourButton->setStyleSheet(COLOR_STYLE.arg(m_contiguityStartingColour.name()));
 }
 
 
