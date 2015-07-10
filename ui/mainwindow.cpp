@@ -224,10 +224,8 @@ void MainWindow::loadGraph(QString fullFileName)
     {
         GraphFileType detectedFileType = g_assemblyGraph->getGraphFileTypeFromFile(fullFileName);
 
-        GraphFileType selectedFileType;
-        if (selectedFilter == "Any supported graph (*)")
-            selectedFileType = ANY_FILE_TYPE;
-        else if (selectedFilter == "LastGraph (*LastGraph*)")
+        GraphFileType selectedFileType = ANY_FILE_TYPE;
+        if (selectedFilter == "LastGraph (*LastGraph*)")
             selectedFileType = LAST_GRAPH;
         else if (selectedFilter == "FASTG (*.fastg)")
             selectedFileType = FASTG;
