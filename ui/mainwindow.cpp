@@ -1390,23 +1390,30 @@ void MainWindow::openBlastSearchDialog()
 
     blastSearchDialog.exec();
 
+    ui->blastQueryComboBox->clear();
+    QStringList comboBoxItems;
+    for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
+    {
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
+    }
+
+    if (comboBoxItems.size() > 1)
+        comboBoxItems.push_front("all");
+
+    if (comboBoxItems.size() > 0)
+    {
+        ui->blastQueryComboBox->addItems(comboBoxItems);
+        ui->blastQueryComboBox->setEnabled(true);
+    }
+    else
+    {
+        ui->blastQueryComboBox->addItem("none");
+        ui->blastQueryComboBox->setEnabled(false);
+    }
+
     if (blastSearchDialog.m_blastSearchConducted)
     {
-        //Fill in the blast results combo box
-        ui->blastQueryComboBox->clear();
-        QStringList comboBoxItems;
-        for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
-        {
-            if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
-                comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
-        }
-
-        if (comboBoxItems.size() > 1)
-            comboBoxItems.push_front("all");
-
-        if (comboBoxItems.size() > 0)
-            ui->blastQueryComboBox->addItems(comboBoxItems);
-
         if (ui->blastQueryComboBox->count() > 0)
         {
             //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
@@ -1416,10 +1423,7 @@ void MainWindow::openBlastSearchDialog()
         }
     }
 
-    //If the user didn't run a BLAST search, we still want to update the GUI
-    //in case they changed a colour or something.
-    else
-        g_graphicsView->viewport()->update();
+    g_graphicsView->viewport()->update();
 }
 
 
@@ -1504,6 +1508,10 @@ void MainWindow::setInfoTexts()
                                   "<li>Holding the " + control + " key and using the mouse wheel over the graph.</li>"
                                   "<li>Clicking on the graph display and then using the '+' and '-' keys.</li></ul>");
     ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
+                                        "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
+                                        "selected, new random colours will be chosen. Negative nodes (visible "
+                                        "in 'Double' mode) will be a darker shade of their complement positive "
+                                        "nodes.</li>"
                                         "<li>'Uniform colour': For graphs drawn with the 'Entire graph' scope, all "
                                         "nodes will be the same colour. For graphs drawn with the 'Around nodes' "
                                         "scope, your specified nodes will be drawn in a separate colour. For "
@@ -1511,14 +1519,17 @@ void MainWindow::setInfoTexts()
                                         "will be drawn in a separate colour.</li>"
                                         "<li>'Colour by coverage': Node colours will be defined by their "
                                         "coverage.</li>"
-                                        "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
-                                        "selected, new random colours will be chosen. Negative nodes (visible "
-                                        "in 'Double' mode) will be a darker shade of their complement positive "
-                                        "nodes.</li>"
-                                        "<li>'Colour using BLAST hits': Nodes will be drawn in a light grey colour "
+                                        "<li>'BLAST hits (rainbow)': Nodes will be drawn in a light grey colour "
                                         "and BLAST hits for the currently selected query will be drawn using a "
                                         "rainbow. Red indicates the start of the query sequence and violet "
                                         "indicates the end.</li>"
+                                        "<li>'BLAST hits (solid)': Nodes will be drawn in a light grey colour "
+                                        "and BLAST hits for the currently selected query will be drawn using "
+                                        "the query's colour. Query colours can be specified in the 'Create/view"
+                                        "BLAST search' window.</li>"
+                                        "<li>'Colour by contiguity': This option will display a 'Determine "
+                                        "contiguity button. When pressed, the nodes will be coloured based "
+                                        "on their contiguity with the selected node(s).</li>"
                                         "<li>'Custom colours': Nodes will be coloured using colours of your "
                                         "choice. Select one or more nodes and then click the 'Set colour' button "
                                         "to define their colour.</li></ul>"
@@ -1541,11 +1552,11 @@ void MainWindow::setInfoTexts()
     ui->blastSearchInfoText->setInfoText("Click this button to open a dialog where a BLAST search for one "
                                          "or more queries can be carried out on the graph's nodes.<br><br>"
                                          "After a BLAST search is complete, it will be possible to use the "
-                                         "'Around BLAST hits' graph scope and the 'Colour using BLAST "
-                                         "hits' colour mode.");
+                                         "'Around BLAST hits' graph scope and the 'BLAST "
+                                         "hits' colour modes.");
     ui->blastQueryInfoText->setInfoText("After a BLAST search is completed, you can select a query here for use "
-                                        "with the 'Around BLAST hits' graph scope and the 'Colour using BLAST "
-                                        "hits' colour mode.");
+                                        "with the 'Around BLAST hits' graph scope and the 'BLAST "
+                                        "hits' colour modes.");
     ui->selectionSearchInfoText->setInfoText("Type a comma-delimited list of one or mode node numbers and then click "
                                              "the 'Find node(s)' button to search for nodes in the graph. "
                                              "If the search is successful, the view will zoom to the found nodes "

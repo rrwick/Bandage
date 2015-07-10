@@ -43,7 +43,8 @@
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
-    m_blastSearchConducted(false), ui(new Ui::BlastSearchDialog),
+    m_blastSearchConducted(false),
+    ui(new Ui::BlastSearchDialog),
     m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn")
 
 {
