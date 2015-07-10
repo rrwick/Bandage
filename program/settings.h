@@ -48,7 +48,7 @@ public:
     double arrowheadSize;
     double textOutlineThickness;
 
-    int blastPartsPerQuery;
+    int blastRainbowPartsPerQuery;
 
     GraphScope graphScope;
 

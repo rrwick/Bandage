@@ -83,6 +83,7 @@ private:
     bool checkIfLineEditHasNodes(QLineEdit * lineEdit);
     void setWidgetsFromSettings();
     QString getDefaultImageFileName();
+    void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
 
 private slots:
     void loadGraph(QString fullFileName = "");

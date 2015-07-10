@@ -96,7 +96,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     painter->fillPath(outlinePath, brush);
 
     //If the node contains a BLAST hit, draw that on top.
-    if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR)
+    if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR ||
+            g_settings->nodeColourScheme == BLAST_HITS_SOLID_COLOUR)
     {
         std::vector<BlastHitPart> parts;
 
@@ -271,7 +272,7 @@ void GraphicsItemNode::setNodeColour()
         break;
     }
 
-    case BLAST_HITS_UNIQUE_COLOUR:
+    case BLAST_HITS_SOLID_COLOUR:
     {
         m_colour = g_settings->noBlastHitsColour;
         break;

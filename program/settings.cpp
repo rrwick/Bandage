@@ -40,7 +40,7 @@ Settings::Settings()
     arrowheadSize = 0.01;
     textOutlineThickness = 0.3;
 
-    blastPartsPerQuery = 100;
+    blastRainbowPartsPerQuery = 100;
 
     graphScope = WHOLE_GRAPH;
 

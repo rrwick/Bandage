@@ -47,28 +47,38 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
 {
     std::vector<BlastHitPart> returnVector;
 
-    int partCount = ceil(g_settings->blastPartsPerQuery * fabs(m_queryStartFraction - m_queryEndFraction));
-
-    double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
-    double querySpacing = (m_queryEndFraction - m_queryStartFraction) / partCount;
-
-    double nodeFraction = m_nodeStartFraction;
-    double queryFraction = m_queryStartFraction;
-    for (int i = 0; i < partCount; ++i)
+    //If the colour scheme is Blast rainbow, then this function generates lots
+    //of BlastHitParts - each small and with a different colour of the rainbow.
+    if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR)
     {
-        QColor dotColour;
-        dotColour.setHsvF(queryFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too close to red, as that could confuse the end with the start
+        int partCount = ceil(g_settings->blastRainbowPartsPerQuery * fabs(m_queryStartFraction - m_queryEndFraction));
 
-        double nextFraction = nodeFraction + nodeSpacing;
+        double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
+        double querySpacing = (m_queryEndFraction - m_queryStartFraction) / partCount;
 
-        if (reverse)
-            returnVector.push_back(BlastHitPart(dotColour, 1.0 - nodeFraction, 1.0 - nextFraction));
-        else
-            returnVector.push_back(BlastHitPart(dotColour, nodeFraction, nextFraction));
+        double nodeFraction = m_nodeStartFraction;
+        double queryFraction = m_queryStartFraction;
+        for (int i = 0; i < partCount; ++i)
+        {
+            QColor dotColour;
+            dotColour.setHsvF(queryFraction * 0.9, 1.0, 1.0);  //times 0.9 to keep the colour from getting too close to red, as that could confuse the end with the start
 
-        nodeFraction = nextFraction;
-        queryFraction += querySpacing;
+            double nextFraction = nodeFraction + nodeSpacing;
+
+            if (reverse)
+                returnVector.push_back(BlastHitPart(dotColour, 1.0 - nodeFraction, 1.0 - nextFraction));
+            else
+                returnVector.push_back(BlastHitPart(dotColour, nodeFraction, nextFraction));
+
+            nodeFraction = nextFraction;
+            queryFraction += querySpacing;
+        }
     }
+
+    //If the colour scheme is Blast solid, then this function generates only one
+    //BlastHitPart with a colour dependent on the Blast query.
+    else
+        returnVector.push_back(BlastHitPart(m_query->m_colour, m_nodeStartFraction, m_nodeEndFraction));
 
     return returnVector;
 }
