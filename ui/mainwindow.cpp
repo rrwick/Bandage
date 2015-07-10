@@ -911,14 +911,18 @@ void MainWindow::switchColourScheme()
         ui->contiguityWidget->setVisible(false);
         break;
     case 3:
-        g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
+        g_settings->nodeColourScheme = BLAST_HITS_RAINBOW_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 4:
+        g_settings->nodeColourScheme = BLAST_HITS_UNIQUE_COLOUR;
+        ui->contiguityWidget->setVisible(false);
+        break;
+    case 5:
         g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
         ui->contiguityWidget->setVisible(true);
         break;
-    case 5:
+    case 6:
         g_settings->nodeColourScheme = CUSTOM_COLOURS;
         ui->contiguityWidget->setVisible(false);
         break;
@@ -1861,8 +1865,9 @@ void MainWindow::setWidgetsFromSettings()
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
     case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
     case COVERAGE_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
-    case BLAST_HITS_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
-    case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
-    case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(5); break;
+    case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
+    case BLAST_HITS_UNIQUE_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
+    case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
+    case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
     }
 }
