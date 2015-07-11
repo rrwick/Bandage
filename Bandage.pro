@@ -63,7 +63,8 @@ SOURCES += \
     blast/buildblastdatabaseworker.cpp \
     ui/colourbutton.cpp \
     blast/blastquery.cpp \
-    blast/runblastsearchworker.cpp
+    blast/runblastsearchworker.cpp \
+    blast/blastsearch.cpp
 
 HEADERS  += \
     program/settings.h \

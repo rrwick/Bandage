@@ -16,27 +16,11 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef BLASTSEARCH_H
-#define BLASTSEARCH_H
+#include "blastsearch.h"
 
-#include "blasthit.h"
-#include "blastqueries.h"
-#include <vector>
-#include <QString>
-
-class BlastSearch
+void BlastSearch::clearBlastHits()
 {
-public:
-    BlastSearch() {}
-    ~BlastSearch() {}
-
-    BlastQueries m_blastQueries;
-    std::vector<BlastHit> m_hits;
-    QString m_hitsString;
-
-    void clearBlastHits();
-    void cleanUp() {m_hits.clear(); m_blastQueries.m_queries.clear();}
-
-};
-
-#endif // BLASTSEARCH_H
+    m_hits.clear();
+    m_blastQueries.clearSearchResults();
+    m_hitsString = "";
+}

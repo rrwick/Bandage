@@ -51,6 +51,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //Prepare the query and hits tables
     ui->blastHitsTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     ui->blastQueriesTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     ui->blastHitsTableWidget->setHorizontalHeaderLabels(QStringList() << "" << "Query\nname" << "Node\nname" <<
@@ -92,7 +93,9 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
 
+    //Load any previous parameters the user might have entered when previously using this dialog.
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
+
     setInfoTexts();
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase()));
@@ -110,8 +113,7 @@ BlastSearchDialog::~BlastSearchDialog()
 
 void BlastSearchDialog::clearBlastHits()
 {
-    g_blastSearch->m_hits.clear();
-    g_blastSearch->m_blastQueries.clearSearchResults();
+    g_blastSearch->clearBlastHits();
     ui->blastHitsTableWidget->clearContents();
     while (ui->blastHitsTableWidget->rowCount() > 0)
         ui->blastHitsTableWidget->removeRow(0);
@@ -415,7 +417,6 @@ void BlastSearchDialog::clearQueries()
     while (ui->blastQueriesTableWidget->rowCount() > 0)
         ui->blastQueriesTableWidget->removeRow(0);
 
-
     clearBlastHits();
     setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 }
@@ -439,10 +440,13 @@ void BlastSearchDialog::runBlastSearches()
         return;
     }
 
+    //If the code got here, then the blastn and tblastn are present, so we can continue.
+
     g_cancelRunBlastSearch = false;
-    QApplication::processEvents();
+    clearBlastHits();
 
     //The actual search is done in a different thread so the UI will stay responsive.
+
     MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
                                                        "Clicking this button will stop the BLAST search.");
     progress->setWindowModality(Qt::WindowModal);
@@ -475,7 +479,6 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     else
     {
         m_blastSearchConducted = true;
-        clearBlastHits();
         g_blastSearch->m_blastQueries.searchOccurred();
         loadBlastHits(g_blastSearch->m_hitsString);
         g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
