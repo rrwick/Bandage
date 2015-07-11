@@ -245,7 +245,7 @@ void BlastSearchDialog::fillHitsTable()
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
 
         QTableWidgetItem * queryColour = new QTableWidgetItem();
-        queryColour->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        queryColour->setFlags(Qt::ItemIsEnabled);
         queryColour->setBackground(hit->m_query->m_colour);
         QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
         queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
