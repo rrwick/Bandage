@@ -40,14 +40,14 @@ void RunBlastSearchWorker::runBlastSearch()
             return;
     }
 
-    if (g_blastSearch->m_blastQueries.protQueryCount() > 0 && !g_cancelRunBlastSearch)
+    if (g_blastSearch->m_blastQueries.protQueryCount() > 0 && !g_blastSearch->m_cancelRunBlastSearch)
     {
         g_blastSearch->m_hitsString += runOneBlastSearch(PROTEIN, &success);
         if (!success)
             return;
     }
 
-    if (g_cancelRunBlastSearch)
+    if (g_blastSearch->m_cancelRunBlastSearch)
         emit finishedSearch("Search cancelled.");
     else
         emit finishedSearch("");
@@ -66,14 +66,14 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
     QString extraCommandLineOptions = m_parameters;
     fullBlastCommand += " " + extraCommandLineOptions;
 
-    g_blast = new QProcess();
-    g_blast->start(fullBlastCommand);
+    g_blastSearch->m_blast = new QProcess();
+    g_blastSearch->m_blast->start(fullBlastCommand);
 
-    bool finished = g_blast->waitForFinished(-1);
+    bool finished = g_blastSearch->m_blast->waitForFinished(-1);
 
-    if (g_blast->exitCode() != 0 || !finished)
+    if (g_blastSearch->m_blast->exitCode() != 0 || !finished)
     {
-        if (g_cancelRunBlastSearch)
+        if (g_blastSearch->m_cancelRunBlastSearch)
             emit finishedSearch("Search cancelled.");
         else
             emit finishedSearch("There was a problem building the BLAST database.");
@@ -82,5 +82,5 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
     }
 
     *success = true;
-    return g_blast->readAll();
+    return g_blastSearch->m_blast->readAll();
 }

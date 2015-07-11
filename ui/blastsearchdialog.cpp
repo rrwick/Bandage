@@ -302,7 +302,7 @@ void BlastSearchDialog::buildBlastDatabase()
         return;
     }
 
-    g_cancelBuildBlastDatabase = false;
+    g_blastSearch->m_cancelBuildBlastDatabase = false;
     ui->buildBlastDatabaseButton->setEnabled(false);
     ui->buildBlastDatabaseInfoText->setEnabled(false);
 
@@ -314,7 +314,7 @@ void BlastSearchDialog::buildBlastDatabase()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_makeblastdb = 0;
+    g_blastSearch->m_makeblastdb = 0;
     m_buildBlastDatabaseThread = new QThread;
     BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
     buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
@@ -345,9 +345,9 @@ void BlastSearchDialog::blastDatabaseBuildFinished(QString error)
 
 void BlastSearchDialog::buildBlastDatabaseCancelled()
 {
-    g_cancelBuildBlastDatabase = true;
-    if (g_makeblastdb != 0)
-        g_makeblastdb->kill();
+    g_blastSearch->m_cancelBuildBlastDatabase = true;
+    if (g_blastSearch->m_makeblastdb != 0)
+        g_blastSearch->m_makeblastdb->kill();
 }
 
 
@@ -450,7 +450,7 @@ void BlastSearchDialog::runBlastSearches()
 
     //If the code got here, then the blastn and tblastn are present, so we can continue.
 
-    g_cancelRunBlastSearch = false;
+    g_blastSearch->m_cancelRunBlastSearch = false;
     clearBlastHits();
 
     MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
@@ -458,7 +458,7 @@ void BlastSearchDialog::runBlastSearches()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_blast = 0;
+    g_blastSearch->m_blast = 0;
     m_blastSearchThread = new QThread;
     RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
     runBlastSearchWorker->moveToThread(m_blastSearchThread);
@@ -496,9 +496,9 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
 
 void BlastSearchDialog::runBlastSearchCancelled()
 {
-    g_cancelRunBlastSearch = true;
-    if (g_blast != 0)
-        g_blast->kill();
+    g_blastSearch->m_cancelRunBlastSearch = true;
+    if (g_blastSearch->m_blast != 0)
+        g_blastSearch->m_blast->kill();
 }
 
 

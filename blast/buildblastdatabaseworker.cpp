@@ -25,6 +25,7 @@
 #include <QMapIterator>
 #include "../graph/debruijnnode.h"
 #include "../graph/assemblygraph.h"
+#include "blastsearch.h"
 
 BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
     m_makeblastdbCommand(makeblastdbCommand)
@@ -40,7 +41,7 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
-        if (g_cancelBuildBlastDatabase)
+        if (g_blastSearch->m_cancelBuildBlastDatabase)
         {
             emit finishedBuild("Build cancelled.");
             return;
@@ -55,14 +56,14 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     }
     file.close();
 
-    g_makeblastdb = new QProcess();
-    g_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
+    g_blastSearch->m_makeblastdb = new QProcess();
+    g_blastSearch->m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
 
-    bool finished = g_makeblastdb->waitForFinished(-1);
+    bool finished = g_blastSearch->m_makeblastdb->waitForFinished(-1);
 
-    if (g_makeblastdb->exitCode() != 0 || !finished)
+    if (g_blastSearch->m_makeblastdb->exitCode() != 0 || !finished)
         emit finishedBuild("There was a problem building the BLAST database.");
-    else if (g_cancelBuildBlastDatabase)
+    else if (g_blastSearch->m_cancelBuildBlastDatabase)
         emit finishedBuild("Build cancelled.");
     else
         emit finishedBuild("");

@@ -45,10 +45,6 @@ extern double g_absoluteZoom;
 extern BlastSearch * g_blastSearch;
 extern QString g_tempDirectory;
 extern AssemblyGraph * g_assemblyGraph;
-extern bool g_cancelBuildBlastDatabase;
-extern bool g_cancelRunBlastSearch;
-extern QProcess * g_makeblastdb;
-extern QProcess * g_blast;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
