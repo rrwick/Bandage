@@ -308,7 +308,6 @@ void BlastSearchDialog::buildBlastDatabase()
 
     QApplication::processEvents();
 
-    //The actual build is done in a different thread so the UI will stay responsive.
     MyProgressDialog * progress = new MyProgressDialog(this, "Building BLAST database...", true, "Cancel build", "Cancelling build...",
                                                        "Clicking this button will stop the BLAST database from being "
                                                        "built.");
@@ -358,12 +357,18 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 
     if (fullFileName != "") //User did not hit cancel
     {
+        MyProgressDialog * progress = new MyProgressDialog(this, "Loading queries...", false);
+        progress->setWindowModality(Qt::WindowModal);
+        progress->show();
+
         std::vector<QString> queryNames;
         std::vector<QString> querySequences;
         readFastaFile(fullFileName, &queryNames, &querySequences);
 
         for (size_t i = 0; i < queryNames.size(); ++i)
         {
+            QApplication::processEvents();
+
             QString queryName = cleanQueryName(queryNames[i]);
             g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                                   querySequences[i]));
@@ -372,6 +377,9 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
         fillQueriesTable();
         clearBlastHits();
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        progress->close();
+        delete progress;
     }
 }
 
@@ -444,8 +452,6 @@ void BlastSearchDialog::runBlastSearches()
 
     g_cancelRunBlastSearch = false;
     clearBlastHits();
-
-    //The actual search is done in a different thread so the UI will stay responsive.
 
     MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
                                                        "Clicking this button will stop the BLAST search.");
