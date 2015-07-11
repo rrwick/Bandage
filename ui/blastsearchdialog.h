@@ -51,7 +51,7 @@ private:
     QThread * m_blastSearchThread;
 
     QString getNodeNameFromString(QString nodeString);
-    void setUiStep(int step);
+    void setUiStep(BlastUiState blastUiState);
     void clearBlastHits();
     void setInfoTexts();
     QString cleanQueryName(QString queryName);

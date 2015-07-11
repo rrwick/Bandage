@@ -68,28 +68,28 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     //If a BLAST database already exists, move to step 2.
     QFile databaseFile(g_tempDirectory + "all_nodes.fasta");
     if (databaseFile.exists())
-        setUiStep(2);
+        setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 
     //If there isn't a BLAST database, clear the entire temporary directory
     //and move to step 1.
     else
     {
         emptyTempDirectory();
-        setUiStep(1);
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
     }
 
     //If queries already exist, display them and move to step 3.
     if (g_blastSearch->m_blastQueries.m_queries.size() > 0)
     {
         fillQueriesTable();
-        setUiStep(3);
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 
     //If results already exist, display them and move to step 4.
     if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
-        setUiStep(4);
+        setUiStep(BLAST_SEARCH_COMPLETE);
     }
 
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
@@ -99,7 +99,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
-    connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
+    connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -226,7 +226,7 @@ void BlastSearchDialog::fillQueriesTable()
 
     ui->blastQueriesTableWidget->resizeColumns();
 
-    setUiStep(3);
+    setUiStep(READY_FOR_BLAST_SEARCH);
 }
 
 
@@ -335,10 +335,10 @@ void BlastSearchDialog::blastDatabaseBuildFinished(QString error)
     if (error != "")
     {
         QMessageBox::warning(this, "Error", error);
-        setUiStep(1);
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
     }
     else
-        setUiStep(2);
+        setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 }
 
 
@@ -417,23 +417,25 @@ void BlastSearchDialog::clearQueries()
 
 
     clearBlastHits();
-    setUiStep(2);
+    setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 }
 
 
 
 void BlastSearchDialog::runBlastSearches()
 {
+    setUiStep(BLAST_SEARCH_IN_PROGRESS);
+
     if (!findProgram("blastn", &m_blastnCommand))
     {
         QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
-        setUiStep(3);
+        setUiStep(READY_FOR_BLAST_SEARCH);
         return;
     }
     if (!findProgram("tblastn", &m_tblastnCommand))
     {
         QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
-        setUiStep(3);
+        setUiStep(READY_FOR_BLAST_SEARCH);
         return;
     }
 
@@ -468,7 +470,7 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     if (error != "")
     {
         QMessageBox::warning(this, "Error", error);
-        setUiStep(3);
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
     else
     {
@@ -477,7 +479,7 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
         g_blastSearch->m_blastQueries.searchOccurred();
         loadBlastHits(g_blastSearch->m_hitsString);
         g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
-        setUiStep(4);
+        setUiStep(BLAST_SEARCH_COMPLETE);
     }
 }
 
@@ -537,15 +539,14 @@ bool BlastSearchDialog::findProgram(QString programName, QString * command)
 
 
 
-void BlastSearchDialog::setUiStep(int step)
+void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 {
     QPixmap tick(":/icons/tick-128.png");
     QPixmap tickScaled = tick.scaled(32, 32);
 
-    switch (step)
+    switch (blastUiState)
     {
-    //Step 1 is for when the BLAST database has not yet been made.
-    case 1:
+    case BLAST_DB_NOT_YET_BUILT:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(true);
         ui->step2Label->setEnabled(false);
@@ -555,7 +556,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
-        ui->startBlastSearchButton->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(QPixmap());
@@ -570,8 +571,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 2 is for loading queries
-    case 2:
+    case BLAST_DB_BUILT_BUT_NO_QUERIES:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
         ui->step2Label->setEnabled(true);
@@ -581,7 +581,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
-        ui->startBlastSearchButton->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
         ui->clearQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
@@ -596,8 +596,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 3 is for running the BLAST search
-    case 3:
+    case READY_FOR_BLAST_SEARCH:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
         ui->step2Label->setEnabled(true);
@@ -607,7 +606,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
-        ui->startBlastSearchButton->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(true);
         ui->clearQueriesButton->setEnabled(true);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
@@ -622,8 +621,7 @@ void BlastSearchDialog::setUiStep(int step)
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 4 is after the BLAST search has been run.
-    case 4:
+    case BLAST_SEARCH_IN_PROGRESS:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
         ui->step2Label->setEnabled(true);
@@ -633,7 +631,32 @@ void BlastSearchDialog::setUiStep(int step)
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
-        ui->startBlastSearchButton->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearQueriesButton->setEnabled(true);
+        ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(true);
+        ui->enterQueryManuallyInfoText->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->startBlastSearchInfoText->setEnabled(true);
+        ui->clearQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(false);
+        break;
+
+    case BLAST_SEARCH_COMPLETE:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
+        ui->step3Label->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(true);
         ui->clearQueriesButton->setEnabled(true);
         ui->hitsLabel->setEnabled(true);
         ui->step1TickLabel->setPixmap(tickScaled);
