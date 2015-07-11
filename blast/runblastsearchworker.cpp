@@ -83,4 +83,6 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
 
     *success = true;
     return g_blastSearch->m_blast->readAll();
+
+    g_blastSearch->m_blast->deleteLater();
 }

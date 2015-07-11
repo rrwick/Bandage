@@ -34,16 +34,15 @@
 AssemblyGraph::AssemblyGraph() :
     m_contiguitySearchDone(false)
 {
-        m_ogdfGraph = new ogdf::Graph();
-        m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
-                                                      ogdf::GraphAttributes::edgeGraphics);
-
+    m_ogdfGraph = new ogdf::Graph();
+    m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
+                                                  ogdf::GraphAttributes::edgeGraphics);
 }
 
 AssemblyGraph::~AssemblyGraph()
 {
-        delete m_graphAttributes;
-        delete m_ogdfGraph;
+    delete m_graphAttributes;
+    delete m_ogdfGraph;
 }
 
 

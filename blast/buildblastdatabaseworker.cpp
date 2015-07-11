@@ -67,4 +67,6 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
         emit finishedBuild("Build cancelled.");
     else
         emit finishedBuild("");
+
+    g_blastSearch->m_makeblastdb->deleteLater();
 }
