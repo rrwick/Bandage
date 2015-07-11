@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QThread>
 #include "../blast/buildblastdatabaseworker.h"
+#include "../blast/runblastsearchworker.h"
 #include "myprogressdialog.h"
 #include "colourbutton.h"
 
@@ -423,91 +424,73 @@ void BlastSearchDialog::clearQueries()
 
 void BlastSearchDialog::runBlastSearches()
 {
-    ui->startBlastSearchButton->setEnabled(false);
-    ui->parametersInfoText->setEnabled(false);
-    ui->parametersLineEdit->setEnabled(false);
-    ui->parametersLabel->setEnabled(false);
-
-    QApplication::processEvents();
-
-    bool success;
-    QString blastHits;
-
-    if (g_blastSearch->m_blastQueries.nuclQueryCount() > 0)
+    if (!findProgram("blastn", &m_blastnCommand))
     {
-        if (!findProgram("blastn", &m_blastnCommand))
-        {
-            QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
-            setUiStep(3);
-            return;
-        }
-
-        blastHits += runOneBlastSearch(NUCLEOTIDE, &success);
-        if (!success)
-        {
-            setUiStep(3);
-            return;
-        }
+        QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(3);
+        return;
+    }
+    if (!findProgram("tblastn", &m_tblastnCommand))
+    {
+        QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(3);
+        return;
     }
 
+    g_cancelRunBlastSearch = false;
     QApplication::processEvents();
 
-    if (g_blastSearch->m_blastQueries.protQueryCount() > 0)
-    {
-        if (!findProgram("tblastn", &m_tblastnCommand))
-        {
-            QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
-            setUiStep(3);
-            return;
-        }
+    //The actual search is done in a different thread so the UI will stay responsive.
+    MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
+                                                       "Clicking this button will stop the BLAST search.");
+    progress->setWindowModality(Qt::WindowModal);
+    progress->show();
 
-        blastHits += runOneBlastSearch(PROTEIN, &success);
-        if (!success)
-        {
-            setUiStep(3);
-            return;
-        }
-    }
+    g_blast = 0;
+    m_blastSearchThread = new QThread;
+    RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
+    runBlastSearchWorker->moveToThread(m_blastSearchThread);
 
-    //If the code got here, then the search programs ran successfully,
-    //through did not necessarily find any hits.
-
-    m_blastSearchConducted = true;
-    clearBlastHits();
-    g_blastSearch->m_blastQueries.searchOccurred();
-    loadBlastHits(blastHits);
-    g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
-    setUiStep(4);
+    connect(progress, SIGNAL(halt()), this, SLOT(runBlastSearchCancelled()));
+    connect(m_blastSearchThread, SIGNAL(started()), runBlastSearchWorker, SLOT(runBlastSearch()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), m_blastSearchThread, SLOT(quit()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), runBlastSearchWorker, SLOT(deleteLater()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), this, SLOT(runBlastSearchFinished(QString)));
+    connect(m_blastSearchThread, SIGNAL(finished()), m_blastSearchThread, SLOT(deleteLater()));
+    connect(m_blastSearchThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+    m_blastSearchThread->start();
 }
 
 
-QString BlastSearchDialog::runOneBlastSearch(SequenceType sequenceType, bool * success)
+
+void BlastSearchDialog::runBlastSearchFinished(QString error)
 {
-    QString fullBlastCommand;
-    if (sequenceType == NUCLEOTIDE)
-        fullBlastCommand = m_blastnCommand + " -query " + g_tempDirectory + "nucl_queries.fasta ";
-    else
-        fullBlastCommand = m_tblastnCommand + " -query " + g_tempDirectory + "prot_queries.fasta ";
-    fullBlastCommand += "-db " + g_tempDirectory + "all_nodes.fasta -outfmt 6";
-
-    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified();
-    fullBlastCommand += " " + extraCommandLineOptions;
-
-    QProcess blast;
-    blast.start(fullBlastCommand);
-
-    bool finished = blast.waitForFinished(-1);
-
-    if (blast.exitCode() != 0 || !finished)
+    if (error != "")
     {
-        QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
-        *success = false;
-        return "";
+        QMessageBox::warning(this, "Error", error);
+        setUiStep(3);
     }
-
-    *success = true;
-    return blast.readAll();
+    else
+    {
+        m_blastSearchConducted = true;
+        clearBlastHits();
+        g_blastSearch->m_blastQueries.searchOccurred();
+        loadBlastHits(g_blastSearch->m_hitsString);
+        g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
+        setUiStep(4);
+    }
 }
+
+
+
+void BlastSearchDialog::runBlastSearchCancelled()
+{
+    g_cancelRunBlastSearch = true;
+    if (g_blast != 0)
+        g_blast->kill();
+}
+
+
 
 
 

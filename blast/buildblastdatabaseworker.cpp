@@ -60,11 +60,8 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
 
     bool finished = g_makeblastdb->waitForFinished(-1);
 
-    if (g_makeblastdb->exitCode() != 0)
+    if (g_makeblastdb->exitCode() != 0 || !finished)
         emit finishedBuild("There was a problem building the BLAST database.");
-    else if (!finished)
-        emit finishedBuild("The BLAST database did not build in the allotted time.\n\n"
-                           "Increase the 'Allowed time' setting and try again.");
     else if (g_cancelBuildBlastDatabase)
         emit finishedBuild("Build cancelled.");
     else

@@ -22,6 +22,7 @@
 #include "blasthit.h"
 #include "blastqueries.h"
 #include <vector>
+#include <QString>
 
 class BlastSearch
 {
@@ -31,6 +32,7 @@ public:
 
     BlastQueries m_blastQueries;
     std::vector<BlastHit> m_hits;
+    QString m_hitsString;
 
     void cleanUp() {m_hits.clear(); m_blastQueries.m_queries.clear();}
 

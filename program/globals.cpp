@@ -32,7 +32,9 @@ BlastSearch * g_blastSearch;
 QString g_tempDirectory;
 AssemblyGraph * g_assemblyGraph;
 bool g_cancelBuildBlastDatabase;
+bool g_cancelRunBlastSearch;
 QProcess * g_makeblastdb;
+QProcess * g_blast;
 
 
 QString formatIntForDisplay(int num)

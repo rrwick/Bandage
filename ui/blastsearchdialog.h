@@ -48,6 +48,7 @@ private:
     QString m_blastnCommand;
     QString m_tblastnCommand;
     QThread * m_buildBlastDatabaseThread;
+    QThread * m_blastSearchThread;
 
     QString getNodeNameFromString(QString nodeString);
     void setUiStep(int step);
@@ -62,12 +63,13 @@ private slots:
     void enterQueryManually();
     void clearQueries();
     void runBlastSearches();
-    QString runOneBlastSearch(SequenceType sequenceType, bool * success);
     void loadBlastHits(QString blastHits);
     void fillQueriesTable();
     void fillHitsTable();
     void blastDatabaseBuildFinished(QString error);
+    void runBlastSearchFinished(QString error);
     void buildBlastDatabaseCancelled();
+    void runBlastSearchCancelled();
 };
 
 #endif // BLASTSEARCHDIALOG_H
