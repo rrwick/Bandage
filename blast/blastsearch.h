@@ -36,7 +36,7 @@ public:
 
     BlastQueries m_blastQueries;
     std::vector<BlastHit> m_hits;
-    QString m_hitsString;
+    QString m_blastOutput;
     bool m_cancelBuildBlastDatabase;
     bool m_cancelRunBlastSearch;
     QProcess * m_makeblastdb;

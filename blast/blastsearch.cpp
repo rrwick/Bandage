@@ -32,7 +32,7 @@ void BlastSearch::clearBlastHits()
 {
     m_hits.clear();
     m_blastQueries.clearSearchResults();
-    m_hitsString = "";
+    m_blastOutput = "";
 }
 
 void BlastSearch::cleanUp()
@@ -41,11 +41,11 @@ void BlastSearch::cleanUp()
     m_blastQueries.clearQueries();
 }
 
-//This function uses the contents of m_hitsString to construct
+//This function uses the contents of m_blastOutput to construct
 //the BlastHit objects.
 void BlastSearch::buildHitsFromBlastOutput()
 {
-    QStringList blastHitList = m_hitsString.split("\n", QString::SkipEmptyParts);
+    QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
 
     for (int i = 0; i < blastHitList.size(); ++i)
     {

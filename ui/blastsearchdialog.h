@@ -62,7 +62,7 @@ private slots:
     void enterQueryManually();
     void clearQueries();
     void runBlastSearches();
-    void loadBlastHits();
+    void fillTablesAfterBlastSearch();
     void fillQueriesTable();
     void fillHitsTable();
     void blastDatabaseBuildFinished(QString error);

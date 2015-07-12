@@ -119,10 +119,8 @@ void BlastSearchDialog::clearBlastHits()
         ui->blastHitsTableWidget->removeRow(0);
 }
 
-void BlastSearchDialog::loadBlastHits()
+void BlastSearchDialog::fillTablesAfterBlastSearch()
 {
-    g_blastSearch->buildHitsFromBlastOutput();
-
     if (g_blastSearch->m_hits.size() == 0)
         QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
 
@@ -242,15 +240,14 @@ void BlastSearchDialog::fillHitsTable()
 
 void BlastSearchDialog::buildBlastDatabase()
 {
+    setUiStep(BLAST_DB_BUILD_IN_PROGRESS);
+
     if (!findProgram("makeblastdb", &m_makeblastdbCommand))
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
         return;
     }
-
-    g_blastSearch->m_cancelBuildBlastDatabase = false;
-    ui->buildBlastDatabaseButton->setEnabled(false);
-    ui->buildBlastDatabaseInfoText->setEnabled(false);
 
     QApplication::processEvents();
 
@@ -260,7 +257,6 @@ void BlastSearchDialog::buildBlastDatabase()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_blastSearch->m_makeblastdb = 0;
     m_buildBlastDatabaseThread = new QThread;
     BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
     buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
@@ -394,9 +390,6 @@ void BlastSearchDialog::runBlastSearches()
         return;
     }
 
-    //If the code got here, then the blastn and tblastn are present, so we can continue.
-
-    g_blastSearch->m_cancelRunBlastSearch = false;
     clearBlastHits();
 
     MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
@@ -404,7 +397,6 @@ void BlastSearchDialog::runBlastSearches()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_blastSearch->m_blast = 0;
     m_blastSearchThread = new QThread;
     RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
     runBlastSearchWorker->moveToThread(m_blastSearchThread);
@@ -431,8 +423,7 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     else
     {
         m_blastSearchConducted = true;
-        g_blastSearch->m_blastQueries.searchOccurred();
-        loadBlastHits();
+        fillTablesAfterBlastSearch();
         g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
@@ -518,6 +509,31 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->step2TickLabel->setPixmap(QPixmap());
         ui->step3TickLabel->setPixmap(QPixmap());
         ui->buildBlastDatabaseInfoText->setEnabled(true);
+        ui->loadQueriesFromFastaInfoText->setEnabled(false);
+        ui->enterQueryManuallyInfoText->setEnabled(false);
+        ui->parametersInfoText->setEnabled(false);
+        ui->startBlastSearchInfoText->setEnabled(false);
+        ui->clearQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
+        break;
+
+    case BLAST_DB_BUILD_IN_PROGRESS:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(false);
+        ui->loadQueriesFromFastaButton->setEnabled(false);
+        ui->enterQueryManuallyButton->setEnabled(false);
+        ui->blastQueriesTableWidget->setEnabled(false);
+        ui->step3Label->setEnabled(false);
+        ui->parametersLabel->setEnabled(false);
+        ui->parametersLineEdit->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearQueriesButton->setEnabled(false);
+        ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(QPixmap());
+        ui->step2TickLabel->setPixmap(QPixmap());
+        ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
         ui->loadQueriesFromFastaInfoText->setEnabled(false);
         ui->enterQueryManuallyInfoText->setEnabled(false);
         ui->parametersInfoText->setEnabled(false);

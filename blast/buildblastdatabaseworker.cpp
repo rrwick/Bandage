@@ -34,6 +34,8 @@ BuildBlastDatabaseWorker::BuildBlastDatabaseWorker(QString makeblastdbCommand) :
 
 void BuildBlastDatabaseWorker::buildBlastDatabase()
 {
+    g_blastSearch->m_cancelBuildBlastDatabase = false;
+
     QFile file(g_tempDirectory + "all_nodes.fasta");
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
@@ -69,4 +71,5 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
         emit finishedBuild("");
 
     g_blastSearch->m_makeblastdb->deleteLater();
+    g_blastSearch->m_makeblastdb = 0;
 }

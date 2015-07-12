@@ -31,26 +31,34 @@ RunBlastSearchWorker::RunBlastSearchWorker(QString blastnCommand, QString tblast
 
 void RunBlastSearchWorker::runBlastSearch()
 {
+    g_blastSearch->m_cancelRunBlastSearch = false;
+
     bool success;
 
     if (g_blastSearch->m_blastQueries.getQueryCount(NUCLEOTIDE) > 0)
     {
-        g_blastSearch->m_hitsString += runOneBlastSearch(NUCLEOTIDE, &success);
+        g_blastSearch->m_blastOutput += runOneBlastSearch(NUCLEOTIDE, &success);
         if (!success)
             return;
     }
 
     if (g_blastSearch->m_blastQueries.getQueryCount(PROTEIN) > 0 && !g_blastSearch->m_cancelRunBlastSearch)
     {
-        g_blastSearch->m_hitsString += runOneBlastSearch(PROTEIN, &success);
+        g_blastSearch->m_blastOutput += runOneBlastSearch(PROTEIN, &success);
         if (!success)
             return;
     }
 
     if (g_blastSearch->m_cancelRunBlastSearch)
+    {
         emit finishedSearch("Search cancelled.");
-    else
-        emit finishedSearch("");
+        return;
+    }
+
+    //If the code got here, then the search completed successfully.
+    g_blastSearch->buildHitsFromBlastOutput();
+    g_blastSearch->m_blastQueries.searchOccurred();
+    emit finishedSearch("");
 }
 
 
@@ -81,8 +89,10 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
         return "";
     }
 
-    *success = true;
-    return g_blastSearch->m_blast->readAll();
-
+    QString blastOutput = g_blastSearch->m_blast->readAll();
     g_blastSearch->m_blast->deleteLater();
+    g_blastSearch->m_blast = 0;
+
+    *success = true;
+    return blastOutput;
 }
