@@ -242,7 +242,7 @@ void BlastSearchDialog::buildBlastDatabase()
 {
     setUiStep(BLAST_DB_BUILD_IN_PROGRESS);
 
-    if (!findProgram("makeblastdb", &m_makeblastdbCommand))
+    if (!g_blastSearch->findProgram("makeblastdb", &m_makeblastdbCommand))
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
         setUiStep(BLAST_DB_NOT_YET_BUILT);
@@ -268,6 +268,7 @@ void BlastSearchDialog::buildBlastDatabase()
     connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), this, SLOT(blastDatabaseBuildFinished(QString)));
     connect(m_buildBlastDatabaseThread, SIGNAL(finished()), m_buildBlastDatabaseThread, SLOT(deleteLater()));
     connect(m_buildBlastDatabaseThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+
     m_buildBlastDatabaseThread->start();
 }
 
@@ -377,13 +378,13 @@ void BlastSearchDialog::runBlastSearches()
 {
     setUiStep(BLAST_SEARCH_IN_PROGRESS);
 
-    if (!findProgram("blastn", &m_blastnCommand))
+    if (!g_blastSearch->findProgram("blastn", &m_blastnCommand))
     {
         QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
         setUiStep(READY_FOR_BLAST_SEARCH);
         return;
     }
-    if (!findProgram("tblastn", &m_tblastnCommand))
+    if (!g_blastSearch->findProgram("tblastn", &m_tblastnCommand))
     {
         QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
         setUiStep(READY_FOR_BLAST_SEARCH);
@@ -408,6 +409,7 @@ void BlastSearchDialog::runBlastSearches()
     connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), this, SLOT(runBlastSearchFinished(QString)));
     connect(m_blastSearchThread, SIGNAL(finished()), m_blastSearchThread, SLOT(deleteLater()));
     connect(m_blastSearchThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+
     m_blastSearchThread->start();
 }
 
@@ -430,57 +432,11 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
 }
 
 
-
 void BlastSearchDialog::runBlastSearchCancelled()
 {
     g_blastSearch->m_cancelRunBlastSearch = true;
     if (g_blastSearch->m_blast != 0)
         g_blastSearch->m_blast->kill();
-}
-
-
-
-
-
-bool BlastSearchDialog::findProgram(QString programName, QString * command)
-{
-    QString findCommand = "which " + programName;
-#ifdef Q_OS_WIN32
-    findCommand = "WHERE " + programName;
-#endif
-
-    QProcess find;
-
-    //On Mac, it's necessary to do some stuff with the PATH variable in order
-    //for which to work.
-#ifdef Q_OS_MAC
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QStringList envlist = env.toStringList();
-
-    //Add some paths to the process environment
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
-                                                                   "/usr/bin:"
-                                                                   "/bin:"
-                                                                   "/usr/sbin:"
-                                                                   "/sbin:"
-                                                                   "/opt/local/bin:"
-                                                                   "/usr/local/bin:"
-                                                                   "$HOME/bin:"
-                                                                   "/usr/local/ncbi/blast/bin:"
-                                                                   "\\1");
-
-    find.setEnvironment(envlist);
-#endif
-
-    find.start(findCommand);
-    find.waitForFinished();
-
-    //On a Mac, we need to use the full path to the program.
-#ifdef Q_OS_MAC
-    *command = QString(find.readAll()).simplified();
-#endif
-
-    return (find.exitCode() == 0);
 }
 
 

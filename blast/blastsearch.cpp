@@ -99,3 +99,48 @@ QString BlastSearch::getNodeNameFromString(QString nodeString)
     return nodeStringParts[1];
 }
 
+
+
+bool BlastSearch::findProgram(QString programName, QString * command)
+{
+    QString findCommand = "which " + programName;
+#ifdef Q_OS_WIN32
+    findCommand = "WHERE " + programName;
+#endif
+
+    QProcess find;
+
+    //On Mac, it's necessary to do some stuff with the PATH variable in order
+    //for which to work.
+#ifdef Q_OS_MAC
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QStringList envlist = env.toStringList();
+
+    //Add some paths to the process environment
+    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
+                                                                   "/usr/bin:"
+                                                                   "/bin:"
+                                                                   "/usr/sbin:"
+                                                                   "/sbin:"
+                                                                   "/opt/local/bin:"
+                                                                   "/usr/local/bin:"
+                                                                   "$HOME/bin:"
+                                                                   "/usr/local/ncbi/blast/bin:"
+                                                                   "\\1");
+
+    find.setEnvironment(envlist);
+#endif
+
+    find.start(findCommand);
+    find.waitForFinished();
+
+    //On a Mac, we need to use the full path to the program.
+#ifdef Q_OS_MAC
+    *command = QString(find.readAll()).simplified();
+#endif
+
+    return (find.exitCode() == 0);
+}
+
+
+
