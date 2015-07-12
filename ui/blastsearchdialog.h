@@ -69,6 +69,7 @@ private slots:
     void runBlastSearchFinished(QString error);
     void buildBlastDatabaseCancelled();
     void runBlastSearchCancelled();
+    void queryCellChanged(int row, int column);
 };
 
 #endif // BLASTSEARCHDIALOG_H

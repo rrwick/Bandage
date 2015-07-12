@@ -103,6 +103,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
     connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
+    connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -131,6 +132,10 @@ void BlastSearchDialog::fillTablesAfterBlastSearch()
 
 void BlastSearchDialog::fillQueriesTable()
 {
+    //Turn off table widget signals for this function so the
+    //queryCellChanged slot doesn't get called.
+    ui->blastQueriesTableWidget->blockSignals(true);
+
     ui->blastQueriesTableWidget->clearContents();
 
     int queryCount = int(g_blastSearch->m_blastQueries.m_queries.size());
@@ -144,9 +149,11 @@ void BlastSearchDialog::fillQueriesTable()
         BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
 
         QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
-        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
         QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
         type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
         QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
         length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
@@ -173,6 +180,8 @@ void BlastSearchDialog::fillQueriesTable()
     ui->blastQueriesTableWidget->resizeColumns();
 
     setUiStep(READY_FOR_BLAST_SEARCH);
+
+    ui->blastQueriesTableWidget->blockSignals(false);
 }
 
 
@@ -437,6 +446,24 @@ void BlastSearchDialog::runBlastSearchCancelled()
     g_blastSearch->m_cancelRunBlastSearch = true;
     if (g_blastSearch->m_blast != 0)
         g_blastSearch->m_blast->kill();
+}
+
+
+
+void BlastSearchDialog::queryCellChanged(int row, int column)
+{
+    //We are only interested in when a query name is changed.
+    if (column != 1)
+        return;
+
+    QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
+    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+
+    query->m_name = newName;
+
+    //Rebuild the hits table, if necessary, to show the new name.
+    if (query->m_hits > 0)
+        fillHitsTable();
 }
 
 
