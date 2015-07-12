@@ -33,14 +33,14 @@ void RunBlastSearchWorker::runBlastSearch()
 {
     bool success;
 
-    if (g_blastSearch->m_blastQueries.nuclQueryCount() > 0)
+    if (g_blastSearch->m_blastQueries.getQueryCount(NUCLEOTIDE) > 0)
     {
         g_blastSearch->m_hitsString += runOneBlastSearch(NUCLEOTIDE, &success);
         if (!success)
             return;
     }
 
-    if (g_blastSearch->m_blastQueries.protQueryCount() > 0 && !g_blastSearch->m_cancelRunBlastSearch)
+    if (g_blastSearch->m_blastQueries.getQueryCount(PROTEIN) > 0 && !g_blastSearch->m_cancelRunBlastSearch)
     {
         g_blastSearch->m_hitsString += runOneBlastSearch(PROTEIN, &success);
         if (!success)

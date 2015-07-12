@@ -41,6 +41,7 @@ public:
     SequenceType m_sequenceType;
 
     QString getTypeString();
+    void clearSearchResults();
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}

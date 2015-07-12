@@ -24,6 +24,11 @@
 #include <QString>
 #include "../program/globals.h"
 
+//This class carries out the task of running blastn and/or
+//tblastn.
+//It is a separate class because when run from the GUI, this
+//process takes place in a separate thread.
+
 class RunBlastSearchWorker : public QObject
 {
     Q_OBJECT

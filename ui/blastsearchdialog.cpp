@@ -119,70 +119,16 @@ void BlastSearchDialog::clearBlastHits()
         ui->blastHitsTableWidget->removeRow(0);
 }
 
-void BlastSearchDialog::loadBlastHits(QString blastHits)
+void BlastSearchDialog::loadBlastHits()
 {
-    QStringList blastHitList = blastHits.split("\n", QString::SkipEmptyParts);
+    g_blastSearch->buildHitsFromBlastOutput();
 
-    if (blastHitList.size() == 0)
-    {
+    if (g_blastSearch->m_hits.size() == 0)
         QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
-        return;
-    }
-
-    for (int i = 0; i < blastHitList.size(); ++i)
-    {
-        QString hit = blastHitList[i];
-        QStringList alignmentParts = hit.split('\t');
-
-        if (alignmentParts.size() < 12)
-            return;
-
-        QString queryName = alignmentParts[0];
-        QString nodeLabel = alignmentParts[1];
-        double percentIdentity = alignmentParts[2].toDouble();
-        int alignmentLength = alignmentParts[3].toInt();
-        int numberMismatches = alignmentParts[4].toInt();
-        int numberGapOpens = alignmentParts[5].toInt();
-        int queryStart = alignmentParts[6].toInt();
-        int queryEnd = alignmentParts[7].toInt();
-        int nodeStart = alignmentParts[8].toInt();
-        int nodeEnd = alignmentParts[9].toInt();
-        double eValue = alignmentParts[10].toDouble();
-        int bitScore = alignmentParts[11].toInt();
-
-        //Only save BLAST hits that are on forward strands.
-        if (nodeStart > nodeEnd)
-            continue;
-
-        QString nodeName = getNodeNameFromString(nodeLabel);
-        DeBruijnNode * node;
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-            node = g_assemblyGraph->m_deBruijnGraphNodes[nodeName];
-        else
-            return;
-
-        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
-        if (query == 0)
-            return;
-
-        g_blastSearch->m_hits.push_back(BlastHit(query, node, percentIdentity, alignmentLength,
-                                                 numberMismatches, numberGapOpens, queryStart, queryEnd,
-                                                 nodeStart, nodeEnd, eValue, bitScore));
-
-        ++(query->m_hits);
-    }
 
     fillQueriesTable();
     fillHitsTable();
 }
-
-
-QString BlastSearchDialog::getNodeNameFromString(QString nodeString)
-{
-    QStringList nodeStringParts = nodeString.split("_");
-    return nodeStringParts[1];
-}
-
 
 
 void BlastSearchDialog::fillQueriesTable()
@@ -486,7 +432,7 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     {
         m_blastSearchConducted = true;
         g_blastSearch->m_blastQueries.searchOccurred();
-        loadBlastHits(g_blastSearch->m_hitsString);
+        loadBlastHits();
         g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
         setUiStep(BLAST_SEARCH_COMPLETE);
     }

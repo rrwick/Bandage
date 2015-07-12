@@ -27,6 +27,8 @@ BlastQuery::BlastQuery(QString name, QString sequence) :
 }
 
 
+//This function looks at the query sequence to decide if it is
+//a nucleotide or protein sequence.
 void BlastQuery::autoSetSequenceType()
 {
     //If the sequence contains a letter that's in the protein
@@ -43,7 +45,10 @@ void BlastQuery::autoSetSequenceType()
         return;
     }
 
-    //If the code got here, then it's a bit trickier.
+    //If the code got here, then it's a bit trickier.  It could
+    //possibly be an extended alphabet DNA sequence or a protein
+    //sequence without particular amino acids.
+
     //Look to see if A, C, G and T make up 75% or more of
     //the sequence.  If so, it's DNA.  If not, it's
     //protein.
@@ -66,4 +71,11 @@ QString BlastQuery::getTypeString()
         return "nucl";
     else
         return "prot";
+}
+
+
+void BlastQuery::clearSearchResults()
+{
+    m_searchedFor = false;
+    m_hits = 0;
 }

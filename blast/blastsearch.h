@@ -24,11 +24,15 @@
 #include <vector>
 #include <QString>
 
+//This is a class to hold all BLAST search related stuff.
+//An instance of it is made available to the whole program
+//as a global.
+
 class BlastSearch
 {
 public:
-    BlastSearch() {}
-    ~BlastSearch() {}
+    BlastSearch();
+    ~BlastSearch();
 
     BlastQueries m_blastQueries;
     std::vector<BlastHit> m_hits;
@@ -39,8 +43,9 @@ public:
     QProcess * m_blast;
 
     void clearBlastHits();
-    void cleanUp() {m_hits.clear(); m_blastQueries.m_queries.clear();}
-
+    void cleanUp();
+    void buildHitsFromBlastOutput();
+    QString getNodeNameFromString(QString nodeString);
 };
 
 #endif // BLASTSEARCH_H

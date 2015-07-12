@@ -34,7 +34,6 @@ public:
              int queryStart, int queryEnd,
              int nodeStart, int nodeEnd, double eValue, int bitScore);
     BlastHit();
-    ~BlastHit();
 
     BlastQuery * m_query;
     DeBruijnNode * m_node;

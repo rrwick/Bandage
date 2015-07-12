@@ -37,17 +37,14 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
     m_eValue(eValue), m_bitScore(bitScore)
 {
-    m_nodeStartFraction = double(nodeStart) / m_node->m_length;
-    m_nodeEndFraction = double(nodeEnd) / m_node->m_length;
-    m_queryStartFraction = double(queryStart) / m_query->m_length;
-    m_queryEndFraction = double(queryEnd) / m_query->m_length;
+    int nodeLength = m_node->m_length;
+    int queryLength = m_query->m_length;
+
+    m_nodeStartFraction = double(nodeStart) / nodeLength;
+    m_nodeEndFraction = double(nodeEnd) / nodeLength;
+    m_queryStartFraction = double(queryStart) / queryLength;
+    m_queryEndFraction = double(queryEnd) / queryLength;
 }
-
-BlastHit::~BlastHit()
-{
-
-}
-
 
 std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
 {
@@ -64,6 +61,7 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
 
         double nodeFraction = m_nodeStartFraction;
         double queryFraction = m_queryStartFraction;
+
         for (int i = 0; i < partCount; ++i)
         {
             QColor dotColour;

@@ -50,7 +50,6 @@ private:
     QThread * m_buildBlastDatabaseThread;
     QThread * m_blastSearchThread;
 
-    QString getNodeNameFromString(QString nodeString);
     void setUiStep(BlastUiState blastUiState);
     void clearBlastHits();
     void setInfoTexts();
@@ -63,7 +62,7 @@ private slots:
     void enterQueryManually();
     void clearQueries();
     void runBlastSearches();
-    void loadBlastHits(QString blastHits);
+    void loadBlastHits();
     void fillQueriesTable();
     void fillHitsTable();
     void blastDatabaseBuildFinished(QString error);

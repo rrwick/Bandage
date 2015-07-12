@@ -22,6 +22,11 @@
 #include <QObject>
 #include <QProcess>
 
+//This class carries out the task of running makeblastdb on
+//the graph's nodes.
+//It is a separate class because when run from the GUI, this
+//process takes place in a separate thread.
+
 class BuildBlastDatabaseWorker : public QObject
 {
     Q_OBJECT

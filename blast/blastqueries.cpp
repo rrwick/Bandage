@@ -87,10 +87,10 @@ void BlastQueries::updateTempFiles()
 {
     deleteTempFiles();
 
-    if (nuclQueryCount() > 0)
+    if (getQueryCount(NUCLEOTIDE) > 0)
         writeTempFile(&m_tempNuclFile, NUCLEOTIDE);
 
-    if (protQueryCount() > 0)
+    if (getQueryCount(PROTEIN) > 0)
         writeTempFile(&m_tempProtFile, PROTEIN);
 }
 
@@ -122,12 +122,19 @@ void BlastQueries::searchOccurred()
 void BlastQueries::clearSearchResults()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
-    {
-        m_queries[i]->m_searchedFor = false;
-        m_queries[i]->m_hits = 0;
-    }
+        m_queries[i]->clearSearchResults();
 }
 
+int BlastQueries::getQueryCount(SequenceType sequenceType)
+{
+    int count = 0;
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (m_queries[i]->m_sequenceType == sequenceType)
+            ++count;
+    }
+    return count;
+}
 
 
 void BlastQueries::createPresetColours()
@@ -332,27 +339,4 @@ void BlastQueries::createPresetColours()
     presetColours.push_back(QColor("#A0ABC4"));
     presetColours.push_back(QColor("#2B6EFE"));
     presetColours.push_back(QColor("#9A9EE7"));
-}
-
-
-int BlastQueries::nuclQueryCount()
-{
-    int count = 0;
-    for (size_t i = 0; i < m_queries.size(); ++i)
-    {
-        if (m_queries[i]->m_sequenceType == NUCLEOTIDE)
-            ++count;
-    }
-    return count;
-}
-
-int BlastQueries::protQueryCount()
-{
-    int count = 0;
-    for (size_t i = 0; i < m_queries.size(); ++i)
-    {
-        if (m_queries[i]->m_sequenceType == PROTEIN)
-            ++count;
-    }
-    return count;
 }
