@@ -30,7 +30,7 @@ BlastQueries::BlastQueries() :
 
 BlastQueries::~BlastQueries()
 {
-    clearQueries();
+    clearAllQueries();
 }
 
 
@@ -67,7 +67,7 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
     updateTempFiles();
 }
 
-void BlastQueries::clearQueries()
+void BlastQueries::clearAllQueries()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
         delete m_queries[i];

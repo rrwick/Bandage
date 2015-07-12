@@ -60,7 +60,7 @@ private slots:
     void buildBlastDatabase();
     void loadBlastQueriesFromFastaFile();
     void enterQueryManually();
-    void clearQueries();
+    void clearAllQueries();
     void runBlastSearches();
     void fillTablesAfterBlastSearch();
     void fillQueriesTable();
@@ -70,6 +70,7 @@ private slots:
     void buildBlastDatabaseCancelled();
     void runBlastSearchCancelled();
     void queryCellChanged(int row, int column);
+    void queryTableSelectionChanged();
 };
 
 #endif // BLASTSEARCHDIALOG_H

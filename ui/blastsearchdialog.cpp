@@ -101,9 +101,10 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase()));
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
-    connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
+    connect(ui->clearAllQueriesButton, SIGNAL(clicked()), this, SLOT(clearAllQueries()));
     connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
     connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
+    connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -368,11 +369,11 @@ void BlastSearchDialog::enterQueryManually()
 
 
 
-void BlastSearchDialog::clearQueries()
+void BlastSearchDialog::clearAllQueries()
 {
-    g_blastSearch->m_blastQueries.clearQueries();
+    g_blastSearch->m_blastQueries.clearAllQueries();
     ui->blastQueriesTableWidget->clearContents();
-    ui->clearQueriesButton->setEnabled(false);
+    ui->clearAllQueriesButton->setEnabled(false);
 
     while (ui->blastQueriesTableWidget->rowCount() > 0)
         ui->blastQueriesTableWidget->removeRow(0);
@@ -467,6 +468,17 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
 }
 
 
+void BlastSearchDialog::queryTableSelectionChanged()
+{
+    //If there are any selected items, then the 'Clear selected' button
+    //should be enabled.
+    QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
+    bool hasSelection = select->hasSelection();
+
+    ui->clearSelectedQueriesButton->setEnabled(hasSelection);
+}
+
+
 
 void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 {
@@ -486,7 +498,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
         ui->runBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearSelectedQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(QPixmap());
         ui->step2TickLabel->setPixmap(QPixmap());
@@ -496,7 +509,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(false);
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
-        ui->clearQueriesInfoText->setEnabled(false);
+        ui->clearAllQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
@@ -511,7 +525,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
         ui->runBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearSelectedQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(QPixmap());
         ui->step2TickLabel->setPixmap(QPixmap());
@@ -521,7 +536,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(false);
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
-        ui->clearQueriesInfoText->setEnabled(false);
+        ui->clearAllQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
@@ -536,7 +552,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
         ui->runBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(QPixmap());
@@ -546,7 +563,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
-        ui->clearQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
@@ -561,7 +579,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
         ui->runBlastSearchButton->setEnabled(true);
-        ui->clearQueriesButton->setEnabled(true);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
@@ -571,7 +590,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
-        ui->clearQueriesInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
@@ -586,7 +606,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
         ui->runBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(true);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
@@ -596,7 +617,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
-        ui->clearQueriesInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(false);
         break;
 
@@ -611,7 +633,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
         ui->runBlastSearchButton->setEnabled(true);
-        ui->clearQueriesButton->setEnabled(true);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(true);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
@@ -621,7 +644,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
-        ui->clearQueriesInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(true);
         break;
     }
@@ -649,7 +673,8 @@ void BlastSearchDialog::setInfoTexts()
                                               "parameters field, then this will run:<br>"
                                               "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01<br><br>"
                                               "For protein queries, tblastn will be used instead of blastn.");
-    ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
+    ui->clearSelectedQueriesInfoText->setInfoText("Click this button to remove any selected queries in the below list.");
+    ui->clearAllQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }
 
 

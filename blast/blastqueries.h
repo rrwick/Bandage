@@ -42,7 +42,7 @@ public:
     BlastQuery * getQueryFromName(QString queryName);
 
     void addQuery(BlastQuery * newQuery);
-    void clearQueries();
+    void clearAllQueries();
     void searchOccurred();
     void clearSearchResults();
     int getQueryCount(SequenceType sequenceType);

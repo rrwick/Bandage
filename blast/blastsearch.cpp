@@ -38,7 +38,7 @@ void BlastSearch::clearBlastHits()
 void BlastSearch::cleanUp()
 {
     clearBlastHits();
-    m_blastQueries.clearQueries();
+    m_blastQueries.clearAllQueries();
 }
 
 //This function uses the contents of m_blastOutput to construct

@@ -47,6 +47,7 @@ public:
     void buildHitsFromBlastOutput();
     QString getNodeNameFromString(QString nodeString);
     bool findProgram(QString programName, QString * command);
+
 };
 
 #endif // BLASTSEARCH_H
