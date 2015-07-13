@@ -45,7 +45,6 @@ extern QSharedPointer<Settings> g_settings;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
 extern QSharedPointer<BlastSearch> g_blastSearch;
-extern QString g_tempDirectory;
 extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
 QString formatIntForDisplay(int num);
@@ -53,9 +52,6 @@ QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
 QString getOppositeNodeName(QString nodeName);
-
-
-void emptyTempDirectory();
 
 void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
 QString convertGraphFileTypeToString(GraphFileType graphFileType);

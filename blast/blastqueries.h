@@ -23,6 +23,7 @@
 #include "blastquery.h"
 #include <QFile>
 #include "../program/globals.h"
+#include <QSharedPointer>
 
 //This class manages all BLAST queries. It holds BlastQuery
 //objects itself, and it creates/modifies/deletes the temp
@@ -41,6 +42,7 @@ public:
 
     BlastQuery * getQueryFromName(QString queryName);
 
+    void createTempQueryFiles();
     void addQuery(BlastQuery * newQuery);
     void clearAllQueries();
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
@@ -51,15 +53,15 @@ public:
     std::vector<QColor> presetColours;
 
 private:
-    QFile m_tempNuclFile;
-    QFile m_tempProtFile;
+    QSharedPointer<QFile> m_tempNuclFile;
+    QSharedPointer<QFile> m_tempProtFile;
 
     void deleteTempFiles();
     void updateTempFiles();
-    bool tempNuclFileExists() {return m_tempNuclFile.exists();}
-    bool tempProtFileExists() {return m_tempProtFile.exists();}
+    bool tempNuclFileExists() {return m_tempNuclFile->exists();}
+    bool tempProtFileExists() {return m_tempProtFile->exists();}
     void createPresetColours();
-    void writeTempFile(QFile * file, SequenceType sequenceType);
+    void writeTempFile(QSharedPointer<QFile> file, SequenceType sequenceType);
 
 };
 

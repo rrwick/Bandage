@@ -29,7 +29,7 @@ QSharedPointer<Settings> g_settings;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
 QSharedPointer<BlastSearch> g_blastSearch;
-QString g_tempDirectory;
+QString m_tempDirectory;
 QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
 
@@ -67,16 +67,6 @@ QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
             pastDecimalPoint = true;
     }
     return final;
-}
-
-
-void emptyTempDirectory()
-{
-    QDir tempDirectory(g_tempDirectory);
-    tempDirectory.setNameFilters(QStringList() << "*.*");
-    tempDirectory.setFilter(QDir::Files);
-    foreach(QString dirFile, tempDirectory.entryList())
-        tempDirectory.remove(dirFile);
 }
 
 

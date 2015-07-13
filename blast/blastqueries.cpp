@@ -19,10 +19,10 @@
 #include "blastqueries.h"
 #include "../program/globals.h"
 #include <QTextStream>
+#include "blastsearch.h"
 
 BlastQueries::BlastQueries() :
-    m_tempNuclFile(g_tempDirectory + "nucl_queries.fasta"),
-    m_tempProtFile(g_tempDirectory + "prot_queries.fasta")
+    m_tempNuclFile(0), m_tempProtFile(0)
 {
     createPresetColours();
 }
@@ -33,6 +33,12 @@ BlastQueries::~BlastQueries()
     clearAllQueries();
 }
 
+
+void BlastQueries::createTempQueryFiles()
+{
+    m_tempNuclFile.reset(new QFile(g_blastSearch->m_tempDirectory + "nucl_queries.fasta"));
+    m_tempProtFile.reset(new QFile(g_blastSearch->m_tempDirectory + "prot_queries.fasta"));
+}
 
 BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 {
@@ -89,9 +95,9 @@ void BlastQueries::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 void BlastQueries::deleteTempFiles()
 {
     if (tempNuclFileExists())
-        m_tempNuclFile.remove();
+        m_tempNuclFile->remove();
     if (tempProtFileExists())
-        m_tempProtFile.remove();
+        m_tempProtFile->remove();
 }
 
 void BlastQueries::updateTempFiles()
@@ -99,17 +105,17 @@ void BlastQueries::updateTempFiles()
     deleteTempFiles();
 
     if (getQueryCount(NUCLEOTIDE) > 0)
-        writeTempFile(&m_tempNuclFile, NUCLEOTIDE);
+        writeTempFile(m_tempNuclFile, NUCLEOTIDE);
 
     if (getQueryCount(PROTEIN) > 0)
-        writeTempFile(&m_tempProtFile, PROTEIN);
+        writeTempFile(m_tempProtFile, PROTEIN);
 }
 
 
-void BlastQueries::writeTempFile(QFile * file, SequenceType sequenceType)
+void BlastQueries::writeTempFile(QSharedPointer<QFile> file, SequenceType sequenceType)
 {
     file->open(QIODevice::Append | QIODevice::Text);
-    QTextStream out(file);
+    QTextStream out(file.data());
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
         if (m_queries[i]->m_sequenceType == sequenceType)

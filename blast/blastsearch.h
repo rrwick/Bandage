@@ -41,6 +41,7 @@ public:
     bool m_cancelRunBlastSearch;
     QProcess * m_makeblastdb;
     QProcess * m_blast;
+    QString m_tempDirectory;
 
     void clearBlastHits();
     void cleanUp();
@@ -48,7 +49,7 @@ public:
     QString getNodeNameFromString(QString nodeString);
     bool findProgram(QString programName, QString * command);
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
-
+    void emptyTempDirectory();
 };
 
 #endif // BLASTSEARCH_H

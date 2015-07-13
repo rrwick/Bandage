@@ -66,10 +66,10 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
 {
     QString fullBlastCommand;
     if (sequenceType == NUCLEOTIDE)
-        fullBlastCommand = m_blastnCommand + " -query " + g_tempDirectory + "nucl_queries.fasta ";
+        fullBlastCommand = m_blastnCommand + " -query " +g_blastSearch-> m_tempDirectory + "nucl_queries.fasta ";
     else
-        fullBlastCommand = m_tblastnCommand + " -query " + g_tempDirectory + "prot_queries.fasta ";
-    fullBlastCommand += "-db " + g_tempDirectory + "all_nodes.fasta -outfmt 6";
+        fullBlastCommand = m_tblastnCommand + " -query " + g_blastSearch->m_tempDirectory + "prot_queries.fasta ";
+    fullBlastCommand += "-db " + g_blastSearch->m_tempDirectory + "all_nodes.fasta -outfmt 6";
 
     QString extraCommandLineOptions = m_parameters;
     fullBlastCommand += " " + extraCommandLineOptions;

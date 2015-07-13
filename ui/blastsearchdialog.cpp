@@ -68,7 +68,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
 
 
     //If a BLAST database already exists, move to step 2.
-    QFile databaseFile(g_tempDirectory + "all_nodes.fasta");
+    QFile databaseFile(g_blastSearch->m_tempDirectory + "all_nodes.fasta");
     if (databaseFile.exists())
         setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 
@@ -76,7 +76,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     //and move to step 1.
     else
     {
-        emptyTempDirectory();
+        g_blastSearch->emptyTempDirectory();
         setUiStep(BLAST_DB_NOT_YET_BUILT);
     }
 

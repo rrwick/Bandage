@@ -18,8 +18,10 @@
 
 #include "blastsearch.h"
 #include "../graph/assemblygraph.h"
+#include <QDir>
 
-BlastSearch::BlastSearch()
+BlastSearch::BlastSearch() :
+    m_blastQueries()
 {
 }
 
@@ -166,3 +168,11 @@ void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 
 
 
+void BlastSearch::emptyTempDirectory()
+{
+    QDir tempDirectory(m_tempDirectory);
+    tempDirectory.setNameFilters(QStringList() << "*.*");
+    tempDirectory.setFilter(QDir::Files);
+    foreach(QString dirFile, tempDirectory.entryList())
+        tempDirectory.remove(dirFile);
+}
