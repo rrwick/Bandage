@@ -24,7 +24,6 @@
 
 bool loadAssemblyGraph(QString filename)
 {
-    g_assemblyGraph.reset(new AssemblyGraph());
     return g_assemblyGraph->loadGraphFromFile(filename);
 }
 
