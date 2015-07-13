@@ -19,6 +19,8 @@
 #include "blastsearch.h"
 #include "../graph/assemblygraph.h"
 #include <QDir>
+#include <QRegularExpression>
+
 
 BlastSearch::BlastSearch() :
     m_blastQueries()
