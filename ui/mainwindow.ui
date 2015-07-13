@@ -923,6 +923,22 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
+              <item row="1" column="0">
+               <widget class="InfoTextWidget" name="nodeLabelsInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="1">
                <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
                 <property name="text">
@@ -951,19 +967,10 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="0">
-               <widget class="InfoTextWidget" name="nodeLabelsInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+              <item row="3" column="1">
+               <widget class="QCheckBox" name="blastHitsCheckBox">
+                <property name="text">
+                 <string>BLAST hits</string>
                 </property>
                </widget>
               </item>

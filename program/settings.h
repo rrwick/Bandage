@@ -62,6 +62,7 @@ public:
     bool displayNodeNames;
     bool displayNodeLengths;
     bool displayNodeCoverages;
+    bool displayBlastHits;
     QFont labelFont;
     bool textOutline;
     bool antialiasing;

@@ -54,6 +54,7 @@ Settings::Settings()
     displayNodeNames = false;
     displayNodeLengths = false;
     displayNodeCoverages = false;
+    displayBlastHits = false;
     labelFont = QFont();
     textOutline = true;
     antialiasing = true;

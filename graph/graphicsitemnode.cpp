@@ -37,6 +37,8 @@
 #include <set>
 #include "../ui/mygraphicsview.h"
 #include <QTransform>
+#include "../blast/blasthit.h"
+#include "../blast/blastquery.h"
 #include "../blast/blasthitpart.h"
 #include "assemblygraph.h"
 #include <cmath>
@@ -136,6 +138,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         }
     }
 
+
     //Draw the node outline
     QColor outlineColour = g_settings->outlineColour;
     double outlineThickness = g_settings->outlineThickness;
@@ -153,7 +156,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
 
 
-    //Draw text if there is any to display.
+    //Draw node labels if there is any to display.
     if (g_settings->anyNodeDisplayText())
     {
         QStringList nodeText = getNodeText();
@@ -201,6 +204,47 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             painter->translate(-offset);
             painter->rotate(g_graphicsView->m_rotation);
             painter->translate(-centres[i]);
+        }
+    }
+
+    //Draw BLAST hit labels, if appropriate.
+    if (g_settings->displayBlastHits && m_deBruijnNode->thisNodeHasBlastHits())
+    {
+        for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
+        {
+            BlastHit * blastHit = m_deBruijnNode->m_blastHits[i];
+            double blastHitCentreFraction = (blastHit->m_nodeStartFraction + blastHit->m_nodeEndFraction) / 2.0;
+            QPointF blastHitCentre = findLocationOnPath(blastHitCentreFraction);
+
+            QPainterPath textPath;
+            QString text = blastHit->m_query->m_name;
+            QFontMetrics metrics(g_settings->labelFont);
+            double shiftLeft = -metrics.width(text) / 2.0;
+            textPath.addText(shiftLeft, 0.0, g_settings->labelFont, text);
+
+            QRectF textBoundingRect = textPath.boundingRect();
+            double textHeight = textBoundingRect.height();
+
+            QPointF offset(0.0, textHeight / 2.0);
+
+            painter->translate(blastHitCentre);
+            painter->rotate(-g_graphicsView->m_rotation);
+            painter->translate(offset);
+
+            if (g_settings->textOutline)
+            {
+                painter->setPen(QPen(g_settings->textOutlineColour,
+                                     g_settings->textOutlineThickness * 2.0,
+                                     Qt::SolidLine,
+                                     Qt::SquareCap,
+                                     Qt::RoundJoin));
+                painter->drawPath(textPath);
+            }
+
+            painter->fillPath(textPath, QBrush(g_settings->textColour));
+            painter->translate(-offset);
+            painter->rotate(g_graphicsView->m_rotation);
+            painter->translate(-blastHitCentre);
         }
     }
 }
@@ -490,12 +534,7 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
     if (endFraction < startFraction)
         std::swap(startFraction, endFraction);
 
-    double totalLength = 0.0;
-    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
-    {
-        QLineF line(m_linePoints[i], m_linePoints[i + 1]);
-        totalLength += line.length();
-    }
+    double totalLength = getNodePathLength();
 
     QPainterPath path;
     bool pathStarted = false;
@@ -537,6 +576,49 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
     }
 
     return path;
+}
+
+
+double GraphicsItemNode::getNodePathLength()
+{
+    double totalLength = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QLineF line(m_linePoints[i], m_linePoints[i + 1]);
+        totalLength += line.length();
+    }
+    return totalLength;
+}
+
+
+//This function will find the point that is a certain fraction of the way along the node's path.
+QPointF GraphicsItemNode::findLocationOnPath(double fraction)
+{
+    double totalLength = getNodePathLength();
+
+    double lengthSoFar = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QPointF point1 = m_linePoints[i];
+        QPointF point2 = m_linePoints[i + 1];
+        QLineF line(point1, point2);
+
+        double point1Fraction = lengthSoFar / totalLength;
+        lengthSoFar += line.length();
+        double point2Fraction = lengthSoFar / totalLength;
+
+        //If point2 hasn't yet reached the target, do nothing.
+        if (point2Fraction < fraction)
+            continue;
+
+        //If the path hasn't yet begun but this segment covers the starting
+        //fraction, start the path now.
+        if (point2Fraction >= fraction)
+            return findIntermediatePoint(point1, point2, point1Fraction, point2Fraction, fraction);
+    }
+
+    //The code shouldn't get here, as the target point should have been found in the above loop.
+    return QPointF();
 }
 
 QPointF GraphicsItemNode::findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue)

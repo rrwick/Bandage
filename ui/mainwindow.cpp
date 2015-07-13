@@ -135,6 +135,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeCoveragesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
     connect(ui->setNodeCustomColourButton, SIGNAL(clicked()), this, SLOT(setNodeCustomColour()));
@@ -1116,6 +1117,7 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeNames = ui->nodeNamesCheckBox->isChecked();
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
+    g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
     //If any of the nodes have text displayed, then it is necessary to set the
@@ -1127,7 +1129,8 @@ void MainWindow::setTextDisplaySettings()
     if (g_settings->displayNodeCustomLabels ||
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
-            g_settings->displayNodeCoverages)
+            g_settings->displayNodeCoverages ||
+            g_settings->displayBlastHits)
         g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     else
         g_graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
@@ -1916,6 +1919,7 @@ void MainWindow::setWidgetsFromSettings()
     ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
     ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
     ui->nodeCoveragesCheckBox->setChecked(g_settings->displayNodeCoverages);
+    ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
 
     setNodeColourSchemeComboBox(g_settings->nodeColourScheme);

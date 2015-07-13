@@ -67,6 +67,8 @@ public:
     QColor getCoverageColour();
     void setWidth();
     QPainterPath makePartialPath(double startFraction, double endFraction);
+    double getNodePathLength();
+    QPointF findLocationOnPath(double fraction);
     QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue);
     QRectF boundingRect() const;
     static double getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
