@@ -208,16 +208,28 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
 
     //Draw BLAST hit labels, if appropriate.
-    if (g_settings->displayBlastHits && m_deBruijnNode->thisNodeHasBlastHits())
+    bool nodeHasBlastHits;
+    if (g_settings->doubleMode)
+        nodeHasBlastHits = m_deBruijnNode->thisNodeHasBlastHits();
+    else
+        nodeHasBlastHits = m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits();
+
+    if (g_settings->displayBlastHits && nodeHasBlastHits)
     {
-        for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
+        std::vector<QString> blastHitText;
+        std::vector<QPointF> blastHitLocation;
+
+        if (g_settings->doubleMode)
+            getBlastHitsTextAndLocationThisNode(&blastHitText, &blastHitLocation);
+        else
+            getBlastHitsTextAndLocationThisNodeOrReverseComplement(&blastHitText, &blastHitLocation);
+
+        for (size_t i = 0; i < blastHitText.size(); ++i)
         {
-            BlastHit * blastHit = m_deBruijnNode->m_blastHits[i];
-            double blastHitCentreFraction = (blastHit->m_nodeStartFraction + blastHit->m_nodeEndFraction) / 2.0;
-            QPointF blastHitCentre = findLocationOnPath(blastHitCentreFraction);
+            QString text = blastHitText[i];
+            QPointF centre = blastHitLocation[i];
 
             QPainterPath textPath;
-            QString text = blastHit->m_query->m_name;
             QFontMetrics metrics(g_settings->labelFont);
             double shiftLeft = -metrics.width(text) / 2.0;
             textPath.addText(shiftLeft, 0.0, g_settings->labelFont, text);
@@ -227,7 +239,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
             QPointF offset(0.0, textHeight / 2.0);
 
-            painter->translate(blastHitCentre);
+            painter->translate(centre);
             painter->rotate(-g_graphicsView->m_rotation);
             painter->translate(offset);
 
@@ -244,7 +256,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             painter->fillPath(textPath, QBrush(g_settings->textColour));
             painter->translate(-offset);
             painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-blastHitCentre);
+            painter->translate(-centre);
         }
     }
 }
@@ -889,5 +901,32 @@ void GraphicsItemNode::shiftPointsLeft()
         QPointF shiftVector = shiftLine.p2() - shiftLine.p1();
         QPointF newPoint = point + shiftVector;
         m_linePoints[i] = newPoint;
+    }
+}
+
+
+
+void GraphicsItemNode::getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
+                                                       std::vector<QPointF> * blastHitLocation)
+{
+    for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
+    {
+        BlastHit * hit = m_deBruijnNode->m_blastHits[i];
+        blastHitText->push_back(hit->m_query->m_name);
+        blastHitLocation->push_back(findLocationOnPath(hit->getNodeCentreFraction()));
+    }
+
+}
+
+void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
+                                                                          std::vector<QPointF> * blastHitLocation)
+{
+    getBlastHitsTextAndLocationThisNode(blastHitText, blastHitLocation);
+
+    for (size_t i = 0; i < m_deBruijnNode->m_reverseComplement->m_blastHits.size(); ++i)
+    {
+        BlastHit * hit = m_deBruijnNode->m_reverseComplement->m_blastHits[i];
+        blastHitText->push_back(hit->m_query->m_name);
+        blastHitLocation->push_back(findLocationOnPath(1.0 - hit->getNodeCentreFraction()));
     }
 }

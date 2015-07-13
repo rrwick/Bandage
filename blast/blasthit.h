@@ -55,6 +55,7 @@ public:
 
     std::vector<BlastHitPart> getBlastHitParts(bool reverse);
     bool onForwardStrand() {return m_queryStart < m_queryEnd;}
+    double getNodeCentreFraction() {return (m_nodeStartFraction + m_nodeEndFraction) / 2.0;}
 };
 
 #endif // BLASTHIT_H

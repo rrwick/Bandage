@@ -74,6 +74,10 @@ public:
     static double getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
                                double coverageEffectOnWidth, double averageNodeWidth);
     void shiftPointsLeft();
+    void getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
+                                             std::vector<QPointF> * blastHitLocation);
+    void getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
+                                                                std::vector<QPointF> * blastHitLocation);
 
 };
 

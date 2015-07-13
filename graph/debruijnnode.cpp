@@ -23,6 +23,7 @@
 #include "graphicsitemnode.h"
 #include <math.h>
 #include "../blast/blasthit.h"
+#include "../blast/blastquery.h"
 #include "assemblygraph.h"
 #include <set>
 #include <QApplication>
@@ -385,8 +386,8 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
         std::swap(positiveNode, negativeNode);
 
     //Look for blast hit parts on both the positive and the negative node,
-    // since hits were previously filtered such that startPos < endPos,
-    // hence we need to look at both positive and negative nodes to recover all hits.
+    //since hits were previously filtered such that startPos < endPos,
+    //hence we need to look at both positive and negative nodes to recover all hits.
     std::vector<BlastHitPart> returnVector;
     for (size_t i = 0; i < positiveNode->m_blastHits.size(); ++i)
     {
@@ -415,3 +416,5 @@ bool DeBruijnNode::isNegativeNode()
     QChar lastChar = m_name.at(m_name.length() - 1);
     return lastChar == '-';
 }
+
+
