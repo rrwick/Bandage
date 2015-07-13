@@ -26,13 +26,11 @@
 #include "../program/settings.h"
 #include <QPainter>
 #include <QSvgGenerator>
+#include <QDir>
+#include "../blast/blastsearch.h"
 
 int bandageImage(QStringList arguments)
 {
-    //Since frame rate performance doesn't matter for a fixed image, set the
-    //default node outline to a nonzero value.
-    g_settings->outlineThickness = 0.3;
-
     QTextStream out(stdout);
     QTextStream err(stdout);
 
@@ -89,6 +87,23 @@ int bandageImage(QStringList arguments)
     int height = 0;
     parseImageOptions(arguments, &width, &height);
 
+
+
+    //Since frame rate performance doesn't matter for a fixed image, set the
+    //default node outline to a nonzero value.
+    g_settings->outlineThickness = 0.3;
+
+    bool blastUsed = false;
+
+    if (blastUsed)
+    {
+        //Running from the command line, it makes more sense to put the temp
+        //directory in the current directory.
+        g_blastSearch->m_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+        QDir().mkdir(g_blastSearch->m_tempDirectory);
+        g_blastSearch->m_blastQueries.createTempQueryFiles();
+    }
+
     //CURRENTLY FIXED AS WHOLE_GRAPH, THOUGH I WOULD LIKE TO ADD
     //SUPPORT FOR AROUND_BLAST_HITS
     g_settings->graphScope = WHOLE_GRAPH;
@@ -140,13 +155,19 @@ int bandageImage(QStringList arguments)
         painter.end();
     }
 
+    int returnCode;
     if (!success)
     {
         out << "There was an error writing the image to file." << endl;
-        return 1;
+        returnCode = 1;
     }
     else
-        return 0;
+        returnCode = 0;
+
+    if (blastUsed)
+        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+
+    return returnCode;
 }
 
 
