@@ -78,6 +78,7 @@ public:
                                              std::vector<QPointF> * blastHitLocation);
     void getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
                                                                 std::vector<QPointF> * blastHitLocation);
+    void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
 
 };
 

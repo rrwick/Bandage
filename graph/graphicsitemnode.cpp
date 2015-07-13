@@ -156,7 +156,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
 
 
-    //Draw node labels if there is any to display.
+    //Draw node labels if there are any to display.
     if (g_settings->anyNodeDisplayText())
     {
         QStringList nodeText = getNodeText();
@@ -173,8 +173,6 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             textPath.addText(shiftLeft, -stepsUntilLast * fontHeight, g_settings->labelFont, text);
         }
 
-        QRectF textBoundingRect = textPath.boundingRect();
-
         std::vector<QPointF> centres;
         if (g_settings->positionTextNodeCentre)
             centres.push_back(getCentre(m_linePoints));
@@ -182,29 +180,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             centres = getCentres();
 
         for (size_t i = 0; i < centres.size(); ++i)
-        {
-            double textHeight = textBoundingRect.height();
-            QPointF offset(0.0, textHeight / 2.0);
-
-            painter->translate(centres[i]);
-            painter->rotate(-g_graphicsView->m_rotation);
-            painter->translate(offset);
-
-            if (g_settings->textOutline)
-            {
-                painter->setPen(QPen(g_settings->textOutlineColour,
-                                     g_settings->textOutlineThickness * 2.0,
-                                     Qt::SolidLine,
-                                     Qt::SquareCap,
-                                     Qt::RoundJoin));
-                painter->drawPath(textPath);
-            }
-
-            painter->fillPath(textPath, QBrush(g_settings->textColour));
-            painter->translate(-offset);
-            painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-centres[i]);
-        }
+            drawTextPathAtLocation(painter, textPath, centres[i]);
     }
 
     //Draw BLAST hit labels, if appropriate.
@@ -234,31 +210,36 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             double shiftLeft = -metrics.width(text) / 2.0;
             textPath.addText(shiftLeft, 0.0, g_settings->labelFont, text);
 
-            QRectF textBoundingRect = textPath.boundingRect();
-            double textHeight = textBoundingRect.height();
-
-            QPointF offset(0.0, textHeight / 2.0);
-
-            painter->translate(centre);
-            painter->rotate(-g_graphicsView->m_rotation);
-            painter->translate(offset);
-
-            if (g_settings->textOutline)
-            {
-                painter->setPen(QPen(g_settings->textOutlineColour,
-                                     g_settings->textOutlineThickness * 2.0,
-                                     Qt::SolidLine,
-                                     Qt::SquareCap,
-                                     Qt::RoundJoin));
-                painter->drawPath(textPath);
-            }
-
-            painter->fillPath(textPath, QBrush(g_settings->textColour));
-            painter->translate(-offset);
-            painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-centre);
+            drawTextPathAtLocation(painter, textPath, centre);
         }
     }
+}
+
+
+void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath textPath, QPointF centre)
+{
+    QRectF textBoundingRect = textPath.boundingRect();
+    double textHeight = textBoundingRect.height();
+    QPointF offset(0.0, textHeight / 2.0);
+
+    painter->translate(centre);
+    painter->rotate(-g_graphicsView->m_rotation);
+    painter->translate(offset);
+
+    if (g_settings->textOutline)
+    {
+        painter->setPen(QPen(g_settings->textOutlineColour,
+                             g_settings->textOutlineThickness * 2.0,
+                             Qt::SolidLine,
+                             Qt::SquareCap,
+                             Qt::RoundJoin));
+        painter->drawPath(textPath);
+    }
+
+    painter->fillPath(textPath, QBrush(g_settings->textColour));
+    painter->translate(-offset);
+    painter->rotate(g_graphicsView->m_rotation);
+    painter->translate(-centre);
 }
 
 
