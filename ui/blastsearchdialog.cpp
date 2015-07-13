@@ -191,10 +191,10 @@ void BlastSearchDialog::fillHitsTable()
     ui->blastHitsTableWidget->clearContents();
 
     int hitCount = int(g_blastSearch->m_hits.size());
+    ui->blastHitsTableWidget->setRowCount(hitCount);
+
     if (hitCount == 0)
         return;
-
-    ui->blastHitsTableWidget->setRowCount(hitCount);
 
     for (int i = 0; i < hitCount; ++i)
     {
@@ -389,14 +389,13 @@ void BlastSearchDialog::clearAllQueries()
 
 void BlastSearchDialog::clearSelectedQueries()
 {
+    //Use the table selection to figure out which queries are to be removed.
+    std::vector<BlastQuery *> queriesToRemove;
     QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
     QModelIndexList selection = select->selectedIndexes();
-
     QSet<int> rowsWithSelectionSet;
     for (int i = 0; i < selection.size(); ++i)
         rowsWithSelectionSet.insert(selection[i].row());
-
-    std::vector<BlastQuery *> queriesToRemove;
     QSet<int>::const_iterator i = rowsWithSelectionSet.constBegin();
     while (i != rowsWithSelectionSet.constEnd())
     {
