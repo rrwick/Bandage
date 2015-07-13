@@ -61,6 +61,7 @@ private slots:
     void loadBlastQueriesFromFastaFile();
     void enterQueryManually();
     void clearAllQueries();
+    void clearSelectedQueries();
     void runBlastSearches();
     void fillTablesAfterBlastSearch();
     void fillQueriesTable();

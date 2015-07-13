@@ -43,6 +43,7 @@ public:
 
     void addQuery(BlastQuery * newQuery);
     void clearAllQueries();
+    void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void searchOccurred();
     void clearSearchResults();
     int getQueryCount(SequenceType sequenceType);

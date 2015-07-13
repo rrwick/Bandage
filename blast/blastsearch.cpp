@@ -144,3 +144,25 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 
 
 
+
+
+void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
+{
+    //Remove any hits that are for queries that will be deleted.
+    std::vector<BlastHit>::iterator i;
+    for (i = m_hits.begin(); i != m_hits.end(); )
+    {
+        BlastQuery * hitQuery = i->m_query;
+        bool hitIsForDeletedQuery = (std::find(queriesToRemove.begin(), queriesToRemove.end(), hitQuery) != queriesToRemove.end());
+        if (hitIsForDeletedQuery)
+            i = m_hits.erase(i);
+        else
+            ++i;
+    }
+
+    //Now actually delete the queries.
+    m_blastQueries.clearSomeQueries(queriesToRemove);
+}
+
+
+

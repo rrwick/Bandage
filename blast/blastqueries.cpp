@@ -75,6 +75,17 @@ void BlastQueries::clearAllQueries()
     deleteTempFiles();
 }
 
+void BlastQueries::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
+{
+    for (size_t i = 0; i < queriesToRemove.size(); ++i)
+    {
+        m_queries.erase(std::remove(m_queries.begin(), m_queries.end(), queriesToRemove[i]), m_queries.end());
+        delete queriesToRemove[i];
+    }
+
+    updateTempFiles();
+}
+
 void BlastQueries::deleteTempFiles()
 {
     if (tempNuclFileExists())

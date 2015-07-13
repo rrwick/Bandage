@@ -41,6 +41,7 @@
 #include "../blast/runblastsearchworker.h"
 #include "myprogressdialog.h"
 #include "colourbutton.h"
+#include <QSet>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
@@ -102,6 +103,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearAllQueriesButton, SIGNAL(clicked()), this, SLOT(clearAllQueries()));
+    connect(ui->clearSelectedQueriesButton, SIGNAL(clicked(bool)), this, SLOT(clearSelectedQueries()));
     connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
     connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
     connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
@@ -179,8 +181,6 @@ void BlastSearchDialog::fillQueriesTable()
     }
 
     ui->blastQueriesTableWidget->resizeColumns();
-
-    setUiStep(READY_FOR_BLAST_SEARCH);
 
     ui->blastQueriesTableWidget->blockSignals(false);
 }
@@ -333,6 +333,8 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 
         progress->close();
         delete progress;
+
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 }
 
@@ -364,6 +366,8 @@ void BlastSearchDialog::enterQueryManually()
                                                               enterOneBlastQueryDialog.getSequence()));
         fillQueriesTable();
         clearBlastHits();
+
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 }
 
@@ -380,6 +384,44 @@ void BlastSearchDialog::clearAllQueries()
 
     clearBlastHits();
     setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
+}
+
+
+void BlastSearchDialog::clearSelectedQueries()
+{
+    QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
+    QModelIndexList selection = select->selectedIndexes();
+
+    QSet<int> rowsWithSelectionSet;
+    for (int i = 0; i < selection.size(); ++i)
+        rowsWithSelectionSet.insert(selection[i].row());
+
+    std::vector<BlastQuery *> queriesToRemove;
+    QSet<int>::const_iterator i = rowsWithSelectionSet.constBegin();
+    while (i != rowsWithSelectionSet.constEnd())
+    {
+        size_t queryToRemoveIndex = *i;
+        if (queryToRemoveIndex < g_blastSearch->m_blastQueries.m_queries.size())
+        {
+            BlastQuery * queryToRemove = g_blastSearch->m_blastQueries.m_queries[queryToRemoveIndex];
+            queriesToRemove.push_back(queryToRemove);
+        }
+        ++i;
+    }
+
+    if (queriesToRemove.size() == g_blastSearch->m_blastQueries.m_queries.size())
+    {
+        clearAllQueries();
+        return;
+    }
+
+    bool hitsExist = (g_blastSearch->m_hits.size() > 0);
+
+    g_blastSearch->clearSomeQueries(queriesToRemove);
+
+    fillQueriesTable();
+    if (hitsExist)
+        fillHitsTable();
 }
 
 
