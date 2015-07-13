@@ -25,12 +25,12 @@
 #include <QApplication>
 #include <QProcess>
 
-Settings * g_settings;
+QSharedPointer<Settings> g_settings;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
-BlastSearch * g_blastSearch;
+QSharedPointer<BlastSearch> g_blastSearch;
 QString g_tempDirectory;
-AssemblyGraph * g_assemblyGraph;
+QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
 
 QString formatIntForDisplay(int num)

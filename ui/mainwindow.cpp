@@ -67,7 +67,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
 {
     ui->setupUi(this);
 
-    g_assemblyGraph = new AssemblyGraph();
+    g_assemblyGraph.reset(new AssemblyGraph());
 
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
     g_graphicsView = new MyGraphicsView();
@@ -107,7 +107,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
-    g_blastSearch = new BlastSearch();
+    g_blastSearch.reset(new BlastSearch());
 
     setInfoTexts();
 
@@ -194,9 +194,7 @@ MainWindow::~MainWindow()
 {
     cleanUp();
     delete m_graphicsViewZoom;
-    delete g_assemblyGraph;
     delete ui;
-    delete g_blastSearch;
 
     QDir(g_tempDirectory).removeRecursively();
 }

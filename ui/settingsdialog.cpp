@@ -87,7 +87,7 @@ void setOneWidgetFromSetting(QColor * setting, ColourButton * widget) {widget->s
 
 void SettingsDialog::setWidgetsFromSettings()
 {
-    loadOrSaveSettingsToOrFromWidgets(true, g_settings);
+    loadOrSaveSettingsToOrFromWidgets(true, g_settings.data());
 
     enableDisableCoverageValueSpinBoxes();
 }
@@ -95,7 +95,7 @@ void SettingsDialog::setWidgetsFromSettings()
 
 void SettingsDialog::setSettingsFromWidgets()
 {
-    loadOrSaveSettingsToOrFromWidgets(false, g_settings);
+    loadOrSaveSettingsToOrFromWidgets(false, g_settings.data());
 
     //The highlighted outline thickness should always be a bit
     //bigger than the outlineThickness.

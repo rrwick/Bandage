@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     QTextStream out(stdout);
     QTextStream err(stdout);
 
-    g_settings = new Settings();
+    g_settings.reset(new Settings());
 
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();

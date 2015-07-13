@@ -22,6 +22,7 @@
 #include <vector>
 #include <QString>
 #include <QProcess>
+#include <QSharedPointer>
 
 class Settings;
 class MyGraphicsView;
@@ -40,12 +41,12 @@ enum SequenceType {NUCLEOTIDE, PROTEIN, EITHER_NUCLEOTIDE_OR_PROTEIN};
 enum BlastUiState {BLAST_DB_NOT_YET_BUILT, BLAST_DB_BUILD_IN_PROGRESS, BLAST_DB_BUILT_BUT_NO_QUERIES,
                    READY_FOR_BLAST_SEARCH, BLAST_SEARCH_IN_PROGRESS, BLAST_SEARCH_COMPLETE};
 
-extern Settings * g_settings;
+extern QSharedPointer<Settings> g_settings;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
-extern BlastSearch * g_blastSearch;
+extern QSharedPointer<BlastSearch> g_blastSearch;
 extern QString g_tempDirectory;
-extern AssemblyGraph * g_assemblyGraph;
+extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
