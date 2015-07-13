@@ -926,11 +926,11 @@ void MainWindow::switchColourScheme()
         ui->contiguityWidget->setVisible(false);
         break;
     case 3:
-        g_settings->nodeColourScheme = BLAST_HITS_RAINBOW_COLOUR;
+        g_settings->nodeColourScheme = BLAST_HITS_SOLID_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 4:
-        g_settings->nodeColourScheme = BLAST_HITS_SOLID_COLOUR;
+        g_settings->nodeColourScheme = BLAST_HITS_RAINBOW_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 5:
@@ -1419,7 +1419,7 @@ void MainWindow::openBlastSearchDialog()
             //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
             if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
                     g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
-                setNodeColourSchemeComboBox(BLAST_HITS_RAINBOW_COLOUR);
+                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
         }
     }
 
@@ -1933,8 +1933,8 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
     case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
     case COVERAGE_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
-    case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
-    case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
+    case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
+    case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
     case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
     case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
     }

@@ -787,12 +787,12 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>BLAST hits (rainbow)</string>
+                  <string>BLAST hits (solid)</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>BLAST hits (solid)</string>
+                  <string>BLAST hits (rainbow)</string>
                  </property>
                 </item>
                 <item>
