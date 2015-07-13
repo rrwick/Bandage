@@ -67,8 +67,6 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
 {
     ui->setupUi(this);
 
-    g_assemblyGraph = new AssemblyGraph();
-
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
     g_graphicsView = new MyGraphicsView();
     ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
@@ -76,12 +74,16 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     srand(time(NULL));
 
     //Make a temp directory to hold the BLAST files.
-    g_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
-    if (!QDir().mkdir(g_tempDirectory))
+    //Since Bandage is running in GUI mode, we make it in the system's
+    //temp area - out of the way for the user.
+    g_blastSearch->m_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+    if (!QDir().mkdir(g_blastSearch->m_tempDirectory))
     {
         QMessageBox::warning(this, "Error", "A temporary directory could not be created.  BLAST search functionality will not be available");
         return;
     }
+    else
+        g_blastSearch->m_blastQueries.createTempQueryFiles();
 
     m_previousZoomSpinBoxValue = ui->zoomSpinBox->value();
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
@@ -106,8 +108,6 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
 
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
-
-    g_blastSearch = new BlastSearch();
 
     setInfoTexts();
 
@@ -135,6 +135,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeCoveragesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
     connect(ui->setNodeCustomColourButton, SIGNAL(clicked()), this, SLOT(setNodeCustomColour()));
@@ -193,11 +194,9 @@ MainWindow::~MainWindow()
 {
     cleanUp();
     delete m_graphicsViewZoom;
-    delete g_assemblyGraph;
     delete ui;
-    delete g_blastSearch;
 
-    QDir(g_tempDirectory).removeRecursively();
+    QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
 
 
@@ -205,7 +204,8 @@ MainWindow::~MainWindow()
 void MainWindow::cleanUp()
 {
     ui->blastQueryComboBox->clear();
-    emptyTempDirectory();
+    ui->blastQueryComboBox->addItem("none");
+
     g_blastSearch->cleanUp();
     g_assemblyGraph->cleanUp();
     setWindowTitle("Bandage");
@@ -710,12 +710,27 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
     if (g_blastSearch->m_blastQueries.m_queries.size() == 0)
         return returnVector;
 
-    BlastQuery * currentQuery = &(g_blastSearch->m_blastQueries.m_queries[ui->blastQueryComboBox->currentIndex()]);
+    std::vector<BlastQuery *> queries;
 
-    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
+    //If "all" is selected, then we'll display nodes with hits from any query
+    if (ui->blastQueryComboBox->currentIndex() == 0 &&
+            ui->blastQueryComboBox->currentText() == "all")
+        queries = g_blastSearch->m_blastQueries.m_queries;
+
+    //If only one query is selected, then we just display nodes with hits from that query
+    else
+        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText()));
+
+    //Add the blast hit pointers to nodes that have a hit for
+    //the selected target(s).
+    for (size_t i = 0; i < queries.size(); ++i)
     {
-        if (g_blastSearch->m_hits[i].m_query == currentQuery)
-            returnVector.push_back(g_blastSearch->m_hits[i].m_node);
+        BlastQuery * currentQuery = queries[i];
+        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        {
+            if (g_blastSearch->m_hits[j].m_query == currentQuery)
+                returnVector.push_back(g_blastSearch->m_hits[j].m_node);
+        }
     }
 
     return returnVector;
@@ -725,7 +740,17 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromBlastHits()
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
-    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Laying out graph...", true, "Cancel layout", "Cancelling layout...",
+                                                       "Clicking this button will halt the graph layout and display "
+                                                       "the graph in its current, incomplete state.<br><br>"
+                                                       "Layout can take a long time for very large graphs.  There are "
+                                                       "three strategies to reduce the amount of time required:<ul>"
+                                                       "<li>Change the scope of the graph from 'Entire graph' to either "
+                                                       "'Around nodes' or 'Around BLAST hits'.  This will reduce the "
+                                                       "number of nodes that are drawn to the screen.</li>"
+                                                       "<li>Increase the 'Base pairs per segment' setting.  This will "
+                                                       "result in shorter contigs which take less time to lay out.</li>"
+                                                       "<li>Reduce the 'Graph layout iterations' setting.</li></ul>");
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
@@ -736,7 +761,7 @@ void MainWindow::layoutGraph()
                                                                   g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
-    connect(progress, SIGNAL(haltLayout()), this, SLOT(graphLayoutCancelled()));
+    connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));
     connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
     connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
@@ -900,14 +925,18 @@ void MainWindow::switchColourScheme()
         ui->contiguityWidget->setVisible(false);
         break;
     case 3:
-        g_settings->nodeColourScheme = BLAST_HITS_COLOUR;
+        g_settings->nodeColourScheme = BLAST_HITS_SOLID_COLOUR;
         ui->contiguityWidget->setVisible(false);
         break;
     case 4:
+        g_settings->nodeColourScheme = BLAST_HITS_RAINBOW_COLOUR;
+        ui->contiguityWidget->setVisible(false);
+        break;
+    case 5:
         g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
         ui->contiguityWidget->setVisible(true);
         break;
-    case 5:
+    case 6:
         g_settings->nodeColourScheme = CUSTOM_COLOURS;
         ui->contiguityWidget->setVisible(false);
         break;
@@ -1084,6 +1113,7 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeNames = ui->nodeNamesCheckBox->isChecked();
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
+    g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
     //If any of the nodes have text displayed, then it is necessary to set the
@@ -1095,7 +1125,8 @@ void MainWindow::setTextDisplaySettings()
     if (g_settings->displayNodeCustomLabels ||
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
-            g_settings->displayNodeCoverages)
+            g_settings->displayNodeCoverages ||
+            g_settings->displayBlastHits)
         g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     else
         g_graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
@@ -1128,8 +1159,8 @@ void MainWindow::setNodeCustomColour()
     if (newColour.isValid())
     {
         //If the colouring scheme is not currently custom, change it to custom now
-        if (ui->coloursComboBox->currentIndex() != 5)
-            ui->coloursComboBox->setCurrentIndex(5);
+        if (g_settings->nodeColourScheme != CUSTOM_COLOURS)
+            setNodeColourSchemeComboBox(CUSTOM_COLOURS);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {
@@ -1356,25 +1387,42 @@ void MainWindow::openBlastSearchDialog()
 {
     BlastSearchDialog blastSearchDialog(this);
 
-    connect(&blastSearchDialog, SIGNAL(createAllNodesFasta(QString, bool)), this, SLOT(saveAllNodesToFasta(QString, bool)));
-    connect(this, SIGNAL(saveAllNodesToFastaFinished()), &blastSearchDialog, SLOT(buildBlastDatabase2()));
-
     blastSearchDialog.exec();
 
-    //Fill in the blast results combo box
     ui->blastQueryComboBox->clear();
+    QStringList comboBoxItems;
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i].m_hits > 0)
-            ui->blastQueryComboBox->addItem(g_blastSearch->m_blastQueries.m_queries[i].m_name);
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
     }
 
-    if (ui->blastQueryComboBox->count() > 0)
+    if (comboBoxItems.size() > 1)
+        comboBoxItems.push_front("all");
+
+    if (comboBoxItems.size() > 0)
     {
-        //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
-        if (ui->coloursComboBox->currentIndex() != 3)
-            ui->coloursComboBox->setCurrentIndex(3);
+        ui->blastQueryComboBox->addItems(comboBoxItems);
+        ui->blastQueryComboBox->setEnabled(true);
     }
+    else
+    {
+        ui->blastQueryComboBox->addItem("none");
+        ui->blastQueryComboBox->setEnabled(false);
+    }
+
+    if (blastSearchDialog.m_blastSearchConducted)
+    {
+        if (ui->blastQueryComboBox->count() > 0)
+        {
+            //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
+            if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
+                    g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
+                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
+        }
+    }
+
+    g_graphicsView->viewport()->update();
 }
 
 
@@ -1382,42 +1430,32 @@ void MainWindow::blastTargetChanged()
 {
     g_assemblyGraph->clearAllBlastHitPointers();
 
+    std::vector<BlastQuery *> queries;
+
+    //If "all" is selected, then we'll display each of the BLAST queries
+    if (ui->blastQueryComboBox->currentIndex() == 0 &&
+            ui->blastQueryComboBox->currentText() == "all")
+        queries = g_blastSearch->m_blastQueries.m_queries;
+
+    //If only one query is selected, then just display that one.
+    else
+        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText()));
+
     //Add the blast hit pointers to nodes that have a hit for
-    //the selected target.
-    BlastQuery * currentQuery = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
-    for (size_t i = 0; i < g_blastSearch->m_hits.size(); ++i)
+    //the selected target(s).
+    for (size_t i = 0; i < queries.size(); ++i)
     {
-        BlastHit * hit = &(g_blastSearch->m_hits[i]);
-        if (hit->m_query == currentQuery)
-            hit->m_node->m_blastHits.push_back(hit);
+        BlastQuery * currentQuery = queries[i];
+        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        {
+            BlastHit * hit = &(g_blastSearch->m_hits[j]);
+            if (hit->m_query == currentQuery)
+                hit->m_node->m_blastHits.push_back(hit);
+        }
     }
 
     g_graphicsView->viewport()->update();
 }
-
-
-
-void MainWindow::saveAllNodesToFasta(QString path, bool includeEmptyNodes)
-{
-    QFile file(path + "all_nodes.fasta");
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
-    QTextStream out(&file);
-
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        if (includeEmptyNodes || i.value()->m_length > 0)
-        {
-            out << i.value()->getFasta();
-            out << "\n";
-        }
-    }
-    file.close();
-
-    emit saveAllNodesToFastaFinished();
-}
-
 
 
 void MainWindow::setInfoTexts()
@@ -1469,6 +1507,10 @@ void MainWindow::setInfoTexts()
                                   "<li>Holding the " + control + " key and using the mouse wheel over the graph.</li>"
                                   "<li>Clicking on the graph display and then using the '+' and '-' keys.</li></ul>");
     ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
+                                        "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
+                                        "selected, new random colours will be chosen. Negative nodes (visible "
+                                        "in 'Double' mode) will be a darker shade of their complement positive "
+                                        "nodes.</li>"
                                         "<li>'Uniform colour': For graphs drawn with the 'Entire graph' scope, all "
                                         "nodes will be the same colour. For graphs drawn with the 'Around nodes' "
                                         "scope, your specified nodes will be drawn in a separate colour. For "
@@ -1476,14 +1518,17 @@ void MainWindow::setInfoTexts()
                                         "will be drawn in a separate colour.</li>"
                                         "<li>'Colour by coverage': Node colours will be defined by their "
                                         "coverage.</li>"
-                                        "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
-                                        "selected, new random colours will be chosen. Negative nodes (visible "
-                                        "in 'Double' mode) will be a darker shade of their complement positive "
-                                        "nodes.</li>"
-                                        "<li>'Colour using BLAST hits': Nodes will be drawn in a light grey colour "
+                                        "<li>'BLAST hits (rainbow)': Nodes will be drawn in a light grey colour "
                                         "and BLAST hits for the currently selected query will be drawn using a "
                                         "rainbow. Red indicates the start of the query sequence and violet "
                                         "indicates the end.</li>"
+                                        "<li>'BLAST hits (solid)': Nodes will be drawn in a light grey colour "
+                                        "and BLAST hits for the currently selected query will be drawn using "
+                                        "the query's colour. Query colours can be specified in the 'Create/view"
+                                        "BLAST search' window.</li>"
+                                        "<li>'Colour by contiguity': This option will display a 'Determine "
+                                        "contiguity button. When pressed, the nodes will be coloured based "
+                                        "on their contiguity with the selected node(s).</li>"
                                         "<li>'Custom colours': Nodes will be coloured using colours of your "
                                         "choice. Select one or more nodes and then click the 'Set colour' button "
                                         "to define their colour.</li></ul>"
@@ -1494,9 +1539,11 @@ void MainWindow::setInfoTexts()
                                         "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
                                         "nodes in the graph.<br><br>"
-                                        "'Number', 'Length' and 'Coverage' labels are created automatically. "
+                                        "'Name', 'Length' and 'Coverage' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
-                                        "label' button when one or more nodes are selected.");
+                                        "label' button when one or more nodes are selected.<br><br>"
+                                        "When 'BLAST hits' labels are shown, they are displayed over any "
+                                        "BLAST hits present in the node.");
     ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels. The "
                                       "colour of the font is configurable in Bandage's settings.<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
@@ -1506,11 +1553,11 @@ void MainWindow::setInfoTexts()
     ui->blastSearchInfoText->setInfoText("Click this button to open a dialog where a BLAST search for one "
                                          "or more queries can be carried out on the graph's nodes.<br><br>"
                                          "After a BLAST search is complete, it will be possible to use the "
-                                         "'Around BLAST hits' graph scope and the 'Colour using BLAST "
-                                         "hits' colour mode.");
+                                         "'Around BLAST hits' graph scope and the 'BLAST "
+                                         "hits' colour modes.");
     ui->blastQueryInfoText->setInfoText("After a BLAST search is completed, you can select a query here for use "
-                                        "with the 'Around BLAST hits' graph scope and the 'Colour using BLAST "
-                                        "hits' colour mode.");
+                                        "with the 'Around BLAST hits' graph scope and the 'BLAST "
+                                        "hits' colour modes.");
     ui->selectionSearchInfoText->setInfoText("Type a comma-delimited list of one or mode node numbers and then click "
                                              "the 'Find node(s)' button to search for nodes in the graph. "
                                              "If the search is successful, the view will zoom to the found nodes "
@@ -1870,15 +1917,24 @@ void MainWindow::setWidgetsFromSettings()
     ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
     ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
     ui->nodeCoveragesCheckBox->setChecked(g_settings->displayNodeCoverages);
+    ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
 
-    switch (g_settings->nodeColourScheme)
+    setNodeColourSchemeComboBox(g_settings->nodeColourScheme);
+}
+
+
+
+void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
+{
+    switch (nodeColourScheme)
     {
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
     case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
     case COVERAGE_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
-    case BLAST_HITS_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
-    case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
-    case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(5); break;
+    case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
+    case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
+    case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
+    case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
     }
 }

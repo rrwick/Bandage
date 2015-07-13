@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-964</y>
-        <width>338</width>
-        <height>1611</height>
+        <y>-1415</y>
+        <width>432</width>
+        <height>2041</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -200,7 +200,7 @@
         </widget>
        </item>
        <item row="22" column="3">
-        <widget class="QPushButton" name="outlineColourButton">
+        <widget class="ColourButton" name="outlineColourButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -226,7 +226,7 @@
         </widget>
        </item>
        <item row="20" column="3">
-        <widget class="QPushButton" name="edgeColourButton">
+        <widget class="ColourButton" name="edgeColourButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -377,7 +377,7 @@
         </widget>
        </item>
        <item row="85" column="3">
-        <widget class="QPushButton" name="contiguityStartingColourButton">
+        <widget class="ColourButton" name="contiguityStartingColourButton">
          <property name="text">
           <string/>
          </property>
@@ -563,14 +563,14 @@
         </widget>
        </item>
        <item row="84" column="3">
-        <widget class="QPushButton" name="notContiguousColourButton">
+        <widget class="ColourButton" name="notContiguousColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
        <item row="83" column="3">
-        <widget class="QPushButton" name="maybeContiguousColourButton">
+        <widget class="ColourButton" name="maybeContiguousColourButton">
          <property name="text">
           <string/>
          </property>
@@ -599,7 +599,7 @@
         </widget>
        </item>
        <item row="64" column="3">
-        <widget class="QPushButton" name="highCoverageColourButton">
+        <widget class="ColourButton" name="highCoverageColourButton">
          <property name="text">
           <string/>
          </property>
@@ -1139,7 +1139,7 @@
         </widget>
        </item>
        <item row="53" column="3">
-        <widget class="QPushButton" name="uniformPositiveNodeColourButton">
+        <widget class="ColourButton" name="uniformPositiveNodeColourButton">
          <property name="text">
           <string/>
          </property>
@@ -1192,7 +1192,7 @@
         </widget>
        </item>
        <item row="82" column="3">
-        <widget class="QPushButton" name="contiguousEitherStrandColourButton">
+        <widget class="ColourButton" name="contiguousEitherStrandColourButton">
          <property name="text">
           <string/>
          </property>
@@ -1251,7 +1251,7 @@
         </widget>
        </item>
        <item row="33" column="3">
-        <widget class="QPushButton" name="textColourButton">
+        <widget class="ColourButton" name="textColourButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1526,7 +1526,7 @@
         </widget>
        </item>
        <item row="34" column="3">
-        <widget class="QPushButton" name="textOutlineColourButton">
+        <widget class="ColourButton" name="textOutlineColourButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1721,7 +1721,7 @@
         </widget>
        </item>
        <item row="24" column="3">
-        <widget class="QPushButton" name="selectionColourButton">
+        <widget class="ColourButton" name="selectionColourButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -2061,14 +2061,14 @@
         </widget>
        </item>
        <item row="63" column="3">
-        <widget class="QPushButton" name="lowCoverageColourButton">
+        <widget class="ColourButton" name="lowCoverageColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
        <item row="81" column="3">
-        <widget class="QPushButton" name="contiguousStrandSpecificColourButton">
+        <widget class="ColourButton" name="contiguousStrandSpecificColourButton">
          <property name="text">
           <string/>
          </property>
@@ -2114,7 +2114,7 @@
         </widget>
        </item>
        <item row="55" column="3">
-        <widget class="QPushButton" name="uniformNodeSpecialColourButton">
+        <widget class="ColourButton" name="uniformNodeSpecialColourButton">
          <property name="text">
           <string/>
          </property>
@@ -2157,7 +2157,7 @@
         </widget>
        </item>
        <item row="54" column="3">
-        <widget class="QPushButton" name="uniformNegativeNodeColourButton">
+        <widget class="ColourButton" name="uniformNegativeNodeColourButton">
          <property name="text">
           <string/>
          </property>
@@ -2197,7 +2197,7 @@
         </widget>
        </item>
        <item row="73" column="3">
-        <widget class="QPushButton" name="noBlastHitsColourButton">
+        <widget class="ColourButton" name="noBlastHitsColourButton">
          <property name="text">
           <string/>
          </property>
@@ -2435,6 +2435,11 @@
    <extends>QWidget</extends>
    <header>nodewidthvisualaid.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColourButton</class>
+   <extends>QPushButton</extends>
+   <header>colourbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

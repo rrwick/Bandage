@@ -40,7 +40,7 @@ Settings::Settings()
     arrowheadSize = 0.01;
     textOutlineThickness = 0.3;
 
-    blastPartsPerQuery = 100;
+    blastRainbowPartsPerQuery = 100;
 
     graphScope = WHOLE_GRAPH;
 
@@ -54,6 +54,7 @@ Settings::Settings()
     displayNodeNames = false;
     displayNodeLengths = false;
     displayNodeCoverages = false;
+    displayBlastHits = false;
     labelFont = QFont();
     textOutline = true;
     antialiasing = true;
@@ -95,7 +96,6 @@ Settings::Settings()
     highCoverageColour = QColor(255, 0, 0);
 
     blastSearchParameters = "";
-    blastTimeoutSeconds = 30;
 
     rememberedPath = QDir::homePath();
 }

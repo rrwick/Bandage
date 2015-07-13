@@ -48,7 +48,7 @@ public:
     double arrowheadSize;
     double textOutlineThickness;
 
-    int blastPartsPerQuery;
+    int blastRainbowPartsPerQuery;
 
     GraphScope graphScope;
 
@@ -62,6 +62,7 @@ public:
     bool displayNodeNames;
     bool displayNodeLengths;
     bool displayNodeCoverages;
+    bool displayBlastHits;
     QFont labelFont;
     bool textOutline;
     bool antialiasing;
@@ -104,7 +105,6 @@ public:
     QColor highCoverageColour;
 
     QString blastSearchParameters;
-    int blastTimeoutSeconds;
 
     QString rememberedPath;
 

@@ -37,6 +37,8 @@
 #include <set>
 #include "../ui/mygraphicsview.h"
 #include <QTransform>
+#include "../blast/blasthit.h"
+#include "../blast/blastquery.h"
 #include "../blast/blasthitpart.h"
 #include "assemblygraph.h"
 #include <cmath>
@@ -95,8 +97,15 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     QBrush brush(m_colour);
     painter->fillPath(outlinePath, brush);
 
+    bool nodeHasBlastHits;
+    if (g_settings->doubleMode)
+        nodeHasBlastHits = m_deBruijnNode->thisNodeHasBlastHits();
+    else
+        nodeHasBlastHits = m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits();
+
     //If the node contains a BLAST hit, draw that on top.
-    if (g_settings->nodeColourScheme == BLAST_HITS_COLOUR)
+    if (nodeHasBlastHits && (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR ||
+            g_settings->nodeColourScheme == BLAST_HITS_SOLID_COLOUR))
     {
         std::vector<BlastHitPart> parts;
 
@@ -111,29 +120,27 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
                 parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
         }
 
-        if (parts.size() > 0)
+        QPen partPen;
+        partPen.setWidthF(m_width);
+        partPen.setCapStyle(Qt::FlatCap);
+        partPen.setJoinStyle(Qt::BevelJoin);
+
+        //If the node has an arrow, then it's necessary to use the outline
+        //as a clipping path so the colours don't extend past the edge of the
+        //node.
+        if (m_hasArrow)
+            painter->setClipPath(outlinePath);
+
+        for (size_t i = 0; i < parts.size(); ++i)
         {
-            QPen partPen;
-            partPen.setWidthF(m_width);
-            partPen.setCapStyle(Qt::FlatCap);
-            partPen.setJoinStyle(Qt::BevelJoin);
+            partPen.setColor(parts[i].m_colour);
+            painter->setPen(partPen);
 
-            //If the node has an arrow, then it's necessary to use the outline
-            //as a clipping path so the colours don't extend past the edge of the
-            //node.
-            if (m_hasArrow)
-                painter->setClipPath(outlinePath);
-
-            for (size_t i = 0; i < parts.size(); ++i)
-            {
-                partPen.setColor(parts[i].m_colour);
-                painter->setPen(partPen);
-
-                painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
-            }
-            painter->setClipping(false);
+            painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
         }
+        painter->setClipping(false);
     }
+
 
     //Draw the node outline
     QColor outlineColour = g_settings->outlineColour;
@@ -152,7 +159,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
 
 
-    //Draw text if there is any to display.
+    //Draw node labels if there are any to display.
     if (g_settings->anyNodeDisplayText())
     {
         QStringList nodeText = getNodeText();
@@ -169,8 +176,6 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             textPath.addText(shiftLeft, -stepsUntilLast * fontHeight, g_settings->labelFont, text);
         }
 
-        QRectF textBoundingRect = textPath.boundingRect();
-
         std::vector<QPointF> centres;
         if (g_settings->positionTextNodeCentre)
             centres.push_back(getCentre(m_linePoints));
@@ -178,30 +183,60 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             centres = getCentres();
 
         for (size_t i = 0; i < centres.size(); ++i)
+            drawTextPathAtLocation(painter, textPath, centres[i]);
+    }
+
+    //Draw BLAST hit labels, if appropriate.
+    if (g_settings->displayBlastHits && nodeHasBlastHits)
+    {
+        std::vector<QString> blastHitText;
+        std::vector<QPointF> blastHitLocation;
+
+        if (g_settings->doubleMode)
+            getBlastHitsTextAndLocationThisNode(&blastHitText, &blastHitLocation);
+        else
+            getBlastHitsTextAndLocationThisNodeOrReverseComplement(&blastHitText, &blastHitLocation);
+
+        for (size_t i = 0; i < blastHitText.size(); ++i)
         {
-            double textHeight = textBoundingRect.height();
-            QPointF offset(0.0, textHeight / 2.0);
+            QString text = blastHitText[i];
+            QPointF centre = blastHitLocation[i];
 
-            painter->translate(centres[i]);
-            painter->rotate(-g_graphicsView->m_rotation);
-            painter->translate(offset);
+            QPainterPath textPath;
+            QFontMetrics metrics(g_settings->labelFont);
+            double shiftLeft = -metrics.width(text) / 2.0;
+            textPath.addText(shiftLeft, 0.0, g_settings->labelFont, text);
 
-            if (g_settings->textOutline)
-            {
-                painter->setPen(QPen(g_settings->textOutlineColour,
-                                     g_settings->textOutlineThickness * 2.0,
-                                     Qt::SolidLine,
-                                     Qt::SquareCap,
-                                     Qt::RoundJoin));
-                painter->drawPath(textPath);
-            }
-
-            painter->fillPath(textPath, QBrush(g_settings->textColour));
-            painter->translate(-offset);
-            painter->rotate(g_graphicsView->m_rotation);
-            painter->translate(-centres[i]);
+            drawTextPathAtLocation(painter, textPath, centre);
         }
     }
+}
+
+
+void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath textPath, QPointF centre)
+{
+    QRectF textBoundingRect = textPath.boundingRect();
+    double textHeight = textBoundingRect.height();
+    QPointF offset(0.0, textHeight / 2.0);
+
+    painter->translate(centre);
+    painter->rotate(-g_graphicsView->m_rotation);
+    painter->translate(offset);
+
+    if (g_settings->textOutline)
+    {
+        painter->setPen(QPen(g_settings->textOutlineColour,
+                             g_settings->textOutlineThickness * 2.0,
+                             Qt::SolidLine,
+                             Qt::SquareCap,
+                             Qt::RoundJoin));
+        painter->drawPath(textPath);
+    }
+
+    painter->fillPath(textPath, QBrush(g_settings->textColour));
+    painter->translate(-offset);
+    painter->rotate(g_graphicsView->m_rotation);
+    painter->translate(-centre);
 }
 
 
@@ -265,7 +300,13 @@ void GraphicsItemNode::setNodeColour()
         break;
     }
 
-    case BLAST_HITS_COLOUR:
+    case BLAST_HITS_RAINBOW_COLOUR:
+    {
+        m_colour = g_settings->noBlastHitsColour;
+        break;
+    }
+
+    case BLAST_HITS_SOLID_COLOUR:
     {
         m_colour = g_settings->noBlastHitsColour;
         break;
@@ -483,12 +524,7 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
     if (endFraction < startFraction)
         std::swap(startFraction, endFraction);
 
-    double totalLength = 0.0;
-    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
-    {
-        QLineF line(m_linePoints[i], m_linePoints[i + 1]);
-        totalLength += line.length();
-    }
+    double totalLength = getNodePathLength();
 
     QPainterPath path;
     bool pathStarted = false;
@@ -530,6 +566,49 @@ QPainterPath GraphicsItemNode::makePartialPath(double startFraction, double endF
     }
 
     return path;
+}
+
+
+double GraphicsItemNode::getNodePathLength()
+{
+    double totalLength = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QLineF line(m_linePoints[i], m_linePoints[i + 1]);
+        totalLength += line.length();
+    }
+    return totalLength;
+}
+
+
+//This function will find the point that is a certain fraction of the way along the node's path.
+QPointF GraphicsItemNode::findLocationOnPath(double fraction)
+{
+    double totalLength = getNodePathLength();
+
+    double lengthSoFar = 0.0;
+    for (size_t i = 0; i < m_linePoints.size() - 1; ++i)
+    {
+        QPointF point1 = m_linePoints[i];
+        QPointF point2 = m_linePoints[i + 1];
+        QLineF line(point1, point2);
+
+        double point1Fraction = lengthSoFar / totalLength;
+        lengthSoFar += line.length();
+        double point2Fraction = lengthSoFar / totalLength;
+
+        //If point2 hasn't yet reached the target, do nothing.
+        if (point2Fraction < fraction)
+            continue;
+
+        //If the path hasn't yet begun but this segment covers the starting
+        //fraction, start the path now.
+        if (point2Fraction >= fraction)
+            return findIntermediatePoint(point1, point2, point1Fraction, point2Fraction, fraction);
+    }
+
+    //The code shouldn't get here, as the target point should have been found in the above loop.
+    return QPointF();
 }
 
 QPointF GraphicsItemNode::findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue)
@@ -800,5 +879,32 @@ void GraphicsItemNode::shiftPointsLeft()
         QPointF shiftVector = shiftLine.p2() - shiftLine.p1();
         QPointF newPoint = point + shiftVector;
         m_linePoints[i] = newPoint;
+    }
+}
+
+
+
+void GraphicsItemNode::getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
+                                                       std::vector<QPointF> * blastHitLocation)
+{
+    for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
+    {
+        BlastHit * hit = m_deBruijnNode->m_blastHits[i];
+        blastHitText->push_back(hit->m_query->m_name);
+        blastHitLocation->push_back(findLocationOnPath(hit->getNodeCentreFraction()));
+    }
+
+}
+
+void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
+                                                                          std::vector<QPointF> * blastHitLocation)
+{
+    getBlastHitsTextAndLocationThisNode(blastHitText, blastHitLocation);
+
+    for (size_t i = 0; i < m_deBruijnNode->m_reverseComplement->m_blastHits.size(); ++i)
+    {
+        BlastHit * hit = m_deBruijnNode->m_reverseComplement->m_blastHits[i];
+        blastHitText->push_back(hit->m_query->m_name);
+        blastHitLocation->push_back(findLocationOnPath(1.0 - hit->getNodeCentreFraction()));
     }
 }

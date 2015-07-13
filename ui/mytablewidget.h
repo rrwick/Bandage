@@ -16,30 +16,22 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "enteroneblastquerydialog.h"
-#include "ui_enteroneblastquerydialog.h"
+#ifndef MYTABLEWIDGET_H
+#define MYTABLEWIDGET_H
 
-EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::EnterOneBlastQueryDialog)
-{
-    ui->setupUi(this);
-}
+#include <QTableWidget>
 
-EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
-{
-    delete ui;
-}
 
-QString EnterOneBlastQueryDialog::getName()
+class MyTableWidget : public QTableWidget
 {
-    QString name = ui->nameLineEdit->text().simplified();
-    if (name == "")
-        name = "unnamed";
-    return name;
-}
+    Q_OBJECT
+public:
+    explicit MyTableWidget(QWidget *parent = 0);
 
-QString EnterOneBlastQueryDialog::getSequence()
-{
-    return ui->sequenceTextEdit->toPlainText().simplified();
-}
+    void resizeColumns();
+
+protected:
+    void resizeEvent(QResizeEvent * event);
+};
+
+#endif // MYTABLEWIDGET_H

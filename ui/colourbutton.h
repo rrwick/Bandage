@@ -16,30 +16,30 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "enteroneblastquerydialog.h"
-#include "ui_enteroneblastquerydialog.h"
+#ifndef COLOURBUTTON_H
+#define COLOURBUTTON_H
 
-EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::EnterOneBlastQueryDialog)
-{
-    ui->setupUi(this);
-}
+#include <QPushButton>
+#include <QColor>
+#include <QString>
 
-EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
+class ColourButton : public QPushButton
 {
-    delete ui;
-}
+    Q_OBJECT
 
-QString EnterOneBlastQueryDialog::getName()
-{
-    QString name = ui->nameLineEdit->text().simplified();
-    if (name == "")
-        name = "unnamed";
-    return name;
-}
+public:
+    ColourButton(QWidget * parent = 0);
 
-QString EnterOneBlastQueryDialog::getSequence()
-{
-    return ui->sequenceTextEdit->toPlainText().simplified();
-}
+    QColor m_colour;
+    QString m_name;
+
+    void setColour(QColor newColour);
+
+signals:
+    void colourChosen(QColor colour);
+
+public slots:
+    void chooseColour();
+};
+
+#endif // COLOURBUTTON_H

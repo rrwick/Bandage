@@ -14,25 +14,116 @@
    <string>Load BLAST results</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="9" column="1">
-    <widget class="QLabel" name="step3Label">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 3:&lt;/span&gt; run BLAST search&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
+   <item row="10" column="2" rowspan="2">
+    <widget class="MyTableWidget" name="blastHitsTableWidget">
+     <column>
+      <property name="text">
+       <string/>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Percent identity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Alignment length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Mismatches</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Gap opens</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query start</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query end</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node start</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Node end</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>E-value</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Bit score</string>
+      </property>
+     </column>
     </widget>
    </item>
-   <item row="13" column="2" rowspan="2">
-    <widget class="QTableView" name="blastHitsTableView">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
+   <item row="4" column="2">
+    <widget class="MyTableWidget" name="blastQueriesTableWidget">
+     <column>
+      <property name="text">
+       <string/>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Hits</string>
+      </property>
+     </column>
     </widget>
+   </item>
+   <item row="11" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="0" column="2">
     <widget class="QWidget" name="widget_3" native="true">
@@ -49,19 +140,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item>
        <widget class="InfoTextWidget" name="buildBlastDatabaseInfoText" native="true">
         <property name="sizePolicy">
@@ -91,85 +169,7 @@
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_10">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="InfoTextWidget" name="timeoutInfoText" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="timeoutLabel">
-        <property name="text">
-         <string>Allowed time (sec):</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="timeoutSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
-    </widget>
-   </item>
-   <item row="4" column="2" rowspan="4">
-    <widget class="QTableView" name="blastQueriesTableView">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
     </widget>
    </item>
    <item row="0" column="1">
@@ -185,14 +185,14 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="1" colspan="2">
+   <item row="5" column="1" colspan="2">
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="10" column="1">
     <widget class="QLabel" name="hitsLabel">
      <property name="enabled">
       <bool>false</bool>
@@ -208,14 +208,14 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1" colspan="2">
+   <item row="9" column="1" colspan="2">
     <widget class="Line" name="line_4">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="16" column="2">
+   <item row="14" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -225,7 +225,7 @@
      </property>
     </widget>
    </item>
-   <item row="15" column="2">
+   <item row="13" column="2">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -254,80 +254,14 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="2">
-    <widget class="QWidget" name="widget_5" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="InfoTextWidget" name="startBlastSearchInfoText" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="startBlastSearchButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Run BLAST search</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
+   <item row="6" column="1">
+    <widget class="QLabel" name="step3Label">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 3:&lt;/span&gt; run BLAST search&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
     </widget>
    </item>
    <item row="3" column="2">
@@ -345,19 +279,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item>
        <widget class="InfoTextWidget" name="loadQueriesFromFastaInfoText" native="true">
         <property name="sizePolicy">
@@ -394,6 +315,9 @@
        <spacer name="horizontalSpacer_7">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -436,9 +360,12 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_8">
+       <spacer name="horizontalSpacer_9">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -449,7 +376,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="InfoTextWidget" name="clearQueriesInfoText" native="true">
+       <widget class="InfoTextWidget" name="clearSelectedQueriesInfoText" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -465,7 +392,55 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="clearQueriesButton">
+       <widget class="QPushButton" name="clearSelectedQueriesButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Clear selected</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="InfoTextWidget" name="clearAllQueriesInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearAllQueriesButton">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -480,23 +455,39 @@
         </property>
        </widget>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="9" column="2">
+   <item row="3" column="0">
+    <widget class="QLabel" name="step2TickLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="Line" name="line_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2">
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="leftMargin">
@@ -547,59 +538,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="step2Label">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 2: &lt;/span&gt;enter BLAST queries&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
-    <widget class="Line" name="line_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="1">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="step2TickLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="step3TickLabel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -621,6 +560,66 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="step2Label">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 2: &lt;/span&gt;enter BLAST queries&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QWidget" name="widget_5" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="InfoTextWidget" name="startBlastSearchInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="runBlastSearchButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Run BLAST search</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -629,6 +628,11 @@
    <extends>QWidget</extends>
    <header>infotextwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MyTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>mytablewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

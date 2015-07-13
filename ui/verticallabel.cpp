@@ -1,11 +1,11 @@
-#include "verticallabel.h"
+// http://stackoverflow.com/questions/9183050/vertical-qlabel-or-the-equivalent
 
+#include "verticallabel.h"
 #include <QPainter>
 
 VerticalLabel::VerticalLabel(QWidget *parent)
     : QLabel(parent)
 {
-
 }
 
 VerticalLabel::VerticalLabel(const QString &text, QWidget *parent)

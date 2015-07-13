@@ -28,19 +28,25 @@ class BlastQuery;
 class BlastHit
 {
 public:
-    BlastHit(DeBruijnNode * node, int nodeStart, int nodeEnd,
-             BlastQuery * query, int queryStart, int queryEnd,
-             QString eValue);
+    BlastHit(BlastQuery * query, DeBruijnNode * node,
+             double percentIdentity, int alignmentLength,
+             int numberMismatches, int numberGapOpens,
+             int queryStart, int queryEnd,
+             int nodeStart, int nodeEnd, double eValue, int bitScore);
     BlastHit();
-    ~BlastHit();
 
-    DeBruijnNode * m_node;
-    int m_nodeStart;
-    int m_nodeEnd;
     BlastQuery * m_query;
+    DeBruijnNode * m_node;
+    double m_percentIdentity;
+    int m_alignmentLength;
+    int m_numberMismatches;
+    int m_numberGapOpens;
     int m_queryStart;
     int m_queryEnd;
-    QString m_eValue;
+    int m_nodeStart;
+    int m_nodeEnd;
+    double m_eValue;
+    int m_bitScore;
 
     double m_nodeStartFraction;
     double m_nodeEndFraction;
@@ -49,6 +55,7 @@ public:
 
     std::vector<BlastHitPart> getBlastHitParts(bool reverse);
     bool onForwardStrand() {return m_queryStart < m_queryEnd;}
+    double getNodeCentreFraction() {return (m_nodeStartFraction + m_nodeEndFraction) / 2.0;}
 };
 
 #endif // BLASTHIT_H

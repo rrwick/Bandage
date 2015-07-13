@@ -41,45 +41,12 @@ public:
 
 private:
     Ui::SettingsDialog *ui;
-    QColor m_edgeColour;
-    QColor m_outlineColour;
-    QColor m_selectionColour;
-    QColor m_textColour;
-    QColor m_textOutlineColour;
-    QColor m_uniformPositiveNodeColour;
-    QColor m_uniformNegativeNodeColour;
-    QColor m_uniformNodeSpecialColour;
-    QColor m_lowCoverageColour;
-    QColor m_highCoverageColour;
-    QColor m_noBlastHitsColour;
-    QColor m_contiguousStrandSpecificColour;
-    QColor m_contiguousEitherStrandColour;
-    QColor m_maybeContiguousColour;
-    QColor m_notContiguousColour;
-    QColor m_contiguityStartingColour;
 
     void loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings * settings);
-    void setButtonColours();
     void setInfoTexts();
 
 private slots:
     void restoreDefaults();
-    void edgeColourClicked();
-    void outlineColourClicked();
-    void selectionColourClicked();
-    void textColourClicked();
-    void textOutlineColourClicked();
-    void uniformPositiveNodeColourClicked();
-    void uniformNegativeNodeColourClicked();
-    void uniformNodeSpecialColourClicked();
-    void lowCoverageColourClicked();
-    void highCoverageColourClicked();
-    void noBlastHitsColourClicked();
-    void contiguousStrandSpecificColourClicked();
-    void contiguousEitherStrandColourClicked();
-    void maybeContiguousColourClicked();
-    void notContiguousColourClicked();
-    void contiguityStartingColourClicked();
     void enableDisableCoverageValueSpinBoxes();
     void basePairsPerSegmentManualChanged();
     void updateNodeWidthVisualAid();

@@ -21,6 +21,9 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QThread>
+#include <QProcess>
+#include "../program/globals.h"
 
 class DeBruijnNode;
 
@@ -36,32 +39,39 @@ public:
     explicit BlastSearchDialog(QWidget *parent = 0);
     ~BlastSearchDialog();
 
+    bool m_blastSearchConducted;
+
 private:
     Ui::BlastSearchDialog *ui;
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
     QString m_makeblastdbCommand;
     QString m_blastnCommand;
+    QString m_tblastnCommand;
+    QThread * m_buildBlastDatabaseThread;
+    QThread * m_blastSearchThread;
 
-    QString getNodeNameFromString(QString nodeString);
-    void setUiStep(int step);
+    void setUiStep(BlastUiState blastUiState);
     void clearBlastHits();
     void setInfoTexts();
     QString cleanQueryName(QString queryName);
+    bool findProgram(QString programName, QString * command);
 
 private slots:
-    void buildBlastDatabase1();
-    void buildBlastDatabase2();
+    void buildBlastDatabase();
     void loadBlastQueriesFromFastaFile();
     void enterQueryManually();
-    void clearQueries();
-    void runBlastSearch();
-    void loadBlastHits(QString blastHits);
+    void clearAllQueries();
+    void clearSelectedQueries();
+    void runBlastSearches();
+    void fillTablesAfterBlastSearch();
     void fillQueriesTable();
     void fillHitsTable();
-
-signals:
-    void createAllNodesFasta(QString path, bool includeEmptyNodes);
-
+    void blastDatabaseBuildFinished(QString error);
+    void runBlastSearchFinished(QString error);
+    void buildBlastDatabaseCancelled();
+    void runBlastSearchCancelled();
+    void queryCellChanged(int row, int column);
+    void queryTableSelectionChanged();
 };
 
 #endif // BLASTSEARCHDIALOG_H

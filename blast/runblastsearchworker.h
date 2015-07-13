@@ -16,34 +16,37 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#ifndef MYPROGRESSDIALOG_H
-#define MYPROGRESSDIALOG_H
+#ifndef RUNBLASTSEARCHWORKER_H
+#define RUNBLASTSEARCHWORKER_H
 
-#include <QDialog>
+#include <QObject>
+#include <QProcess>
 #include <QString>
+#include "../program/globals.h"
 
-namespace Ui {
-class MyProgressDialog;
-}
+//This class carries out the task of running blastn and/or
+//tblastn.
+//It is a separate class because when run from the GUI, this
+//process takes place in a separate thread.
 
-class MyProgressDialog : public QDialog
+class RunBlastSearchWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MyProgressDialog(QWidget * parent, QString message, bool showCancelButton,
-                              QString cancelButtonText = "", QString cancelMessage = "", QString cancelInfoText = "");
-    ~MyProgressDialog();
+    RunBlastSearchWorker(QString blastnCommand, QString tblastnCommand, QString parameters);
 
 private:
-    Ui::MyProgressDialog *ui;
-    QString m_cancelMessage;
+    QString m_blastnCommand;
+    QString m_tblastnCommand;
+    QString m_parameters;
+    QString runOneBlastSearch(SequenceType sequenceType, bool * success);
 
-private slots:
-    void cancel();
+public slots:
+    void runBlastSearch();
 
 signals:
-    void halt();
+    void finishedSearch(QString error);
 };
 
-#endif // MYPROGRESSDIALOG_H
+#endif // RUNBLASTSEARCHWORKER_H

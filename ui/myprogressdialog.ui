@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="messageLabel">
      <property name="text">
-      <string>Laying out graph...</string>
+      <string>Progress message...</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -84,7 +84,7 @@
       <item>
        <widget class="QPushButton" name="cancelButton">
         <property name="text">
-         <string>Cancel layout</string>
+         <string>Cancel</string>
         </property>
        </widget>
       </item>

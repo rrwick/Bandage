@@ -36,49 +36,77 @@
 #include "../blast/blastsearch.h"
 #include <QProcessEnvironment>
 #include <QMessageBox>
+#include <QThread>
+#include "../blast/buildblastdatabaseworker.h"
+#include "../blast/runblastsearchworker.h"
+#include "myprogressdialog.h"
+#include "colourbutton.h"
+#include <QSet>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BlastSearchDialog), m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn")
+    m_blastSearchConducted(false),
+    ui(new Ui::BlastSearchDialog),
+    m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"), m_tblastnCommand("tblastn")
+
 {
     ui->setupUi(this);
 
+    //Prepare the query and hits tables
+    ui->blastHitsTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    ui->blastQueriesTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    ui->blastHitsTableWidget->setHorizontalHeaderLabels(QStringList() << "" << "Query\nname" << "Node\nname" <<
+                                                        "Percent\nidentity" << "Alignment\nlength" << "Mis-\nmatches" <<
+                                                        "Gap\nopens" << "Query\nstart" << "Query\nend" << "Node\nstart" <<
+                                                        "Node\nend" <<"E-\nvalue" << "Bit\nscore");
+    QFont font = ui->blastQueriesTableWidget->horizontalHeader()->font();
+    font.setBold(true);
+    ui->blastQueriesTableWidget->horizontalHeader()->setFont(font);
+    ui->blastHitsTableWidget->horizontalHeader()->setFont(font);
+    ui->blastQueriesTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->blastHitsTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+
+
     //If a BLAST database already exists, move to step 2.
-    QFile databaseFile(g_tempDirectory + "all_nodes.fasta");
+    QFile databaseFile(g_blastSearch->m_tempDirectory + "all_nodes.fasta");
     if (databaseFile.exists())
-        setUiStep(2);
+        setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
 
     //If there isn't a BLAST database, clear the entire temporary directory
     //and move to step 1.
     else
     {
-        emptyTempDirectory();
-        setUiStep(1);
+        g_blastSearch->emptyTempDirectory();
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
     }
 
     //If queries already exist, display them and move to step 3.
     if (g_blastSearch->m_blastQueries.m_queries.size() > 0)
     {
         fillQueriesTable();
-        setUiStep(3);
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 
-    //If results already exist, display them and move to step 3.
+    //If results already exist, display them and move to step 4.
     if (g_blastSearch->m_hits.size() > 0)
     {
         fillHitsTable();
-        setUiStep(3);
+        setUiStep(BLAST_SEARCH_COMPLETE);
     }
 
+    //Load any previous parameters the user might have entered when previously using this dialog.
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
-    ui->timeoutSpinBox->setValue(g_settings->blastTimeoutSeconds);
+
     setInfoTexts();
 
-    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase1()));
+    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase()));
     connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
-    connect(ui->clearQueriesButton, SIGNAL(clicked()), this, SLOT(clearQueries()));
-    connect(ui->startBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearch()));
+    connect(ui->clearAllQueriesButton, SIGNAL(clicked()), this, SLOT(clearAllQueries()));
+    connect(ui->clearSelectedQueriesButton, SIGNAL(clicked(bool)), this, SLOT(clearSelectedQueries()));
+    connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
+    connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
+    connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -89,207 +117,190 @@ BlastSearchDialog::~BlastSearchDialog()
 
 void BlastSearchDialog::clearBlastHits()
 {
-    g_blastSearch->m_hits.clear();
-    g_blastSearch->m_blastQueries.clearSearchResults();
-    ui->blastHitsTableView->setModel(0);
+    g_blastSearch->clearBlastHits();
+    ui->blastHitsTableWidget->clearContents();
+    while (ui->blastHitsTableWidget->rowCount() > 0)
+        ui->blastHitsTableWidget->removeRow(0);
 }
 
-void BlastSearchDialog::loadBlastHits(QString blastHits)
+void BlastSearchDialog::fillTablesAfterBlastSearch()
 {
-    QStringList blastHitList = blastHits.split("\n", QString::SkipEmptyParts);
-
-    if (blastHitList.size() == 0)
-    {
+    if (g_blastSearch->m_hits.size() == 0)
         QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
-        return;
-    }
-
-    for (int i = 0; i < blastHitList.size(); ++i)
-    {
-        QString hit = blastHitList[i];
-        QStringList alignmentParts = hit.split('\t');
-
-        QString queryName = alignmentParts[0];
-        QString nodeLabel = alignmentParts[1];
-        int queryStart = alignmentParts[6].toInt();
-        int queryEnd = alignmentParts[7].toInt();
-        int nodeStart = alignmentParts[8].toInt();
-        int nodeEnd = alignmentParts[9].toInt();
-        QString eValue = alignmentParts[10];
-
-        //Only save BLAST hits that are on forward strands.
-        if (nodeStart > nodeEnd)
-            continue;
-
-        QString nodeName = getNodeNameFromString(nodeLabel);
-        DeBruijnNode * node;
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-            node = g_assemblyGraph->m_deBruijnGraphNodes[nodeName];
-        else
-            return;
-
-        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
-        if (query == 0)
-            return;
-
-        g_blastSearch->m_hits.push_back(BlastHit(node, nodeStart, nodeEnd,
-                                                 query, queryStart, queryEnd, eValue));
-
-        ++(query->m_hits);
-    }
 
     fillQueriesTable();
     fillHitsTable();
 }
 
 
-QString BlastSearchDialog::getNodeNameFromString(QString nodeString)
-{
-    QStringList nodeStringParts = nodeString.split("_");
-    return nodeStringParts[1];
-}
-
-
-
 void BlastSearchDialog::fillQueriesTable()
 {
+    //Turn off table widget signals for this function so the
+    //queryCellChanged slot doesn't get called.
+    ui->blastQueriesTableWidget->blockSignals(true);
+
+    ui->blastQueriesTableWidget->clearContents();
+
     int queryCount = int(g_blastSearch->m_blastQueries.m_queries.size());
     if (queryCount == 0)
         return;
 
-    QStandardItemModel * model = new QStandardItemModel(queryCount, 3, this); //3 Columns
-    model->setHorizontalHeaderItem(0, new QStandardItem("Target name"));
-    model->setHorizontalHeaderItem(1, new QStandardItem("Target length"));
-    model->setHorizontalHeaderItem(2, new QStandardItem("Hits"));
+    ui->blastQueriesTableWidget->setRowCount(queryCount);
+
     for (int i = 0; i < queryCount; ++i)
     {
-        BlastQuery * query = &(g_blastSearch->m_blastQueries.m_queries[i]);
-        model->setItem(i, 0, new QStandardItem(query->m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(query->m_length)));
+        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
+
+        QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+        QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
+        type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
+        length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         //If the search hasn't yet been run, don't put a number in the hits column.
+        QTableWidgetItem * hits;
         if (query->m_searchedFor)
-            model->setItem(i, 2, new QStandardItem(formatIntForDisplay(query->m_hits)));
+            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits));
         else
-            model->setItem(i, 2, new QStandardItem("-"));
-    }
-    ui->blastQueriesTableView->setModel(model);
-    ui->blastQueriesTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+            hits = new QTableWidgetItem("-");
+        hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-    setUiStep(3);
+        ColourButton * colourButton = new ColourButton();
+        colourButton->setColour(query->m_colour);
+        connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
+        connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
+
+        ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
+        ui->blastQueriesTableWidget->setItem(i, 1, name);
+        ui->blastQueriesTableWidget->setItem(i, 2, type);
+        ui->blastQueriesTableWidget->setItem(i, 3, length);
+        ui->blastQueriesTableWidget->setItem(i, 4, hits);
+    }
+
+    ui->blastQueriesTableWidget->resizeColumns();
+
+    ui->blastQueriesTableWidget->blockSignals(false);
 }
 
 
 void BlastSearchDialog::fillHitsTable()
 {
-    int hitCount = int(g_blastSearch->m_hits.size());
+    ui->blastHitsTableWidget->clearContents();
 
-    QStandardItemModel * model = new QStandardItemModel(hitCount, 8, this); //8 Columns
-    model->setHorizontalHeaderItem(0, new QStandardItem("Node number"));
-    model->setHorizontalHeaderItem(1, new QStandardItem("Node length"));
-    model->setHorizontalHeaderItem(2, new QStandardItem("Node start"));
-    model->setHorizontalHeaderItem(3, new QStandardItem("Node end"));
-    model->setHorizontalHeaderItem(4, new QStandardItem("Query name"));
-    model->setHorizontalHeaderItem(5, new QStandardItem("Query start"));
-    model->setHorizontalHeaderItem(6, new QStandardItem("Query end"));
-    model->setHorizontalHeaderItem(7, new QStandardItem("E-value"));
+    int hitCount = int(g_blastSearch->m_hits.size());
+    ui->blastHitsTableWidget->setRowCount(hitCount);
+
+    if (hitCount == 0)
+        return;
 
     for (int i = 0; i < hitCount; ++i)
     {
         BlastHit * hit = &(g_blastSearch->m_hits[i]);
-        model->setItem(i, 0, new QStandardItem(hit->m_node->m_name));
-        model->setItem(i, 1, new QStandardItem(formatIntForDisplay(hit->m_node->m_length)));
-        model->setItem(i, 2, new QStandardItem(formatIntForDisplay(hit->m_nodeStart)));
-        model->setItem(i, 3, new QStandardItem(formatIntForDisplay(hit->m_nodeEnd)));
-        model->setItem(i, 4, new QStandardItem(hit->m_query->m_name));
-        model->setItem(i, 5, new QStandardItem(formatIntForDisplay(hit->m_queryStart)));
-        model->setItem(i, 6, new QStandardItem(formatIntForDisplay(hit->m_queryEnd)));
-        model->setItem(i, 7, new QStandardItem(hit->m_eValue));
-    }
-    ui->blastHitsTableView->setModel(model);
-    ui->blastHitsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->blastHitsTableView->setEnabled(true);
+        QTableWidgetItem * queryColour = new QTableWidgetItem();
+        queryColour->setFlags(Qt::ItemIsEnabled);
+        queryColour->setBackground(hit->m_query->m_colour);
+        QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
+        queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
+        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * percentIdentity = new QTableWidgetItem(QString::number(hit->m_percentIdentity) + "%");
+        percentIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * alignmentLength = new QTableWidgetItem(formatIntForDisplay(hit->m_alignmentLength));
+        alignmentLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * numberMismatches = new QTableWidgetItem(formatIntForDisplay(hit->m_numberMismatches));
+        numberMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * numberGapOpens = new QTableWidgetItem(formatIntForDisplay(hit->m_numberGapOpens));
+        numberGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * queryStart = new QTableWidgetItem(formatIntForDisplay(hit->m_queryStart));
+        queryStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * queryEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_queryEnd));
+        queryEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * nodeStart = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeStart));
+        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * nodeEnd = new QTableWidgetItem(formatIntForDisplay(hit->m_nodeEnd));
+        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * eValue = new QTableWidgetItem(QString::number(hit->m_eValue));
+        eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        QTableWidgetItem * bitScore = new QTableWidgetItem(formatIntForDisplay(hit->m_bitScore));
+        bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        ui->blastHitsTableWidget->setItem(i, 0, queryColour);
+        ui->blastHitsTableWidget->setItem(i, 1, queryName);
+        ui->blastHitsTableWidget->setItem(i, 2, nodeName);
+        ui->blastHitsTableWidget->setItem(i, 3, percentIdentity);
+        ui->blastHitsTableWidget->setItem(i, 4, alignmentLength);
+        ui->blastHitsTableWidget->setItem(i, 5, numberMismatches);
+        ui->blastHitsTableWidget->setItem(i, 6, numberGapOpens);
+        ui->blastHitsTableWidget->setItem(i, 7, queryStart);
+        ui->blastHitsTableWidget->setItem(i, 8, queryEnd);
+        ui->blastHitsTableWidget->setItem(i, 9, nodeStart);
+        ui->blastHitsTableWidget->setItem(i, 10, nodeEnd);
+        ui->blastHitsTableWidget->setItem(i, 11, eValue);
+        ui->blastHitsTableWidget->setItem(i, 12, bitScore);
+    }
+
+    ui->blastHitsTableWidget->resizeColumns();
+    ui->blastHitsTableWidget->setEnabled(true);
 }
 
 
-void BlastSearchDialog::buildBlastDatabase1()
+void BlastSearchDialog::buildBlastDatabase()
 {
-    QString findMakeblastdbCommand = "which makeblastdb";
-#ifdef Q_OS_WIN32
-    findMakeblastdbCommand = "WHERE makeblastdb";
-#endif
+    setUiStep(BLAST_DB_BUILD_IN_PROGRESS);
 
-    QProcess findMakeblastdb;
-
-    //On Mac, it's necessary to do some stuff with the PATH variable in order
-    //for which to work.
-#ifdef Q_OS_MAC
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QStringList envlist = env.toStringList();
-
-    //Add some paths to the process environment
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
-                                                                   "/usr/bin:"
-                                                                   "/bin:"
-                                                                   "/usr/sbin:"
-                                                                   "/sbin:"
-                                                                   "/opt/local/bin:"
-                                                                   "/usr/local/bin:"
-                                                                   "$HOME/bin:"
-                                                                   "/usr/local/ncbi/blast/bin:"
-                                                                   "\\1");
-
-    findMakeblastdb.setEnvironment(envlist);
-#endif
-
-    findMakeblastdb.start(findMakeblastdbCommand);
-    findMakeblastdb.waitForFinished();
-
-    //On Mac, the command for makeblastdb needs to be the absolute path.
-#ifdef Q_OS_MAC
-    m_makeblastdbCommand = QString(findMakeblastdb.readAll()).simplified();
-#endif
-
-    if (findMakeblastdb.exitCode() != 0)
+    if (!g_blastSearch->findProgram("makeblastdb", &m_makeblastdbCommand))
     {
         QMessageBox::warning(this, "Error", "The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
         return;
     }
-
-    ui->buildBlastDatabaseButton->setEnabled(false);
-    ui->buildBlastDatabaseInfoText->setEnabled(false);
 
     QApplication::processEvents();
 
-    emit createAllNodesFasta(g_tempDirectory, false);
+    MyProgressDialog * progress = new MyProgressDialog(this, "Building BLAST database...", true, "Cancel build", "Cancelling build...",
+                                                       "Clicking this button will stop the BLAST database from being "
+                                                       "built.");
+    progress->setWindowModality(Qt::WindowModal);
+    progress->show();
+
+    m_buildBlastDatabaseThread = new QThread;
+    BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
+    buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
+
+    connect(progress, SIGNAL(halt()), this, SLOT(buildBlastDatabaseCancelled()));
+    connect(m_buildBlastDatabaseThread, SIGNAL(started()), buildBlastDatabaseWorker, SLOT(buildBlastDatabase()));
+    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), m_buildBlastDatabaseThread, SLOT(quit()));
+    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), buildBlastDatabaseWorker, SLOT(deleteLater()));
+    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), this, SLOT(blastDatabaseBuildFinished(QString)));
+    connect(m_buildBlastDatabaseThread, SIGNAL(finished()), m_buildBlastDatabaseThread, SLOT(deleteLater()));
+    connect(m_buildBlastDatabaseThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+
+    m_buildBlastDatabaseThread->start();
 }
 
 
-void BlastSearchDialog::buildBlastDatabase2()
+
+void BlastSearchDialog::blastDatabaseBuildFinished(QString error)
 {
-    QProcess makeblastdb;
-    makeblastdb.start(m_makeblastdbCommand + " -in " + g_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
-
-
-    g_settings->blastTimeoutSeconds = ui->timeoutSpinBox->value();
-    bool finished = makeblastdb.waitForFinished(g_settings->blastTimeoutSeconds * 1000); //Multiply by 1000 because this function takes milliseconds
-
-    if (makeblastdb.exitCode() != 0)
+    if (error != "")
     {
-        QMessageBox::warning(this, "Error", "There was a problem building the BLAST database.");
-        setUiStep(1);
-        return;
+        QMessageBox::warning(this, "Error", error);
+        setUiStep(BLAST_DB_NOT_YET_BUILT);
     }
-    else if (!finished)
-    {
-        QMessageBox::warning(this, "Error", "The BLAST database did not build in the allotted time.\n\n"
-                                            "Increase the 'Allowed time' setting and try again.");
-        setUiStep(1);
-        return;
-    }
+    else
+        setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
+}
 
-    setUiStep(2);
+
+void BlastSearchDialog::buildBlastDatabaseCancelled()
+{
+    g_blastSearch->m_cancelBuildBlastDatabase = true;
+    if (g_blastSearch->m_makeblastdb != 0)
+        g_blastSearch->m_makeblastdb->kill();
 }
 
 
@@ -299,20 +310,31 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile()
 
     if (fullFileName != "") //User did not hit cancel
     {
+        MyProgressDialog * progress = new MyProgressDialog(this, "Loading queries...", false);
+        progress->setWindowModality(Qt::WindowModal);
+        progress->show();
+
         std::vector<QString> queryNames;
         std::vector<QString> querySequences;
         readFastaFile(fullFileName, &queryNames, &querySequences);
 
         for (size_t i = 0; i < queryNames.size(); ++i)
         {
+            QApplication::processEvents();
+
             QString queryName = cleanQueryName(queryNames[i]);
-            g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
-                                                              querySequences[i]));
+            g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                                  querySequences[i]));
         }
 
         fillQueriesTable();
         clearBlastHits();
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        progress->close();
+        delete progress;
+
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 }
 
@@ -340,155 +362,185 @@ void BlastSearchDialog::enterQueryManually()
     if (enterOneBlastQueryDialog.exec())
     {
         QString queryName = cleanQueryName(enterOneBlastQueryDialog.getName());
-        g_blastSearch->m_blastQueries.addQuery(BlastQuery(queryName,
-                                                          enterOneBlastQueryDialog.getSequence()));
+        g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                              enterOneBlastQueryDialog.getSequence()));
         fillQueriesTable();
         clearBlastHits();
+
+        setUiStep(READY_FOR_BLAST_SEARCH);
     }
 }
 
 
 
-void BlastSearchDialog::clearQueries()
+void BlastSearchDialog::clearAllQueries()
 {
-    g_blastSearch->m_blastQueries.clearQueries();
-    ui->blastQueriesTableView->setModel(0);
-    ui->clearQueriesButton->setEnabled(false);
+    g_blastSearch->m_blastQueries.clearAllQueries();
+    ui->blastQueriesTableWidget->clearContents();
+    ui->clearAllQueriesButton->setEnabled(false);
+
+    while (ui->blastQueriesTableWidget->rowCount() > 0)
+        ui->blastQueriesTableWidget->removeRow(0);
 
     clearBlastHits();
-    setUiStep(2);
+    setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
+}
+
+
+void BlastSearchDialog::clearSelectedQueries()
+{
+    //Use the table selection to figure out which queries are to be removed.
+    std::vector<BlastQuery *> queriesToRemove;
+    QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
+    QModelIndexList selection = select->selectedIndexes();
+    QSet<int> rowsWithSelectionSet;
+    for (int i = 0; i < selection.size(); ++i)
+        rowsWithSelectionSet.insert(selection[i].row());
+    QSet<int>::const_iterator i = rowsWithSelectionSet.constBegin();
+    while (i != rowsWithSelectionSet.constEnd())
+    {
+        size_t queryToRemoveIndex = *i;
+        if (queryToRemoveIndex < g_blastSearch->m_blastQueries.m_queries.size())
+        {
+            BlastQuery * queryToRemove = g_blastSearch->m_blastQueries.m_queries[queryToRemoveIndex];
+            queriesToRemove.push_back(queryToRemove);
+        }
+        ++i;
+    }
+
+    if (queriesToRemove.size() == g_blastSearch->m_blastQueries.m_queries.size())
+    {
+        clearAllQueries();
+        return;
+    }
+
+    bool hitsExist = (g_blastSearch->m_hits.size() > 0);
+
+    g_blastSearch->clearSomeQueries(queriesToRemove);
+
+    fillQueriesTable();
+    if (hitsExist)
+        fillHitsTable();
 }
 
 
 
-void BlastSearchDialog::runBlastSearch()
-{    
-    QString findBlastnCommand = "which blastn";
-#ifdef Q_OS_WIN32
-    findBlastnCommand = "WHERE blastn";
-#endif
+void BlastSearchDialog::runBlastSearches()
+{
+    setUiStep(BLAST_SEARCH_IN_PROGRESS);
 
-    QProcess findBlastn;
-
-    //On Mac, it's necessary to do some stuff with the PATH variable in order
-    //for which to work.
-#ifdef Q_OS_MAC
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QStringList envlist = env.toStringList();
-
-    //Add some paths to the process environment
-    envlist.replaceInStrings(QRegularExpression("^(?i)PATH=(.*)"), "PATH="
-                                                                   "/usr/bin:"
-                                                                   "/bin:"
-                                                                   "/usr/sbin:"
-                                                                   "/sbin:"
-                                                                   "/opt/local/bin:"
-                                                                   "/usr/local/bin:"
-                                                                   "$HOME/bin:"
-                                                                   "/usr/local/ncbi/blast/bin:"
-                                                                   "\\1");
-
-    findBlastn.setEnvironment(envlist);
-#endif
-
-    findBlastn.start(findBlastnCommand);
-    findBlastn.waitForFinished();
-
-    //On Mac, the command for makeblastdb needs to be the absolute path.
-#ifdef Q_OS_MAC
-    m_blastnCommand = QString(findBlastn.readAll()).simplified();
-#endif
-
-    if (findBlastn.exitCode() != 0)
+    if (!g_blastSearch->findProgram("blastn", &m_blastnCommand))
     {
         QMessageBox::warning(this, "Error", "The program blastn was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(READY_FOR_BLAST_SEARCH);
         return;
     }
-
-    ui->startBlastSearchButton->setEnabled(false);
-    ui->parametersInfoText->setEnabled(false);
-    ui->parametersLineEdit->setEnabled(false);
-    ui->parametersLabel->setEnabled(false);
-    ui->timeoutInfoText->setEnabled(false);
-    ui->timeoutSpinBox->setEnabled(false);
-    ui->timeoutLabel->setEnabled(false);
-
-
-    QApplication::processEvents();
-
-    QProcess blastn;
-    QString extraCommandLineOptions = ui->parametersLineEdit->text().simplified() + " ";
-    QString fullBlastnCommand = m_blastnCommand + " -query " + g_tempDirectory + "queries.fasta -db " + g_tempDirectory + "all_nodes.fasta -outfmt 6 " + extraCommandLineOptions;
-
-    blastn.start(fullBlastnCommand);
-
-    g_settings->blastTimeoutSeconds = ui->timeoutSpinBox->value();
-    bool finished = blastn.waitForFinished(g_settings->blastTimeoutSeconds * 1000); //Multiply by 1000 because this function takes milliseconds
-
-    QString blastHits = blastn.readAll();
-
-    if (blastn.exitCode() != 0)
+    if (!g_blastSearch->findProgram("tblastn", &m_tblastnCommand))
     {
-        QMessageBox::warning(this, "Error", "There was a problem running the BLAST search.");
-
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->parametersLineEdit->setEnabled(true);
-        ui->parametersLabel->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutLabel->setEnabled(true);
-
-        return;
-    }
-    else if (!finished)
-    {
-        QMessageBox::warning(this, "Error", "The BLAST search did not finish in the allotted time.\n\n"
-                                            "Increase the 'Allowed time' setting and try again.");
-
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->parametersLineEdit->setEnabled(true);
-        ui->parametersLabel->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutLabel->setEnabled(true);
-
+        QMessageBox::warning(this, "Error", "The program tblastn was not found.  Please install NCBI BLAST to use this feature.");
+        setUiStep(READY_FOR_BLAST_SEARCH);
         return;
     }
 
     clearBlastHits();
-    g_blastSearch->m_blastQueries.searchOccurred();
-    loadBlastHits(blastHits);
-    g_settings->blastSearchParameters = extraCommandLineOptions;
-    setUiStep(4);
+
+    MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
+                                                       "Clicking this button will stop the BLAST search.");
+    progress->setWindowModality(Qt::WindowModal);
+    progress->show();
+
+    m_blastSearchThread = new QThread;
+    RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
+    runBlastSearchWorker->moveToThread(m_blastSearchThread);
+
+    connect(progress, SIGNAL(halt()), this, SLOT(runBlastSearchCancelled()));
+    connect(m_blastSearchThread, SIGNAL(started()), runBlastSearchWorker, SLOT(runBlastSearch()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), m_blastSearchThread, SLOT(quit()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), runBlastSearchWorker, SLOT(deleteLater()));
+    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), this, SLOT(runBlastSearchFinished(QString)));
+    connect(m_blastSearchThread, SIGNAL(finished()), m_blastSearchThread, SLOT(deleteLater()));
+    connect(m_blastSearchThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+
+    m_blastSearchThread->start();
 }
 
 
 
-void BlastSearchDialog::setUiStep(int step)
+void BlastSearchDialog::runBlastSearchFinished(QString error)
+{
+    if (error != "")
+    {
+        QMessageBox::warning(this, "Error", error);
+        setUiStep(READY_FOR_BLAST_SEARCH);
+    }
+    else
+    {
+        m_blastSearchConducted = true;
+        fillTablesAfterBlastSearch();
+        g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
+        setUiStep(BLAST_SEARCH_COMPLETE);
+    }
+}
+
+
+void BlastSearchDialog::runBlastSearchCancelled()
+{
+    g_blastSearch->m_cancelRunBlastSearch = true;
+    if (g_blastSearch->m_blast != 0)
+        g_blastSearch->m_blast->kill();
+}
+
+
+
+void BlastSearchDialog::queryCellChanged(int row, int column)
+{
+    //We are only interested in when a query name is changed.
+    if (column != 1)
+        return;
+
+    QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
+    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+
+    query->m_name = newName;
+
+    //Rebuild the hits table, if necessary, to show the new name.
+    if (query->m_hits > 0)
+        fillHitsTable();
+}
+
+
+void BlastSearchDialog::queryTableSelectionChanged()
+{
+    //If there are any selected items, then the 'Clear selected' button
+    //should be enabled.
+    QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
+    bool hasSelection = select->hasSelection();
+
+    ui->clearSelectedQueriesButton->setEnabled(hasSelection);
+}
+
+
+
+void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 {
     QPixmap tick(":/icons/tick-128.png");
     QPixmap tickScaled = tick.scaled(32, 32);
 
-    switch (step)
+    switch (blastUiState)
     {
-    //Step 1 is for when the BLAST database has not yet been made.
-    case 1:
+    case BLAST_DB_NOT_YET_BUILT:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(true);
-        ui->timeoutLabel->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(false);
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
-        ui->blastQueriesTableView->setEnabled(false);
+        ui->blastQueriesTableWidget->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
-        ui->startBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearSelectedQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(QPixmap());
         ui->step2TickLabel->setPixmap(QPixmap());
@@ -498,25 +550,51 @@ void BlastSearchDialog::setUiStep(int step)
         ui->enterQueryManuallyInfoText->setEnabled(false);
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
-        ui->clearQueriesInfoText->setEnabled(false);
+        ui->clearAllQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 2 is for loading queries
-    case 2:
+    case BLAST_DB_BUILD_IN_PROGRESS:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
-        ui->timeoutLabel->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
-        ui->step2Label->setEnabled(true);
-        ui->loadQueriesFromFastaButton->setEnabled(true);
-        ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->step2Label->setEnabled(false);
+        ui->loadQueriesFromFastaButton->setEnabled(false);
+        ui->enterQueryManuallyButton->setEnabled(false);
+        ui->blastQueriesTableWidget->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
-        ui->startBlastSearchButton->setEnabled(false);
-        ui->clearQueriesButton->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearSelectedQueriesButton->setEnabled(false);
+        ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(QPixmap());
+        ui->step2TickLabel->setPixmap(QPixmap());
+        ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(false);
+        ui->enterQueryManuallyInfoText->setEnabled(false);
+        ui->parametersInfoText->setEnabled(false);
+        ui->startBlastSearchInfoText->setEnabled(false);
+        ui->clearAllQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
+        break;
+
+    case BLAST_DB_BUILT_BUT_NO_QUERIES:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
+        ui->step3Label->setEnabled(false);
+        ui->parametersLabel->setEnabled(false);
+        ui->parametersLineEdit->setEnabled(false);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(QPixmap());
@@ -526,25 +604,24 @@ void BlastSearchDialog::setUiStep(int step)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(false);
         ui->startBlastSearchInfoText->setEnabled(false);
-        ui->clearQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
+        ui->clearSelectedQueriesInfoText->setEnabled(false);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 3 is for running the BLAST search
-    case 3:
+    case READY_FOR_BLAST_SEARCH:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
-        ui->timeoutLabel->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->clearQueriesButton->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(true);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(false);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
@@ -554,25 +631,51 @@ void BlastSearchDialog::setUiStep(int step)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
-        ui->clearQueriesInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(false);
         break;
 
-    //Step 4 is after the BLAST search has been run.
-    case 4:
+    case BLAST_SEARCH_IN_PROGRESS:
         ui->step1Label->setEnabled(true);
         ui->buildBlastDatabaseButton->setEnabled(false);
-        ui->timeoutLabel->setEnabled(true);
-        ui->timeoutSpinBox->setEnabled(true);
-        ui->timeoutInfoText->setEnabled(true);
         ui->step2Label->setEnabled(true);
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
-        ui->blastQueriesTableView->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
-        ui->startBlastSearchButton->setEnabled(true);
-        ui->clearQueriesButton->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(false);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
+        ui->hitsLabel->setEnabled(false);
+        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step3TickLabel->setPixmap(QPixmap());
+        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->loadQueriesFromFastaInfoText->setEnabled(true);
+        ui->enterQueryManuallyInfoText->setEnabled(true);
+        ui->parametersInfoText->setEnabled(true);
+        ui->startBlastSearchInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(false);
+        break;
+
+    case BLAST_SEARCH_COMPLETE:
+        ui->step1Label->setEnabled(true);
+        ui->buildBlastDatabaseButton->setEnabled(false);
+        ui->step2Label->setEnabled(true);
+        ui->loadQueriesFromFastaButton->setEnabled(true);
+        ui->enterQueryManuallyButton->setEnabled(true);
+        ui->blastQueriesTableWidget->setEnabled(true);
+        ui->step3Label->setEnabled(true);
+        ui->parametersLabel->setEnabled(true);
+        ui->parametersLineEdit->setEnabled(true);
+        ui->runBlastSearchButton->setEnabled(true);
+        ui->clearAllQueriesButton->setEnabled(true);
+        queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(true);
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
@@ -582,7 +685,9 @@ void BlastSearchDialog::setUiStep(int step)
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
         ui->startBlastSearchInfoText->setEnabled(true);
-        ui->clearQueriesInfoText->setEnabled(true);
+        ui->clearAllQueriesInfoText->setEnabled(true);
+        ui->clearSelectedQueriesInfoText->setEnabled(true);
+        ui->blastHitsTableWidget->setEnabled(true);
         break;
     }
 }
@@ -595,21 +700,22 @@ void BlastSearchDialog::setInfoTexts()
                                                 "preparing them for a BLAST search.<br><br>"
                                                 "The database files generated are temporary and will "
                                                 "be deleted when Bandage is closed.");
-    ui->timeoutInfoText->setInfoText("This is the number of seconds Bandage will wait for the BLAST database "
-                                     "to build and for the BLAST search to complete. If the processes do not "
-                                     "finish in this time, they will be halted.");
     ui->loadQueriesFromFastaInfoText->setInfoText("Click this button to load a FASTA file. Each "
                                                   "sequence in the FASTA file will be a separate "
                                                   "query.");
     ui->enterQueryManuallyInfoText->setInfoText("Click this button to type or paste a single query sequence.");
-    ui->parametersInfoText->setInfoText("You may add additional blastn parameters here, exactly as they "
+    ui->parametersInfoText->setInfoText("You may add additional blastn/tblastn parameters here, exactly as they "
                                         "would be typed at the command line.");
-    ui->startBlastSearchInfoText->setInfoText("Click this to conduct a blastn search for the above "
+    ui->startBlastSearchInfoText->setInfoText("Click this to conduct search for the above "
                                               "queries on the graph nodes.<br><br>"
                                               "If no parameters were added above, this will run:<br>"
                                               "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6<br><br>"
                                               "If, for example, '-evalue 0.01' was entered in the above "
                                               "parameters field, then this will run:<br>"
-                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01");
-    ui->clearQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
+                                              "blastn -query queries.fasta -db all_nodes.fasta -outfmt 6 -evalue 0.01<br><br>"
+                                              "For protein queries, tblastn will be used instead of blastn.");
+    ui->clearSelectedQueriesInfoText->setInfoText("Click this button to remove any selected queries in the below list.");
+    ui->clearAllQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
 }
+
+

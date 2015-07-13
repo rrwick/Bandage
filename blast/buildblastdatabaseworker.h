@@ -16,30 +16,32 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "enteroneblastquerydialog.h"
-#include "ui_enteroneblastquerydialog.h"
+#ifndef BUILDBLASTDATABASEWORKER_H
+#define BUILDBLASTDATABASEWORKER_H
 
-EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::EnterOneBlastQueryDialog)
-{
-    ui->setupUi(this);
-}
+#include <QObject>
+#include <QProcess>
 
-EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
-{
-    delete ui;
-}
+//This class carries out the task of running makeblastdb on
+//the graph's nodes.
+//It is a separate class because when run from the GUI, this
+//process takes place in a separate thread.
 
-QString EnterOneBlastQueryDialog::getName()
+class BuildBlastDatabaseWorker : public QObject
 {
-    QString name = ui->nameLineEdit->text().simplified();
-    if (name == "")
-        name = "unnamed";
-    return name;
-}
+    Q_OBJECT
 
-QString EnterOneBlastQueryDialog::getSequence()
-{
-    return ui->sequenceTextEdit->toPlainText().simplified();
-}
+public:
+    BuildBlastDatabaseWorker(QString makeblastdbCommand);
+
+private:
+    QString m_makeblastdbCommand;
+
+public slots:
+    void buildBlastDatabase();
+
+signals:
+    void finishedBuild(QString error);
+};
+
+#endif // BUILDBLASTDATABASEWORKER_H

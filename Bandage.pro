@@ -58,7 +58,13 @@ SOURCES += \
     command_line/contiguous.cpp \
     command_line/load.cpp \
     command_line/image.cpp \
-    command_line/commoncommandlinefunctions.cpp
+    command_line/commoncommandlinefunctions.cpp \
+    ui/mytablewidget.cpp \
+    blast/buildblastdatabaseworker.cpp \
+    ui/colourbutton.cpp \
+    blast/blastquery.cpp \
+    blast/runblastsearchworker.cpp \
+    blast/blastsearch.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -91,7 +97,11 @@ HEADERS  += \
     command_line/contiguous.h \
     command_line/load.h \
     command_line/image.h \
-    command_line/commoncommandlinefunctions.h
+    command_line/commoncommandlinefunctions.h \
+    ui/mytablewidget.h \
+    blast/buildblastdatabaseworker.h \
+    ui/colourbutton.h \
+    blast/runblastsearchworker.h
 
 FORMS    += \
     ui/mainwindow.ui \

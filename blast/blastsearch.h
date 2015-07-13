@@ -22,18 +22,34 @@
 #include "blasthit.h"
 #include "blastqueries.h"
 #include <vector>
+#include <QString>
+
+//This is a class to hold all BLAST search related stuff.
+//An instance of it is made available to the whole program
+//as a global.
 
 class BlastSearch
 {
 public:
-    BlastSearch() {}
-    ~BlastSearch() {}
+    BlastSearch();
+    ~BlastSearch();
 
     BlastQueries m_blastQueries;
     std::vector<BlastHit> m_hits;
+    QString m_blastOutput;
+    bool m_cancelBuildBlastDatabase;
+    bool m_cancelRunBlastSearch;
+    QProcess * m_makeblastdb;
+    QProcess * m_blast;
+    QString m_tempDirectory;
 
-    void cleanUp() {m_hits.clear(); m_blastQueries.m_queries.clear();}
-
+    void clearBlastHits();
+    void cleanUp();
+    void buildHitsFromBlastOutput();
+    QString getNodeNameFromString(QString nodeString);
+    bool findProgram(QString programName, QString * command);
+    void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
+    void emptyTempDirectory();
 };
 
 #endif // BLASTSEARCH_H

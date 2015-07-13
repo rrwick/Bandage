@@ -16,30 +16,32 @@
 //along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "enteroneblastquerydialog.h"
-#include "ui_enteroneblastquerydialog.h"
+#include "colourbutton.h"
+#include <QColorDialog>
 
-EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::EnterOneBlastQueryDialog)
+ColourButton::ColourButton(QWidget * parent) :
+    QPushButton(parent)
 {
-    ui->setupUi(this);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(chooseColour()));
 }
 
-EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
+
+void ColourButton::setColour(QColor newColour)
 {
-    delete ui;
+    m_colour = newColour;
+
+    const QString COLOR_STYLE("QPushButton { background-color : %1 }");
+    setStyleSheet(COLOR_STYLE.arg(m_colour.name()));
 }
 
-QString EnterOneBlastQueryDialog::getName()
-{
-    QString name = ui->nameLineEdit->text().simplified();
-    if (name == "")
-        name = "unnamed";
-    return name;
-}
 
-QString EnterOneBlastQueryDialog::getSequence()
+
+void ColourButton::chooseColour()
 {
-    return ui->sequenceTextEdit->toPlainText().simplified();
+    QColor chosenColour = QColorDialog::getColor(m_colour, this, m_name, QColorDialog::ShowAlphaChannel);
+    if (chosenColour.isValid())
+    {
+        setColour(chosenColour);
+        emit colourChosen(chosenColour);
+    }
 }

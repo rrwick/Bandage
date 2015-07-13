@@ -27,6 +27,8 @@
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
+#include "../blast/blastsearch.h"
+#include "../graph/assemblygraph.h"
 
 void printUsage(QTextStream * out, bool all)
 {
@@ -50,12 +52,15 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.6.0");
+    QApplication::setApplicationVersion("0.6.1");
 
     QTextStream out(stdout);
     QTextStream err(stdout);
 
-    g_settings = new Settings();
+    //Create the important global objects.
+    g_settings.reset(new Settings());
+    g_blastSearch.reset(new BlastSearch());
+    g_assemblyGraph.reset(new AssemblyGraph());
 
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();

@@ -27,7 +27,6 @@ public:
     BlastHitPart() {}
     BlastHitPart(QColor colour, double nodeFractionStart, double nodeFractionEnd) :
         m_colour(colour), m_nodeFractionStart(nodeFractionStart), m_nodeFractionEnd(nodeFractionEnd) {}
-    ~BlastHitPart() {}
 
     QColor m_colour;
     double m_nodeFractionStart;

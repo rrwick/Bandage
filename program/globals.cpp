@@ -23,13 +23,14 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QProcess>
 
-Settings * g_settings;
+QSharedPointer<Settings> g_settings;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
-BlastSearch * g_blastSearch;
-QString g_tempDirectory;
-AssemblyGraph * g_assemblyGraph;
+QSharedPointer<BlastSearch> g_blastSearch;
+QString m_tempDirectory;
+QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
 
 QString formatIntForDisplay(int num)
@@ -44,7 +45,7 @@ QString formatIntForDisplay(long long num)
     return locale.toString(num);
 }
 
-QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay)
+QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
 {
     QLocale locale;
     QString withCommas = locale.toString(num, 'f');
@@ -66,16 +67,6 @@ QString formatDoubleForDisplay(double num, double decimalPlacesToDisplay)
             pastDecimalPoint = true;
     }
     return final;
-}
-
-
-void emptyTempDirectory()
-{
-    QDir tempDirectory(g_tempDirectory);
-    tempDirectory.setNameFilters(QStringList() << "*.*");
-    tempDirectory.setFilter(QDir::Files);
-    foreach(QString dirFile, tempDirectory.entryList())
-        tempDirectory.remove(dirFile);
 }
 
 
