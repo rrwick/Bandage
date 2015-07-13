@@ -1543,9 +1543,11 @@ void MainWindow::setInfoTexts()
                                         "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
                                         "nodes in the graph.<br><br>"
-                                        "'Number', 'Length' and 'Coverage' labels are created automatically. "
+                                        "'Name', 'Length' and 'Coverage' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
-                                        "label' button when one or more nodes are selected.");
+                                        "label' button when one or more nodes are selected.<br><br>"
+                                        "When 'BLAST hits' labels are shown, they are displayed over any "
+                                        "BLAST hits present in the node.");
     ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels. The "
                                       "colour of the font is configurable in Bandage's settings.<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
