@@ -97,9 +97,15 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     QBrush brush(m_colour);
     painter->fillPath(outlinePath, brush);
 
+    bool nodeHasBlastHits;
+    if (g_settings->doubleMode)
+        nodeHasBlastHits = m_deBruijnNode->thisNodeHasBlastHits();
+    else
+        nodeHasBlastHits = m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits();
+
     //If the node contains a BLAST hit, draw that on top.
-    if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR ||
-            g_settings->nodeColourScheme == BLAST_HITS_SOLID_COLOUR)
+    if (nodeHasBlastHits && (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR ||
+            g_settings->nodeColourScheme == BLAST_HITS_SOLID_COLOUR))
     {
         std::vector<BlastHitPart> parts;
 
@@ -114,28 +120,25 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
                 parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
         }
 
-        if (parts.size() > 0)
+        QPen partPen;
+        partPen.setWidthF(m_width);
+        partPen.setCapStyle(Qt::FlatCap);
+        partPen.setJoinStyle(Qt::BevelJoin);
+
+        //If the node has an arrow, then it's necessary to use the outline
+        //as a clipping path so the colours don't extend past the edge of the
+        //node.
+        if (m_hasArrow)
+            painter->setClipPath(outlinePath);
+
+        for (size_t i = 0; i < parts.size(); ++i)
         {
-            QPen partPen;
-            partPen.setWidthF(m_width);
-            partPen.setCapStyle(Qt::FlatCap);
-            partPen.setJoinStyle(Qt::BevelJoin);
+            partPen.setColor(parts[i].m_colour);
+            painter->setPen(partPen);
 
-            //If the node has an arrow, then it's necessary to use the outline
-            //as a clipping path so the colours don't extend past the edge of the
-            //node.
-            if (m_hasArrow)
-                painter->setClipPath(outlinePath);
-
-            for (size_t i = 0; i < parts.size(); ++i)
-            {
-                partPen.setColor(parts[i].m_colour);
-                painter->setPen(partPen);
-
-                painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
-            }
-            painter->setClipping(false);
+            painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
         }
+        painter->setClipping(false);
     }
 
 
@@ -184,12 +187,6 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     }
 
     //Draw BLAST hit labels, if appropriate.
-    bool nodeHasBlastHits;
-    if (g_settings->doubleMode)
-        nodeHasBlastHits = m_deBruijnNode->thisNodeHasBlastHits();
-    else
-        nodeHasBlastHits = m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits();
-
     if (g_settings->displayBlastHits && nodeHasBlastHits)
     {
         std::vector<QString> blastHitText;
