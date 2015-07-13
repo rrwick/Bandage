@@ -93,15 +93,15 @@ int bandageImage(QStringList arguments)
     //default node outline to a nonzero value.
     g_settings->outlineThickness = 0.3;
 
-    bool blastUsed = false;
+    bool blastUsed = false; //TEMP - THIS WILL LOOK AT OPTIONS
 
     if (blastUsed)
     {
-        //Running from the command line, it makes more sense to put the temp
-        //directory in the current directory.
-        g_blastSearch->m_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
-        QDir().mkdir(g_blastSearch->m_tempDirectory);
-        g_blastSearch->m_blastQueries.createTempQueryFiles();
+        if (!createBlastTempDirectory())
+        {
+            err << "Error creating temporary directory for BLAST files" << error << endl;
+            return 1;
+        }
     }
 
     //CURRENTLY FIXED AS WHOLE_GRAPH, THOUGH I WOULD LIKE TO ADD
@@ -165,7 +165,7 @@ int bandageImage(QStringList arguments)
         returnCode = 0;
 
     if (blastUsed)
-        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+        deleteBlastTempDirectory();
 
     return returnCode;
 }

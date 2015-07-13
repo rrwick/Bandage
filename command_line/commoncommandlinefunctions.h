@@ -57,4 +57,7 @@ void printSettingsUsage(QTextStream * out);
 
 QString getColourName(QColor colour);
 
+bool createBlastTempDirectory();
+void deleteBlastTempDirectory();
+
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

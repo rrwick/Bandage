@@ -21,6 +21,9 @@
 #include <ogdf/energybased/FMMMLayout.h>
 #include "../program/graphlayoutworker.h"
 #include "../program/settings.h"
+#include <QDir>
+#include "../blast/blastsearch.h"
+#include <QCoreApplication>
 
 bool loadAssemblyGraph(QString filename)
 {
@@ -795,4 +798,23 @@ QString getColourName(QColor colour)
     if (colour == QColor(154, 205, 50)) return "yellowgreen";
 
     return colour.name();
+}
+
+
+bool createBlastTempDirectory()
+{
+    //Running from the command line, it makes more sense to put the temp
+    //directory in the current directory.
+    g_blastSearch->m_tempDirectory = QDir::tempPath() + "/bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+
+    if (!QDir().mkdir(g_blastSearch->m_tempDirectory))
+        return false;
+
+    g_blastSearch->m_blastQueries.createTempQueryFiles();
+    return true;
+}
+
+void deleteBlastTempDirectory()
+{
+    QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
