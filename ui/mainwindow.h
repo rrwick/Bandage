@@ -77,9 +77,6 @@ private:
     void setInfoTexts();
     void enableDisableUiElements(UiState uiState);
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
-    QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
-    QStringList removeNullStringsFromList(QStringList in);
-    bool checkIfLineEditHasNodes(QLineEdit * lineEdit);
     void setWidgetsFromSettings();
     QString getDefaultImageFileName();
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);

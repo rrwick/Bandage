@@ -521,53 +521,20 @@ void MainWindow::graphScopeChanged()
 
 void MainWindow::drawGraph()
 {
-    if (g_settings->graphScope == AROUND_NODE)
+    QString errorTitle;
+    QString errorMessage;
+    std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
+                                                                                  ui->doubleNodesRadioButton->isChecked(),
+                                                                                  ui->startingNodesLineEdit->text(),
+                                                                                  ui->blastQueryComboBox->currentText());
+
+    if (errorMessage != "")
     {
-        if (checkIfLineEditHasNodes(ui->startingNodesLineEdit))
-        {
-            QMessageBox::information(this, "No starting nodes",
-                                     "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
-                                     "Separate multiple nodes with commas.");
-            return;
-        }
-
-        //Make sure the nodes the user typed in are actually in the graph.
-        std::vector<QString> nodesNotInGraph;
-        std::vector<DeBruijnNode *> nodesInGraph = getNodesFromLineEdit(ui->startingNodesLineEdit,
-                                                                        g_settings->startingNodesExactMatch,
-                                                                        &nodesNotInGraph);
-        if (nodesNotInGraph.size() > 0)
-        {
-            QString errorMessage = generateNodesNotFoundErrorMessage(nodesNotInGraph, g_settings->startingNodesExactMatch);
-
-            QMessageBox::information(this, "Nodes not found", errorMessage);
-            if (nodesInGraph.size() == 0)
-                return;
-        }
+        QMessageBox::information(this, errorTitle, errorMessage);
+        return;
     }
 
-    else if (g_settings->graphScope == AROUND_BLAST_HITS)
-    {
-        std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getNodesFromBlastHits(ui->blastQueryComboBox->currentText());
-
-        if (startingNodes.size() == 0)
-        {
-            QMessageBox::information(this, "No BLAST hits",
-                                     "To draw the graph around BLAST hits, you must first conduct a BLAST search.");
-            return;
-        }
-    }
-
-    g_settings->doubleMode = ui->doubleNodesRadioButton->isChecked();
     resetScene();
-    g_assemblyGraph->clearOgdfGraphAndResetNodes();
-
-    std::vector<DeBruijnNode *> startingNodes;
-    if (g_settings->graphScope == AROUND_NODE)
-        startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, g_settings->startingNodesExactMatch);
-    else if (g_settings->graphScope == AROUND_BLAST_HITS)
-        startingNodes = g_assemblyGraph->getNodesFromBlastHits(ui->blastQueryComboBox->currentText());
-
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     layoutGraph();
 }
@@ -1186,7 +1153,7 @@ void MainWindow::openSettingsDialog()
 
 void MainWindow::selectUserSpecifiedNodes()
 {
-    if (checkIfLineEditHasNodes(ui->selectionSearchNodesLineEdit))
+    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
     {
         QMessageBox::information(this, "No starting nodes",
                                  "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
@@ -1240,8 +1207,8 @@ void MainWindow::selectUserSpecifiedNodes()
         QString errorMessage;
         if (nodesNotInGraph.size() > 0)
         {
-            errorMessage += generateNodesNotFoundErrorMessage(nodesNotInGraph,
-                                                              ui->selectionSearchNodesExactMatchRadioButton->isChecked());
+            errorMessage += g_assemblyGraph->generateNodesNotFoundErrorMessage(nodesNotInGraph,
+                                                                               ui->selectionSearchNodesExactMatchRadioButton->isChecked());
         }
         if (nodesNotFound.size() > 0)
         {
@@ -1761,48 +1728,9 @@ void MainWindow::openBandageUrl()
 }
 
 
-QString MainWindow::generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact)
-{
-    QString errorMessage;
-    if (exact)
-        errorMessage += "The following nodes are not in the graph:\n";
-    else
-        errorMessage += "The following queries do not match any nodes in the graph:\n";
-
-    for (size_t i = 0; i < nodesNotInGraph.size(); ++i)
-    {
-        errorMessage += nodesNotInGraph[i];
-        if (i != nodesNotInGraph.size() - 1)
-            errorMessage += ", ";
-    }
-    errorMessage += "\n";
-
-    return errorMessage;
-}
 
 
-QStringList MainWindow::removeNullStringsFromList(QStringList in)
-{
-    QStringList out;
 
-    for (int i = 0; i < in.size(); ++i)
-    {
-        QString string = in.at(i);
-        if (string.length() > 0)
-            out.push_back(string);
-    }
-    return out;
-}
-
-
-bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
-{
-    QString nodesString = lineEdit->text();
-    nodesString = nodesString.simplified();
-    QStringList nodesList = nodesString.split(",");
-    nodesList = removeNullStringsFromList(nodesList);
-    return (nodesList.size() == 0);
-}
 
 
 void MainWindow::setWidgetsFromSettings()

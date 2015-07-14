@@ -82,16 +82,21 @@ public:
     void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
-    std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph);
-    std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
-    std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
-    std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
+    std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,
+                                                 QString nodesList, QString blastQueryName);
+    bool checkIfStringHasNodes(QString nodesString);
+    QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
+    std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
     QString convertNormalNumberStringToBandageNodeName(QString number);
     void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
     void pointEachNodeToItsReverseComplement();
+    QStringList removeNullStringsFromList(QStringList in);
+    std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
+    std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
+    std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
 };
 
 #endif // ASSEMBLYGRAPH_H

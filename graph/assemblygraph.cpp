@@ -1041,6 +1041,89 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
 
 
+
+std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,
+                                                            QString nodesList, QString blastQueryName)
+{
+    std::vector<DeBruijnNode *> startingNodes;
+
+    if (g_settings->graphScope == AROUND_NODE)
+    {
+        if (checkIfStringHasNodes(nodesList))
+        {
+            *errorTitle = "No starting nodes";
+            *errorMessage = "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
+                            "Separate multiple nodes with commas.";
+            return startingNodes;
+        }
+
+        //Make sure the nodes the user typed in are actually in the graph.
+        std::vector<QString> nodesNotInGraph;
+        std::vector<DeBruijnNode *> nodesInGraph = getNodesFromString(nodesList,
+                                                                      g_settings->startingNodesExactMatch,
+                                                                      &nodesNotInGraph);
+        if (nodesNotInGraph.size() > 0)
+        {
+            *errorTitle = "Nodes not found";
+            *errorMessage = generateNodesNotFoundErrorMessage(nodesNotInGraph, g_settings->startingNodesExactMatch);
+            if (nodesInGraph.size() == 0)
+                return startingNodes;
+        }
+    }
+
+    else if (g_settings->graphScope == AROUND_BLAST_HITS)
+    {
+        std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getNodesFromBlastHits(blastQueryName);
+
+        if (startingNodes.size() == 0)
+        {
+            *errorTitle = "No BLAST hits";
+            *errorMessage = "To draw the graph around BLAST hits, you must first conduct a BLAST search.";
+            return startingNodes;
+        }
+    }
+
+    g_settings->doubleMode = doubleMode;
+    g_assemblyGraph->clearOgdfGraphAndResetNodes();
+
+    if (g_settings->graphScope == AROUND_NODE)
+        startingNodes = getNodesFromString(nodesList, g_settings->startingNodesExactMatch);
+    else if (g_settings->graphScope == AROUND_BLAST_HITS)
+        startingNodes = g_assemblyGraph->getNodesFromBlastHits(blastQueryName);
+
+    return startingNodes;
+}
+
+
+bool AssemblyGraph::checkIfStringHasNodes(QString nodesString)
+{
+    nodesString = nodesString.simplified();
+    QStringList nodesList = nodesString.split(",");
+    nodesList = removeNullStringsFromList(nodesList);
+    return (nodesList.size() == 0);
+}
+
+
+QString AssemblyGraph::generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact)
+{
+    QString errorMessage;
+    if (exact)
+        errorMessage += "The following nodes are not in the graph:\n";
+    else
+        errorMessage += "The following queries do not match any nodes in the graph:\n";
+
+    for (size_t i = 0; i < nodesNotInGraph.size(); ++i)
+    {
+        errorMessage += nodesNotInGraph[i];
+        if (i != nodesNotInGraph.size() - 1)
+            errorMessage += ", ";
+    }
+    errorMessage += "\n";
+
+    return errorMessage;
+}
+
+
 std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph)
 {
     nodeNamesString = nodeNamesString.simplified();
@@ -1165,4 +1248,19 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryNa
     }
 
     return returnVector;
+}
+
+
+
+QStringList AssemblyGraph::removeNullStringsFromList(QStringList in)
+{
+    QStringList out;
+
+    for (int i = 0; i < in.size(); ++i)
+    {
+        QString string = in.at(i);
+        if (string.length() > 0)
+            out.push_back(string);
+    }
+    return out;
 }
