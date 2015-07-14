@@ -23,8 +23,8 @@
 #include <qmath.h>
 #include "../program/settings.h"
 
-GraphicsViewZoom::GraphicsViewZoom(QSharedPointer<QGraphicsView> view)
-    : QObject(view.data()), _view(view)
+GraphicsViewZoom::GraphicsViewZoom(QGraphicsView* view)
+    : QObject(view), _view(view)
 {
     g_absoluteZoom = 1.0;
     _view->viewport()->installEventFilter(this);

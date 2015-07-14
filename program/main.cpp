@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     g_settings.reset(new Settings());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
-    g_graphicsView.reset(new MyGraphicsView());
+    g_graphicsView = new MyGraphicsView();
 
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();

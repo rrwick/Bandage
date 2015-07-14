@@ -69,7 +69,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->setupUi(this);
 
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
-    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView.data());
+    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
 
     srand(time(NULL));
 
@@ -189,6 +189,13 @@ void MainWindow::afterMainWindowShow()
     //necessary to update the UI to match these settings.
     setWidgetsFromSettings();
     setTextDisplaySettings();
+
+    //If a BLAST query filename is present, do the BLAST search now automatically.
+    if (g_settings->blastQueryFilename != "")
+    {
+        BlastSearchDialog blastSearchDialog(this, g_settings->blastQueryFilename);
+        setupBlastQueryComboBox();
+    }
 
     graphScopeChanged();
     switchColourScheme();
@@ -1751,13 +1758,6 @@ void MainWindow::setWidgetsFromSettings()
     setGraphScopeComboBox(g_settings->graphScope);
     ui->nodeDistanceSpinBox->setValue(g_settings->nodeDistance);
     ui->startingNodesLineEdit->setText(g_settings->startingNodes);
-
-    if (g_settings->blastQueryFilename != "")
-    {
-        BlastSearchDialog blastSearchDialog(this, g_settings->blastQueryFilename);
-        blastSearchDialog.exec();
-        setupBlastQueryComboBox();
-    }
 }
 
 

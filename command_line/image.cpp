@@ -28,6 +28,7 @@
 #include <QSvgGenerator>
 #include <QDir>
 #include "../blast/blastsearch.h"
+#include "../ui/blastsearchdialog.h"
 
 int bandageImage(QStringList arguments)
 {
@@ -97,7 +98,7 @@ int bandageImage(QStringList arguments)
     //default node outline to a nonzero value.
     g_settings->outlineThickness = 0.3;
 
-    bool blastUsed = false; //TEMP - THIS WILL LOOK AT OPTIONS
+    bool blastUsed = isOptionPresent("--query", &arguments);
 
     if (blastUsed)
     {
@@ -106,6 +107,8 @@ int bandageImage(QStringList arguments)
             err << "Error creating temporary directory for BLAST files" << error << endl;
             return 1;
         }
+
+        BlastSearchDialog blastSearchDialog(0, g_settings->blastQueryFilename);
     }
 
 

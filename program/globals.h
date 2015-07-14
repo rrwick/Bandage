@@ -42,7 +42,7 @@ enum BlastUiState {BLAST_DB_NOT_YET_BUILT, BLAST_DB_BUILD_IN_PROGRESS, BLAST_DB_
                    READY_FOR_BLAST_SEARCH, BLAST_SEARCH_IN_PROGRESS, BLAST_SEARCH_COMPLETE};
 
 extern QSharedPointer<Settings> g_settings;
-extern QSharedPointer<MyGraphicsView> g_graphicsView;
+extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
 extern QSharedPointer<BlastSearch> g_blastSearch;
 extern QSharedPointer<AssemblyGraph> g_assemblyGraph;

@@ -22,7 +22,6 @@
 #include <QObject>
 #include <QGraphicsView>
 #include "../program/globals.h"
-#include <QSharedPointer>
 
 // This class is a modified version of:
 // http://stackoverflow.com/questions/19113532/qgraphicsview-zooming-in-and-out-under-mouse-position-using-mouse-wheel
@@ -60,14 +59,14 @@
 class GraphicsViewZoom : public QObject {
     Q_OBJECT
 public:
-    GraphicsViewZoom(QSharedPointer<QGraphicsView> view);
+    GraphicsViewZoom(QGraphicsView* view);
     void gentle_zoom(double factor, ZoomSource zoomSource);
     void set_modifiers(Qt::KeyboardModifiers modifiers);
     void set_zoom_factor_base(double value);
     double _zoom_factor_base;
 
 private:
-    QSharedPointer<QGraphicsView> _view;
+    QGraphicsView * _view;
     Qt::KeyboardModifiers _modifiers;
     QPointF target_scene_pos, target_viewport_pos;
     bool eventFilter(QObject* object, QEvent* event);
