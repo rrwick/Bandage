@@ -58,8 +58,8 @@ private:
 
     void deleteTempFiles();
     void updateTempFiles();
-    bool tempNuclFileExists() {return m_tempNuclFile->exists();}
-    bool tempProtFileExists() {return m_tempProtFile->exists();}
+    bool tempNuclFileExists();
+    bool tempProtFileExists();
     void createPresetColours();
     void writeTempFile(QSharedPointer<QFile> file, SequenceType sequenceType);
 

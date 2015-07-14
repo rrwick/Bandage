@@ -33,14 +33,17 @@ bool checkForVersion(QStringList arguments);
 
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
 QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
-QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList);
+QString checkOptionForString(QString option, QStringList * arguments,
+                             QStringList validOptionsList, QString validDescription = "");
 QString checkOptionForColour(QString option, QStringList * arguments);
+QString checkOptionForFile(QString option, QStringList * arguments);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
 QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
                                  double min1, double max1, double min2, double max2,
                                  bool secondMustBeEqualOrLarger = false);
 
 bool isOptionPresent(QString option, QStringList * arguments);
+bool isOptionAndValuePresent(QString option, QString value, QStringList * arguments);
 
 int getIntOption(QString option, QStringList * arguments);
 double getFloatOption(QString option, QStringList * arguments);

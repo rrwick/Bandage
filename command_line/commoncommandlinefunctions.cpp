@@ -146,7 +146,7 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
 //Returns empty string if everything is okay and an error
 //message if there's a problem.  If everything is okay, it
 //also removes the option and its value from arguments.
-QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList)
+QString checkOptionForString(QString option, QStringList * arguments, QStringList validOptionsList, QString validDescription)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -165,15 +165,20 @@ QString checkOptionForString(QString option, QStringList * arguments, QStringLis
         else if (i < validOptionsList.size() - 2)
             validOptions += ", ";
     }
+    if (validOptions == "")
+        validOptions = validDescription;
 
     //If nothing follows the option, that's a problem.
     if (stringIndex >= arguments->size())
         return option + " must be followed by " + validOptions;
 
     //If the thing following the option isn't a valid choice, that's a problem.
-    QString value = arguments->at(stringIndex);
-    if (!validOptionsList.contains(value, Qt::CaseInsensitive))
-        return option + " must be followed by " + validOptions;
+    if (validOptionsList.size() > 0)
+    {
+        QString value = arguments->at(stringIndex);
+        if (!validOptionsList.contains(value, Qt::CaseInsensitive))
+            return option + " must be followed by " + validOptions;
+    }
 
     //If the code got here, the option and its string are okay.
     //Remove them from the arguments.
@@ -206,6 +211,35 @@ QString checkOptionForColour(QString option, QStringList * arguments)
     //If the code got here, the option and its colour are okay.
     //Remove them from the arguments.
     arguments->removeAt(colIndex);
+    arguments->removeAt(optionIndex);
+
+    return "";
+}
+
+
+QString checkOptionForFile(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return "";
+
+    int fileIndex = optionIndex + 1;
+
+    //If nothing follows the option, that's a problem.
+    if (fileIndex >= arguments->size())
+        return option + " must be followed by a filename";
+
+    //If the thing that follows the option isn't a file that's a problem
+    QFileInfo checkFile(arguments->at(fileIndex));
+    bool fileOkay = (checkFile.exists() && checkFile.isFile());
+    if (!fileOkay)
+        return option + " must be followed by a a valid filename";
+
+    //If the code got here, the option and its file are okay.
+    //Remove them from the arguments.
+    arguments->removeAt(fileIndex);
     arguments->removeAt(optionIndex);
 
     return "";
@@ -264,6 +298,20 @@ QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList *
 bool isOptionPresent(QString option, QStringList * arguments)
 {
     return (arguments->indexOf(option) > -1);
+}
+
+bool isOptionAndValuePresent(QString option, QString value, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return false;
+
+    int valueIndex = optionIndex + 1;
+    if (valueIndex >= arguments->size())
+        return false;
+
+    QString optionValue = arguments->at(valueIndex);
+    return (optionValue == value);
 }
 
 
@@ -337,8 +385,24 @@ QColor getColourOption(QString option, QStringList * arguments)
 //a null string.  If there's a problem, it returns an error message.
 QString checkForInvalidOrExcessSettings(QStringList * arguments)
 {
+    QStringList argumentsCopy = *arguments;
+
+    QStringList validScopeOptions;
+    validScopeOptions << "entire" << "aroundnodes" << "aroundblast";
+    QString error = checkOptionForString("--scope", arguments, validScopeOptions);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names");
+    if (error.length() > 0) return error;
+
+    error = checkOptionForInt("--distance", arguments, 0, 100);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFile("--query", arguments);
+    if (error.length() > 0) return error;
+
     checkOptionWithoutValue("--double", arguments);
-    QString error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
+    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
     if (error.length() > 0) return error;
     error = checkOptionForInt("--quality", arguments, 1, 5);
     if (error.length() > 0) return error;
@@ -409,6 +473,11 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
     if (error.length() > 0) return error;
 
+    bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
+    bool queryFile = isOptionPresent("--query", &argumentsCopy);
+    if (blastScope && !queryFile)
+        return "A BLAST query must be given with the --query option when the\naroundblast scope is used.";
+
     return checkForExcessArguments(*arguments);
 }
 
@@ -454,6 +523,26 @@ void printSettingsUsage(QTextStream * out)
     *out << "          either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the" << endl;
     *out << "          hash symbol escaped (e.g. \\#FFB6C1)." << endl;
     *out << endl;
+    *out << "          Graph scope" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings control the graph scope.  If the aroundnodes scope is" << endl;
+    *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
+    *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
+    *out << "          --scope <scope>     Graph scope, from one of the following options:" << endl;
+    *out << "                              entire, aroundnodes, aroundblast (default:" << endl;
+    *out << "                              entire)" << endl;
+    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
+    *out << "                              aroundnodes scope (default: none)" << endl;
+    *out << "                              Enclose this list in quotes if it includes spaces" << endl;
+    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
+    *out << "                              aroundnodes and aroundblast scopes (default: 0)" << endl;
+    *out << endl;
+    *out << "          BLAST search" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
+    *out << "                              sequences to be used as BLAST queries (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --double            draw graph in double mode (default: off)" << endl;
@@ -466,10 +555,10 @@ void printSettingsUsage(QTextStream * out)
     *out << "          Node width" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          Node widths are determined using the following formula:" << endl;
-    *out << "              a*b*((c/d)^e-1)+1" << endl;
-    *out << "                 a = average node width, b = coverage effect on width" << endl;
-    *out << "                 c = node coverage, d = mean coverage" << endl;
-    *out << "                 e = power of coverage effect on width" << endl;
+    *out << "          a*b*((c/d)^e-1)+1" << endl;
+    *out << "            a = average node width, b = coverage effect on width" << endl;
+    *out << "            c = node coverage, d = mean coverage" << endl;
+    *out << "            e = power of coverage effect on width" << endl;
     *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
     *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: " + QString::number(g_settings->coverageEffectOnWidth) + ")" << endl;
     *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;

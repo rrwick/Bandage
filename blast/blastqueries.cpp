@@ -154,6 +154,20 @@ int BlastQueries::getQueryCount(SequenceType sequenceType)
 }
 
 
+bool BlastQueries::tempNuclFileExists()
+{
+    if (m_tempNuclFile.isNull())
+        return false;
+    return m_tempNuclFile->exists();
+}
+bool BlastQueries::tempProtFileExists()
+{
+    if (m_tempProtFile.isNull())
+        return false;
+    return m_tempProtFile->exists();
+}
+
+
 void BlastQueries::createPresetColours()
 {
     presetColours.push_back(QColor("#306FF8"));
