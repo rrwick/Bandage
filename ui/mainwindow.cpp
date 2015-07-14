@@ -1132,6 +1132,7 @@ void MainWindow::openSettingsDialog()
         if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
                 settingsBefore.uniformNegativeNodeColour != g_settings->uniformNegativeNodeColour ||
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
+                settingsBefore.autoCoverageValue != g_settings->autoCoverageValue ||
                 settingsBefore.lowCoverageColour != g_settings->lowCoverageColour ||
                 settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
                 settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
