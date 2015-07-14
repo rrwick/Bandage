@@ -445,6 +445,8 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     error = checkOptionForFile("--query", arguments);
     if (error.length() > 0) return error;
+    error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters");
+    if (error.length() > 0) return error;
 
     checkOptionWithoutValue("--double", arguments);
     error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
@@ -587,6 +589,12 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
     *out << "                              sequences to be used as BLAST queries (default:" << endl;
     *out << "                              none)" << endl;
+    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
+    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << "                              Format BLAST parameters exactly as they would be" << endl;
+    *out << "                              used for blastn/tblastn on the command line, and" << endl;
+    *out << "                              enclose them in quotes." << endl;
     *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -685,6 +693,8 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--query", &arguments))
         g_settings->blastQueryFilename = getStringOption("--query", &arguments);
+    if (isOptionPresent("--blastp", &arguments))
+        g_settings->blastSearchParameters = getStringOption("--blastp", &arguments);
 
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 

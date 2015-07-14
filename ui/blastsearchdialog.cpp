@@ -52,6 +52,9 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
 {
     ui->setupUi(this);
 
+    //Load any previous parameters the user might have entered when previously using this dialog.
+    ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
+
     //If the dialog is given an autoQuery parameter, then it will
     //carry out the entire process on its own.
     if (autoQuery != "")
@@ -105,9 +108,6 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
         fillHitsTable();
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
-
-    //Load any previous parameters the user might have entered when previously using this dialog.
-    ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
 
     setInfoTexts();
 

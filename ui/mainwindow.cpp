@@ -1927,6 +1927,8 @@ bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
 
 void MainWindow::setWidgetsFromSettings()
 {
+    Settings * test = g_settings.data();
+
     ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
     ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
 
