@@ -87,6 +87,10 @@ int bandageImage(QStringList arguments)
     int height = 0;
     parseImageOptions(arguments, &width, &height);
 
+    //For Bandage image, it is necessary to position node labels at the
+    //centre of the node, not the visible centre(s).  This is because there
+    //is no viewport.
+    g_settings->positionTextNodeCentre = true;
 
 
     //Since frame rate performance doesn't matter for a fixed image, set the
@@ -104,13 +108,21 @@ int bandageImage(QStringList arguments)
         }
     }
 
-    //CURRENTLY FIXED AS WHOLE_GRAPH, THOUGH I WOULD LIKE TO ADD
-    //SUPPORT FOR AROUND_BLAST_HITS
-    g_settings->graphScope = WHOLE_GRAPH;
-    int nodeDistance = 0;
-    std::vector<DeBruijnNode *> startingNodes;
 
-    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, nodeDistance);
+    QString errorTitle;
+    QString errorMessage;
+    std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
+                                                                                  g_settings->doubleMode,
+                                                                                  g_settings->startingNodes,
+                                                                                  "all");
+
+    if (errorMessage != "")
+    {
+        err << errorMessage << endl;
+        return 1;
+    }
+
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     layoutGraph();
 
     g_assemblyGraph->addGraphicsItemsToScene(&scene);
