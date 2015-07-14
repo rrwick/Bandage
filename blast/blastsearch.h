@@ -53,6 +53,7 @@ public:
     QString doAutoBlastSearch();
     void loadBlastQueriesFromFastaFile(QString fullFileName);
     QString cleanQueryName(QString queryName);
+    void blastTargetChanged(QString queryName);
 };
 
 #endif // BLASTSEARCH_H

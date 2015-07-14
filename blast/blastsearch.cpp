@@ -24,6 +24,7 @@
 #include "runblastsearchworker.h"
 #include "../program/settings.h"
 #include <QApplication>
+#include "../graph/debruijnnode.h"
 
 BlastSearch::BlastSearch() :
     m_blastQueries()
@@ -212,6 +213,8 @@ QString BlastSearch::doAutoBlastSearch()
     if (runBlastSearchWorker.m_error != "")
         return runBlastSearchWorker.m_error;
 
+    blastTargetChanged("all");
+
     return "";
 }
 
@@ -246,4 +249,32 @@ QString BlastSearch::cleanQueryName(QString queryName)
         queryName = queryName.left(queryName.size() - 1);
 
     return queryName;
+}
+
+void BlastSearch::blastTargetChanged(QString queryName)
+{
+    g_assemblyGraph->clearAllBlastHitPointers();
+
+    std::vector<BlastQuery *> queries;
+
+    //If "all" is selected, then we'll display each of the BLAST queries
+    if (queryName == "all")
+        queries = g_blastSearch->m_blastQueries.m_queries;
+
+    //If only one query is selected, then just display that one.
+    else
+        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(queryName));
+
+    //Add the blast hit pointers to nodes that have a hit for
+    //the selected target(s).
+    for (size_t i = 0; i < queries.size(); ++i)
+    {
+        BlastQuery * currentQuery = queries[i];
+        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        {
+            BlastHit * hit = &(g_blastSearch->m_hits[j]);
+            if (hit->m_query == currentQuery)
+                hit->m_node->m_blastHits.push_back(hit);
+        }
+    }
 }
