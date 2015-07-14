@@ -470,6 +470,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--names", arguments);
     checkOptionWithoutValue("--lengths", arguments);
     checkOptionWithoutValue("--coverages", arguments);
+    checkOptionWithoutValue("--blasthits", arguments);
     error = checkOptionForInt("--fontsize", arguments, 1, 100);
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
@@ -630,6 +631,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --names             Label nodes with name (default: off)" << endl;
     *out << "          --lengths           Label nodes with length (default: off)" << endl;
     *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
+    *out << "          --blasthits         Label BLAST hits (default: off)" << endl;
     *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
     *out << endl;
     *out << "          Graph appearance" << endl;
@@ -749,10 +751,9 @@ void parseSettings(QStringList arguments)
     g_settings->positionTextNodeCentre = isOptionPresent("--centre", &arguments);
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
-
     g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
-
     g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+    g_settings->displayBlastHits = isOptionPresent("--blasthits", &arguments);
 
     if (isOptionPresent("--fontsize", &arguments))
     {
