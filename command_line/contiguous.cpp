@@ -19,6 +19,7 @@
 #include "contiguous.h"
 #include "commoncommandlinefunctions.h"
 #include "../program/settings.h"
+#include "../graph/assemblygraph.h"
 
 int bandageContiguous(QStringList arguments)
 {
@@ -53,12 +54,9 @@ int bandageContiguous(QStringList arguments)
 
     parseContiguousOptions(arguments);
 
-    bool loadSuccess = loadAssemblyGraph(graphFile);
+    bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFile);
     if (!loadSuccess)
         return 1;
-
-
-
 
     return 0;
 }

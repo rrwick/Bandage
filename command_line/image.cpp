@@ -77,7 +77,7 @@ int bandageImage(QStringList arguments)
         return 1;
     }
 
-    bool loadSuccess = loadAssemblyGraph(graphFilename);
+    bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
         return 1;
 
@@ -130,7 +130,7 @@ int bandageImage(QStringList arguments)
     }
 
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
-    layoutGraph();
+    g_assemblyGraph->layoutGraph();
 
     g_assemblyGraph->addGraphicsItemsToScene(&scene);
     scene.setSceneRectangle();

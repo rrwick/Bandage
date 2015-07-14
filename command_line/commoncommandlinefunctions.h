@@ -24,9 +24,6 @@
 #include <QColor>
 #include <QTextStream>
 
-bool loadAssemblyGraph(QString filename);
-void layoutGraph();
-
 bool checkForHelp(QStringList arguments);
 bool checkForHelpAll(QStringList arguments);
 bool checkForVersion(QStringList arguments);

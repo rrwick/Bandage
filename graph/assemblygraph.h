@@ -87,6 +87,8 @@ public:
     bool checkIfStringHasNodes(QString nodesString);
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
     std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
+    void layoutGraph();
+
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

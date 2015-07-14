@@ -18,28 +18,376 @@
 
 #include "commoncommandlinefunctions.h"
 #include "../graph/assemblygraph.h"
-#include <ogdf/energybased/FMMMLayout.h>
-#include "../program/graphlayoutworker.h"
 #include "../program/settings.h"
 #include <QDir>
 #include "../blast/blastsearch.h"
 #include <QCoreApplication>
 
-bool loadAssemblyGraph(QString filename)
+
+void printSettingsUsage(QTextStream * out)
 {
-    return g_assemblyGraph->loadGraphFromFile(filename);
+    *out << "Settings: The following options configure the Bandage settings that are" << endl;
+    *out << "          available in the Bandage GUI." << endl;
+    *out << endl;
+    *out << "          Colours can be specified using hex values, with or without an alpha " << endl;
+    *out << "          channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names" << endl;
+    *out << "          (e.g. red, yellowgreen or skyblue).  Note that hex colour names will" << endl;
+    *out << "          either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the" << endl;
+    *out << "          hash symbol escaped (e.g. \\#FFB6C1)." << endl;
+    *out << endl;
+    *out << "          Graph scope" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings control the graph scope.  If the aroundnodes scope is" << endl;
+    *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
+    *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
+    *out << "          --scope <scope>     Graph scope, from one of the following options:" << endl;
+    *out << "                              entire, aroundnodes, aroundblast (default:" << endl;
+    *out << "                              entire)" << endl;
+    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
+    *out << "                              aroundnodes scope (default: none)" << endl;
+    *out << "          --partial           Use partial node name matching (default: exact" << endl;
+    *out << "                              node name matching)" << endl;
+    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
+    *out << "                              aroundnodes and aroundblast scopes (default: 0)" << endl;
+    *out << endl;
+    *out << "          BLAST search" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
+    *out << "                              sequences to be used as BLAST queries (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
+    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << "                              Format BLAST parameters exactly as they would be" << endl;
+    *out << "                              used for blastn/tblastn on the command line, and" << endl;
+    *out << "                              enclose them in quotes." << endl;
+    *out << endl;
+    *out << "          Graph layout" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --double            Draw graph in double mode (default: off)" << endl;
+    *out << "          --bases <int>       Base pairs per segment (default: auto)" << endl;
+    *out << "                              High values result in longer nodes, small values" << endl;
+    *out << "                              in shorter nodes." << endl;
+    *out << "          --quality <int>     Graph layout quality, 0 (low) to 4 (high)" << endl;
+    *out << "                              (default: " + QString::number(g_settings->graphLayoutQuality) + ")" << endl;
+    *out << endl;
+    *out << "          Node width" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          Node widths are determined using the following formula:" << endl;
+    *out << "          a*b*((c/d)^e-1)+1" << endl;
+    *out << "            a = average node width, b = coverage effect on width" << endl;
+    *out << "            c = node coverage, d = mean coverage" << endl;
+    *out << "            e = power of coverage effect on width" << endl;
+    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
+    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: " + QString::number(g_settings->coverageEffectOnWidth) + ")" << endl;
+    *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
+    *out << "                              default: " + QString::number(g_settings->coveragePower) + ")" << endl;
+    *out << endl;
+    *out << "          Node labels" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --names             Label nodes with name (default: off)" << endl;
+    *out << "          --lengths           Label nodes with length (default: off)" << endl;
+    *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
+    *out << "          --blasthits         Label BLAST hits (default: off)" << endl;
+    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
+    *out << endl;
+    *out << "          Graph appearance" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --edgecol <col>     Colour for edges (default: " + getColourName(g_settings->edgeColour.name()) + ")" << endl;
+    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
+    *out << "          --outcol <col>      Colour for node outlines (default: " + getColourName(g_settings->outlineColour.name()) + ")" << endl;
+    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
+    *out << "          --selcol <col>      Colour for selections (default: " + getColourName(g_settings->selectionColour.name()) + ")" << endl;
+    *out << "          --noaa              Disable antialiasing (default: antialiasing on)" << endl;
+    *out << endl;
+    *out << "          Text appearance" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --textcol <col>     Colour for label text (default: " + getColourName(g_settings->textColour.name()) + ")" << endl;
+    *out << "          --toutcol <col>     Colour for text outline (default: " + getColourName(g_settings->textOutlineColour.name()) + ")" << endl;
+    *out << "          --toutline <float>  Surround text with an outline with this" << endl;
+    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
+    *out << "          --centre            Node labels appear at the centre of the node" << endl;
+    *out << "                              (default: off, node labels appear over visible" << endl;
+    *out << "                              parts of nodes)" << endl;
+    *out << endl;
+    *out << "          Node colours" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
+    *out << "                              options: random, uniform, coverage, blastsolid," << endl;
+    *out << "                              blastrainbow (default: random if --query option" << endl;
+    *out << "                              not used, blastsolid if --query option used)" << endl;
+    *out << endl;
+    *out << "          Random colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the random colour scheme is used." << endl;
+    *out << "          --ransatpos <int>   Positive node saturation (0-255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
+    *out << "          --ransatneg <int>   Negative node saturation (0-255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
+    *out << "          --ranligpos <int>   Positive node lightness (0-255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
+    *out << "          --ranligneg <int>   Negative node lightness (0-255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
+    *out << "          --ranopapos <int>   Positive node opacity (0-255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
+    *out << "          --ranopaneg <int>   Negative node opacity (0-255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
+    *out << endl;
+    *out << "          Uniform colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the uniform colour scheme is used." << endl;
+    *out << "          --unicolpos <col>   Positive node colour (default: " + getColourName(g_settings->uniformPositiveNodeColour.name()) + ")" << endl;
+    *out << "          --unicolneg <col>   Negative node colour (default: " + getColourName(g_settings->uniformNegativeNodeColour.name()) + ")" << endl;
+    *out << "          --unicolspe <col>   Special node colour (default: " + getColourName(g_settings->uniformNodeSpecialColour.name()) + ")" << endl;
+    *out << endl;
+    *out << "          Coverage colour scheme" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings only apply when the coverage colour scheme is used." << endl;
+    *out << "          --covcollow <col>   Colour for nodes with coverage below the low" << endl;
+    *out << "                              coverage value (default: " + getColourName(g_settings->lowCoverageColour.name()) + ")" << endl;
+    *out << "          --covcolhi <col>    Colour for nodes with coverage above the high" << endl;
+    *out << "                              coverage value (default: " + getColourName(g_settings->highCoverageColour.name()) + ")" << endl;
+    *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
+    *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
+    *out << endl;
+}
+
+
+//This function checks the values of the Bandage settings.
+//If everything is fine, it removes the good arguments/values and returns
+//a null string.  If there's a problem, it returns an error message.
+QString checkForInvalidOrExcessSettings(QStringList * arguments)
+{
+    QStringList argumentsCopy = *arguments;
+
+    QStringList validScopeOptions;
+    validScopeOptions << "entire" << "aroundnodes" << "aroundblast";
+    QString error = checkOptionForString("--scope", arguments, validScopeOptions);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names");
+    if (error.length() > 0) return error;
+    checkOptionWithoutValue("--partial", arguments);
+
+    error = checkOptionForInt("--distance", arguments, 0, 100);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFile("--query", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters");
+    if (error.length() > 0) return error;
+
+    checkOptionWithoutValue("--double", arguments);
+    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--quality", arguments, 1, 5);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covwidth", arguments, 0.0, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--covpower", arguments, 0.1, 1.0);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0);
+    if (error.length() > 0) return error;
+
+    checkOptionWithoutValue("--names", arguments);
+    checkOptionWithoutValue("--lengths", arguments);
+    checkOptionWithoutValue("--coverages", arguments);
+    checkOptionWithoutValue("--blasthits", arguments);
+    error = checkOptionForInt("--fontsize", arguments, 1, 100);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
+    if (error.length() > 0) return error;
+    checkOptionWithoutValue("--centre", arguments);
+
+    error = checkOptionForColour("--edgecol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--outcol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--selcol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--textcol", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--toutcol", arguments);
+    if (error.length() > 0) return error;
+    checkOptionWithoutValue("--noaa", arguments);
+
+    QStringList validColourOptions;
+    validColourOptions << "random" << "uniform" << "coverage" << "blastsolid" << "blastrainbow";
+    error = checkOptionForString("--colour", arguments, validColourOptions);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForInt("--ransatpos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ransatneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligpos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopapos", arguments, 0, 255);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopaneg", arguments, 0, 255);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForColour("--unicolpos", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--unicolneg", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--unicolspe", arguments);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForColour("--covcollow", arguments);
+    if (error.length() > 0) return error;
+    error = checkOptionForColour("--covcolhi", arguments);
+    if (error.length() > 0) return error;
+
+    error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
+    if (error.length() > 0) return error;
+
+    bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
+    bool queryFile = isOptionPresent("--query", &argumentsCopy);
+    if (blastScope && !queryFile)
+        return "A BLAST query must be given with the --query option when the\naroundblast scope is used.";
+
+    bool nodesScope = isOptionAndValuePresent("--scope", "aroundnodes", &argumentsCopy);
+    bool nodesList = isOptionPresent("--nodes", &argumentsCopy);
+    if (nodesScope && !nodesList)
+        return "A list of starting nodes must be given with the --nodes option\nwhen the aroundnodes scope is used.";
+
+    return checkForExcessArguments(*arguments);
 }
 
 
 
-//Unlike the equivalent function in MainWindow, this does the graph layout in the main thread.
-void layoutGraph()
+void parseSettings(QStringList arguments)
 {
-    ogdf::FMMMLayout fmmm;
-    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, g_assemblyGraph->m_graphAttributes,
-                                                                  g_settings->graphLayoutQuality, g_settings->segmentLength);
-    graphLayoutWorker->layoutGraph();
+    if (isOptionPresent("--scope", &arguments))
+        g_settings->graphScope = getGraphScopeOption("--scope", &arguments);
+
+    if (isOptionPresent("--distance", &arguments))
+        g_settings->nodeDistance = getIntOption("--distance", &arguments);
+
+    if (isOptionPresent("--nodes", &arguments))
+        g_settings->startingNodes = getStringOption("--nodes", &arguments);
+    g_settings->startingNodesExactMatch = !isOptionPresent("--partial", &arguments);
+
+    if (isOptionPresent("--query", &arguments))
+        g_settings->blastQueryFilename = getStringOption("--query", &arguments);
+    if (isOptionPresent("--blastp", &arguments))
+        g_settings->blastSearchParameters = getStringOption("--blastp", &arguments);
+
+    g_settings->doubleMode = isOptionPresent("--double", &arguments);
+
+    if (isOptionPresent("--bases", &arguments))
+    {
+        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
+        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+    }
+
+    if (isOptionPresent("--quality", &arguments))
+    {
+        int quality = getIntOption("--quality", &arguments);
+        if (quality < 0)
+            quality = 0;
+        if (quality > 4)
+            quality = 4;
+        g_settings->graphLayoutQuality = quality;
+    }
+
+    if (isOptionPresent("--nodewidth", &arguments))
+        g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
+    if (isOptionPresent("--covwidth", &arguments))
+        g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
+    if (isOptionPresent("--covpower", &arguments))
+        g_settings->coveragePower = getFloatOption("--covpower", &arguments);
+
+    if (isOptionPresent("--edgewidth", &arguments))
+        g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
+    if (isOptionPresent("--outline", &arguments))
+        g_settings->outlineThickness = getFloatOption("--outline", &arguments);
+    g_settings->antialiasing = !isOptionPresent("--noaa", &arguments);
+
+    if (isOptionPresent("--edgecol", &arguments))
+        g_settings->edgeColour = getColourOption("--edgecol", &arguments);
+    if (isOptionPresent("--outcol", &arguments))
+        g_settings->outlineColour = getColourOption("--outcol", &arguments);
+    if (isOptionPresent("--selcol", &arguments))
+        g_settings->selectionColour = getColourOption("--selcol", &arguments);
+    if (isOptionPresent("--textcol", &arguments))
+        g_settings->textColour = getColourOption("--textcol", &arguments);
+    if (isOptionPresent("--toutcol", &arguments))
+        g_settings->textOutlineColour = getColourOption("--toutcol", &arguments);
+    g_settings->positionTextNodeCentre = isOptionPresent("--centre", &arguments);
+
+    g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
+    g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
+    g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+    g_settings->displayBlastHits = isOptionPresent("--blasthits", &arguments);
+
+    if (isOptionPresent("--fontsize", &arguments))
+    {
+        int fontsize = getIntOption("--fontsize", &arguments);
+        QFont font = g_settings->labelFont;
+        font.setPointSize(fontsize);
+        g_settings->labelFont = font;
+    }
+
+    if (isOptionPresent("--toutline", &arguments))
+    {
+        double textOutlineThickness = getFloatOption("--toutline", &arguments);
+        if (textOutlineThickness == 0.0)
+            g_settings->textOutline = false;
+        else
+        {
+            g_settings->textOutline = true;
+            g_settings->textOutlineThickness = textOutlineThickness;
+        }
+    }
+    else
+    {
+        g_settings->textOutline = true;
+        g_settings->textOutlineThickness = 0.3;
+    }
+
+    g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
+
+    if (isOptionPresent("--ransatpos", &arguments))
+        g_settings->randomColourPositiveSaturation = getIntOption("--ransatpos", &arguments);
+    if (isOptionPresent("--ransatneg", &arguments))
+        g_settings->randomColourNegativeSaturation = getIntOption("--ransatneg", &arguments);
+    if (isOptionPresent("--ranligpos", &arguments))
+        g_settings->randomColourPositiveLightness = getIntOption("--ranligpos", &arguments);
+    if (isOptionPresent("--ranligneg", &arguments))
+        g_settings->randomColourNegativeLightness = getIntOption("--ranligneg", &arguments);
+    if (isOptionPresent("--ranopapos", &arguments))
+        g_settings->randomColourPositiveOpacity = getIntOption("--ranopapos", &arguments);
+    if (isOptionPresent("--ranopaneg", &arguments))
+        g_settings->randomColourNegativeOpacity = getIntOption("--ranopaneg", &arguments);
+
+    if (isOptionPresent("--unicolpos", &arguments))
+        g_settings->uniformPositiveNodeColour = getColourOption("--unicolpos", &arguments);
+    if (isOptionPresent("--unicolneg", &arguments))
+        g_settings->uniformNegativeNodeColour = getColourOption("--unicolneg", &arguments);
+    if (isOptionPresent("--unicolspe", &arguments))
+        g_settings->uniformNodeSpecialColour = getColourOption("--unicolspe", &arguments);
+
+    if (isOptionPresent("--covcollow", &arguments))
+        g_settings->lowCoverageColour = getColourOption("--covcollow", &arguments);
+    if (isOptionPresent("--covcolhi", &arguments))
+        g_settings->highCoverageColour = getColourOption("--covcolhi", &arguments);
+    if (isOptionPresent("--covvallow", &arguments))
+    {
+        g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
+    if (isOptionPresent("--covvalhi", &arguments))
+    {
+        g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
+        g_settings->autoCoverageValue = false;
+    }
 }
+
+
 
 bool checkForHelp(QStringList arguments)
 {
@@ -425,116 +773,6 @@ QString getStringOption(QString option, QStringList * arguments)
 
 
 
-//This function checks the values of the Bandage settings.
-//If everything is fine, it removes the good arguments/values and returns
-//a null string.  If there's a problem, it returns an error message.
-QString checkForInvalidOrExcessSettings(QStringList * arguments)
-{
-    QStringList argumentsCopy = *arguments;
-
-    QStringList validScopeOptions;
-    validScopeOptions << "entire" << "aroundnodes" << "aroundblast";
-    QString error = checkOptionForString("--scope", arguments, validScopeOptions);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names");
-    if (error.length() > 0) return error;
-    checkOptionWithoutValue("--partial", arguments);
-
-    error = checkOptionForInt("--distance", arguments, 0, 100);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFile("--query", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters");
-    if (error.length() > 0) return error;
-
-    checkOptionWithoutValue("--double", arguments);
-    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--quality", arguments, 1, 5);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--covwidth", arguments, 0.0, 1.0);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--covpower", arguments, 0.1, 1.0);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0);
-    if (error.length() > 0) return error;
-
-    checkOptionWithoutValue("--names", arguments);
-    checkOptionWithoutValue("--lengths", arguments);
-    checkOptionWithoutValue("--coverages", arguments);
-    checkOptionWithoutValue("--blasthits", arguments);
-    error = checkOptionForInt("--fontsize", arguments, 1, 100);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
-    if (error.length() > 0) return error;
-    checkOptionWithoutValue("--centre", arguments);
-
-    error = checkOptionForColour("--edgecol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--outcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--selcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--textcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--toutcol", arguments);
-    if (error.length() > 0) return error;
-    checkOptionWithoutValue("--noaa", arguments);
-
-    QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "coverage" << "blastsolid" << "blastrainbow";
-    error = checkOptionForString("--colour", arguments, validColourOptions);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--ransatpos", arguments, 0, 255);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ransatneg", arguments, 0, 255);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligpos", arguments, 0, 255);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligneg", arguments, 0, 255);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopapos", arguments, 0, 255);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopaneg", arguments, 0, 255);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForColour("--unicolpos", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--unicolneg", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--unicolspe", arguments);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForColour("--covcollow", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--covcolhi", arguments);
-    if (error.length() > 0) return error;
-
-    error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
-    if (error.length() > 0) return error;
-
-    bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
-    bool queryFile = isOptionPresent("--query", &argumentsCopy);
-    if (blastScope && !queryFile)
-        return "A BLAST query must be given with the --query option when the\naroundblast scope is used.";
-
-    bool nodesScope = isOptionAndValuePresent("--scope", "aroundnodes", &argumentsCopy);
-    bool nodesList = isOptionPresent("--nodes", &argumentsCopy);
-    if (nodesScope && !nodesList)
-        return "A list of starting nodes must be given with the --nodes option\nwhen the aroundnodes scope is used.";
-
-
-    return checkForExcessArguments(*arguments);
-}
 
 
 
@@ -567,256 +805,6 @@ void printCommonHelp(QTextStream * out)
     *out << endl;
 }
 
-void printSettingsUsage(QTextStream * out)
-{
-    *out << "Settings: The following options configure the Bandage settings that are" << endl;
-    *out << "          available in the Bandage GUI." << endl;
-    *out << endl;
-    *out << "          Colours can be specified using hex values, with or without an alpha " << endl;
-    *out << "          channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names" << endl;
-    *out << "          (e.g. red, yellowgreen or skyblue).  Note that hex colour names will" << endl;
-    *out << "          either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the" << endl;
-    *out << "          hash symbol escaped (e.g. \\#FFB6C1)." << endl;
-    *out << endl;
-    *out << "          Graph scope" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings control the graph scope.  If the aroundnodes scope is" << endl;
-    *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
-    *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
-    *out << "          --scope <scope>     Graph scope, from one of the following options:" << endl;
-    *out << "                              entire, aroundnodes, aroundblast (default:" << endl;
-    *out << "                              entire)" << endl;
-    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
-    *out << "                              aroundnodes scope (default: none)" << endl;
-    *out << "          --partial           Use partial node name matching (default: exact" << endl;
-    *out << "                              node name matching)" << endl;
-    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
-    *out << "                              aroundnodes and aroundblast scopes (default: 0)" << endl;
-    *out << endl;
-    *out << "          BLAST search" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
-    *out << "                              sequences to be used as BLAST queries (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
-    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "                              Format BLAST parameters exactly as they would be" << endl;
-    *out << "                              used for blastn/tblastn on the command line, and" << endl;
-    *out << "                              enclose them in quotes." << endl;
-    *out << endl;
-    *out << "          Graph layout" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --double            Draw graph in double mode (default: off)" << endl;
-    *out << "          --bases <int>       Base pairs per segment (default: auto)" << endl;
-    *out << "                              High values result in longer nodes, small values" << endl;
-    *out << "                              in shorter nodes." << endl;
-    *out << "          --quality <int>     Graph layout quality, 0 (low) to 4 (high)" << endl;
-    *out << "                              (default: " + QString::number(g_settings->graphLayoutQuality) + ")" << endl;
-    *out << endl;
-    *out << "          Node width" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          Node widths are determined using the following formula:" << endl;
-    *out << "          a*b*((c/d)^e-1)+1" << endl;
-    *out << "            a = average node width, b = coverage effect on width" << endl;
-    *out << "            c = node coverage, d = mean coverage" << endl;
-    *out << "            e = power of coverage effect on width" << endl;
-    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
-    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: " + QString::number(g_settings->coverageEffectOnWidth) + ")" << endl;
-    *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
-    *out << "                              default: " + QString::number(g_settings->coveragePower) + ")" << endl;
-    *out << endl;
-    *out << "          Node labels" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --names             Label nodes with name (default: off)" << endl;
-    *out << "          --lengths           Label nodes with length (default: off)" << endl;
-    *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
-    *out << "          --blasthits         Label BLAST hits (default: off)" << endl;
-    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
-    *out << endl;
-    *out << "          Graph appearance" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --edgecol <col>     Colour for edges (default: " + getColourName(g_settings->edgeColour.name()) + ")" << endl;
-    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
-    *out << "          --outcol <col>      Colour for node outlines (default: " + getColourName(g_settings->outlineColour.name()) + ")" << endl;
-    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
-    *out << "          --selcol <col>      Colour for selections (default: " + getColourName(g_settings->selectionColour.name()) + ")" << endl;
-    *out << "          --noaa              Disable antialiasing (default: antialiasing on)" << endl;
-    *out << endl;
-    *out << "          Text appearance" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --textcol <col>     Colour for label text (default: " + getColourName(g_settings->textColour.name()) + ")" << endl;
-    *out << "          --toutcol <col>     Colour for text outline (default: " + getColourName(g_settings->textOutlineColour.name()) + ")" << endl;
-    *out << "          --toutline <float>  Surround text with an outline with this" << endl;
-    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
-    *out << "          --centre            Node labels appear at the centre of the node" << endl;
-    *out << "                              (default: off, node labels appear over visible" << endl;
-    *out << "                              parts of nodes)" << endl;
-    *out << endl;
-    *out << "          Node colours" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
-    *out << "                              options: random, uniform, coverage, blastsolid," << endl;
-    *out << "                              blastrainbow (default: random if --query option" << endl;
-    *out << "                              not used, blastsolid if --query option used)" << endl;
-    *out << endl;
-    *out << "          Random colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the random colour scheme is used." << endl;
-    *out << "          --ransatpos <int>   Positive node saturation (0-255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
-    *out << "          --ransatneg <int>   Negative node saturation (0-255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
-    *out << "          --ranligpos <int>   Positive node lightness (0-255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
-    *out << "          --ranligneg <int>   Negative node lightness (0-255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
-    *out << "          --ranopapos <int>   Positive node opacity (0-255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
-    *out << "          --ranopaneg <int>   Negative node opacity (0-255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
-    *out << endl;
-    *out << "          Uniform colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the uniform colour scheme is used." << endl;
-    *out << "          --unicolpos <col>   Positive node colour (default: " + getColourName(g_settings->uniformPositiveNodeColour.name()) + ")" << endl;
-    *out << "          --unicolneg <col>   Negative node colour (default: " + getColourName(g_settings->uniformNegativeNodeColour.name()) + ")" << endl;
-    *out << "          --unicolspe <col>   Special node colour (default: " + getColourName(g_settings->uniformNodeSpecialColour.name()) + ")" << endl;
-    *out << endl;
-    *out << "          Coverage colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the coverage colour scheme is used." << endl;
-    *out << "          --covcollow <col>   Colour for nodes with coverage below the low" << endl;
-    *out << "                              coverage value (default: " + getColourName(g_settings->lowCoverageColour.name()) + ")" << endl;
-    *out << "          --covcolhi <col>    Colour for nodes with coverage above the high" << endl;
-    *out << "                              coverage value (default: " + getColourName(g_settings->highCoverageColour.name()) + ")" << endl;
-    *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
-    *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
-    *out << endl;
-}
-
-
-void parseSettings(QStringList arguments)
-{
-    if (isOptionPresent("--scope", &arguments))
-        g_settings->graphScope = getGraphScopeOption("--scope", &arguments);
-
-    if (isOptionPresent("--distance", &arguments))
-        g_settings->nodeDistance = getIntOption("--distance", &arguments);
-
-    if (isOptionPresent("--nodes", &arguments))
-        g_settings->startingNodes = getStringOption("--nodes", &arguments);
-    g_settings->startingNodesExactMatch = !isOptionPresent("--partial", &arguments);
-
-    if (isOptionPresent("--query", &arguments))
-        g_settings->blastQueryFilename = getStringOption("--query", &arguments);
-    if (isOptionPresent("--blastp", &arguments))
-        g_settings->blastSearchParameters = getStringOption("--blastp", &arguments);
-
-    g_settings->doubleMode = isOptionPresent("--double", &arguments);
-
-    if (isOptionPresent("--bases", &arguments))
-    {
-        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
-        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
-    }
-
-    if (isOptionPresent("--quality", &arguments))
-    {
-        int quality = getIntOption("--quality", &arguments);
-        if (quality < 0)
-            quality = 0;
-        if (quality > 4)
-            quality = 4;
-        g_settings->graphLayoutQuality = quality;
-    }
-
-    if (isOptionPresent("--nodewidth", &arguments))
-        g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
-    if (isOptionPresent("--covwidth", &arguments))
-        g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
-    if (isOptionPresent("--covpower", &arguments))
-        g_settings->coveragePower = getFloatOption("--covpower", &arguments);
-
-    if (isOptionPresent("--edgewidth", &arguments))
-        g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
-    if (isOptionPresent("--outline", &arguments))
-        g_settings->outlineThickness = getFloatOption("--outline", &arguments);
-    g_settings->antialiasing = !isOptionPresent("--noaa", &arguments);
-
-    if (isOptionPresent("--edgecol", &arguments))
-        g_settings->edgeColour = getColourOption("--edgecol", &arguments);
-    if (isOptionPresent("--outcol", &arguments))
-        g_settings->outlineColour = getColourOption("--outcol", &arguments);
-    if (isOptionPresent("--selcol", &arguments))
-        g_settings->selectionColour = getColourOption("--selcol", &arguments);
-    if (isOptionPresent("--textcol", &arguments))
-        g_settings->textColour = getColourOption("--textcol", &arguments);
-    if (isOptionPresent("--toutcol", &arguments))
-        g_settings->textOutlineColour = getColourOption("--toutcol", &arguments);
-    g_settings->positionTextNodeCentre = isOptionPresent("--centre", &arguments);
-
-    g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
-    g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
-    g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
-    g_settings->displayBlastHits = isOptionPresent("--blasthits", &arguments);
-
-    if (isOptionPresent("--fontsize", &arguments))
-    {
-        int fontsize = getIntOption("--fontsize", &arguments);
-        QFont font = g_settings->labelFont;
-        font.setPointSize(fontsize);
-        g_settings->labelFont = font;
-    }
-
-    if (isOptionPresent("--toutline", &arguments))
-    {
-        double textOutlineThickness = getFloatOption("--toutline", &arguments);
-        if (textOutlineThickness == 0.0)
-            g_settings->textOutline = false;
-        else
-        {
-            g_settings->textOutline = true;
-            g_settings->textOutlineThickness = textOutlineThickness;
-        }
-    }
-    else
-    {
-        g_settings->textOutline = true;
-        g_settings->textOutlineThickness = 0.3;
-    }
-
-    g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
-
-    if (isOptionPresent("--ransatpos", &arguments))
-        g_settings->randomColourPositiveSaturation = getIntOption("--ransatpos", &arguments);
-    if (isOptionPresent("--ransatneg", &arguments))
-        g_settings->randomColourNegativeSaturation = getIntOption("--ransatneg", &arguments);
-    if (isOptionPresent("--ranligpos", &arguments))
-        g_settings->randomColourPositiveLightness = getIntOption("--ranligpos", &arguments);
-    if (isOptionPresent("--ranligneg", &arguments))
-        g_settings->randomColourNegativeLightness = getIntOption("--ranligneg", &arguments);
-    if (isOptionPresent("--ranopapos", &arguments))
-        g_settings->randomColourPositiveOpacity = getIntOption("--ranopapos", &arguments);
-    if (isOptionPresent("--ranopaneg", &arguments))
-        g_settings->randomColourNegativeOpacity = getIntOption("--ranopaneg", &arguments);
-
-    if (isOptionPresent("--unicolpos", &arguments))
-        g_settings->uniformPositiveNodeColour = getColourOption("--unicolpos", &arguments);
-    if (isOptionPresent("--unicolneg", &arguments))
-        g_settings->uniformNegativeNodeColour = getColourOption("--unicolneg", &arguments);
-    if (isOptionPresent("--unicolspe", &arguments))
-        g_settings->uniformNodeSpecialColour = getColourOption("--unicolspe", &arguments);
-
-    if (isOptionPresent("--covcollow", &arguments))
-        g_settings->lowCoverageColour = getColourOption("--covcollow", &arguments);
-    if (isOptionPresent("--covcolhi", &arguments))
-        g_settings->highCoverageColour = getColourOption("--covcolhi", &arguments);
-    if (isOptionPresent("--covvallow", &arguments))
-    {
-        g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
-        g_settings->autoCoverageValue = false;
-    }
-    if (isOptionPresent("--covvalhi", &arguments))
-    {
-        g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
-        g_settings->autoCoverageValue = false;
-    }
-}
 
 
 //This function will convert a colour to its SVG name, if one exists, or the hex value otherwise.
