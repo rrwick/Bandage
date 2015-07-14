@@ -526,6 +526,12 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (blastScope && !queryFile)
         return "A BLAST query must be given with the --query option when the\naroundblast scope is used.";
 
+    bool nodesScope = isOptionAndValuePresent("--scope", "aroundnodes", &argumentsCopy);
+    bool nodesList = isOptionPresent("--nodes", &argumentsCopy);
+    if (nodesScope && !nodesList)
+        return "A list of starting nodes must be given with the --nodes option\nwhen the aroundnodes scope is used.";
+
+
     return checkForExcessArguments(*arguments);
 }
 
