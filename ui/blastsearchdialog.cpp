@@ -521,6 +521,9 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
 
     query->m_name = newName;
 
+    //Resize the query table columns, as the name new might take up more or less space.
+    ui->blastQueriesTableWidget->resizeColumns();
+
     //Rebuild the hits table, if necessary, to show the new name.
     if (query->m_hits > 0)
         fillHitsTable();
