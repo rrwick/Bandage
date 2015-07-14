@@ -43,6 +43,8 @@ Settings::Settings()
     blastRainbowPartsPerQuery = 100;
 
     graphScope = WHOLE_GRAPH;
+    nodeDistance = 0;
+    startingNodes = "";
 
     minZoom = 0.01;
     maxZoom = 20.0;

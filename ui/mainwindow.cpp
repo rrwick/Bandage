@@ -160,6 +160,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_possibly_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectMaybeContiguous()));
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
     connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
+    connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
@@ -558,7 +559,7 @@ void MainWindow::drawGraph()
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
         startingNodes = getNodesFromBlastHits();
 
-    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, ui->nodeDistanceSpinBox->value());
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     layoutGraph();
 }
 
@@ -1911,6 +1912,8 @@ bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
 
 void MainWindow::setWidgetsFromSettings()
 {
+    Settings * test = g_settings.data();
+
     ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
     ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
 
@@ -1921,6 +1924,10 @@ void MainWindow::setWidgetsFromSettings()
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
 
     setNodeColourSchemeComboBox(g_settings->nodeColourScheme);
+
+    setGraphScopeComboBox(g_settings->graphScope);
+    ui->nodeDistanceSpinBox->setValue(g_settings->nodeDistance);
+    ui->startingNodesLineEdit->setText(g_settings->startingNodes);
 }
 
 
@@ -1937,4 +1944,19 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
     case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
     }
+}
+
+void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
+{
+    switch (graphScope)
+    {
+    case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
+    case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
+    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
+    }
+}
+
+void MainWindow::nodeDistanceChanged()
+{
+    g_settings->nodeDistance = ui->nodeDistanceSpinBox->value();
 }

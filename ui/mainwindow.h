@@ -84,6 +84,7 @@ private:
     void setWidgetsFromSettings();
     QString getDefaultImageFileName();
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
+    void setGraphScopeComboBox(GraphScope graphScope);
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -121,6 +122,7 @@ private slots:
     void selectMaybeContiguous();
     void selectNotContiguous();
     void openBandageUrl();
+    void nodeDistanceChanged();
 };
 
 #endif // MAINWINDOW_H

@@ -49,6 +49,8 @@ int getIntOption(QString option, QStringList * arguments);
 double getFloatOption(QString option, QStringList * arguments);
 QColor getColourOption(QString option, QStringList * arguments);
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments);
+GraphScope getGraphScopeOption(QString option, QStringList * arguments);
+QString getStringOption(QString option, QStringList * arguments);
 
 QString checkForInvalidOrExcessSettings(QStringList * arguments);
 QString checkForExcessArguments(QStringList arguments);

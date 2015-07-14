@@ -365,6 +365,29 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
 }
 
 
+GraphScope getGraphScopeOption(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return WHOLE_GRAPH;
+
+    int scopeIndex = optionIndex + 1;
+    if (scopeIndex >= arguments->size())
+        return WHOLE_GRAPH;
+
+    QString scopeString = arguments->at(scopeIndex).toLower();
+    if (scopeString == "entire")
+        return WHOLE_GRAPH;
+    else if (scopeString == "aroundnodes")
+        return AROUND_NODE;
+    else if (scopeString == "aroundblast")
+        return AROUND_BLAST_HITS;
+
+    //Entire graph scope is the default.
+    return WHOLE_GRAPH;
+}
+
+
 QColor getColourOption(QString option, QStringList * arguments)
 {
     int optionIndex = arguments->indexOf(option);
@@ -376,6 +399,20 @@ QColor getColourOption(QString option, QStringList * arguments)
         return QColor();
 
     return QColor(arguments->at(colIndex));
+}
+
+
+QString getStringOption(QString option, QStringList * arguments)
+{
+    int optionIndex = arguments->indexOf(option);
+    if (optionIndex == -1)
+        return "";
+
+    int stringIndex = optionIndex + 1;
+    if (stringIndex >= arguments->size())
+        return "";
+
+    return arguments->at(stringIndex);
 }
 
 
@@ -628,6 +665,15 @@ void printSettingsUsage(QTextStream * out)
 
 void parseSettings(QStringList arguments)
 {
+    if (isOptionPresent("--scope", &arguments))
+        g_settings->graphScope = getGraphScopeOption("--scope", &arguments);
+
+    if (isOptionPresent("--distance", &arguments))
+        g_settings->nodeDistance = getIntOption("--distance", &arguments);
+
+    if (isOptionPresent("--nodes", &arguments))
+        g_settings->startingNodes = getStringOption("--nodes", &arguments);
+
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 
     if (isOptionPresent("--bases", &arguments))

@@ -51,6 +51,8 @@ public:
     int blastRainbowPartsPerQuery;
 
     GraphScope graphScope;
+    int nodeDistance;
+    QString startingNodes;
 
     double minZoom;
     double maxZoom;
