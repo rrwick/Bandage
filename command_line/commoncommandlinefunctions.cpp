@@ -344,13 +344,17 @@ double getFloatOption(QString option, QStringList * arguments)
 
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
 {
+    NodeColourScheme defaultScheme = RANDOM_COLOURS;
+    if (isOptionPresent("--query", arguments))
+        defaultScheme = BLAST_HITS_SOLID_COLOUR;
+
     int optionIndex = arguments->indexOf(option);
     if (optionIndex == -1)
-        return RANDOM_COLOURS;
+        return defaultScheme;
 
     int colourIndex = optionIndex + 1;
     if (colourIndex >= arguments->size())
-        return RANDOM_COLOURS;
+        return defaultScheme;
 
     QString colourString = arguments->at(colourIndex).toLower();
     if (colourString == "random")
@@ -359,9 +363,13 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
         return ONE_COLOUR;
     else if (colourString == "coverage")
         return COVERAGE_COLOUR;
+    else if (colourString == "blastsolid")
+        return BLAST_HITS_SOLID_COLOUR;
+    else if (colourString == "blastrainbow")
+        return BLAST_HITS_RAINBOW_COLOUR;
 
     //Random colours is the default
-    return RANDOM_COLOURS;
+    return defaultScheme;
 }
 
 
@@ -478,7 +486,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--noaa", arguments);
 
     QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "coverage";
+    validColourOptions << "random" << "uniform" << "coverage" << "blastsolid" << "blastrainbow";
     error = checkOptionForString("--colour", arguments, validColourOptions);
     if (error.length() > 0) return error;
 
@@ -630,8 +638,9 @@ void printSettingsUsage(QTextStream * out)
     *out << "          Node colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
-    *out << "                              options: random, uniform or coverage (default: " << endl;
-    *out << "                              random)" << endl;
+    *out << "                              options: random, uniform, coverage, blastsolid," << endl;
+    *out << "                              blastrainbow (default: random if --query option" << endl;
+    *out << "                              not used, blastsolid if --query option used)" << endl;
     *out << endl;
     *out << "          Random colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -751,8 +760,7 @@ void parseSettings(QStringList arguments)
         g_settings->textOutlineThickness = 0.3;
     }
 
-    if (isOptionPresent("--colour", &arguments))
-        g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
+    g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
 
     if (isOptionPresent("--ransatpos", &arguments))
         g_settings->randomColourPositiveSaturation = getIntOption("--ransatpos", &arguments);
