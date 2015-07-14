@@ -27,8 +27,10 @@
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
+#include "../program/globals.h"
 #include "../blast/blastsearch.h"
 #include "../graph/assemblygraph.h"
+#include "../ui/mygraphicsview.h"
 
 void printUsage(QTextStream * out, bool all)
 {
@@ -61,6 +63,7 @@ int main(int argc, char *argv[])
     g_settings.reset(new Settings());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
+    g_graphicsView.reset(new MyGraphicsView());
 
     QStringList arguments = QCoreApplication::arguments();
     arguments.pop_front();

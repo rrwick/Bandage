@@ -69,8 +69,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->setupUi(this);
 
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
-    g_graphicsView = new MyGraphicsView();
-    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
+    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView.data());
 
     srand(time(NULL));
 
