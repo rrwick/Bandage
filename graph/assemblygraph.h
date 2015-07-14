@@ -82,6 +82,11 @@ public:
     void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
+    std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph);
+    std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
+    std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
+    std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
+
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
     QString convertNormalNumberStringToBandageNodeName(QString number);

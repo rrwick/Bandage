@@ -29,6 +29,7 @@
 #include <QTextStream>
 #include <QApplication>
 #include "../graph/graphicsitemedge.h"
+#include "../blast/blastsearch.h"
 
 
 AssemblyGraph::AssemblyGraph() :
@@ -1038,3 +1039,130 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
     }
 }
 
+
+
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph)
+{
+    nodeNamesString = nodeNamesString.simplified();
+    QStringList nodesList = nodeNamesString.split(",");
+
+    if (exactMatch)
+        return getNodesFromListExact(nodesList, nodesNotInGraph);
+    else
+        return getNodesFromListPartial(nodesList, nodesNotInGraph);
+}
+
+
+//Given a list of node names (as strings), this function will return all nodes which match
+//those names exactly.  The last +/- on the end of the node name is optional - if missing
+//both + and - nodes will be returned.
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    for (int i = 0; i < nodesList.size(); ++i)
+    {
+        QString nodeName = nodesList.at(i).simplified();
+        if (nodeName == "")
+            continue;
+
+        //If the node name ends in +/-, then we assume the user was specifying the exact
+        //node in the pair.  If the node name does not end in +/-, then we assume the
+        //user is asking for either node in the pair.
+        QChar lastChar = nodeName.at(nodeName.length() - 1);
+        if (lastChar == '+' || lastChar == '-')
+        {
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
+            else if (nodesNotInGraph != 0)
+                nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+        }
+        else
+        {
+            QString posNodeName = nodeName + "+";
+            QString negNodeName = nodeName + "-";
+
+            bool posNodeFound = false;
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(posNodeName))
+            {
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[posNodeName]);
+                posNodeFound = true;
+            }
+
+            bool negNodeFound = false;
+            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(negNodeName))
+            {
+                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[negNodeName]);
+                negNodeFound = true;
+            }
+
+            if (!posNodeFound && !negNodeFound && nodesNotInGraph != 0)
+                nodesNotInGraph->push_back(nodesList.at(i).trimmed());
+        }
+    }
+
+    return returnVector;
+}
+
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    for (int i = 0; i < nodesList.size(); ++i)
+    {
+        QString queryName = nodesList.at(i).simplified();
+        if (queryName == "")
+            continue;
+
+        bool found = false;
+        QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (j.hasNext())
+        {
+            j.next();
+            QString nodeName = j.value()->m_name;
+
+            if (nodeName.contains(queryName))
+            {
+                found = true;
+                returnVector.push_back(j.value());
+            }
+        }
+
+        if (!found && nodesNotInGraph != 0)
+            nodesNotInGraph->push_back(queryName.trimmed());
+    }
+
+    return returnVector;
+}
+
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryName)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    if (g_blastSearch->m_blastQueries.m_queries.size() == 0)
+        return returnVector;
+
+    std::vector<BlastQuery *> queries;
+
+    //If "all" is selected, then we'll display nodes with hits from any query
+    if (queryName == "all")
+        queries = g_blastSearch->m_blastQueries.m_queries;
+
+    //If only one query is selected, then we just display nodes with hits from that query
+    else
+        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(queryName));
+
+    //Add the blast hit pointers to nodes that have a hit for
+    //the selected target(s).
+    for (size_t i = 0; i < queries.size(); ++i)
+    {
+        BlastQuery * currentQuery = queries[i];
+        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        {
+            if (g_blastSearch->m_hits[j].m_query == currentQuery)
+                returnVector.push_back(g_blastSearch->m_hits[j].m_node);
+        }
+    }
+
+    return returnVector;
+}

@@ -72,9 +72,6 @@ private:
     QString getSelectedEdgeListText();
     double getGraphicsItemNodeWidth(double coverageRelativeToMean);
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
-    std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
-    std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
-    std::vector<DeBruijnNode *> getNodesFromBlastHits();
     void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);
     void setInfoTexts();
