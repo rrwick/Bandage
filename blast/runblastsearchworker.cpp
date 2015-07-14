@@ -90,7 +90,7 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
         }
         else
         {
-            m_error = "There was a problem building the BLAST database.";
+            m_error = "There was a problem running the BLAST search.";
             emit finishedSearch(m_error);
         }
         *success = false;
