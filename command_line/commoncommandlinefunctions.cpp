@@ -674,6 +674,9 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--nodes", &arguments))
         g_settings->startingNodes = getStringOption("--nodes", &arguments);
 
+    if (isOptionPresent("--query", &arguments))
+        g_settings->blastQueryFilename = getStringOption("--query", &arguments);
+
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 
     if (isOptionPresent("--bases", &arguments))

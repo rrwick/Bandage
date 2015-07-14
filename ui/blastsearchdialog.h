@@ -36,7 +36,7 @@ class BlastSearchDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit BlastSearchDialog(QWidget *parent = 0);
+    explicit BlastSearchDialog(QWidget *parent = 0, QString autoQuery = "");
     ~BlastSearchDialog();
 
     bool m_blastSearchConducted;
@@ -55,14 +55,17 @@ private:
     void setInfoTexts();
     QString cleanQueryName(QString queryName);
     bool findProgram(QString programName, QString * command);
+    void loadBlastQueriesFromFastaFile(QString fullFileName);
+    void buildBlastDatabase(bool separateThread);
+    void runBlastSearches(bool separateThread);
 
 private slots:
-    void buildBlastDatabase();
-    void loadBlastQueriesFromFastaFile();
+    void buildBlastDatabaseInThread();
+    void loadBlastQueriesFromFastaFileButtonClicked();
     void enterQueryManually();
     void clearAllQueries();
     void clearSelectedQueries();
-    void runBlastSearches();
+    void runBlastSearchesInThread();
     void fillTablesAfterBlastSearch();
     void fillQueriesTable();
     void fillHitsTable();

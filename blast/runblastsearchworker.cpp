@@ -51,14 +51,16 @@ void RunBlastSearchWorker::runBlastSearch()
 
     if (g_blastSearch->m_cancelRunBlastSearch)
     {
-        emit finishedSearch("Search cancelled.");
+        m_error = "Search cancelled.";
+        emit finishedSearch(m_error);
         return;
     }
 
     //If the code got here, then the search completed successfully.
     g_blastSearch->buildHitsFromBlastOutput();
     g_blastSearch->m_blastQueries.searchOccurred();
-    emit finishedSearch("");
+    m_error = "";
+    emit finishedSearch(m_error);
 }
 
 
@@ -82,9 +84,15 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
     if (g_blastSearch->m_blast->exitCode() != 0 || !finished)
     {
         if (g_blastSearch->m_cancelRunBlastSearch)
-            emit finishedSearch("Search cancelled.");
+        {
+            m_error = "Search cancelled.";
+            emit finishedSearch(m_error);
+        }
         else
-            emit finishedSearch("There was a problem building the BLAST database.");
+        {
+            m_error = "There was a problem building the BLAST database.";
+            emit finishedSearch(m_error);
+        }
         *success = false;
         return "";
     }

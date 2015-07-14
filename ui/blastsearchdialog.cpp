@@ -43,7 +43,7 @@
 #include "colourbutton.h"
 #include <QSet>
 
-BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
+BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
     m_blastSearchConducted(false),
     ui(new Ui::BlastSearchDialog),
@@ -51,6 +51,18 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
 
 {
     ui->setupUi(this);
+
+    //If the dialog is given an autoQuery parameter, then it will
+    //carry out the entire process on its own.
+    if (autoQuery != "")
+    {
+        buildBlastDatabase(false);
+        clearAllQueries();
+        loadBlastQueriesFromFastaFile(autoQuery);
+        runBlastSearches(false);
+        QMetaObject::invokeMethod(this, "close", Qt::QueuedConnection);
+        return;
+    }
 
     //Prepare the query and hits tables
     ui->blastHitsTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
@@ -99,12 +111,12 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent) :
 
     setInfoTexts();
 
-    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabase()));
-    connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFile()));
+    connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabaseInThread()));
+    connect(ui->loadQueriesFromFastaButton, SIGNAL(clicked()), this, SLOT(loadBlastQueriesFromFastaFileButtonClicked()));
     connect(ui->enterQueryManuallyButton, SIGNAL(clicked()), this, SLOT(enterQueryManually()));
     connect(ui->clearAllQueriesButton, SIGNAL(clicked()), this, SLOT(clearAllQueries()));
     connect(ui->clearSelectedQueriesButton, SIGNAL(clicked(bool)), this, SLOT(clearSelectedQueries()));
-    connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearches()));
+    connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearchesInThread()));
     connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
     connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
 }
@@ -247,8 +259,12 @@ void BlastSearchDialog::fillHitsTable()
     ui->blastHitsTableWidget->setEnabled(true);
 }
 
+void BlastSearchDialog::buildBlastDatabaseInThread()
+{
+    buildBlastDatabase(true);
+}
 
-void BlastSearchDialog::buildBlastDatabase()
+void BlastSearchDialog::buildBlastDatabase(bool separateThread)
 {
     setUiStep(BLAST_DB_BUILD_IN_PROGRESS);
 
@@ -267,19 +283,30 @@ void BlastSearchDialog::buildBlastDatabase()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    m_buildBlastDatabaseThread = new QThread;
-    BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
-    buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
+    if (separateThread)
+    {
+        m_buildBlastDatabaseThread = new QThread;
+        BuildBlastDatabaseWorker * buildBlastDatabaseWorker = new BuildBlastDatabaseWorker(m_makeblastdbCommand);
+        buildBlastDatabaseWorker->moveToThread(m_buildBlastDatabaseThread);
 
-    connect(progress, SIGNAL(halt()), this, SLOT(buildBlastDatabaseCancelled()));
-    connect(m_buildBlastDatabaseThread, SIGNAL(started()), buildBlastDatabaseWorker, SLOT(buildBlastDatabase()));
-    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), m_buildBlastDatabaseThread, SLOT(quit()));
-    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), buildBlastDatabaseWorker, SLOT(deleteLater()));
-    connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), this, SLOT(blastDatabaseBuildFinished(QString)));
-    connect(m_buildBlastDatabaseThread, SIGNAL(finished()), m_buildBlastDatabaseThread, SLOT(deleteLater()));
-    connect(m_buildBlastDatabaseThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+        connect(progress, SIGNAL(halt()), this, SLOT(buildBlastDatabaseCancelled()));
+        connect(m_buildBlastDatabaseThread, SIGNAL(started()), buildBlastDatabaseWorker, SLOT(buildBlastDatabase()));
+        connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), m_buildBlastDatabaseThread, SLOT(quit()));
+        connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), buildBlastDatabaseWorker, SLOT(deleteLater()));
+        connect(buildBlastDatabaseWorker, SIGNAL(finishedBuild(QString)), this, SLOT(blastDatabaseBuildFinished(QString)));
+        connect(m_buildBlastDatabaseThread, SIGNAL(finished()), m_buildBlastDatabaseThread, SLOT(deleteLater()));
+        connect(m_buildBlastDatabaseThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
 
-    m_buildBlastDatabaseThread->start();
+        m_buildBlastDatabaseThread->start();
+    }
+    else
+    {
+        BuildBlastDatabaseWorker buildBlastDatabaseWorker(m_makeblastdbCommand);
+        buildBlastDatabaseWorker.buildBlastDatabase();
+        progress->close();
+        delete progress;
+        blastDatabaseBuildFinished(buildBlastDatabaseWorker.m_error);
+    }
 }
 
 
@@ -303,39 +330,41 @@ void BlastSearchDialog::buildBlastDatabaseCancelled()
         g_blastSearch->m_makeblastdb->kill();
 }
 
-
-void BlastSearchDialog::loadBlastQueriesFromFastaFile()
+void BlastSearchDialog::loadBlastQueriesFromFastaFileButtonClicked()
 {
     QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA", g_settings->rememberedPath);
 
     if (fullFileName != "") //User did not hit cancel
+        loadBlastQueriesFromFastaFile(fullFileName);
+}
+
+void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
+{
+    MyProgressDialog * progress = new MyProgressDialog(this, "Loading queries...", false);
+    progress->setWindowModality(Qt::WindowModal);
+    progress->show();
+
+    std::vector<QString> queryNames;
+    std::vector<QString> querySequences;
+    readFastaFile(fullFileName, &queryNames, &querySequences);
+
+    for (size_t i = 0; i < queryNames.size(); ++i)
     {
-        MyProgressDialog * progress = new MyProgressDialog(this, "Loading queries...", false);
-        progress->setWindowModality(Qt::WindowModal);
-        progress->show();
+        QApplication::processEvents();
 
-        std::vector<QString> queryNames;
-        std::vector<QString> querySequences;
-        readFastaFile(fullFileName, &queryNames, &querySequences);
-
-        for (size_t i = 0; i < queryNames.size(); ++i)
-        {
-            QApplication::processEvents();
-
-            QString queryName = cleanQueryName(queryNames[i]);
-            g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
-                                                                  querySequences[i]));
-        }
-
-        fillQueriesTable();
-        clearBlastHits();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
-
-        progress->close();
-        delete progress;
-
-        setUiStep(READY_FOR_BLAST_SEARCH);
+        QString queryName = cleanQueryName(queryNames[i]);
+        g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                              querySequences[i]));
     }
+
+    fillQueriesTable();
+    clearBlastHits();
+    g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+    progress->close();
+    delete progress;
+
+    setUiStep(READY_FOR_BLAST_SEARCH);
 }
 
 
@@ -423,9 +452,13 @@ void BlastSearchDialog::clearSelectedQueries()
         fillHitsTable();
 }
 
+void BlastSearchDialog::runBlastSearchesInThread()
+{
+    runBlastSearches(true);
+}
 
 
-void BlastSearchDialog::runBlastSearches()
+void BlastSearchDialog::runBlastSearches(bool separateThread)
 {
     setUiStep(BLAST_SEARCH_IN_PROGRESS);
 
@@ -449,19 +482,30 @@ void BlastSearchDialog::runBlastSearches()
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    m_blastSearchThread = new QThread;
-    RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
-    runBlastSearchWorker->moveToThread(m_blastSearchThread);
+    if (separateThread)
+    {
+        m_blastSearchThread = new QThread;
+        RunBlastSearchWorker * runBlastSearchWorker = new RunBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());
+        runBlastSearchWorker->moveToThread(m_blastSearchThread);
 
-    connect(progress, SIGNAL(halt()), this, SLOT(runBlastSearchCancelled()));
-    connect(m_blastSearchThread, SIGNAL(started()), runBlastSearchWorker, SLOT(runBlastSearch()));
-    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), m_blastSearchThread, SLOT(quit()));
-    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), runBlastSearchWorker, SLOT(deleteLater()));
-    connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), this, SLOT(runBlastSearchFinished(QString)));
-    connect(m_blastSearchThread, SIGNAL(finished()), m_blastSearchThread, SLOT(deleteLater()));
-    connect(m_blastSearchThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+        connect(progress, SIGNAL(halt()), this, SLOT(runBlastSearchCancelled()));
+        connect(m_blastSearchThread, SIGNAL(started()), runBlastSearchWorker, SLOT(runBlastSearch()));
+        connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), m_blastSearchThread, SLOT(quit()));
+        connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), runBlastSearchWorker, SLOT(deleteLater()));
+        connect(runBlastSearchWorker, SIGNAL(finishedSearch(QString)), this, SLOT(runBlastSearchFinished(QString)));
+        connect(m_blastSearchThread, SIGNAL(finished()), m_blastSearchThread, SLOT(deleteLater()));
+        connect(m_blastSearchThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
 
-    m_blastSearchThread->start();
+        m_blastSearchThread->start();
+    }
+    else
+    {
+        RunBlastSearchWorker runBlastSearchWorker(m_blastnCommand, m_tblastnCommand, ui->parametersLineEdit->text().simplified());;
+        runBlastSearchWorker.runBlastSearch();
+        progress->close();
+        delete progress;
+        runBlastSearchFinished(runBlastSearchWorker.m_error);
+    }
 }
 
 

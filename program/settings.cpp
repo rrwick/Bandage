@@ -45,6 +45,7 @@ Settings::Settings()
     graphScope = WHOLE_GRAPH;
     nodeDistance = 0;
     startingNodes = "";
+    blastQueryFilename = "";
 
     minZoom = 0.01;
     maxZoom = 20.0;

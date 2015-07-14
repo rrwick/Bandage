@@ -61,9 +61,10 @@
 #include <QDesktopServices>
 #include <QSvgGenerator>
 
-MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
+MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
-    ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)")
+    ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)"),
+    m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad)
 {
     ui->setupUi(this);
 
@@ -111,14 +112,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
 
     setInfoTexts();
 
-    //The user may have specified settings on the command line, so it is now
-    //necessary to update the UI to match these settings.
-    setWidgetsFromSettings();
-    setTextDisplaySettings();
-
     selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
-    graphScopeChanged();
-    switchColourScheme();
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
@@ -161,6 +155,7 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
     connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
+    connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
     connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
@@ -178,17 +173,30 @@ MainWindow::MainWindow(QString filename, bool drawGraphAfterLoad) :
     ui->setNodeCustomColourButton->setToolTip(command + 'O');
     ui->setNodeCustomLabelButton->setToolTip(command + 'L');
 #endif
+}
 
+
+//This function runs after the MainWindow has been shown.  This code is not
+//included in the contructor because it can perform a BLAST search, which
+//will fill the BLAST query combo box and screw up widget sizes.
+void MainWindow::afterMainWindowShow()
+{
     //If the user passed a filename as a command line argument, try to open it now.
-    if (filename != "")
-    {
-        loadGraph(filename);
+    if (m_fileToLoadOnStartup != "")
+        loadGraph(m_fileToLoadOnStartup);
 
-        //If the draw option was used and the graph appears to have loaded (i.e. there
-        //is at least one node), then draw the graph.
-        if (drawGraphAfterLoad && g_assemblyGraph->m_deBruijnGraphNodes.size() > 0)
-            drawGraph();
-    }
+    //The user may have specified settings on the command line, so it is now
+    //necessary to update the UI to match these settings.
+    setWidgetsFromSettings();
+    setTextDisplaySettings();
+
+    graphScopeChanged();
+    switchColourScheme();
+
+    //If the draw option was used and the graph appears to have loaded (i.e. there
+    //is at least one node), then draw the graph.
+    if (m_fileToLoadOnStartup != "" && m_drawGraphAfterLoad && g_assemblyGraph->m_deBruijnGraphNodes.size() > 0)
+        drawGraph();
 }
 
 MainWindow::~MainWindow()
@@ -1390,6 +1398,25 @@ void MainWindow::openBlastSearchDialog()
 
     blastSearchDialog.exec();
 
+    setupBlastQueryComboBox();
+
+    if (blastSearchDialog.m_blastSearchConducted)
+    {
+        if (ui->blastQueryComboBox->count() > 0)
+        {
+            //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
+            if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
+                    g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
+                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
+        }
+    }
+
+    g_graphicsView->viewport()->update();
+}
+
+
+void MainWindow::setupBlastQueryComboBox()
+{
     ui->blastQueryComboBox->clear();
     QStringList comboBoxItems;
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
@@ -1412,18 +1439,6 @@ void MainWindow::openBlastSearchDialog()
         ui->blastQueryComboBox->setEnabled(false);
     }
 
-    if (blastSearchDialog.m_blastSearchConducted)
-    {
-        if (ui->blastQueryComboBox->count() > 0)
-        {
-            //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
-            if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
-                    g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
-                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
-        }
-    }
-
-    g_graphicsView->viewport()->update();
 }
 
 
@@ -1912,8 +1927,6 @@ bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
 
 void MainWindow::setWidgetsFromSettings()
 {
-    Settings * test = g_settings.data();
-
     ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
     ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
 
@@ -1928,6 +1941,13 @@ void MainWindow::setWidgetsFromSettings()
     setGraphScopeComboBox(g_settings->graphScope);
     ui->nodeDistanceSpinBox->setValue(g_settings->nodeDistance);
     ui->startingNodesLineEdit->setText(g_settings->startingNodes);
+
+    if (g_settings->blastQueryFilename != "")
+    {
+        BlastSearchDialog blastSearchDialog(this, g_settings->blastQueryFilename);
+        blastSearchDialog.exec();
+        setupBlastQueryComboBox();
+    }
 }
 
 
@@ -1960,3 +1980,10 @@ void MainWindow::nodeDistanceChanged()
 {
     g_settings->nodeDistance = ui->nodeDistanceSpinBox->value();
 }
+
+void MainWindow::showEvent(QShowEvent *ev)
+{
+    QMainWindow::showEvent(ev);
+    emit windowLoaded();
+}
+

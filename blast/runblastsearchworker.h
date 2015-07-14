@@ -35,6 +35,7 @@ class RunBlastSearchWorker : public QObject
 
 public:
     RunBlastSearchWorker(QString blastnCommand, QString tblastnCommand, QString parameters);
+    QString m_error;
 
 private:
     QString m_blastnCommand;

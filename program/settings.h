@@ -53,6 +53,7 @@ public:
     GraphScope graphScope;
     int nodeDistance;
     QString startingNodes;
+    QString blastQueryFilename;
 
     double minZoom;
     double maxZoom;

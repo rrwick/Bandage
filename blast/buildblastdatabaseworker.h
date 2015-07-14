@@ -33,6 +33,7 @@ class BuildBlastDatabaseWorker : public QObject
 
 public:
     BuildBlastDatabaseWorker(QString makeblastdbCommand);
+    QString m_error;
 
 private:
     QString m_makeblastdbCommand;

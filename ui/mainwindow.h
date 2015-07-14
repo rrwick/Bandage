@@ -43,7 +43,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QString filename = "", bool drawGraphAfterLoad = false);
+    explicit MainWindow(QString fileToLoadOnStartup = "", bool drawGraphAfterLoad = false);
     ~MainWindow();
 
 private:
@@ -55,6 +55,8 @@ private:
     QThread * m_layoutThread;
     ogdf::FMMMLayout * m_fmmm;
     QString m_imageFilter;
+    QString m_fileToLoadOnStartup;
+    bool m_drawGraphAfterLoad;
 
     void cleanUp();
     void displayGraphDetails();
@@ -85,6 +87,7 @@ private:
     QString getDefaultImageFileName();
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
     void setGraphScopeComboBox(GraphScope graphScope);
+    void setupBlastQueryComboBox();
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -123,6 +126,14 @@ private slots:
     void selectNotContiguous();
     void openBandageUrl();
     void nodeDistanceChanged();
+    void afterMainWindowShow();
+
+protected:
+      void showEvent(QShowEvent *ev);
+
+signals:
+      void windowLoaded();
+
 };
 
 #endif // MAINWINDOW_H

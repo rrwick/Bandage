@@ -64,11 +64,13 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     bool finished = g_blastSearch->m_makeblastdb->waitForFinished(-1);
 
     if (g_blastSearch->m_makeblastdb->exitCode() != 0 || !finished)
-        emit finishedBuild("There was a problem building the BLAST database.");
+        m_error = "There was a problem building the BLAST database.";
     else if (g_blastSearch->m_cancelBuildBlastDatabase)
-        emit finishedBuild("Build cancelled.");
+        m_error = "Build cancelled.";
     else
-        emit finishedBuild("");
+        m_error = "";
+
+    emit finishedBuild(m_error);
 
     g_blastSearch->m_makeblastdb->deleteLater();
     g_blastSearch->m_makeblastdb = 0;
