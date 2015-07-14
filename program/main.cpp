@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     }
 
     //Since a recognised command was not seen, we now check to see if the user
-    //was looking for help or version information.
+    //was looking for help information.
     if (checkForHelp(arguments))
     {
         out << "" << endl;

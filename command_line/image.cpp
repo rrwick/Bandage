@@ -40,7 +40,7 @@ int bandageImage(QStringList arguments)
         return 0;
     }
 
-    if (isOptionPresent("--helpall", &arguments))
+    if (checkForHelpAll(arguments))
     {
         printImageUsage(&out, true);
         return 0;
@@ -54,6 +54,12 @@ int bandageImage(QStringList arguments)
 
     QString graphFilename = arguments.at(0);
     arguments.pop_front();
+
+    if (!checkIfFileExists(graphFilename))
+    {
+        err << "Bandage error: " << graphFilename << " does not exist." << endl;
+        return 1;
+    }
 
     QString imageSaveFilename = arguments.at(0);
     arguments.pop_front();
@@ -79,9 +85,10 @@ int bandageImage(QStringList arguments)
 
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
+    {
+        err << "Bandage error: could not load " << graphFilename << endl;
         return 1;
-
-    MyGraphicsScene scene;
+    }
 
     int width = 0;
     int height = 0;
@@ -91,7 +98,6 @@ int bandageImage(QStringList arguments)
     //centre of the node, not the visible centre(s).  This is because there
     //is no viewport.
     g_settings->positionTextNodeCentre = true;
-
 
     //Since frame rate performance doesn't matter for a fixed image, set the
     //default node outline to a nonzero value.
@@ -132,6 +138,7 @@ int bandageImage(QStringList arguments)
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     g_assemblyGraph->layoutGraph();
 
+    MyGraphicsScene scene;
     g_assemblyGraph->addGraphicsItemsToScene(&scene);
     scene.setSceneRectangle();
     double sceneRectAspectRatio = scene.sceneRect().width() / scene.sceneRect().height();
@@ -208,7 +215,7 @@ void printImageUsage(QTextStream * out, bool all)
 
 QString checkForInvalidImageOptions(QStringList arguments)
 {
-    QString  error = checkOptionForInt("--height", &arguments, 1, 32767);
+    QString error = checkOptionForInt("--height", &arguments, 1, 32767);
     if (error.length() > 0) return error;
 
     error = checkOptionForInt("--width", &arguments, 1, 32767);

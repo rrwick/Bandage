@@ -30,7 +30,7 @@ int bandageLoad(QApplication * a, QStringList arguments)
         return 0;
     }
 
-    if (isOptionPresent("--helpall", &arguments))
+    if (checkForHelpAll(arguments))
     {
         printLoadUsage(&out, true);
         return 0;
@@ -45,6 +45,11 @@ int bandageLoad(QApplication * a, QStringList arguments)
     QString filename = arguments.at(0);
     arguments.pop_front();
 
+    if (!checkIfFileExists(filename))
+    {
+        err << "Bandage error: " << filename << " does not exist." << endl;
+        return 1;
+    }
 
     QString error = checkForInvalidLoadOptions(arguments);
     if (error.length() > 0)

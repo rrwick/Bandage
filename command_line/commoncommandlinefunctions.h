@@ -34,6 +34,7 @@ QString checkOptionForString(QString option, QStringList * arguments,
                              QStringList validOptionsList, QString validDescription = "");
 QString checkOptionForColour(QString option, QStringList * arguments);
 QString checkOptionForFile(QString option, QStringList * arguments);
+bool checkIfFileExists(QString filename);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
 QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
                                  double min1, double max1, double min2, double max2,

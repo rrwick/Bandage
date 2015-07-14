@@ -48,7 +48,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --partial           Use partial node name matching (default: exact" << endl;
     *out << "                              node name matching)" << endl;
     *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
-    *out << "                              aroundnodes and aroundblast scopes (default: 0)" << endl;
+    *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
     *out << endl;
     *out << "          BLAST search" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -580,9 +580,7 @@ QString checkOptionForFile(QString option, QStringList * arguments)
         return option + " must be followed by a filename";
 
     //If the thing that follows the option isn't a file that's a problem
-    QFileInfo checkFile(arguments->at(fileIndex));
-    bool fileOkay = (checkFile.exists() && checkFile.isFile());
-    if (!fileOkay)
+    if (!checkIfFileExists(arguments->at(fileIndex)))
         return option + " must be followed by a a valid filename";
 
     //If the code got here, the option and its file are okay.
@@ -591,6 +589,12 @@ QString checkOptionForFile(QString option, QStringList * arguments)
     arguments->removeAt(optionIndex);
 
     return "";
+}
+
+bool checkIfFileExists(QString filename)
+{
+    QFileInfo checkFile(filename);
+    return (checkFile.exists() && checkFile.isFile());
 }
 
 
