@@ -332,10 +332,13 @@ void BlastSearchDialog::buildBlastDatabaseCancelled()
 
 void BlastSearchDialog::loadBlastQueriesFromFastaFileButtonClicked()
 {
-    QString fullFileName = QFileDialog::getOpenFileName(this, "Load queries FASTA", g_settings->rememberedPath);
+    QStringList fullFileNames = QFileDialog::getOpenFileNames(this, "Load queries FASTA", g_settings->rememberedPath);
 
-    if (fullFileName != "") //User did not hit cancel
-        loadBlastQueriesFromFastaFile(fullFileName);
+    if (fullFileNames.size() > 0) //User did not hit cancel
+    {
+        for (int i = 0; i < fullFileNames.size(); ++i)
+            loadBlastQueriesFromFastaFile(fullFileNames.at(i));
+    }
 }
 
 void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
