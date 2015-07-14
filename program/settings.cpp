@@ -44,6 +44,7 @@ Settings::Settings()
 
     graphScope = WHOLE_GRAPH;
     nodeDistance = 0;
+    startingNodesExactMatch = true;
     startingNodes = "";
     blastQueryFilename = "";
 

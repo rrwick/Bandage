@@ -52,6 +52,7 @@ public:
 
     GraphScope graphScope;
     int nodeDistance;
+    bool startingNodesExactMatch;
     QString startingNodes;
     QString blastQueryFilename;
 

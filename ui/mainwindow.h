@@ -127,6 +127,7 @@ private slots:
     void openBandageUrl();
     void nodeDistanceChanged();
     void afterMainWindowShow();
+    void startingNodesExactMatchChanged();
 
 protected:
       void showEvent(QShowEvent *ev);

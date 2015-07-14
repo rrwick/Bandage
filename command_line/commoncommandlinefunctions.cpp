@@ -439,6 +439,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names");
     if (error.length() > 0) return error;
+    checkOptionWithoutValue("--partial", arguments);
 
     error = checkOptionForInt("--distance", arguments, 0, 100);
     if (error.length() > 0) return error;
@@ -580,7 +581,8 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              entire)" << endl;
     *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
     *out << "                              aroundnodes scope (default: none)" << endl;
-    *out << "                              Enclose this list in quotes if it includes spaces" << endl;
+    *out << "          --partial           Use partial node name matching (default: exact" << endl;
+    *out << "                              node name matching)" << endl;
     *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
     *out << "                              aroundnodes and aroundblast scopes (default: 0)" << endl;
     *out << endl;
@@ -598,11 +600,11 @@ void printSettingsUsage(QTextStream * out)
     *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --double            draw graph in double mode (default: off)" << endl;
-    *out << "          --bases <int>       base pairs per segment (default: auto)" << endl;
+    *out << "          --double            Draw graph in double mode (default: off)" << endl;
+    *out << "          --bases <int>       Base pairs per segment (default: auto)" << endl;
     *out << "                              High values result in longer nodes, small values" << endl;
     *out << "                              in shorter nodes." << endl;
-    *out << "          --quality <int>     graph layout quality, 0 (low) to 4 (high)" << endl;
+    *out << "          --quality <int>     Graph layout quality, 0 (low) to 4 (high)" << endl;
     *out << "                              (default: " + QString::number(g_settings->graphLayoutQuality) + ")" << endl;
     *out << endl;
     *out << "          Node width" << endl;
@@ -690,6 +692,7 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--nodes", &arguments))
         g_settings->startingNodes = getStringOption("--nodes", &arguments);
+    g_settings->startingNodesExactMatch = !isOptionPresent("--partial", &arguments);
 
     if (isOptionPresent("--query", &arguments))
         g_settings->blastQueryFilename = getStringOption("--query", &arguments);

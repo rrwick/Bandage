@@ -155,6 +155,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
     connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
+    connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -533,11 +534,11 @@ void MainWindow::drawGraph()
         //Make sure the nodes the user typed in are actually in the graph.
         std::vector<QString> nodesNotInGraph;
         std::vector<DeBruijnNode *> nodesInGraph = getNodesFromLineEdit(ui->startingNodesLineEdit,
-                                                                        ui->startingNodesExactMatchRadioButton->isChecked(),
+                                                                        g_settings->startingNodesExactMatch,
                                                                         &nodesNotInGraph);
         if (nodesNotInGraph.size() > 0)
         {
-            QString errorMessage = generateNodesNotFoundErrorMessage(nodesNotInGraph, ui->startingNodesExactMatchRadioButton->isChecked());
+            QString errorMessage = generateNodesNotFoundErrorMessage(nodesNotInGraph, g_settings->startingNodesExactMatch);
 
             QMessageBox::information(this, "Nodes not found", errorMessage);
             if (nodesInGraph.size() == 0)
@@ -563,7 +564,7 @@ void MainWindow::drawGraph()
 
     std::vector<DeBruijnNode *> startingNodes;
     if (g_settings->graphScope == AROUND_NODE)
-        startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, ui->startingNodesExactMatchRadioButton->isChecked());
+        startingNodes = getNodesFromLineEdit(ui->startingNodesLineEdit, g_settings->startingNodesExactMatch);
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
         startingNodes = getNodesFromBlastHits();
 
@@ -1927,8 +1928,6 @@ bool MainWindow::checkIfLineEditHasNodes(QLineEdit * lineEdit)
 
 void MainWindow::setWidgetsFromSettings()
 {
-    Settings * test = g_settings.data();
-
     ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
     ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
 
@@ -1937,6 +1936,9 @@ void MainWindow::setWidgetsFromSettings()
     ui->nodeCoveragesCheckBox->setChecked(g_settings->displayNodeCoverages);
     ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
+
+    ui->startingNodesExactMatchRadioButton->setChecked(g_settings->startingNodesExactMatch);
+    ui->startingNodesPartialMatchRadioButton->setChecked(!g_settings->startingNodesExactMatch);
 
     setNodeColourSchemeComboBox(g_settings->nodeColourScheme);
 
@@ -1989,3 +1991,8 @@ void MainWindow::showEvent(QShowEvent *ev)
     emit windowLoaded();
 }
 
+
+void MainWindow::startingNodesExactMatchChanged()
+{
+    g_settings->startingNodesExactMatch = ui->startingNodesExactMatchRadioButton->isChecked();
+}
