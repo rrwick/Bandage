@@ -20,7 +20,10 @@
 #include "../graph/assemblygraph.h"
 #include <QDir>
 #include <QRegularExpression>
-
+#include "buildblastdatabaseworker.h"
+#include "runblastsearchworker.h"
+#include "../program/settings.h"
+#include <QApplication>
 
 BlastSearch::BlastSearch() :
     m_blastQueries()
@@ -177,4 +180,70 @@ void BlastSearch::emptyTempDirectory()
     tempDirectory.setFilter(QDir::Files);
     foreach(QString dirFile, tempDirectory.entryList())
         tempDirectory.remove(dirFile);
+}
+
+
+//This function carries out the entire BLAST search procedure automatically, without user input.
+//It returns an error string which is empty if all goes well.
+QString BlastSearch::doAutoBlastSearch()
+{
+    cleanUp();
+
+    QString makeblastdbCommand = "makeblastdb";
+    if (!findProgram("makeblastdb", &makeblastdbCommand))
+        return "Error: The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.";
+
+    BuildBlastDatabaseWorker buildBlastDatabaseWorker(makeblastdbCommand);
+    buildBlastDatabaseWorker.buildBlastDatabase();
+    if (buildBlastDatabaseWorker.m_error != "")
+        return buildBlastDatabaseWorker.m_error;
+
+    loadBlastQueriesFromFastaFile(g_settings->blastQueryFilename);
+
+    QString blastnCommand = "blastn";
+    if (!findProgram("blastn", &blastnCommand))
+        return "Error: The program blastn was not found.  Please install NCBI BLAST to use this feature.";
+    QString tblastnCommand = "tblastn";
+    if (!findProgram("tblastn", &tblastnCommand))
+        return "Error: The program tblastn was not found.  Please install NCBI BLAST to use this feature.";
+
+    RunBlastSearchWorker runBlastSearchWorker(blastnCommand, tblastnCommand, g_settings->blastSearchParameters);;
+    runBlastSearchWorker.runBlastSearch();
+    if (runBlastSearchWorker.m_error != "")
+        return runBlastSearchWorker.m_error;
+
+    return "";
+}
+
+
+void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
+{
+    std::vector<QString> queryNames;
+    std::vector<QString> querySequences;
+    readFastaFile(fullFileName, &queryNames, &querySequences);
+
+    for (size_t i = 0; i < queryNames.size(); ++i)
+    {
+        QApplication::processEvents();
+
+        QString queryName = cleanQueryName(queryNames[i]);
+        g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
+                                                              querySequences[i]));
+    }
+}
+
+
+QString BlastSearch::cleanQueryName(QString queryName)
+{
+    //Replace whitespace with underscores
+    queryName = queryName.replace(QRegExp("\\s"), "_");
+
+    //Remove any dots from the end of the query name.  BLAST doesn't
+    //include them in its results, so if we don't remove them, then
+    //we won't be able to find a match between the query name and
+    //the BLAST hit.
+    while (queryName.length() > 0 && queryName[queryName.size() - 1] == '.')
+        queryName = queryName.left(queryName.size() - 1);
+
+    return queryName;
 }

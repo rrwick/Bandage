@@ -28,7 +28,6 @@
 #include <QSvgGenerator>
 #include <QDir>
 #include "../blast/blastsearch.h"
-#include "../ui/blastsearchdialog.h"
 
 int bandageImage(QStringList arguments)
 {
@@ -104,13 +103,18 @@ int bandageImage(QStringList arguments)
     {
         if (!createBlastTempDirectory())
         {
-            err << "Error creating temporary directory for BLAST files" << error << endl;
+            err << "Error creating temporary directory for BLAST files" << endl;
             return 1;
         }
 
-        BlastSearchDialog blastSearchDialog(0, g_settings->blastQueryFilename);
-    }
+        QString blastError = g_blastSearch->doAutoBlastSearch();
 
+        if (blastError != "")
+        {
+            err << blastError << endl;
+            return 1;
+        }
+    }
 
     QString errorTitle;
     QString errorMessage;

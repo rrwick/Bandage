@@ -50,6 +50,9 @@ public:
     bool findProgram(QString programName, QString * command);
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void emptyTempDirectory();
+    QString doAutoBlastSearch();
+    void loadBlastQueriesFromFastaFile(QString fullFileName);
+    QString cleanQueryName(QString queryName);
 };
 
 #endif // BLASTSEARCH_H

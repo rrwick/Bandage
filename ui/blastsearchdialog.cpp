@@ -344,18 +344,7 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    std::vector<QString> queryNames;
-    std::vector<QString> querySequences;
-    readFastaFile(fullFileName, &queryNames, &querySequences);
-
-    for (size_t i = 0; i < queryNames.size(); ++i)
-    {
-        QApplication::processEvents();
-
-        QString queryName = cleanQueryName(queryNames[i]);
-        g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
-                                                              querySequences[i]));
-    }
+    g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
 
     fillQueriesTable();
     clearBlastHits();
@@ -368,21 +357,6 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
 }
 
 
-QString BlastSearchDialog::cleanQueryName(QString queryName)
-{
-    //Replace whitespace with underscores
-    queryName = queryName.replace(QRegExp("\\s"), "_");
-
-    //Remove any dots from the end of the query name.  BLAST doesn't
-    //include them in its results, so if we don't remove them, then
-    //we won't be able to find a match between the query name and
-    //the BLAST hit.
-    while (queryName.length() > 0 && queryName[queryName.size() - 1] == '.')
-        queryName = queryName.left(queryName.size() - 1);
-
-    return queryName;
-}
-
 
 void BlastSearchDialog::enterQueryManually()
 {
@@ -390,7 +364,7 @@ void BlastSearchDialog::enterQueryManually()
 
     if (enterOneBlastQueryDialog.exec())
     {
-        QString queryName = cleanQueryName(enterOneBlastQueryDialog.getName());
+        QString queryName = g_blastSearch->cleanQueryName(enterOneBlastQueryDialog.getName());
         g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                               enterOneBlastQueryDialog.getSequence()));
         fillQueriesTable();

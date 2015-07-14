@@ -58,8 +58,9 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     }
     file.close();
 
+    QString fullMakeblastdbCommand = m_makeblastdbCommand + " -in " + g_blastSearch->m_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
     g_blastSearch->m_makeblastdb = new QProcess();
-    g_blastSearch->m_makeblastdb->start(m_makeblastdbCommand + " -in " + g_blastSearch->m_tempDirectory + "all_nodes.fasta " + "-dbtype nucl");
+    g_blastSearch->m_makeblastdb->start(fullMakeblastdbCommand);
 
     bool finished = g_blastSearch->m_makeblastdb->waitForFinished(-1);
 
