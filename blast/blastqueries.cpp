@@ -203,11 +203,6 @@ bool BlastQueries::isQueryPresent(BlastQuery * query)
 }
 
 
-int getQueryIndex(BlastQuery * query)
-{
-
-}
-
 void BlastQueries::createPresetColours()
 {
     presetColours.push_back(QColor("#306FF8"));

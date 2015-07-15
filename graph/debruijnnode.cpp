@@ -382,7 +382,7 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 {
     DeBruijnNode * positiveNode = this;
     DeBruijnNode * negativeNode = m_reverseComplement;
-    if (isNegativeNode() < 0)
+    if (isNegativeNode())
         std::swap(positiveNode, negativeNode);
 
     //Look for blast hit parts on both the positive and the negative node,

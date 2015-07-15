@@ -314,10 +314,11 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
 
     catch (...)
     {
-        QMessageBox::warning(this, "Error loading " + graphFileType,
-                             "There was an error when attempting to load:\n"
-                             + fullFileName + "\n\n"
-                             "Please verify that this file has the correct format.");
+        QString errorTitle = "Error loading " + convertGraphFileTypeToString(graphFileType);
+        QString errorMessage = "There was an error when attempting to load:\n"
+                               + fullFileName + "\n\n"
+                               "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
         resetScene();
         cleanUp();
         clearGraphDetails();
