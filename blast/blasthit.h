@@ -24,6 +24,7 @@ class BlastQuery;
 
 #include <QString>
 #include "blasthitpart.h"
+#include <vector>
 
 class BlastHit
 {
