@@ -103,6 +103,8 @@ Settings::Settings()
     blastSearchParameters = "";
 
     rememberedPath = QDir::homePath();
+
+    commandLineCommand = NO_COMMAND;
 }
 
 

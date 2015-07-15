@@ -81,11 +81,13 @@ int main(int argc, char *argv[])
         if (first == "load")
         {
             arguments.pop_front();
+            g_settings->commandLineCommand = BANDAGE_LOAD;
             return bandageLoad(&a, arguments);
         }
         else if (first == "image")
         {
             arguments.pop_front();
+            g_settings->commandLineCommand = BANDAGE_IMAGE;
             return bandageImage(arguments);
         }
 //        else if (first == "contiguous")

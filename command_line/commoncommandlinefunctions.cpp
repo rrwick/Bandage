@@ -166,6 +166,9 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--distance", arguments, 0, 100);
     if (error.length() > 0) return error;
 
+    if (isOptionPresent("--query", arguments) && g_settings->commandLineCommand == NO_COMMAND)
+        return "The --query option can only be used with Bandage load and Bandage image";
+
     error = checkOptionForFile("--query", arguments);
     if (error.length() > 0) return error;
     error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters");
