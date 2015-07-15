@@ -113,6 +113,11 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
 
+    //The user may have specified settings on the command line, so it is now
+    //necessary to update the UI to match these settings.
+    setWidgetsFromSettings();
+    setTextDisplaySettings();
+
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -184,11 +189,6 @@ void MainWindow::afterMainWindowShow()
     //If the user passed a filename as a command line argument, try to open it now.
     if (m_fileToLoadOnStartup != "")
         loadGraph(m_fileToLoadOnStartup);
-
-    //The user may have specified settings on the command line, so it is now
-    //necessary to update the UI to match these settings.
-    setWidgetsFromSettings();
-    setTextDisplaySettings();
 
     //If a BLAST query filename is present, do the BLAST search now automatically.
     if (g_settings->blastQueryFilename != "")
