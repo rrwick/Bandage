@@ -549,12 +549,12 @@ QString checkOptionForColour(QString option, QStringList * arguments)
 
     //If nothing follows the option, that's a problem.
     if (colIndex >= arguments->size())
-        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #F0D2B48C) or a standard colour name (e.g. skyblue)";
+        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)";
 
     //If the thing following the option isn't a colour, that's a problem.
     QColor colour(arguments->at(colIndex));
     if (!colour.isValid())
-        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #F0D2B48C) or a standard colour name (e.g. skyblue)";
+        return option + " must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)";
 
     //If the code got here, the option and its colour are okay.
     //Remove them from the arguments.
