@@ -18,6 +18,7 @@
 
 #include "blastqueries.h"
 #include "../program/globals.h"
+#include "../program/settings.h"
 #include <QTextStream>
 #include "blastsearch.h"
 
@@ -51,18 +52,9 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 }
 
 
-
 void BlastQueries::addQuery(BlastQuery * newQuery)
 {
-    //Add a suffix to the new query name if it not unique.  Also make
-    //sure it's not "all", as that will conflict with viewing all
-    //queries at once.
-    QString newQueryName = newQuery->m_name;
-    int queryNumber = 2;
-    QString finalName = newQueryName;
-    while (getQueryFromName(finalName) != 0 || finalName == "all")
-        finalName = newQueryName + "_" + QString::number(queryNumber++);
-    newQuery->m_name = finalName;
+    newQuery->m_name = getUniqueName(newQuery->m_name);
 
     //Give the new query a colour
     int colourIndex = m_queries.size();
@@ -71,6 +63,34 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
 
     m_queries.push_back(newQuery);
     updateTempFiles();
+}
+
+
+//This function renames the query.  It returns the name given, because that
+//might not be exactly the same as the name passed to the function if it
+//wasn't unique.
+QString BlastQueries::renameQuery(BlastQuery * newQuery, QString newName)
+{
+    newQuery->m_name = getUniqueName(newName);
+    updateTempFiles();
+    return newQuery->m_name;
+}
+
+
+//This function looks at the name, and if it is not unique, it adds a suffix
+//to make it unique.  Also make sure it's not "all", as that will conflict
+//with viewing all queries at once.
+QString BlastQueries::getUniqueName(QString name)
+{
+    //The name can't be empty.
+    if (name == "")
+        name = g_settings->unnamedQueryDefaultName;
+
+    int queryNumber = 2;
+    QString finalName = name;
+    while (getQueryFromName(finalName) != 0 || finalName == "all")
+        finalName = name + "_" + QString::number(queryNumber++);
+    return finalName;
 }
 
 void BlastQueries::clearAllQueries()

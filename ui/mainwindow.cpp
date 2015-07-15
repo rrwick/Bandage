@@ -1248,11 +1248,24 @@ void MainWindow::openAboutDialog()
 
 void MainWindow::openBlastSearchDialog()
 {
-    BlastSearchDialog blastSearchDialog(this);
+    //Remember the current state of the queries.
+    std::vector<BlastQuery *> blastQueriesBefore = g_blastSearch->m_blastQueries.m_queries;
+    int queryComboBoxIndexBefore = ui->blastQueryComboBox->currentIndex();
 
+    BlastSearchDialog blastSearchDialog(this);
     blastSearchDialog.exec();
 
+    //Rebuild the query combo box, in case the user changed the queries or
+    //their names.
     setupBlastQueryComboBox();
+
+    //Look to see if the BLAST queries have changed since the user opened the
+    //dialog.  If they haven't really changed (name changes are okay), then
+    //restore the index of the combo box.  If they have changed in a
+    //significant way, leave the combo box at the current index of 0.
+    std::vector<BlastQuery *> blastQueriesAfter = g_blastSearch->m_blastQueries.m_queries;
+    if (blastQueriesBefore == blastQueriesAfter)
+        ui->blastQueryComboBox->setCurrentIndex(queryComboBoxIndexBefore);
 
     if (blastSearchDialog.m_blastSearchConducted)
     {
@@ -1292,7 +1305,6 @@ void MainWindow::setupBlastQueryComboBox()
         ui->blastQueryComboBox->addItem("none");
         ui->blastQueryComboBox->setEnabled(false);
     }
-
 }
 
 

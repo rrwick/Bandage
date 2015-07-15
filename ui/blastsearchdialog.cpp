@@ -515,6 +515,10 @@ void BlastSearchDialog::runBlastSearchCancelled()
 
 void BlastSearchDialog::queryCellChanged(int row, int column)
 {
+    //Suspend signals for this function, as it is might change
+    //the cell value again if the new name isn't unique.
+    ui->blastQueriesTableWidget->blockSignals(true);
+
     //We are only interested in when a query name is changed.
     if (column != 1)
         return;
@@ -522,7 +526,12 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
     BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-    query->m_name = newName;
+    QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
+
+    //It's possible that the user gave the query a non-unique name, in which
+    //case we now have to adjust it.
+    if (uniqueName != newName)
+        ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
 
     //Resize the query table columns, as the name new might take up more or less space.
     ui->blastQueriesTableWidget->resizeColumns();
@@ -530,6 +539,8 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     //Rebuild the hits table, if necessary, to show the new name.
     if (query->m_hits > 0)
         fillHitsTable();
+
+    ui->blastQueriesTableWidget->blockSignals(false);
 }
 
 

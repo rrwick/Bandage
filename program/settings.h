@@ -55,6 +55,7 @@ public:
     bool startingNodesExactMatch;
     QString startingNodes;
     QString blastQueryFilename;
+    QString unnamedQueryDefaultName;
 
     double minZoom;
     double maxZoom;

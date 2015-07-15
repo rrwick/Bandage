@@ -47,6 +47,7 @@ Settings::Settings()
     startingNodesExactMatch = true;
     startingNodes = "";
     blastQueryFilename = "";
+    unnamedQueryDefaultName = "unnamed";
 
     minZoom = 0.01;
     maxZoom = 20.0;

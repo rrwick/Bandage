@@ -18,6 +18,8 @@
 
 #include "enteroneblastquerydialog.h"
 #include "ui_enteroneblastquerydialog.h"
+#include "../program/settings.h"
+#include "../program/globals.h"
 
 EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
     QDialog(parent),
@@ -35,7 +37,7 @@ QString EnterOneBlastQueryDialog::getName()
 {
     QString name = ui->nameLineEdit->text().simplified();
     if (name == "")
-        name = "unnamed";
+        name = g_settings->unnamedQueryDefaultName;
     return name;
 }
 
