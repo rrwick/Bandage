@@ -50,6 +50,8 @@ public:
     void searchOccurred();
     void clearSearchResults();
     int getQueryCount(SequenceType sequenceType);
+    bool isQueryPresent(BlastQuery * query);
+    int getQueryIndex(BlastQuery * query);
 
     std::vector<QColor> presetColours;
 

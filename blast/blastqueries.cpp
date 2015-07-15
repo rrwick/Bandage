@@ -188,6 +188,26 @@ bool BlastQueries::tempProtFileExists()
 }
 
 
+//This function looks to see if a query pointer is in the list
+//of queries.  The query pointer given may or may not still
+//actually exist, so it can't be dereferenced.
+bool BlastQueries::isQueryPresent(BlastQuery * query)
+{
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (query == m_queries[i])
+            return true;
+    }
+
+    return false;
+}
+
+
+int getQueryIndex(BlastQuery * query)
+{
+
+}
+
 void BlastQueries::createPresetColours()
 {
     presetColours.push_back(QColor("#306FF8"));

@@ -1248,9 +1248,7 @@ void MainWindow::openAboutDialog()
 
 void MainWindow::openBlastSearchDialog()
 {
-    //Remember the current state of the queries.
-    std::vector<BlastQuery *> blastQueriesBefore = g_blastSearch->m_blastQueries.m_queries;
-    int queryComboBoxIndexBefore = ui->blastQueryComboBox->currentIndex();
+    BlastQuery * beforeQuery = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
 
     BlastSearchDialog blastSearchDialog(this);
     blastSearchDialog.exec();
@@ -1259,13 +1257,15 @@ void MainWindow::openBlastSearchDialog()
     //their names.
     setupBlastQueryComboBox();
 
-    //Look to see if the BLAST queries have changed since the user opened the
-    //dialog.  If they haven't really changed (name changes are okay), then
-    //restore the index of the combo box.  If they have changed in a
-    //significant way, leave the combo box at the current index of 0.
-    std::vector<BlastQuery *> blastQueriesAfter = g_blastSearch->m_blastQueries.m_queries;
-    if (blastQueriesBefore == blastQueriesAfter)
-        ui->blastQueryComboBox->setCurrentIndex(queryComboBoxIndexBefore);
+    //Look to see if the query selected before is still present.  If so,
+    //set the combo box to have that query selected.  If not (or if no
+    //query was previously selected), leave the combo box a index 0.
+    if (beforeQuery != 0 && g_blastSearch->m_blastQueries.isQueryPresent(beforeQuery))
+    {
+        int indexOfQuery = ui->blastQueryComboBox->findText(beforeQuery->m_name);
+        if (indexOfQuery != -1)
+            ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
+    }
 
     if (blastSearchDialog.m_blastSearchConducted)
     {
