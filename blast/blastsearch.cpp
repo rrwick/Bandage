@@ -47,6 +47,7 @@ void BlastSearch::cleanUp()
 {
     clearBlastHits();
     m_blastQueries.clearAllQueries();
+    emptyTempDirectory();
 }
 
 //This function uses the contents of m_blastOutput to construct
