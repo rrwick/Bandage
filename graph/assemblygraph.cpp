@@ -876,7 +876,7 @@ bool AssemblyGraph::checkFileIsFastG(QString fullFileName)
 //Cursory look to see if file appears to be a GFA file.
 bool AssemblyGraph::checkFileIsGfa(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, "[SL]\t");
+    return checkFirstLineOfFile(fullFileName, "[SLH]\t");
 }
 
 //Cursory look to see if file appears to be a Trinity.fasta file.
