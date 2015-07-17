@@ -118,6 +118,9 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     setWidgetsFromSettings();
     setTextDisplaySettings();
 
+    graphScopeChanged();
+    switchColourScheme();
+
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -196,9 +199,6 @@ void MainWindow::afterMainWindowShow()
         BlastSearchDialog blastSearchDialog(this, g_settings->blastQueryFilename);
         setupBlastQueryComboBox();
     }
-
-    graphScopeChanged();
-    switchColourScheme();
 
     //If the draw option was used and the graph appears to have loaded (i.e. there
     //is at least one node), then draw the graph.
