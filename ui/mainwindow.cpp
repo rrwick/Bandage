@@ -489,6 +489,11 @@ QString MainWindow::getSelectedEdgeListText()
 }
 
 
+
+//This function shows/hides UI elements depending on which
+//graph scope is currently selected.  It also reorganises
+//the widgets in the layout to prevent gaps when widgets
+//are hidden.
 void MainWindow::graphScopeChanged()
 {
     switch (ui->graphScopeComboBox->currentIndex())
@@ -508,6 +513,13 @@ void MainWindow::graphScopeChanged()
         ui->nodeDistanceInfoText->setVisible(false);
         ui->nodeDistanceLabel->setVisible(false);
         ui->nodeDistanceSpinBox->setVisible(false);
+
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 2, 1, 1, 2);
+
         break;
 
     case 1:
@@ -531,6 +543,22 @@ void MainWindow::graphScopeChanged()
                                               "A value of 0 will result in only the specified nodes being drawn. "
                                               "A large value will result in large sections of the graph around "
                                               "the specified nodes being drawn.");
+
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesLabel, 1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesLineEdit, 1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesMatchTypeInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesMatchTypeLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->startingNodesMatchTypeWidget, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 3, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceSpinBox, 3, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 4, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 4, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 4, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 5, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 5, 1, 1, 2);
+
         break;
 
     case 2:
@@ -554,6 +582,16 @@ void MainWindow::graphScopeChanged()
                                               "A value of 0 will result in only nodes with BLAST hits being drawn. "
                                               "A large value will result in large sections of the graph around "
                                               "nodes with BLAST hits being drawn.");
+
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceSpinBox, 1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 3, 1, 1, 2);
+
         break;
     }
 }

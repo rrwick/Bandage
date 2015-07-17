@@ -60,7 +60,7 @@
          <x>0</x>
          <y>0</y>
          <width>293</width>
-         <height>1048</height>
+         <height>1063</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -83,9 +83,6 @@
             <number>0</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item row="2" column="0">
@@ -210,7 +207,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
          </spacer>
@@ -254,8 +251,8 @@
             </widget>
            </item>
            <item>
-            <widget class="QWidget" name="widget_5" native="true">
-             <layout class="QGridLayout" name="gridLayout_9">
+            <widget class="QWidget" name="graphDrawingWidget_2" native="true">
+             <layout class="QGridLayout" name="graphDrawingGridLayout">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -263,9 +260,6 @@
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="0" column="0">
@@ -406,7 +400,7 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QWidget" name="widget_3" native="true">
+               <widget class="QWidget" name="startingNodesMatchTypeWidget" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_5">
                  <property name="spacing">
                   <number>0</number>
@@ -533,7 +527,7 @@
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QWidget" name="widget_6" native="true">
+               <widget class="QWidget" name="nodeStyleWidget" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="spacing">
                   <number>0</number>
@@ -622,7 +616,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
          </spacer>
@@ -675,9 +669,6 @@
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="1" column="0">
@@ -832,7 +823,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
          </spacer>
@@ -885,9 +876,6 @@
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="0" column="0">
@@ -1009,7 +997,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>25</height>
+            <height>15</height>
            </size>
           </property>
          </spacer>
@@ -1062,9 +1050,6 @@
                <number>0</number>
               </property>
               <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="1" column="0">
