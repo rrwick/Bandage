@@ -777,31 +777,38 @@ void MainWindow::switchColourScheme()
     {
     case 0:
         g_settings->nodeColourScheme = RANDOM_COLOURS;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     case 1:
         g_settings->nodeColourScheme = ONE_COLOUR;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     case 2:
         g_settings->nodeColourScheme = COVERAGE_COLOUR;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     case 3:
         g_settings->nodeColourScheme = BLAST_HITS_SOLID_COLOUR;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     case 4:
         g_settings->nodeColourScheme = BLAST_HITS_RAINBOW_COLOUR;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     case 5:
         g_settings->nodeColourScheme = CONTIGUITY_COLOUR;
-        ui->contiguityWidget->setVisible(true);
+        ui->contiguityButton->setVisible(true);
+        ui->contiguityInfoText->setVisible(true);
         break;
     case 6:
         g_settings->nodeColourScheme = CUSTOM_COLOURS;
-        ui->contiguityWidget->setVisible(false);
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
         break;
     }
 

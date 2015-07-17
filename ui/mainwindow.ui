@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>250</width>
-         <height>1053</height>
+         <width>270</width>
+         <height>1063</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -88,37 +88,6 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Nodes:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QLabel" name="totalLengthLabel">
-             <property name="text">
-              <string>0</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="edgeCountLabel">
-             <property name="text">
-              <string>0</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="nodeCountLabel">
-             <property name="text">
-              <string>0</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="0">
             <widget class="InfoTextWidget" name="graphInformationInfoText" native="true">
              <property name="sizePolicy">
@@ -135,7 +104,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0" colspan="3">
+           <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_7">
              <property name="font">
               <font>
@@ -148,31 +117,83 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="3">
+           <item row="1" column="0" colspan="2">
             <widget class="Line" name="line_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Edges:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="2">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Total length:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
+           <item row="2" column="1">
+            <widget class="QWidget" name="widget_14" native="true">
+             <layout class="QGridLayout" name="gridLayout_4">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Nodes:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="nodeCountLabel">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Edges:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="edgeCountLabel">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Total length:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="totalLengthLabel">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
@@ -189,7 +210,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>35</height>
+            <height>25</height>
            </size>
           </property>
          </spacer>
@@ -234,7 +255,7 @@
            </item>
            <item>
             <widget class="QWidget" name="widget_5" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <layout class="QGridLayout" name="gridLayout_9">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -247,7 +268,7 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
+              <item row="0" column="0">
                <widget class="InfoTextWidget" name="graphScopeInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -263,14 +284,14 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="1">
                <widget class="QLabel" name="label_9">
                 <property name="text">
                  <string>Scope:</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QComboBox" name="graphScopeComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -316,67 +337,6 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item row="0" column="0">
-               <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_11">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Node(s):</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="startingNodesLineEdit">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="2">
                <widget class="QWidget" name="widget_12" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -419,6 +379,67 @@
                 </property>
                 <property name="text">
                  <string>Match:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_11">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Node(s):</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLineEdit" name="startingNodesLineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                </widget>
               </item>
@@ -622,7 +643,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>35</height>
+            <height>25</height>
            </size>
           </property>
          </spacer>
@@ -667,7 +688,7 @@
            </item>
            <item>
             <widget class="QWidget" name="widget_2" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <layout class="QGridLayout" name="gridLayout_8">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -680,7 +701,23 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
+              <item row="1" column="0">
+               <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
                <widget class="InfoTextWidget" name="zoomInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -696,23 +733,16 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="label_13">
-                <property name="text">
-                 <string>Zoom:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QDoubleSpinBox" name="zoomSpinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                 <property name="suffix">
                  <string>%</string>
@@ -734,41 +764,17 @@
                 </property>
                </widget>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget_3" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_11">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
-               <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Zoom:</string>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="1" colspan="2">
                <widget class="QComboBox" name="coloursComboBox">
                 <item>
                  <property name="text">
@@ -807,25 +813,7 @@
                 </item>
                </widget>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="contiguityWidget" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_15">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="2" column="0">
                <widget class="InfoTextWidget" name="contiguityInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -841,7 +829,7 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="2" column="1" colspan="2">
                <widget class="QPushButton" name="contiguityButton">
                 <property name="text">
                  <string>Determine contiguity</string>
@@ -865,7 +853,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
-            <height>35</height>
+            <height>25</height>
            </size>
           </property>
          </spacer>
@@ -910,7 +898,7 @@
            </item>
            <item>
             <widget class="QWidget" name="widget_8" native="true">
-             <layout class="QGridLayout" name="gridLayout_9">
+             <layout class="QGridLayout" name="gridLayout_7">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -923,10 +911,7 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <item row="1" column="0">
+              <item row="0" column="0">
                <widget class="InfoTextWidget" name="nodeLabelsInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -942,60 +927,7 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
-                <property name="text">
-                 <string>Custom</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QCheckBox" name="nodeNamesCheckBox">
-                <property name="text">
-                 <string>Name</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QCheckBox" name="nodeLengthsCheckBox">
-                <property name="text">
-                 <string>Length</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QCheckBox" name="nodeCoveragesCheckBox">
-                <property name="text">
-                 <string>Coverage</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QCheckBox" name="blastHitsCheckBox">
-                <property name="text">
-                 <string>BLAST hits</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget_6" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="1" column="0">
                <widget class="InfoTextWidget" name="nodeFontInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1011,18 +943,74 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="1">
                <widget class="QPushButton" name="fontButton">
                 <property name="text">
                  <string>Font</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="2">
                <widget class="QCheckBox" name="textOutlineCheckBox">
                 <property name="text">
                  <string>Text outline</string>
                 </property>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="2">
+               <widget class="QWidget" name="widget_13" native="true">
+                <layout class="QGridLayout" name="gridLayout_3">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="verticalSpacing">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
+                   <property name="text">
+                    <string>Custom</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QCheckBox" name="nodeNamesCheckBox">
+                   <property name="text">
+                    <string>Name</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="nodeLengthsCheckBox">
+                   <property name="text">
+                    <string>Length</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="nodeCoveragesCheckBox">
+                   <property name="text">
+                    <string>Coverage</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0" colspan="2">
+                  <widget class="QCheckBox" name="blastHitsCheckBox">
+                   <property name="text">
+                    <string>BLAST hits</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -1042,7 +1030,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>229</width>
-            <height>35</height>
+            <height>25</height>
            </size>
           </property>
          </spacer>
@@ -1087,7 +1075,7 @@
            </item>
            <item>
             <widget class="QWidget" name="widget_4" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <layout class="QGridLayout" name="gridLayout_5">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -1100,48 +1088,7 @@
               <property name="bottomMargin">
                <number>0</number>
               </property>
-              <item>
-               <widget class="InfoTextWidget" name="blastSearchInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="blastSearchButton">
-                <property name="text">
-                 <string>Create/view BLAST search</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget_7" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_13">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="1" column="0">
                <widget class="InfoTextWidget" name="blastQueryInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1157,7 +1104,7 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="1" column="1">
                <widget class="QLabel" name="label_4">
                 <property name="text">
                  <string>Query:</string>
@@ -1167,7 +1114,23 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="0">
+               <widget class="InfoTextWidget" name="blastSearchInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
                <widget class="QComboBox" name="blastQueryComboBox">
                 <property name="enabled">
                  <bool>false</bool>
@@ -1183,6 +1146,13 @@
                   <string>none</string>
                  </property>
                 </item>
+               </widget>
+              </item>
+              <item row="0" column="1" colspan="2">
+               <widget class="QPushButton" name="blastSearchButton">
+                <property name="text">
+                 <string>Create/view BLAST search</string>
+                </property>
                </widget>
               </item>
              </layout>
@@ -1254,8 +1224,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>274</width>
-         <height>1053</height>
+         <width>280</width>
+         <height>1063</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1720,7 +1690,7 @@
      <x>0</x>
      <y>0</y>
      <width>1301</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2009,11 +1979,6 @@
   <tabstop>nodeDistanceSpinBox</tabstop>
   <tabstop>singleNodesRadioButton</tabstop>
   <tabstop>doubleNodesRadioButton</tabstop>
-  <tabstop>nodeCustomLabelsCheckBox</tabstop>
-  <tabstop>nodeNamesCheckBox</tabstop>
-  <tabstop>nodeLengthsCheckBox</tabstop>
-  <tabstop>nodeCoveragesCheckBox</tabstop>
-  <tabstop>textOutlineCheckBox</tabstop>
   <tabstop>selectionScrollArea</tabstop>
   <tabstop>selectionSearchNodesLineEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
