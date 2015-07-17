@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>270</width>
-         <height>1063</height>
+         <width>293</width>
+         <height>1048</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -285,7 +285,13 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLabel" name="label_9">
+               <widget class="QLabel" name="graphScopeLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
                  <string>Scope:</string>
                 </property>
@@ -294,7 +300,7 @@
               <item row="0" column="2">
                <widget class="QComboBox" name="graphScopeComboBox">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -316,102 +322,7 @@
                 </item>
                </widget>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="nodeSelectionWidget" native="true">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <layout class="QGridLayout" name="gridLayout">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item row="1" column="2">
-               <widget class="QWidget" name="widget_12" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
-                   <property name="text">
-                    <string>Exact</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
-                   <property name="text">
-                    <string>Partial</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_15">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Match:</string>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="0">
-               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_11">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Node(s):</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
                <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
                 <property name="enabled">
                  <bool>true</bool>
@@ -430,41 +341,121 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
+              <item row="1" column="1">
+               <widget class="QLabel" name="startingNodesLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Node(s):</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
                <widget class="QLineEdit" name="startingNodesLineEdit">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                </widget>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="distanceWidget" native="true">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="2" column="0">
+               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="startingNodesMatchTypeLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Match:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QWidget" name="widget_3" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Exact</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Partial</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="3" column="0">
                <widget class="InfoTextWidget" name="nodeDistanceInfoText" native="true">
                 <property name="enabled">
                  <bool>true</bool>
@@ -483,8 +474,8 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="label">
+              <item row="3" column="1">
+               <widget class="QLabel" name="nodeDistanceLabel">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -493,41 +484,26 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="3" column="2">
                <widget class="QSpinBox" name="nodeDistanceSpinBox">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                 <property name="maximum">
                  <number>10000</number>
                 </property>
                </widget>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="4" column="0">
                <widget class="InfoTextWidget" name="nodeStyleInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -543,8 +519,8 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QLabel" name="label_3">
+              <item row="4" column="1">
+               <widget class="QLabel" name="nodeStyleLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -556,54 +532,57 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QRadioButton" name="singleNodesRadioButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Single</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
+              <item row="4" column="2">
+               <widget class="QWidget" name="widget_6" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QRadioButton" name="singleNodesRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Single</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="doubleNodesRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Double</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
-              <item>
-               <widget class="QRadioButton" name="doubleNodesRadioButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Double</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QWidget" name="widget_10" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout_14">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
-              <item>
+              <item row="5" column="0">
                <widget class="InfoTextWidget" name="drawGraphInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -619,7 +598,7 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="5" column="1" colspan="2">
                <widget class="QPushButton" name="drawGraphButton">
                 <property name="text">
                  <string>Draw graph</string>
@@ -1975,10 +1954,6 @@
  <tabstops>
   <tabstop>controlsScrollArea</tabstop>
   <tabstop>graphScopeComboBox</tabstop>
-  <tabstop>startingNodesLineEdit</tabstop>
-  <tabstop>nodeDistanceSpinBox</tabstop>
-  <tabstop>singleNodesRadioButton</tabstop>
-  <tabstop>doubleNodesRadioButton</tabstop>
   <tabstop>selectionScrollArea</tabstop>
   <tabstop>selectionSearchNodesLineEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>

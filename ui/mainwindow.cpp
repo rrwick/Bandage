@@ -495,26 +495,60 @@ void MainWindow::graphScopeChanged()
     {
     case 0:
         g_settings->graphScope = WHOLE_GRAPH;
-        ui->nodeSelectionWidget->setVisible(false);
-        ui->distanceWidget->setVisible(false);
+
+        ui->startingNodesInfoText->setVisible(false);
+        ui->startingNodesLabel->setVisible(false);
+        ui->startingNodesLineEdit->setVisible(false);
+
+        ui->startingNodesMatchTypeInfoText->setVisible(false);
+        ui->startingNodesMatchTypeLabel->setVisible(false);
+        ui->startingNodesExactMatchRadioButton->setVisible(false);
+        ui->startingNodesPartialMatchRadioButton->setVisible(false);
+
+        ui->nodeDistanceInfoText->setVisible(false);
+        ui->nodeDistanceLabel->setVisible(false);
+        ui->nodeDistanceSpinBox->setVisible(false);
         break;
+
     case 1:
         g_settings->graphScope = AROUND_NODE;
-        ui->nodeSelectionWidget->setVisible(true);
-        ui->nodeSelectionWidget->setEnabled(true);
-        ui->distanceWidget->setVisible(true);
-        ui->distanceWidget->setEnabled(true);
+
+        ui->startingNodesInfoText->setVisible(true);
+        ui->startingNodesLabel->setVisible(true);
+        ui->startingNodesLineEdit->setVisible(true);
+
+        ui->startingNodesMatchTypeInfoText->setVisible(true);
+        ui->startingNodesMatchTypeLabel->setVisible(true);
+        ui->startingNodesExactMatchRadioButton->setVisible(true);
+        ui->startingNodesPartialMatchRadioButton->setVisible(true);
+
+        ui->nodeDistanceInfoText->setVisible(true);
+        ui->nodeDistanceLabel->setVisible(true);
+        ui->nodeDistanceSpinBox->setVisible(true);
+
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
                                               "A value of 0 will result in only the specified nodes being drawn. "
                                               "A large value will result in large sections of the graph around "
                                               "the specified nodes being drawn.");
         break;
+
     case 2:
         g_settings->graphScope = AROUND_BLAST_HITS;
-        ui->nodeSelectionWidget->setVisible(false);
-        ui->distanceWidget->setVisible(true);
-        ui->distanceWidget->setEnabled(true);
+
+        ui->startingNodesInfoText->setVisible(false);
+        ui->startingNodesLabel->setVisible(false);
+        ui->startingNodesLineEdit->setVisible(false);
+
+        ui->startingNodesMatchTypeInfoText->setVisible(false);
+        ui->startingNodesMatchTypeLabel->setVisible(false);
+        ui->startingNodesExactMatchRadioButton->setVisible(false);
+        ui->startingNodesPartialMatchRadioButton->setVisible(false);
+
+        ui->nodeDistanceInfoText->setVisible(true);
+        ui->nodeDistanceLabel->setVisible(true);
+        ui->nodeDistanceSpinBox->setVisible(true);
+
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
                                               "A value of 0 will result in only nodes with BLAST hits being drawn. "
