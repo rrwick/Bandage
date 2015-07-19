@@ -21,7 +21,6 @@
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
-#include <QMarginsF>
 
 MyGraphicsScene::MyGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
