@@ -297,7 +297,7 @@ std::vector<DeBruijnEdge *> DeBruijnEdge::findNextEdgesInPath(DeBruijnNode * nex
 
 
 //This function tries to automatically determine the overlap size
-//between the two nodes.  It tries each overlap size from the min
+//between the two nodes.  It tries each overlap size between the min
 //to the max (in settings), assigning the first one it finds.
 void DeBruijnEdge::autoDetermineExactOverlap()
 {
@@ -311,14 +311,21 @@ void DeBruijnEdge::autoDetermineExactOverlap()
     int min = std::min(minPossibleOverlap, g_settings->minAutoFindEdgeOverlap);
     int max = std::min(minPossibleOverlap, g_settings->maxAutoFindEdgeOverlap);
 
-    //Try each overlap in the range.
+    //Try each overlap in the range and set the first one found.
+    //However, we don't want the search to be biased towards larger
+    //or smaller overlaps, so start with a pseudorandom value and loop.
+    int testOverlap = min + (rand() % (max - min + 1));
     for (int i = min; i <= max; ++i)
     {
-        if (testExactOverlap(i))
+        if (testExactOverlap(testOverlap))
         {
-            m_overlap = i;
+            m_overlap = testOverlap;
             return;
         }
+
+        ++testOverlap;
+        if (testOverlap > max)
+            testOverlap = min;
     }
 }
 

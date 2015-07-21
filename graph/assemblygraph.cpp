@@ -1360,10 +1360,7 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
                 break;
             }
         }
-
     }
-    overlapCounts = makeOverlapCountVector(); //TEMP
-    int test = 5; //TEMP
 }
 
 
