@@ -1303,20 +1303,10 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
     if (edgeCount == 0)
         return;
 
-    //Determine the overlap for each edge and add it to a
-    //vector which will track the number of occurrences of
-    //each overlap size.
-    std::vector<int> overlapCounts;
+    //Determine the overlap for each edge and produce a vector
+    //that
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
-    {
         m_deBruijnGraphEdges[i]->autoDetermineExactOverlap();
-        int overlap = m_deBruijnGraphEdges[i]->m_overlap;
-
-        //Add the overlap to the count vector
-        if (int(overlapCounts.size()) < overlap + 1)
-            overlapCounts.resize(overlap + 1, 0);
-        ++overlapCounts[overlap];
-    }
 
     //The expectation here is that most overlaps will be
     //the same or from a small subset of possible sizes.
@@ -1324,13 +1314,16 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
     //overlap(s) are suspected of having their overlap
     //misidentified.  They are therefore rechecked using the
     //common ones.
+    std::vector<int> overlapCounts = makeOverlapCountVector();
 
-    //Create a vector that contains the overlaps which constitute
-    //90% or more of the total overlaps.
-    std::vector<int> commonOverlaps;
+    //Sort the overlaps in order of decreasing numbers of edges.
+    //I.e. the first overlap size in the vector will be the most
+    //common overlap, the second will be the second most common,
+    //etc.
+    std::vector<int> sortedOverlaps;
     int overlapsSoFar = 0;
     double fractionOverlapsFound = 0.0;
-    while (fractionOverlapsFound < 0.9)
+    while (fractionOverlapsFound < 1.0)
     {
         int mostCommonOverlap = 0;
         int mostCommonOverlapCount = 0;
@@ -1346,29 +1339,51 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
         }
 
         //Add that overlap to the common collection and remove it from the counts.
-        commonOverlaps.push_back(mostCommonOverlap);
+        sortedOverlaps.push_back(mostCommonOverlap);
         overlapsSoFar += mostCommonOverlapCount;
         fractionOverlapsFound = double(overlapsSoFar) / edgeCount;
         overlapCounts[mostCommonOverlap] = 0;
     }
 
-    //For each edge for which the overlap is not in the common, see if one
-    //of the common overlaps also works.  If so, use that instead.
+    //For each edge, see if one of the more common overlaps also works.
+    //If so, use that instead.
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
         DeBruijnEdge * edge = m_deBruijnGraphEdges[i];
-        int overlap = edge->m_overlap;
-
-        if (!(std::find(commonOverlaps.begin(), commonOverlaps.end(), overlap) != commonOverlaps.end()))
+        for (size_t j = 0; j < sortedOverlaps.size(); ++j)
         {
-            for (size_t j = 0; j < commonOverlaps.size(); ++j)
+            if (edge->m_overlap == sortedOverlaps[j])
+                break;
+            else if (edge->testExactOverlap(sortedOverlaps[j]))
             {
-                if (edge->testExactOverlap(commonOverlaps[j]))
-                {
-                    edge->m_overlap = commonOverlaps[j];
-                    break;
-                }
+                edge->m_overlap = sortedOverlaps[j];
+                break;
             }
         }
+
     }
+    overlapCounts = makeOverlapCountVector(); //TEMP
+    int test = 5; //TEMP
+}
+
+
+//This function produces a vector for which the values are the number
+//of edges that have an overlap of the index length.
+//E.g. if overlapVector[61] = 123, that means that 123 edges have an
+//overlap of 61.
+std::vector<int> AssemblyGraph::makeOverlapCountVector()
+{
+    std::vector<int> overlapCounts;
+
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+    {
+        int overlap = m_deBruijnGraphEdges[i]->m_overlap;
+
+        //Add the overlap to the count vector
+        if (int(overlapCounts.size()) < overlap + 1)
+            overlapCounts.resize(overlap + 1, 0);
+        ++overlapCounts[overlap];
+    }
+
+    return overlapCounts;
 }

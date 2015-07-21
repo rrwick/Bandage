@@ -102,6 +102,7 @@ private:
     std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
+    std::vector<int> makeOverlapCountVector();
 };
 
 #endif // ASSEMBLYGRAPH_H
