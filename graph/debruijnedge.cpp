@@ -305,7 +305,7 @@ void DeBruijnEdge::autoDetermineExactOverlap()
     m_overlapType = AUTO_DETERMINED_EXACT_OVERLAP;
 
     //Find an appropriate search range
-    int minPossibleOverlap = std::min(m_startingNode->m_sequence.length(), m_endingNode->m_sequence.length()) - 1;
+    int minPossibleOverlap = std::min(m_startingNode->m_sequence.length(), m_endingNode->m_sequence.length());
     if (minPossibleOverlap < g_settings->minAutoFindEdgeOverlap)
         return;
     int min = std::min(minPossibleOverlap, g_settings->minAutoFindEdgeOverlap);
@@ -344,3 +344,5 @@ bool DeBruijnEdge::testExactOverlap(int overlap)
 
     return !mismatchFound;
 }
+
+

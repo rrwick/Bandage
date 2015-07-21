@@ -1295,10 +1295,80 @@ void AssemblyGraph::setAllEdgesExactOverlap(int overlap)
         m_deBruijnGraphEdges[i]->setExactOverlap(overlap);
 }
 
+
+
 void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
 {
+    int edgeCount = m_deBruijnGraphEdges.size();
+    if (edgeCount == 0)
+        return;
+
+    //Determine the overlap for each edge and add it to a
+    //vector which will track the number of occurrences of
+    //each overlap size.
+    std::vector<int> overlapCounts;
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+    {
         m_deBruijnGraphEdges[i]->autoDetermineExactOverlap();
+        int overlap = m_deBruijnGraphEdges[i]->m_overlap;
 
+        //Add the overlap to the count vector
+        if (int(overlapCounts.size()) < overlap + 1)
+            overlapCounts.resize(overlap + 1, 0);
+        ++overlapCounts[overlap];
+    }
 
+    //The expectation here is that most overlaps will be
+    //the same or from a small subset of possible sizes.
+    //Edges with an overlap that do not match the most common
+    //overlap(s) are suspected of having their overlap
+    //misidentified.  They are therefore rechecked using the
+    //common ones.
+
+    //Create a vector that contains the overlaps which constitute
+    //90% or more of the total overlaps.
+    std::vector<int> commonOverlaps;
+    int overlapsSoFar = 0;
+    double fractionOverlapsFound = 0.0;
+    while (fractionOverlapsFound < 0.9)
+    {
+        int mostCommonOverlap = 0;
+        int mostCommonOverlapCount = 0;
+
+        //Find the overlap size with the most instances.
+        for (size_t i = 0; i < overlapCounts.size(); ++i)
+        {
+            if (overlapCounts[i] > mostCommonOverlapCount)
+            {
+                mostCommonOverlap = i;
+                mostCommonOverlapCount = overlapCounts[i];
+            }
+        }
+
+        //Add that overlap to the common collection and remove it from the counts.
+        commonOverlaps.push_back(mostCommonOverlap);
+        overlapsSoFar += mostCommonOverlapCount;
+        fractionOverlapsFound = double(overlapsSoFar) / edgeCount;
+        overlapCounts[mostCommonOverlap] = 0;
+    }
+
+    //For each edge for which the overlap is not in the common, see if one
+    //of the common overlaps also works.  If so, use that instead.
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_deBruijnGraphEdges[i];
+        int overlap = edge->m_overlap;
+
+        if (!(std::find(commonOverlaps.begin(), commonOverlaps.end(), overlap) != commonOverlaps.end()))
+        {
+            for (size_t j = 0; j < commonOverlaps.size(); ++j)
+            {
+                if (edge->testExactOverlap(commonOverlaps[j]))
+                {
+                    edge->m_overlap = commonOverlaps[j];
+                    break;
+                }
+            }
+        }
+    }
 }

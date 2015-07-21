@@ -58,10 +58,10 @@ public:
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path);
     void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
     void autoDetermineExactOverlap();
+    bool testExactOverlap(int overlap);
 
 private:
     bool edgeIsVisible();
-    bool testExactOverlap(int overlap);
 
 };
 
