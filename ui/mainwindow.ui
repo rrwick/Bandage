@@ -1706,12 +1706,6 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
     <addaction name="menuSelect_nodes_based_on_contiguity"/>
-    <addaction name="separator"/>
-    <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
-    <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
-    <addaction name="separator"/>
-    <addaction name="actionCopy_selected_node_path_to_clipboard"/>
-    <addaction name="actionSave_selected_node_path_to_FASTA"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1720,10 +1714,21 @@
     <addaction name="actionAbout"/>
     <addaction name="actionBandage_website"/>
    </widget>
+   <widget class="QMenu" name="menuOutput">
+    <property name="title">
+     <string>Output</string>
+    </property>
+    <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
+    <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopy_selected_node_path_to_clipboard"/>
+    <addaction name="actionSave_selected_node_path_to_FASTA"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuView"/>
    <addaction name="menuSelection"/>
+   <addaction name="menuOutput"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1738,7 +1743,7 @@
   </action>
   <action name="actionSave_image_current_view">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../images/images.qrc">
@@ -1777,7 +1782,7 @@
   </action>
   <action name="actionSave_image_entire_scene">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../images/images.qrc">

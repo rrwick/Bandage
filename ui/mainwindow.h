@@ -57,6 +57,7 @@ private:
     QString m_imageFilter;
     QString m_fileToLoadOnStartup;
     bool m_drawGraphAfterLoad;
+    UiState m_uiState;
 
     void cleanUp();
     void displayGraphDetails();
@@ -75,13 +76,14 @@ private:
     void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);
     void setInfoTexts();
-    void enableDisableUiElements(UiState uiState);
+    void setUiState(UiState uiState);
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
     void setWidgetsFromSettings();
     QString getDefaultImageFileName();
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
     void setGraphScopeComboBox(GraphScope graphScope);
     void setupBlastQueryComboBox();
+    bool checkForImageSave();
 
 private slots:
     void loadGraph(QString fullFileName = "");

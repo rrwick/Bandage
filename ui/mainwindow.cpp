@@ -64,7 +64,8 @@
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)"),
-    m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad)
+    m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad),
+    m_uiState(NO_GRAPH_LOADED)
 {
     ui->setupUi(this);
 
@@ -101,7 +102,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->selectedNodesTextEdit->setFixedHeight(ui->selectedNodesTextEdit->sizeHint().height() / 2.5);
     ui->selectedEdgesTextEdit->setFixedHeight(ui->selectedEdgesTextEdit->sizeHint().height() / 2.5);
 
-    enableDisableUiElements(NO_GRAPH_LOADED);
+    setUiState(NO_GRAPH_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
@@ -304,7 +305,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);
 
-        enableDisableUiElements(GRAPH_LOADED);
+        setUiState(GRAPH_LOADED);
         setWindowTitle("Bandage - " + fullFileName);
 
         g_assemblyGraph->determineGraphInfo();
@@ -322,7 +323,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         resetScene();
         cleanUp();
         clearGraphDetails();
-        enableDisableUiElements(NO_GRAPH_LOADED);
+        setUiState(NO_GRAPH_LOADED);
     }
 }
 
@@ -628,7 +629,7 @@ void MainWindow::graphLayoutFinished()
     zoomToFitScene();
     selectionChanged();
 
-    enableDisableUiElements(GRAPH_DRAWN);
+    setUiState(GRAPH_DRAWN);
 
     //Move the focus to the view so the user can use keyboard controls to navigate.
     g_graphicsView->setFocus();
@@ -934,6 +935,9 @@ QString MainWindow::getDefaultImageFileName()
 
 void MainWindow::saveImageCurrentView()
 {
+    if (!checkForImageSave())
+        return;
+
     QString defaultFileNameAndPath = getDefaultImageFileName();
 
     QString selectedFilter = m_imageFilter;
@@ -984,6 +988,9 @@ void MainWindow::saveImageCurrentView()
 
 void MainWindow::saveImageEntireScene()
 {
+    if (!checkForImageSave())
+        return;
+
     QString defaultFileNameAndPath = getDefaultImageFileName();
 
     QString selectedFilter = m_imageFilter;
@@ -1047,6 +1054,25 @@ void MainWindow::saveImageEntireScene()
     }
 }
 
+
+
+//This function makes sure that a graph is loaded and drawn so that an image can be saved.
+//It returns true if everything is fine.  If things aren't ready, it displays a message
+//to the user and returns false.
+bool MainWindow::checkForImageSave()
+{
+    if (m_uiState == NO_GRAPH_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first load and then draw a graph before you can save an image to file.");
+        return false;
+    }
+    if (m_uiState == GRAPH_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first draw the graph before you can save an image to file.");
+        return false;
+    }
+    return true;
+}
 
 
 void MainWindow::setTextDisplaySettings()
@@ -1512,8 +1538,10 @@ void MainWindow::setInfoTexts()
 
 
 
-void MainWindow::enableDisableUiElements(UiState uiState)
+void MainWindow::setUiState(UiState uiState)
 {
+    m_uiState = uiState;
+
     switch (uiState)
     {
     case NO_GRAPH_LOADED:
@@ -1523,8 +1551,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSave_image_current_view->setEnabled(false);
-        ui->actionSave_image_entire_scene->setEnabled(false);
         ui->actionSelect_all->setEnabled(false);
         ui->actionSelect_none->setEnabled(false);
         ui->actionInvert_selection->setEnabled(false);
@@ -1544,8 +1570,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSave_image_current_view->setEnabled(false);
-        ui->actionSave_image_entire_scene->setEnabled(false);
         ui->actionSelect_all->setEnabled(false);
         ui->actionSelect_none->setEnabled(false);
         ui->actionInvert_selection->setEnabled(false);
@@ -1565,8 +1589,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(true);
-        ui->actionSave_image_current_view->setEnabled(true);
-        ui->actionSave_image_entire_scene->setEnabled(true);
         ui->actionSelect_all->setEnabled(true);
         ui->actionSelect_none->setEnabled(true);
         ui->actionInvert_selection->setEnabled(true);
