@@ -19,17 +19,26 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <vector>
 #include "debruijnnode.h"
 #include "debruijnedge.h"
+#include <QByteArray>
+#include <QList>
 
 class Path
 {
 public:
     Path();
+    Path(QList<DeBruijnNode *> nodes, bool strandSpecific);
 
-    std::vector<DeBruijnNode *> nodes;
-    std::vector<DeBruijnEdge *> egdes;
+    QList<DeBruijnNode *> m_nodes;
+    QList<DeBruijnEdge *> m_edges;
+
+    int m_startPosition;
+    int m_endPosition;
+
+    bool addNode(DeBruijnNode * newNode, bool strandSpecific);
+    bool isEmpty() {return m_nodes.empty();}
+    QByteArray getPathSequence();
 };
 
 #endif // PATH_H

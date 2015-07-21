@@ -83,6 +83,10 @@ public:
     bool doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement);
     bool isPositiveNode();
     bool isNegativeNode();
+
+    DeBruijnEdge * doesNodeLeadIn(DeBruijnNode * node);
+    DeBruijnEdge * doesNodeLeadAway(DeBruijnNode * node);
+    bool isNodeConnected(DeBruijnNode * node);
 };
 
 #endif // DEBRUIJNNODE_H
