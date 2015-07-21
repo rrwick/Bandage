@@ -64,7 +64,8 @@ SOURCES += \
     ui/colourbutton.cpp \
     blast/blastquery.cpp \
     blast/runblastsearchworker.cpp \
-    blast/blastsearch.cpp
+    blast/blastsearch.cpp \
+    graph/path.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -101,7 +102,8 @@ HEADERS  += \
     ui/mytablewidget.h \
     blast/buildblastdatabaseworker.h \
     ui/colourbutton.h \
-    blast/runblastsearchworker.h
+    blast/runblastsearchworker.h \
+    graph/path.h
 
 FORMS    += \
     ui/mainwindow.ui \
