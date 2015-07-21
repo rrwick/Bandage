@@ -1709,6 +1709,9 @@
     <addaction name="separator"/>
     <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
     <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopy_selected_node_path_to_clipboard"/>
+    <addaction name="actionSave_selected_node_path_to_FASTA"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1918,6 +1921,24 @@
    </property>
    <property name="text">
     <string>Bandage website</string>
+   </property>
+  </action>
+  <action name="actionCopy_selected_node_path_to_clipboard">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy selected node path to clipboard</string>
+   </property>
+  </action>
+  <action name="actionSave_selected_node_path_to_FASTA">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save selected node path to FASTA</string>
    </property>
   </action>
  </widget>

@@ -117,6 +117,9 @@ public:
 
     bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
     int getBasePairsPerSegment();
+
+    int minAutoFindEdgeOverlap;
+    int maxAutoFindEdgeOverlap;
 };
 
 #endif // SETTINGS_H

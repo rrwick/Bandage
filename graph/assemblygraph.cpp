@@ -438,6 +438,8 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             }
         }
         inputFile.close();
+
+        setAllEdgesExactOverlap(0);
     }
 
     if (m_deBruijnGraphNodes.size() == 0)
@@ -683,6 +685,8 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
         }
     }
 
+    autoDetermineAllEdgesExactOverlap();
+
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 }
@@ -841,6 +845,8 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QString node2Name = edgeEndingNodeNames[i];
         createDeBruijnEdge(node1Name, node2Name);
     }
+
+    setAllEdgesExactOverlap(0);
 
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
@@ -1281,3 +1287,18 @@ void AssemblyGraph::layoutGraph()
     graphLayoutWorker->layoutGraph();
 }
 
+
+
+void AssemblyGraph::setAllEdgesExactOverlap(int overlap)
+{
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+        m_deBruijnGraphEdges[i]->setExactOverlap(overlap);
+}
+
+void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
+{
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
+        m_deBruijnGraphEdges[i]->autoDetermineExactOverlap();
+
+
+}

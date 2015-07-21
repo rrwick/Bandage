@@ -89,6 +89,9 @@ public:
     std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
     void layoutGraph();
 
+    void setAllEdgesExactOverlap(int overlap);
+    void autoDetermineAllEdgesExactOverlap();
+
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

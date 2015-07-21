@@ -35,6 +35,9 @@ public:
     DeBruijnEdge * m_reverseComplement;
     bool m_drawn;
 
+    EdgeOverlapType m_overlapType;
+    int m_overlap;
+
     bool isStartingNode(DeBruijnNode * node) {return node == m_startingNode;}
     DeBruijnNode * getOtherNode(DeBruijnNode * node);
     void addToOgdfGraph(ogdf::Graph * ogdfGraph);
@@ -53,9 +56,12 @@ public:
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
                                                     bool forward);
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path);
+    void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
+    void autoDetermineExactOverlap();
 
 private:
     bool edgeIsVisible();
+    bool testExactOverlap(int overlap);
 
 };
 

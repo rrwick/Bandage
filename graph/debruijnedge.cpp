@@ -23,7 +23,8 @@
 #include <QApplication>
 
 DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode) :
-    m_startingNode(startingNode), m_endingNode(endingNode), m_graphicsItemEdge(0), m_drawn(false)
+    m_startingNode(startingNode), m_endingNode(endingNode), m_graphicsItemEdge(0),
+    m_drawn(false), m_overlapType(UNKNOWN_OVERLAP), m_overlap(0)
 {
 }
 
@@ -292,4 +293,54 @@ std::vector<DeBruijnEdge *> DeBruijnEdge::findNextEdgesInPath(DeBruijnNode * nex
     }
 
     return nextEdges;
+}
+
+
+//This function tries to automatically determine the overlap size
+//between the two nodes.  It tries each overlap size from the min
+//to the max (in settings), assigning the first one it finds.
+void DeBruijnEdge::autoDetermineExactOverlap()
+{
+    m_overlap = 0;
+    m_overlapType = AUTO_DETERMINED_EXACT_OVERLAP;
+
+    //Find an appropriate search range
+    int minPossibleOverlap = std::min(m_startingNode->m_sequence.length(), m_endingNode->m_sequence.length()) - 1;
+    if (minPossibleOverlap < g_settings->minAutoFindEdgeOverlap)
+        return;
+    int min = std::min(minPossibleOverlap, g_settings->minAutoFindEdgeOverlap);
+    int max = std::min(minPossibleOverlap, g_settings->maxAutoFindEdgeOverlap);
+
+    //Try each overlap in the range.
+    for (int i = min; i <= max; ++i)
+    {
+        if (testExactOverlap(i))
+        {
+            m_overlap = i;
+            return;
+        }
+    }
+}
+
+
+
+
+//This function tries the given overlap between the two nodes.
+//If the overlap works perfectly, it returns true.
+bool DeBruijnEdge::testExactOverlap(int overlap)
+{
+    bool mismatchFound = false;
+
+    int seq1Offset = m_startingNode->m_sequence.length() - overlap;
+
+    //Look at each position in the overlap
+    for (int j = 0; j < overlap && !mismatchFound; ++j)
+    {
+        char a = m_startingNode->m_sequence.at(seq1Offset + j);
+        char b = m_endingNode->m_sequence.at(j);
+        if (a != b)
+            mismatchFound = true;
+    }
+
+    return !mismatchFound;
 }
