@@ -75,7 +75,7 @@ void AssemblyGraph::cleanUp()
 //This function makes a double edge: in one direction for the given nodes
 //and the opposite direction for their reverse complements.  It adds the
 //new edges to the vector here and to the nodes themselves.
-void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name)
+void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int overlap)
 {
     QString node1Opposite = getOppositeNodeName(node1Name);
     QString node2Opposite = getOppositeNodeName(node2Name);
@@ -114,6 +114,9 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name)
 
     forwardEdge->m_reverseComplement = backwardEdge;
     backwardEdge->m_reverseComplement = forwardEdge;
+
+    forwardEdge->m_overlap = overlap;
+    backwardEdge->m_overlap = overlap;
 
     m_deBruijnGraphEdges.push_back(forwardEdge);
     if (!isOwnPair)
@@ -470,6 +473,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
     {
         std::vector<QString> edgeStartingNodeNames;
         std::vector<QString> edgeEndingNodeNames;
+        std::vector<int> edgeOverlaps;
 
         QTextStream in(&inputFile);
         while (!in.atEnd())
@@ -530,7 +534,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 //Instead, we save the starting and ending nodes and make the edges after
                 //we're done looking at the file.
 
-                if (lineParts.size() < 5)
+                if (lineParts.size() < 6)
                     throw "load error";
 
                 //Parts 1 and 3 hold the node names and parts 2 and 4 hold the corresponding +/-.
@@ -538,6 +542,10 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 QString endingNode = lineParts.at(3) + lineParts.at(4);
                 edgeStartingNodeNames.push_back(startingNode);
                 edgeEndingNodeNames.push_back(endingNode);
+
+                //Part 5 holds the node overlap cigar string
+                QString cigar = lineParts.at(5);
+                edgeOverlaps.push_back(getLengthFromCigar(cigar));
             }
         }
 
@@ -546,7 +554,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
         {
             QString node1Name = edgeStartingNodeNames[i];
             QString node2Name = edgeEndingNodeNames[i];
-            createDeBruijnEdge(node1Name, node2Name);
+            int overlap = edgeOverlaps[i];
+            createDeBruijnEdge(node1Name, node2Name, overlap);
         }
     }
 
@@ -554,6 +563,40 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
         throw "load error";
 }
 
+
+
+
+//This function converts a CIGAR string to a length.  It is
+//currently incomplete, only looking at matches and mismatches.
+//I'm waiting for the GFA format to be pinned down before
+//putting more work into this.
+int AssemblyGraph::getLengthFromCigar(QString cigar)
+{
+    int matchCount = getCigarCount("M", cigar);
+    int mismatchCount = getCigarCount("X", cigar);
+
+    return matchCount + mismatchCount;
+}
+
+
+//This function totals up the numbers for any given CIGAR code.
+int AssemblyGraph::getCigarCount(QString cigarCode, QString cigar)
+{
+    QRegExp rx("(\\d+)" + cigarCode);
+    QStringList list;
+    int pos = 0;
+    while ((pos = rx.indexIn(cigar, pos)) != -1)
+    {
+        list << rx.cap(1);
+        pos += rx.matchedLength();
+    }
+
+    int sum = 0;
+    for (int i = 0; i < list.size(); ++i)
+        sum += list.at(i).toInt();
+
+    return sum;
+}
 
 
 void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)

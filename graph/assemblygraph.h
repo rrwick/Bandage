@@ -55,7 +55,7 @@ public:
     bool m_contiguitySearchDone;
 
     void cleanUp();
-    void createDeBruijnEdge(QString node1Name, QString node2Name);
+    void createDeBruijnEdge(QString node1Name, QString node2Name, int overlap = 0);
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
@@ -103,6 +103,8 @@ private:
     std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
     std::vector<int> makeOverlapCountVector();
+    int getLengthFromCigar(QString cigar);
+    int getCigarCount(QString cigarCode, QString cigar);
 };
 
 #endif // ASSEMBLYGRAPH_H
