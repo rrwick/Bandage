@@ -1723,6 +1723,7 @@
     <addaction name="separator"/>
     <addaction name="actionCopy_selected_node_path_to_clipboard"/>
     <addaction name="actionSave_selected_node_path_to_FASTA"/>
+    <addaction name="actionSpecify_exact_path_for_copy_save"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1956,6 +1957,11 @@
    </property>
    <property name="text">
     <string>Save node path sequence to FASTA</string>
+   </property>
+  </action>
+  <action name="actionSpecify_exact_path_for_copy_save">
+   <property name="text">
+    <string>Specify exact path for copy/save</string>
    </property>
   </action>
  </widget>

@@ -41,6 +41,16 @@ Path::Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific)
 }
 
 
+//This constructor builds a path using an ordered list nodes. The path
+//does not have to be unambiguous. If the nodes do not make a valid path,
+//then it will fail and create an empty path.
+Path::Path(QList<DeBruijnNode *> nodes)
+{
+
+
+
+}
+
 
 void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific)
 {

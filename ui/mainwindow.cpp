@@ -61,6 +61,7 @@
 #include <QDesktopServices>
 #include <QSvgGenerator>
 #include "../graph/path.h"
+#include "pathspecifydialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -167,6 +168,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
+    connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -1949,4 +1951,11 @@ void MainWindow::showEvent(QShowEvent *ev)
 void MainWindow::startingNodesExactMatchChanged()
 {
     g_settings->startingNodesExactMatch = ui->startingNodesExactMatchRadioButton->isChecked();
+}
+
+
+void MainWindow::openPathSpecifyDialog()
+{
+    PathSpecifyDialog pathSpecifyDialog(this);
+    pathSpecifyDialog.exec();
 }

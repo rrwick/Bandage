@@ -24,6 +24,7 @@
 #include <QByteArray>
 #include <QList>
 #include <vector>
+#include <QString>
 
 class Path
 {
@@ -31,6 +32,7 @@ public:
     Path();
     Path(QList<DeBruijnNode *> nodes, bool strandSpecific);
     Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific);
+    Path(QList<DeBruijnNode *> nodes);
 
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
