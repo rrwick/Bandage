@@ -951,6 +951,45 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
     return false;
 }
 
+bool AssemblyGraph::loadCSV(QString filename, QStringList* columns, QString* errormsg)
+{
+    QString sep = "\t";
+
+    int unmatched_nodes = 0;
+    QFile inputFile(filename);
+
+    if (!inputFile.open(QIODevice::ReadOnly))
+        return false;
+
+    QTextStream in(&inputFile);
+    *columns = in.readLine().split(sep);
+    while (!in.atEnd())
+    {
+        QApplication::processEvents();
+
+        QString line = in.readLine();
+        QStringList cols = line.split(sep);
+        QString nameCol = cols.at(0);
+        QString nodeFullName = nameCol.split(" ").at(0);
+        std::cout << nodeFullName.toStdString() << std::endl;
+        QString nodeName = nodeFullName.split("_").at(1);
+
+        if (m_deBruijnGraphNodes.contains(nodeName+"+"))
+        {
+            m_deBruijnGraphNodes[nodeName+"+"]->m_csvData = cols;
+        }
+        else {
+            unmatched_nodes ++;
+        }
+        // FIXME: chop \r\n
+    }
+
+    if (unmatched_nodes)
+    {
+        *errormsg = "There were " + QString(unmatched_nodes) + " unmatched entries in the CSV.";
+    }
+    return true;
+}
 
 //Returns true if successful, false if not.
 bool AssemblyGraph::loadGraphFromFile(QString filename)

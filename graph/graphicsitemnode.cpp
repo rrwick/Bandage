@@ -745,6 +745,13 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << formatIntForDisplay(m_deBruijnNode->m_length) + " bp";
     if (g_settings->displayNodeCoverages)
         nodeText << formatDoubleForDisplay(m_deBruijnNode->m_coverage, 1) + "x";
+    if (g_settings->displayNodeCsvData)
+    {
+        if (m_deBruijnNode->m_csvData.length() > g_settings->displayNodeCsvDataCol)
+            nodeText << m_deBruijnNode->m_csvData.at(g_settings->displayNodeCsvDataCol);
+        else
+            nodeText << "-";
+    }
 
     return nodeText;
 }

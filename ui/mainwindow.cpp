@@ -123,6 +123,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
+    connect(ui->actionLoad_CSV, SIGNAL(triggered(bool)), this, SLOT(loadCSV()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -136,6 +137,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeCoveragesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->csvCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->csvComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setTextDisplaySettings()));
     connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
@@ -225,6 +228,47 @@ void MainWindow::cleanUp()
     g_blastSearch->cleanUp();
     g_assemblyGraph->cleanUp();
     setWindowTitle("Bandage");
+}
+
+void MainWindow::loadCSV(QString fullFileName)
+{
+    QString selectedFilter = "Comma separated value (*.csv)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load CSV", g_settings->rememberedPath,
+                                                    "Comma separated value (*.csv)",
+                                                    &selectedFilter);
+    }
+
+    if (fullFileName == "")
+    {
+        return; // user clicked on cancel
+    }
+
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        MyProgressDialog progress(this, "Loading CSV...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        g_assemblyGraph->loadCSV(fullFileName, &columns, &errormsg);
+
+        ui->csvCheckBox->setEnabled(true);
+        ui->csvComboBox->clear();
+        ui->csvComboBox->addItems(columns);
+    }
+
+    catch (...)
+    {
+        QString errorTitle = "Error loading CSV";
+        QString errorMessage = "There was an error when attempting to load:\n"
+                               + fullFileName + "\n\n"
+                               "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
 }
 
 
@@ -1056,6 +1100,8 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
     g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
+    g_settings->displayNodeCsvData = ui->csvCheckBox->isChecked();
+    g_settings->displayNodeCsvDataCol = ui->csvComboBox->currentIndex();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
     //If any of the nodes have text displayed, then it is necessary to set the
@@ -1068,6 +1114,7 @@ void MainWindow::setTextDisplaySettings()
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
             g_settings->displayNodeCoverages ||
+            g_settings->displayNodeCsvData ||
             g_settings->displayBlastHits)
         g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     else
@@ -1536,6 +1583,8 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
         ui->actionBring_selected_nodes_to_front->setEnabled(false);
         ui->actionZoom_to_selection->setEnabled(false);
+        ui->actionLoad_CSV->setEnabled(false);
+        ui->csvCheckBox->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1557,6 +1606,8 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
         ui->actionBring_selected_nodes_to_front->setEnabled(false);
         ui->actionZoom_to_selection->setEnabled(false);
+        ui->actionLoad_CSV->setEnabled(true);
+        ui->csvCheckBox->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1578,6 +1629,7 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(true);
         ui->actionBring_selected_nodes_to_front->setEnabled(true);
         ui->actionZoom_to_selection->setEnabled(true);
+        ui->actionLoad_CSV->setEnabled(true);
         break;
     }
 }

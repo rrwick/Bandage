@@ -67,6 +67,8 @@ public:
     bool displayNodeNames;
     bool displayNodeLengths;
     bool displayNodeCoverages;
+    bool displayNodeCsvData;
+    int  displayNodeCsvDataCol;
     bool displayBlastHits;
     QFont labelFont;
     bool textOutline;
@@ -115,7 +117,8 @@ public:
 
     CommandLineCommand commandLineCommand;
 
-    bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
+    bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages
+                                      || displayNodeCsvData;}
     int getBasePairsPerSegment();
 
     int minAutoFindEdgeOverlap;

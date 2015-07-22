@@ -53,6 +53,7 @@ public:
     QColor m_customColour;
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
+    QStringList m_csvData;
 
     void addEdge(DeBruijnEdge * edge);
     void resetNode();
