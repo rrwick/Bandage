@@ -231,6 +231,10 @@ void MainWindow::cleanUp()
     g_blastSearch->cleanUp();
     g_assemblyGraph->cleanUp();
     setWindowTitle("Bandage");
+
+    g_settings->userSpecifiedPath = "";
+    g_settings->userSpecifiedPathCircular = false;
+    g_settings->userSpecifiedPathNodes = QList<DeBruijnNode *>();
 }
 
 
