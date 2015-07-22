@@ -1862,10 +1862,10 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node sequences to clipboard</string>
+    <string>Copy node sequences to clipboard</string>
    </property>
    <property name="toolTip">
-    <string>Copy selected node sequences to clipboard</string>
+    <string>Copy node sequences to clipboard</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -1877,10 +1877,10 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node sequences to FASTA</string>
+    <string>Save node sequences to FASTA</string>
    </property>
    <property name="toolTip">
-    <string>Save selected node sequences to FASTA</string>
+    <string>Save node sequences to FASTA</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -1946,7 +1946,7 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node path to clipboard</string>
+    <string>Copy node path sequence to clipboard</string>
    </property>
   </action>
   <action name="actionSave_selected_node_path_to_FASTA">
@@ -1955,7 +1955,7 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node path to FASTA</string>
+    <string>Save node path sequence to FASTA</string>
    </property>
   </action>
  </widget>

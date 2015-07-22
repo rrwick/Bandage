@@ -24,11 +24,25 @@ Path::Path()
 }
 
 
-//This constructor will try to produce a path using the given nodes.
+//These constructors will try to produce a path using the given nodes.
 //It will only succeed if the nodes produce one and only one path.
 //If they are disconnected, branching or ambiguous, it will fail
 //and only contruct an empty Path.
 Path::Path(QList<DeBruijnNode *> nodes, bool strandSpecific)
+{
+    buildUnambiguousPathFromNodes(nodes, strandSpecific);
+}
+Path::Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific)
+{
+    QList<DeBruijnNode *> nodesList;
+    for (size_t i = 0; i < nodes.size(); ++i)
+        nodesList.push_back(nodes[i]);
+    buildUnambiguousPathFromNodes(nodesList, strandSpecific);
+}
+
+
+
+void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific)
 {
     if (nodes.isEmpty())
         return;
@@ -138,7 +152,53 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
 
 
 
+//This function extracts the sequence for the whole path.  It uses the overlap
+//value in the edges to remove sequences that are duplicated at the end of one
+//node and the start of the next.
 QByteArray Path::getPathSequence()
 {
-    return ""; //TEMP
+    if (m_nodes.empty())
+        return "";
+
+    QByteArray sequence = m_nodes[0]->m_sequence;
+    for (size_t i = 1; i < m_nodes.size(); ++i)
+    {
+        int overlap = m_edges[i-1]->m_overlap;
+        QByteArray nextSequence = m_nodes[i]->m_sequence;
+        int rightChars = nextSequence.length() - overlap;
+        if (rightChars > 0)
+            sequence += nextSequence.right(rightChars);
+    }
+
+    return sequence;
+}
+
+
+QString Path::getFasta()
+{
+    //The description line is a comma-delimited list of the nodes in the path
+    QString fasta = ">";
+    for (size_t i = 0; i < m_nodes.size(); ++i)
+    {
+        fasta += m_nodes[i]->m_name;
+        if (i < m_nodes.size() - 1)
+            fasta += ", ";
+    }
+    fasta += "\n";
+
+    QString pathSequence = getPathSequence();
+    int charactersOnLine = 0;
+    for (int i = 0; i < pathSequence.length(); ++i)
+    {
+        fasta += pathSequence.at(i);
+        ++charactersOnLine;
+        if (charactersOnLine >= 70)
+        {
+            fasta += "\n";
+            charactersOnLine = 0;
+        }
+    }
+    fasta += "\n";
+
+    return fasta;
 }

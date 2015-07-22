@@ -23,12 +23,14 @@
 #include "debruijnedge.h"
 #include <QByteArray>
 #include <QList>
+#include <vector>
 
 class Path
 {
 public:
     Path();
     Path(QList<DeBruijnNode *> nodes, bool strandSpecific);
+    Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific);
 
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
@@ -39,6 +41,10 @@ public:
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
     bool isEmpty() {return m_nodes.empty();}
     QByteArray getPathSequence();
+    QString getFasta();
+
+private:
+    void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
 };
 
 #endif // PATH_H

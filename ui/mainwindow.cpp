@@ -60,6 +60,7 @@
 #include <limits>
 #include <QDesktopServices>
 #include <QSvgGenerator>
+#include "../graph/path.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -130,6 +131,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(m_graphicsViewZoom, SIGNAL(zoomed()), this, SLOT(zoomedWithMouseWheel()));
     connect(ui->actionCopy_selected_node_sequences_to_clipboard, SIGNAL(triggered()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(ui->actionSave_selected_node_sequences_to_FASTA, SIGNAL(triggered()), this, SLOT(saveSelectedSequencesToFile()));
+    connect(ui->actionCopy_selected_node_path_to_clipboard, SIGNAL(triggered(bool)), this, SLOT(copySelectedPathToClipboard()));
+    connect(ui->actionSave_selected_node_path_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveSelectedPathToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
     connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
     connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
@@ -788,11 +791,10 @@ void MainWindow::zoomToFitRect(QRectF rect)
 void MainWindow::copySelectedSequencesToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "Copy selected sequences", "No nodes are selected.\n\n"
-                                                                  "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
+        QMessageBox::information(this, "Copy sequences to clipboard", "No nodes are selected.\n\n"
+                                                                      "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
         return;
     }
 
@@ -814,17 +816,16 @@ void MainWindow::copySelectedSequencesToClipboard()
 void MainWindow::saveSelectedSequencesToFile()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "Save selected sequences", "No nodes are selected.\n\n"
+        QMessageBox::information(this, "Save sequences to FASTA", "No nodes are selected.\n\n"
                                                                   "You must first select nodes in the graph before you can save their sequences to a FASTA file.");
         return;
     }
 
     QString defaultFileNameAndPath = g_settings->rememberedPath + "/selected_sequences.fasta";
 
-    QString fullFileName = QFileDialog::getSaveFileName(this, "Save selected sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save node sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
 
     if (fullFileName != "") //User did not hit cancel
     {
@@ -833,14 +834,71 @@ void MainWindow::saveSelectedSequencesToFile()
         QTextStream out(&file);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
-        {
             out << selectedNodes[i]->getFasta();
-            if (i != selectedNodes.size() - 1)
-                out << "\n";
-        }
+
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
+
+void MainWindow::copySelectedPathToClipboard()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Copy path sequence to clipboard", "No nodes are selected.\n\n"
+                                                                          "You must first select nodes in the graph which define a unambiguous "
+                                                                          "path before you can copy their path sequence to the clipboard.");
+        return;
+    }
+
+    Path nodePath(selectedNodes, g_settings->doubleMode);
+    if (nodePath.isEmpty())
+    {
+        QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
+                                                                          "To use copy a path sequence to the clipboard, the nodes must follow "
+                                                                          "an unambiguous path through the graph.");
+        return;
+    }
+
+    QClipboard * clipboard = QApplication::clipboard();
+    clipboard->setText(nodePath.getPathSequence());
+}
+
+
+
+void MainWindow::saveSelectedPathToFile()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Save path sequence to FASTA", "No nodes are selected.\n\n"
+                                                                      "You must first select nodes in the graph which define a unambiguous "
+                                                                      "path before you can save their path sequence to a FASTA file.");
+        return;
+    }
+    Path nodePath(selectedNodes, g_settings->doubleMode);
+    if (nodePath.isEmpty())
+    {
+        QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
+                                                                          "To use copy a path sequence to the clipboard, the nodes must follow "
+                                                                          "an unambiguous path through the graph.");
+        return;
+    }
+
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/path_sequence.fasta";
+
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save path sequence", defaultFileNameAndPath, "FASTA (*.fasta)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << nodePath.getFasta();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    }
+}
+
 
 
 
@@ -1576,8 +1634,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1586,8 +1642,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1596,8 +1650,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(true);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(true);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(true);
         break;
     }
 }

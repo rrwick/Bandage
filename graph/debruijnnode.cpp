@@ -310,12 +310,13 @@ QByteArray DeBruijnNode::getFasta()
     {
         fasta += m_sequence.at(i);
         ++charactersOnLine;
-        if (charactersOnLine >= 60)
+        if (charactersOnLine >= 70)
         {
             fasta += "\n";
             charactersOnLine = 0;
         }
     }
+    fasta += "\n";
 
     return fasta;
 }

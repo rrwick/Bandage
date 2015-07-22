@@ -94,6 +94,8 @@ private slots:
     void zoomedWithMouseWheel();
     void copySelectedSequencesToClipboard();
     void saveSelectedSequencesToFile();
+    void copySelectedPathToClipboard();
+    void saveSelectedPathToFile();
     void switchColourScheme();
     void determineContiguityFromSelectedNode();
     void saveImageCurrentView();
