@@ -1035,7 +1035,7 @@ void MainWindow::saveImageEntireScene()
                 return;
             }
 
-            if (imageSize.width() * imageSize.height() > 50000000)
+            if (imageSize.width() * imageSize.height() > 50000000) //50 megapixels is used as an arbitrary large image cutoff
             {
                 QString warning = "At the current zoom level, the image will be ";
                 warning += QString::number(imageSize.width()) + "x" + QString::number(imageSize.height()) + " pixels. ";
@@ -1576,17 +1576,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSelect_all->setEnabled(false);
-        ui->actionSelect_none->setEnabled(false);
-        ui->actionInvert_selection->setEnabled(false);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
-        ui->actionSelect_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
         ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
-        ui->actionBring_selected_nodes_to_front->setEnabled(false);
-        ui->actionZoom_to_selection->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1595,17 +1586,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSelect_all->setEnabled(false);
-        ui->actionSelect_none->setEnabled(false);
-        ui->actionInvert_selection->setEnabled(false);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
-        ui->actionSelect_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
         ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
-        ui->actionBring_selected_nodes_to_front->setEnabled(false);
-        ui->actionZoom_to_selection->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1614,17 +1596,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(true);
-        ui->actionSelect_all->setEnabled(true);
-        ui->actionSelect_none->setEnabled(true);
-        ui->actionInvert_selection->setEnabled(true);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(true);
-        ui->actionSelect_contiguous_nodes->setEnabled(true);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(true);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(true);
         ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(true);
         ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(true);
-        ui->actionBring_selected_nodes_to_front->setEnabled(true);
-        ui->actionZoom_to_selection->setEnabled(true);
         break;
     }
 }
@@ -1643,7 +1616,11 @@ void MainWindow::bringSelectedNodesToFront()
 
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select nodes in the graph before using "
+                                                            "the 'Bring selected nodes to front' function.");
         return;
+    }
 
     double topZ = m_scene->getTopZValue();
     double newZ = topZ + 1.0;
@@ -1759,7 +1736,11 @@ void MainWindow::zoomToSelection()
 {
     QList<QGraphicsItem *> selection = m_scene->selectedItems();
     if (selection.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select nodes in the graph before using "
+                                                            "the 'Zoom to fit selection' function.");
         return;
+    }
 
     QRectF boundingBox;
     for (int i = 0; i < selection.size(); ++i)

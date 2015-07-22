@@ -1820,7 +1820,10 @@
      <normaloff>:/icons/bring-to-front.png</normaloff>:/icons/bring-to-front.png</iconset>
    </property>
    <property name="text">
-    <string>Bring selected node(s) to front</string>
+    <string>Bring selected nodes to front</string>
+   </property>
+   <property name="toolTip">
+    <string>Bring selected nodes to front</string>
    </property>
   </action>
   <action name="actionSelect_nodes_with_BLAST_hits">
@@ -1829,7 +1832,10 @@
      <normaloff>:/icons/BLAST.png</normaloff>:/icons/BLAST.png</iconset>
    </property>
    <property name="text">
-    <string>Select node(s) with BLAST hits</string>
+    <string>Select nodes with BLAST hits</string>
+   </property>
+   <property name="toolTip">
+    <string>Select nodes with BLAST hits</string>
    </property>
   </action>
   <action name="actionSelect_all">
@@ -1856,7 +1862,10 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node sequence(s) to clipboard</string>
+    <string>Copy selected node sequences to clipboard</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy selected node sequences to clipboard</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -1868,7 +1877,10 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node sequence(s) to FASTA</string>
+    <string>Save selected node sequences to FASTA</string>
+   </property>
+   <property name="toolTip">
+    <string>Save selected node sequences to FASTA</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
