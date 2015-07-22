@@ -858,7 +858,9 @@ void MainWindow::copySelectedPathToClipboard()
     {
         QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
                                                                           "To use copy a path sequence to the clipboard, the nodes must follow "
-                                                                          "an unambiguous path through the graph.");
+                                                                          "an unambiguous path through the graph.\n\n"
+                                                                          "Complex paths can be defined using the '" + ui->actionSpecify_exact_path_for_copy_save->text() +
+                                                                          "' tool.");
         return;
     }
 
@@ -881,9 +883,11 @@ void MainWindow::saveSelectedPathToFile()
     Path nodePath = Path::makeFromUnorderedNodes(selectedNodes, g_settings->doubleMode);
     if (nodePath.isEmpty())
     {
-        QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
-                                                                          "To use copy a path sequence to the clipboard, the nodes must follow "
-                                                                          "an unambiguous path through the graph.");
+        QMessageBox::information(this, "Save path sequence to FASTA", "Invalid path.\n\n"
+                                                                      "To use copy a path sequence to the clipboard, the nodes must follow "
+                                                                      "an unambiguous path through the graph.\n\n"
+                                                                      "Complex paths can be defined using the '" + ui->actionSpecify_exact_path_for_copy_save->text() +
+                                                                      "' tool.");
         return;
     }
 
