@@ -108,6 +108,10 @@ Settings::Settings()
 
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
+
+    pathDialogIsVisible = false;
+    userSpecifiedPath = "";
+    userSpecifiedPathCircular = false;
 }
 
 

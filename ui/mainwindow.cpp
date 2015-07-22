@@ -1961,7 +1961,7 @@ void MainWindow::startingNodesExactMatchChanged()
 void MainWindow::openPathSpecifyDialog()
 {
     //Don't open a second dialog if one's already up.
-    if (g_assemblyGraph->m_pathDialogIsVisible)
+    if (g_settings->pathDialogIsVisible)
         return;
 
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);

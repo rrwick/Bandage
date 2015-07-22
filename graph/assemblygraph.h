@@ -54,8 +54,6 @@ public:
     double m_thirdQuartileCoverage;
     GraphFileType m_graphFileType;
     bool m_contiguitySearchDone;
-    bool m_pathDialogIsVisible;
-    Path m_userSpecifiedPath;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name, int overlap = 0);

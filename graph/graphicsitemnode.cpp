@@ -150,9 +150,9 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         outlineColour = g_settings->selectionColour;
         outlineThickness = g_settings->selectionThickness;
     }
-    if (g_assemblyGraph->m_pathDialogIsVisible && g_assemblyGraph->m_userSpecifiedPath.m_nodes.contains(m_deBruijnNode))
+    if (g_settings->pathDialogIsVisible && pathHighlightNode(m_deBruijnNode))
     {
-        outlineColour = QColor(200, 0, 0);
+        outlineColour = g_settings->outlineColour;
         outlineThickness = g_settings->selectionThickness;
     }
     if (outlineThickness > 0.0)
@@ -215,6 +215,15 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             drawTextPathAtLocation(painter, textPath, centre);
         }
     }
+}
+
+
+bool GraphicsItemNode::pathHighlightNode(DeBruijnNode * node)
+{
+    if (g_settings->doubleMode)
+        return g_settings->userSpecifiedPathNodes.contains(node);
+    else
+        return (g_settings->userSpecifiedPathNodes.contains(node) || g_settings->userSpecifiedPathNodes.contains(node->m_reverseComplement));
 }
 
 
