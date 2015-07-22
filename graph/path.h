@@ -40,8 +40,10 @@ public:
 
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
     bool isEmpty() {return m_nodes.empty();}
+    bool isCircular();
     QByteArray getPathSequence();
     QString getFasta();
+    bool checkForOtherEdges();
 
 private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
