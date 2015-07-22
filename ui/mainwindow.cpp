@@ -1956,6 +1956,6 @@ void MainWindow::startingNodesExactMatchChanged()
 
 void MainWindow::openPathSpecifyDialog()
 {
-    PathSpecifyDialog pathSpecifyDialog(this);
-    pathSpecifyDialog.exec();
+    PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
+    pathSpecifyDialog->show();
 }

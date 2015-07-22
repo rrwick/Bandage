@@ -31,6 +31,8 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     ui(new Ui::PathSpecifyDialog)
 {
     ui->setupUi(this);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
     checkPathValidity();
 
     ui->circularPathInfoText->setInfoText("Tick this box to indicate that the path is circular, i.e. there is an edge connecting the "
@@ -40,6 +42,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     connect(ui->circularPathCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkPathValidity()));
     connect(ui->copyButton, SIGNAL(clicked(bool)), this, SLOT(copyPathToClipboard()));
     connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(savePathToFile()));
+    connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 }
 
 PathSpecifyDialog::~PathSpecifyDialog()
