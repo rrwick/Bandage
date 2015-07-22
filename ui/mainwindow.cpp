@@ -853,7 +853,7 @@ void MainWindow::copySelectedPathToClipboard()
         return;
     }
 
-    Path nodePath(selectedNodes, g_settings->doubleMode);
+    Path nodePath = Path::makeFromUnorderedNodes(selectedNodes, g_settings->doubleMode);
     if (nodePath.isEmpty())
     {
         QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
@@ -878,7 +878,7 @@ void MainWindow::saveSelectedPathToFile()
                                                                       "path before you can save their path sequence to a FASTA file.");
         return;
     }
-    Path nodePath(selectedNodes, g_settings->doubleMode);
+    Path nodePath = Path::makeFromUnorderedNodes(selectedNodes, g_settings->doubleMode);
     if (nodePath.isEmpty())
     {
         QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"

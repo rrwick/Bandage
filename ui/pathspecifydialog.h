@@ -42,6 +42,8 @@ private:
 
 private slots:
     void checkPathValidity();
+    void copyPathToClipboard();
+    void savePathToFile();
 };
 
 #endif // PATHSPECIFYDIALOG_H

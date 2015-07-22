@@ -29,10 +29,12 @@
 class Path
 {
 public:
-    Path();
-    Path(QList<DeBruijnNode *> nodes, bool strandSpecific);
-    Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific);
-    Path(QList<DeBruijnNode *> nodes);
+    Path() {}
+
+    //Named constructors
+    static Path makeFromUnorderedNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
+    static Path makeFromUnorderedNodes(std::vector<DeBruijnNode *> nodes, bool strandSpecific);
+    static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular);
 
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;

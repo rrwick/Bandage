@@ -19,7 +19,12 @@
 #include "pathspecifydialog.h"
 #include "ui_pathspecifydialog.h"
 #include "../program/globals.h"
+#include "../program/settings.h"
 #include "../graph/assemblygraph.h"
+#include <QClipboard>
+#include <QTextStream>
+#include <QFileDialog>
+#include <QFileInfo>
 
 PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     QDialog(parent),
@@ -32,6 +37,9 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
                                           "last node in the list to the first.");
 
     connect(ui->pathTextEdit, SIGNAL(textChanged()), this, SLOT(checkPathValidity()));
+    connect(ui->circularPathCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkPathValidity()));
+    connect(ui->copyButton, SIGNAL(clicked(bool)), this, SLOT(copyPathToClipboard()));
+    connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(savePathToFile()));
 }
 
 PathSpecifyDialog::~PathSpecifyDialog()
@@ -85,7 +93,7 @@ void PathSpecifyDialog::checkPathValidity()
         return;
     }
 
-    m_path = Path(pathNodes, ui->circularPathCheckBox->isChecked());
+    m_path = Path::makeFromOrderedNodes(pathNodes, ui->circularPathCheckBox->isChecked());
 
     if (m_path.isEmpty())
     {
@@ -112,4 +120,29 @@ void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
 
     ui->copyButton->setEnabled(pathValid);
     ui->saveButton->setEnabled(pathValid);
+}
+
+
+
+void PathSpecifyDialog::copyPathToClipboard()
+{
+    QClipboard * clipboard = QApplication::clipboard();
+    clipboard->setText(m_path.getPathSequence());
+}
+
+
+
+void PathSpecifyDialog::savePathToFile()
+{
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/path_sequence.fasta";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save path sequence", defaultFileNameAndPath, "FASTA (*.fasta)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << m_path.getFasta();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    }
 }

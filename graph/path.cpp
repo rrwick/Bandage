@@ -18,38 +18,81 @@
 
 #include "path.h"
 
-Path::Path()
-{
 
-}
-
-
-//These constructors will try to produce a path using the given nodes.
-//It will only succeed if the nodes produce one and only one path.
-//If they are disconnected, branching or ambiguous, it will fail
+//These will try to produce a path using the given nodes.
+//They will only succeed if the nodes produce one and only one path.
+//If they are disconnected, branching or ambiguous, they will fail
 //and only contruct an empty Path.
-Path::Path(QList<DeBruijnNode *> nodes, bool strandSpecific)
+Path Path::makeFromUnorderedNodes(QList<DeBruijnNode *> nodes, bool strandSpecific)
 {
-    buildUnambiguousPathFromNodes(nodes, strandSpecific);
+    Path path;
+    path.buildUnambiguousPathFromNodes(nodes, strandSpecific);
+    return path;
 }
-Path::Path(std::vector<DeBruijnNode *> nodes, bool strandSpecific)
+
+Path Path::makeFromUnorderedNodes(std::vector<DeBruijnNode *> nodes, bool strandSpecific)
 {
     QList<DeBruijnNode *> nodesList;
     for (size_t i = 0; i < nodes.size(); ++i)
         nodesList.push_back(nodes[i]);
-    buildUnambiguousPathFromNodes(nodesList, strandSpecific);
+
+    Path path;
+    path.buildUnambiguousPathFromNodes(nodesList, strandSpecific);
+    return path;
 }
 
 
-//This constructor builds a path using an ordered list nodes. The path
-//does not have to be unambiguous. If the nodes do not make a valid path,
-//then it will fail and create an empty path.
-Path::Path(QList<DeBruijnNode *> nodes)
+//This will build a Path from an ordered list of nodes.  If the nodes
+//form a valid path (i.e. there is an edge connecting each step along
+//the way), a Path is made, otherwise just an empty Path is made.
+//This function needs exact, strand-specific nodes.  If circular is
+//given, then it will also look for an edge connecting the last node
+//to the first.
+Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
 {
+    Path path;
 
+    path.m_nodes = nodes;
 
+    int targetNumberOfEdges = path.m_nodes.size() - 1;
+    if (circular)
+        ++targetNumberOfEdges;
 
+    for (int i = 0; i < targetNumberOfEdges; ++i)
+    {
+        int firstNodeIndex = i;
+        int secondNodeIndex = i + 1;
+        if (secondNodeIndex >= path.m_nodes.size())
+            secondNodeIndex = 0;
+
+        DeBruijnNode * node1 = path.m_nodes[firstNodeIndex];
+        DeBruijnNode * node2 = path.m_nodes[secondNodeIndex];
+
+        bool foundEdge = false;
+        for (size_t j = 0; j < node1->m_edges.size(); ++j)
+        {
+            DeBruijnEdge * edge = node1->m_edges[j];
+            if (edge->m_startingNode == node1 && edge->m_endingNode == node2)
+            {
+                path.m_edges.push_back(edge);
+                foundEdge = true;
+                break;
+            }
+        }
+
+        //If we failed to find an edge connecting the nodes, then
+        //the path failed.
+        if (!foundEdge)
+        {
+            path.m_nodes.clear();
+            path.m_edges.clear();
+            return path;
+        }
+    }
+
+    return path;
 }
+
 
 
 void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific)
