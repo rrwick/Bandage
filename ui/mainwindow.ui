@@ -1960,6 +1960,10 @@
    </property>
   </action>
   <action name="actionSpecify_exact_path_for_copy_save">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/specify-path.png</normaloff>:/icons/specify-path.png</iconset>
+   </property>
    <property name="text">
     <string>Specify exact path for copy/save</string>
    </property>
