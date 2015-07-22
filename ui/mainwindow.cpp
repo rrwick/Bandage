@@ -1957,5 +1957,6 @@ void MainWindow::startingNodesExactMatchChanged()
 void MainWindow::openPathSpecifyDialog()
 {
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
+    connect(g_graphicsView, SIGNAL(doubleClickedNode(DeBruijnNode*)), pathSpecifyDialog, SLOT(addNodeName(DeBruijnNode*)));
     pathSpecifyDialog->show();
 }

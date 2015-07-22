@@ -21,6 +21,7 @@
 
 #include <QDialog>
 #include "../graph/path.h"
+#include "../graph/debruijnnode.h"
 
 namespace Ui {
 class PathSpecifyDialog;
@@ -35,6 +36,9 @@ public:
     ~PathSpecifyDialog();
 
     Path m_path;
+
+public slots:
+    void addNodeName(DeBruijnNode * node);
 
 private:
     Ui::PathSpecifyDialog *ui;

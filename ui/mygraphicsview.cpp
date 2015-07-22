@@ -25,6 +25,7 @@
 #include <qmath.h>
 #include <QMessageBox>
 #include <math.h>
+#include "../graph/graphicsitemnode.h"
 
 MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
     QGraphicsView(), m_rotation(0.0)
@@ -74,6 +75,18 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent * event)
     }
     else
         QGraphicsView::mouseMoveEvent(event);
+}
+
+
+void MyGraphicsView::mouseDoubleClickEvent(QMouseEvent * event)
+{
+    //Find the node beneath the cursor.
+    QGraphicsItem * item = itemAt(event->pos());
+
+    GraphicsItemNode * graphicsItemNode = dynamic_cast<GraphicsItemNode *>(item);
+    if (graphicsItemNode != 0)
+        emit doubleClickedNode(graphicsItemNode->m_deBruijnNode);
+
 }
 
 //Adapted from:

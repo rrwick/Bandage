@@ -149,3 +149,14 @@ void PathSpecifyDialog::savePathToFile()
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
+
+
+void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
+{
+    QString newPathText = ui->pathTextEdit->toPlainText();
+    if (newPathText.length() > 0)
+        newPathText += ", ";
+    newPathText += node->m_name;
+
+    ui->pathTextEdit->setPlainText(newPathText);
+}
