@@ -153,10 +153,32 @@ void PathSpecifyDialog::savePathToFile()
 
 void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
 {
-    QString newPathText = ui->pathTextEdit->toPlainText();
-    if (newPathText.length() > 0)
-        newPathText += ", ";
-    newPathText += node->m_name;
+    QString pathText = ui->pathTextEdit->toPlainText();
 
-    ui->pathTextEdit->setPlainText(newPathText);
+    //If the node fits on the end of the path add it there.
+    if (m_path.canNodeFitOnEnd(node))
+    {
+        if (pathText.length() > 0)
+            pathText += ", ";
+        pathText += node->m_name;
+    }
+
+    //If not, try the front of the path.
+    else if (m_path.canNodeFitAtStart(node))
+        pathText = node->m_name + ", " + pathText;
+
+    //If neither of these work, try the reverse complement, first
+    //at the end and then at the front.
+    //But only do this if we are in single mode.
+    else if (!g_settings->doubleMode && m_path.canNodeFitOnEnd(node->m_reverseComplement))
+        pathText += ", " + node->m_reverseComplement->m_name;
+    else if (!g_settings->doubleMode && m_path.canNodeFitAtStart(node->m_reverseComplement))
+        pathText = node->m_reverseComplement->m_name + ", " + pathText;
+
+    //If all of the above failed, just add the node to the end of
+    //the list, which will make the list invalid.
+    else
+        pathText += ", " + node->m_name;
+
+    ui->pathTextEdit->setPlainText(pathText);
 }

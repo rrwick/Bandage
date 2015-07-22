@@ -49,6 +49,9 @@ public:
     QString getFasta();
     bool checkForOtherEdges();
 
+    bool canNodeFitOnEnd(DeBruijnNode * node);
+    bool canNodeFitAtStart(DeBruijnNode * node);
+
 private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
 };

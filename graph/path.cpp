@@ -356,3 +356,43 @@ bool Path::isCircular()
 
     return (lastEdge->m_startingNode == lastNode && lastEdge->m_endingNode == firstNode);
 }
+
+
+
+//These functions test whether the specified node could be added to
+//the end/front of the path to form a larger valid path.
+bool Path::canNodeFitOnEnd(DeBruijnNode * node)
+{
+    if (isEmpty())
+        return true;
+    if (isCircular())
+        return false;
+
+    DeBruijnNode * lastNode = m_nodes.back();
+    for (size_t i = 0; i < lastNode->m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = lastNode->m_edges[i];
+        if (edge->m_startingNode == lastNode && edge->m_endingNode == node)
+            return true;
+    }
+
+    return false;
+}
+
+bool Path::canNodeFitAtStart(DeBruijnNode * node)
+{
+    if (isEmpty())
+        return true;
+    if (isCircular())
+        return false;
+
+    DeBruijnNode * firstNode = m_nodes.front();
+    for (size_t i = 0; i < firstNode->m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = firstNode->m_edges[i];
+        if (edge->m_startingNode == node && edge->m_endingNode == firstNode)
+            return true;
+    }
+
+    return false;
+}
