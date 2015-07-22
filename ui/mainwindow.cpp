@@ -1022,7 +1022,32 @@ void MainWindow::saveImageEntireScene()
         QPainter painter;
         if (pixelImage)
         {
-            QImage image(g_absoluteZoom * m_scene->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
+            QSize imageSize = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+
+            if (imageSize.width() > 32767 || imageSize.height() > 32767)
+            {
+                QString error = "Images can not be taller or wider than 32767 pixels, but at the "
+                                "current zoom level, the image to be saved would be ";
+                error += QString::number(imageSize.width()) + "x" + QString::number(imageSize.height()) + " pixels.\n\n";
+                error += "Please reduce the zoom level before saving the entire scene to image or use the SVG format.";
+
+                QMessageBox::information(this, "Image too large", error);
+                return;
+            }
+
+            if (imageSize.width() * imageSize.height() > 50000000)
+            {
+                QString warning = "At the current zoom level, the image will be ";
+                warning += QString::number(imageSize.width()) + "x" + QString::number(imageSize.height()) + " pixels. ";
+                warning += "An image of this large size may take significant time and space to save.\n\n"
+                           "The image size can be reduced by decreasing the zoom level or using the SVG format.\n\n"
+                           "Do you want to continue saving the image?";
+                QMessageBox::StandardButton response = QMessageBox::question(this, "Large image", warning);
+                if (response == QMessageBox::No || response == QMessageBox::Cancel)
+                    return;
+            }
+
+            QImage image(imageSize, QImage::Format_ARGB32);
             image.fill(Qt::white);
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
