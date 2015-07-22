@@ -87,6 +87,7 @@ void MyGraphicsView::mouseDoubleClickEvent(QMouseEvent * event)
     if (graphicsItemNode != 0)
         emit doubleClickedNode(graphicsItemNode->m_deBruijnNode);
 
+    viewport()->update();
 }
 
 //Adapted from:

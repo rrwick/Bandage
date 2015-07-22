@@ -1960,6 +1960,10 @@ void MainWindow::startingNodesExactMatchChanged()
 
 void MainWindow::openPathSpecifyDialog()
 {
+    //Don't open a second dialog if one's already up.
+    if (g_assemblyGraph->m_pathDialogIsVisible)
+        return;
+
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
     connect(g_graphicsView, SIGNAL(doubleClickedNode(DeBruijnNode*)), pathSpecifyDialog, SLOT(addNodeName(DeBruijnNode*)));
     pathSpecifyDialog->show();

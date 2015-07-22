@@ -150,6 +150,11 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         outlineColour = g_settings->selectionColour;
         outlineThickness = g_settings->selectionThickness;
     }
+    if (g_assemblyGraph->m_pathDialogIsVisible && g_assemblyGraph->m_userSpecifiedPath.m_nodes.contains(m_deBruijnNode))
+    {
+        outlineColour = QColor(200, 0, 0);
+        outlineThickness = g_settings->selectionThickness;
+    }
     if (outlineThickness > 0.0)
     {
         outlinePath = outlinePath.simplified();

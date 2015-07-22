@@ -33,6 +33,9 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
+    ui->pathTextEdit->setPlainText(g_assemblyGraph->m_userSpecifiedPath.getString());
+    ui->circularPathCheckBox->setChecked(g_assemblyGraph->m_userSpecifiedPath.isCircular());
+    g_assemblyGraph->m_pathDialogIsVisible = true;
     checkPathValidity();
 
     ui->circularPathInfoText->setInfoText("Tick this box to indicate that the path is circular, i.e. there is an edge connecting the "
@@ -47,6 +50,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
 
 PathSpecifyDialog::~PathSpecifyDialog()
 {
+    g_assemblyGraph->m_pathDialogIsVisible = false;
     delete ui;
 }
 
@@ -96,9 +100,9 @@ void PathSpecifyDialog::checkPathValidity()
         return;
     }
 
-    m_path = Path::makeFromOrderedNodes(pathNodes, ui->circularPathCheckBox->isChecked());
+    g_assemblyGraph->m_userSpecifiedPath = Path::makeFromOrderedNodes(pathNodes, ui->circularPathCheckBox->isChecked());
 
-    if (m_path.isEmpty())
+    if (g_assemblyGraph->m_userSpecifiedPath.isEmpty())
     {
         if (ui->circularPathCheckBox->isChecked())
             ui->validPathLabel->setText("Invalid path: the nodes do not form a circular path in the graph");
@@ -130,7 +134,7 @@ void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
 void PathSpecifyDialog::copyPathToClipboard()
 {
     QClipboard * clipboard = QApplication::clipboard();
-    clipboard->setText(m_path.getPathSequence());
+    clipboard->setText(g_assemblyGraph->m_userSpecifiedPath.getPathSequence());
 }
 
 
@@ -145,7 +149,7 @@ void PathSpecifyDialog::savePathToFile()
         QFile file(fullFileName);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
-        out << m_path.getFasta();
+        out << g_assemblyGraph->m_userSpecifiedPath.getFasta();
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
@@ -156,7 +160,7 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     QString pathText = ui->pathTextEdit->toPlainText();
 
     //If the node fits on the end of the path add it there.
-    if (m_path.canNodeFitOnEnd(node))
+    if (g_assemblyGraph->m_userSpecifiedPath.canNodeFitOnEnd(node))
     {
         if (pathText.length() > 0)
             pathText += ", ";
@@ -164,15 +168,15 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     }
 
     //If not, try the front of the path.
-    else if (m_path.canNodeFitAtStart(node))
+    else if (g_assemblyGraph->m_userSpecifiedPath.canNodeFitAtStart(node))
         pathText = node->m_name + ", " + pathText;
 
     //If neither of these work, try the reverse complement, first
     //at the end and then at the front.
     //But only do this if we are in single mode.
-    else if (!g_settings->doubleMode && m_path.canNodeFitOnEnd(node->m_reverseComplement))
+    else if (!g_settings->doubleMode && g_assemblyGraph->m_userSpecifiedPath.canNodeFitOnEnd(node->m_reverseComplement))
         pathText += ", " + node->m_reverseComplement->m_name;
-    else if (!g_settings->doubleMode && m_path.canNodeFitAtStart(node->m_reverseComplement))
+    else if (!g_settings->doubleMode && g_assemblyGraph->m_userSpecifiedPath.canNodeFitAtStart(node->m_reverseComplement))
         pathText = node->m_reverseComplement->m_name + ", " + pathText;
 
     //If all of the above failed, just add the node to the end of

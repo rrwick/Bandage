@@ -17,6 +17,8 @@
 
 
 #include "path.h"
+#include "debruijnnode.h"
+#include "debruijnedge.h"
 
 
 //These will try to produce a path using the given nodes.
@@ -308,13 +310,8 @@ QByteArray Path::getPathSequence()
 QString Path::getFasta()
 {
     //The description line is a comma-delimited list of the nodes in the path
-    QString fasta = ">";
-    for (int i = 0; i < m_nodes.size(); ++i)
-    {
-        fasta += m_nodes[i]->m_name;
-        if (i < m_nodes.size() - 1)
-            fasta += ", ";
-    }
+    QString fasta = ">" + getString();
+
     if (isCircular())
         fasta += " (circular)";
     fasta += "\n";
@@ -336,6 +333,19 @@ QString Path::getFasta()
     return fasta;
 }
 
+
+
+QString Path::getString()
+{
+    QString output;
+    for (int i = 0; i < m_nodes.size(); ++i)
+    {
+        output += m_nodes[i]->m_name;
+        if (i < m_nodes.size() - 1)
+            output += ", ";
+    }
+    return output;
+}
 
 
 //This function tests whether the last node in the path leads into the first.

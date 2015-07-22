@@ -19,12 +19,13 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include "debruijnnode.h"
-#include "debruijnedge.h"
 #include <QByteArray>
 #include <QList>
 #include <vector>
 #include <QString>
+
+class DeBruijnNode;
+class DeBruijnEdge;
 
 class Path
 {
@@ -48,6 +49,7 @@ public:
     QByteArray getPathSequence();
     QString getFasta();
     bool checkForOtherEdges();
+    QString getString();
 
     bool canNodeFitOnEnd(DeBruijnNode * node);
     bool canNodeFitAtStart(DeBruijnNode * node);

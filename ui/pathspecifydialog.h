@@ -35,8 +35,6 @@ public:
     explicit PathSpecifyDialog(QWidget *parent = 0);
     ~PathSpecifyDialog();
 
-    Path m_path;
-
 public slots:
     void addNodeName(DeBruijnNode * node);
 
