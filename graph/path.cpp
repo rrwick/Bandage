@@ -339,9 +339,6 @@ QByteArray Path::getPathSequence()
         sequence.chop(amountToTrim);
     }
 
-    //TEMP TEST CODE
-    int length = getLength();
-
     return sequence;
 }
 
@@ -476,10 +473,84 @@ QList<Path> Path::getAllPossiblePaths(DeBruijnNode * startNode,
                                       int endPosition, int nodeSearchDepth,
                                       int minDistance, int maxDistance)
 {
-    Path path;
-    path.addNode(startNode, true);
+    QList<Path> finishedPaths;
+    QList<Path> unfinishedPaths;
+
+    Path startPath;
+    startPath.addNode(startNode, true);
+    startPath.m_startType = PART_OF_NODE;
+    startPath.m_startPosition = startPosition;
+    startPath.m_endType = ENTIRE_NODE;
+    unfinishedPaths.push_back(startPath);
+
+    for (int i = 0; i <= nodeSearchDepth; ++i)
+    {
+        //Look at each of the unfinished paths to see if they end with the end
+        //node.  If so, see if it has the appropriate length.
+        //If it does, it will go into the final returned list.
+        //If it doesn't and it's over length, then it will be removed.
+        QList<Path>::iterator j = unfinishedPaths.begin();
+        while (j != unfinishedPaths.end())
+        {
+            DeBruijnNode * lastNode = (*j).m_nodes.back();
+            if (lastNode == endNode)
+            {
+                Path potentialFinishedPath = *j;
+                potentialFinishedPath.m_endType = PART_OF_NODE;
+                potentialFinishedPath.m_endPosition = endPosition;
+                int length = potentialFinishedPath.getLength();
+                if (length >= minDistance && length <= maxDistance)
+                    finishedPaths.push_back(potentialFinishedPath);
+                ++j;
+            }
+            else
+            {
+                if ((*j).getLength() > maxDistance)
+                    j = unfinishedPaths.erase(j);
+                else
+                    ++j;
+            }
+        }
+
+        //Make new unfinished paths by extending each of the paths.
+        QList<Path> newUnfinishedPaths;
+        for (int j = 0; j < unfinishedPaths.size(); ++j)
+            newUnfinishedPaths.append(unfinishedPaths[j].extendPathInAllPossibleWays());
+        unfinishedPaths = newUnfinishedPaths;
+    }
+
+    return finishedPaths;
+}
 
 
+//This function takes the current path and extends it in all possible ways by
+//adding one more node, then returning a list of the new paths.  How many paths
+//it returns depends on the number of edges leaving the last node in the path.
+QList<Path> Path::extendPathInAllPossibleWays()
+{
+    QList<Path> returnList;
 
+    if (isEmpty())
+        return returnList;
 
+    //Since circular paths don't really have an end to extend, this function
+    //doesn't work for them.
+    if (isCircular())
+        return returnList;
+
+    DeBruijnNode * lastNode = m_nodes.back();
+    std::vector<DeBruijnEdge *> nextEdges = lastNode->getLeavingEdges();
+    for (size_t i = 0; i < nextEdges.size(); ++i)
+    {
+        DeBruijnEdge * nextEdge = nextEdges[i];
+        DeBruijnNode * nextNode = nextEdge->m_endingNode;
+
+        Path newPath(*this);
+        newPath.m_edges.push_back(nextEdge);
+        newPath.m_nodes.push_back(nextNode);
+
+        returnList.push_back(newPath);
+    }
+
+    return returnList;
 }

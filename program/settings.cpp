@@ -111,6 +111,7 @@ Settings::Settings()
 
     queryRequiredCoverage = 0.9;
     queryAllowedLengthDiscrepancy = 0.1;
+    queryPathSearchDepth = 5;
 
     pathDialogIsVisible = false;
     userSpecifiedPath = "";

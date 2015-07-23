@@ -18,6 +18,8 @@
 
 #include "blastquery.h"
 #include "../program/settings.h"
+#include "../graph/path.h"
+#include "../graph/debruijnnode.h"
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
     m_name(name), m_sequence(sequence), m_searchedFor(false)
@@ -85,6 +87,12 @@ void BlastQuery::clearSearchResults()
 //amount of the query.
 void BlastQuery::findQueryPath()
 {
+    //Determine the acceptable path length range for this query.
+    int queryLength = m_sequence.length();
+    int minLength = int(queryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
+    int maxLength = int(queryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
+
+
     //Find all possible path starts within an acceptable distance from the query
     //start.
     QList<BlastHit *> possibleStarts;
@@ -107,17 +115,33 @@ void BlastQuery::findQueryPath()
     }
 
     //For each possible start, find paths to each possible end.
+    QList<Path> possiblePaths;
     for (int i = 0; i < possibleStarts.size(); ++i)
     {
         BlastHit * start = possibleStarts[i];
+        DeBruijnNode * startNode = start->m_node;
+        int startPosition = start->m_nodeStart;
+
         for (int j = 0; j < possibleEnds.size(); ++j)
         {
             BlastHit * end = possibleEnds[j];
+            DeBruijnNode * endNode = end->m_node;
+            int endPosition = end->m_nodeEnd;
 
-
-
+            possiblePaths.append(Path::getAllPossiblePaths(startNode,
+                                                           startPosition,
+                                                           endNode, endPosition,
+                                                           g_settings->queryPathSearchDepth,
+                                                           minLength,
+                                                           maxLength));
         }
     }
+
+
+
+
+
+    int test = 5;
 
 
 

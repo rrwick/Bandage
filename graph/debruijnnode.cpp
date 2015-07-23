@@ -459,3 +459,28 @@ bool DeBruijnNode::isNodeConnected(DeBruijnNode * node)
     }
     return false;
 }
+
+
+
+std::vector<DeBruijnEdge *> DeBruijnNode::getEnteringEdges()
+{
+    std::vector<DeBruijnEdge *> returnVector;
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (this == edge->m_endingNode)
+            returnVector.push_back(edge);
+    }
+    return returnVector;
+}
+std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges()
+{
+    std::vector<DeBruijnEdge *> returnVector;
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (this == edge->m_startingNode)
+            returnVector.push_back(edge);
+    }
+    return returnVector;
+}

@@ -87,6 +87,9 @@ public:
     DeBruijnEdge * doesNodeLeadIn(DeBruijnNode * node);
     DeBruijnEdge * doesNodeLeadAway(DeBruijnNode * node);
     bool isNodeConnected(DeBruijnNode * node);
+
+    std::vector<DeBruijnEdge *> getEnteringEdges();
+    std::vector<DeBruijnEdge *> getLeavingEdges();
 };
 
 #endif // DEBRUIJNNODE_H

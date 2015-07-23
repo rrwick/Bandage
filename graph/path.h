@@ -67,6 +67,7 @@ public:
     bool checkForOtherEdges();
     QString getString();
     int getLength();
+    QList<Path> extendPathInAllPossibleWays();
 
     bool canNodeFitOnEnd(DeBruijnNode * node);
     bool canNodeFitAtStart(DeBruijnNode * node);

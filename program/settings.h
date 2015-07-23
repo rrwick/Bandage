@@ -124,10 +124,11 @@ public:
     int minAutoFindEdgeOverlap;
     int maxAutoFindEdgeOverlap;
 
-    //These control how accurate a BLAST query's hits must be for the query to
-    //have a successful path.
+    //These control how Bandage finds the best path in the graph to represent
+    //each BLAST query.
     double queryRequiredCoverage;
     double queryAllowedLengthDiscrepancy;
+    int queryPathSearchDepth;
 
     //This flag is true when the 'Specify exact path...' dialog is visible.
     bool pathDialogIsVisible;
