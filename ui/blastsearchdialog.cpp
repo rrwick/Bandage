@@ -237,7 +237,7 @@ void BlastSearchDialog::fillHitsTable()
         nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * eValue = new QTableWidgetItem(QString::number(hit->m_eValue));
         eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        QTableWidgetItem * bitScore = new QTableWidgetItem(formatIntForDisplay(hit->m_bitScore));
+        QTableWidgetItem * bitScore = new QTableWidgetItem(QString::number(hit->m_bitScore));
         bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);

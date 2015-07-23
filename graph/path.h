@@ -77,6 +77,9 @@ public:
 
     QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query);
     double getMeanReadDepth();
+    
+    bool areIdentical(Path other);
+    bool hasNodeSubset(Path other);
 
 private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,

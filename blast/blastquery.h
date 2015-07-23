@@ -42,7 +42,8 @@ public:
     bool m_searchedFor;
     QColor m_colour;
     SequenceType m_sequenceType;
-    Path m_path;
+    QList<Path> m_paths;
+    Path m_bestPath;
 
     QString getTypeString();
     void clearSearchResults();

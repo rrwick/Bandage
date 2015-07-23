@@ -137,99 +137,52 @@ void BlastQuery::findQueryPath()
         }
     }
 
+    //We now want to throw out any paths which are sub-paths of other, larger
+    //paths.
+    m_paths = QList<Path>();
+    for (int i = 0; i < possiblePaths.size(); ++i)
+    {
+        bool subpathOfAnyOther = false;
+        for (int j = 0; j < possiblePaths.size(); ++j)
+        {
+            //No need to compare a path with itself.
+            if (i == j)
+                continue;
+
+            if (possiblePaths[i].hasNodeSubset(possiblePaths[j]))
+            {
+                subpathOfAnyOther = true;
+                break;
+            }
+        }
+        if (!subpathOfAnyOther)
+            m_paths.push_back(possiblePaths[i]);
+    }
+
     //If there were no paths which succeeded, then this query gets no path (i.e.
     //an empty path)
-    if (possiblePaths.empty())
+    if (m_paths.empty())
     {
-        m_path = Path();
+        m_bestPath = Path();
         return;
     }
 
-    //Determine the fraction of the query which is covered for each Path.
-    QList<double> queryCoverages;
-    double bestCoverage = 0.0;
-    int bestCoveragePathIndex = 0;
-    for (int i = 0; i < possiblePaths.size(); ++i)
+    //If there are multiple paths, we choose the best one by summing the bit
+    //scores for the hits on each path and choosing the largest.
+    double bestSummedBitScore = 0.0;
+    double bestSummedBitScoreIndex = 0.0;
+    for (int i = 0; i < m_paths.size(); ++i)
     {
-        double coverage = 0.0;
-        QList<BlastHit *> pathHits = possiblePaths[i].getBlastHitsForQuery(this);
+        double summedBitScore = 0.0;
+        QList<BlastHit *> pathHits = m_paths[i].getBlastHitsForQuery(this);
         for (int j = 0; j < pathHits.size(); ++j)
-            coverage += pathHits[j]->getQueryCoverageFraction();
-        queryCoverages.push_back(coverage);
+            summedBitScore += pathHits[j]->m_bitScore;
 
-        if (coverage > bestCoverage)
+        if (summedBitScore > bestSummedBitScore)
         {
-            bestCoverage = coverage;
-            bestCoveragePathIndex = i;
+            bestSummedBitScore = summedBitScore;
+            bestSummedBitScoreIndex = i;
         }
     }
-
-    //Select paths which have the best coverage.  This will be one, or possibly
-    //more if multiple paths tie.
-    QList<Path> bestCoveragePaths;
-    for (int i = 0; i < possiblePaths.size(); ++i)
-    {
-        if (queryCoverages[i] == bestCoverage)
-            bestCoveragePaths.push_back(possiblePaths[i]);
-    }
-
-    //If only one path has the best coverage, it wins and is the query path.
-    if (bestCoveragePaths.size() == 1)
-    {
-        m_path = bestCoveragePaths[0];
-        return;
-    }
-
-    //If the code got here, then multiple paths tied for best coverage.  Now
-    //judge them based on the accuracy of their length, relative to the query.
-    QList<double> pathLengthDiscrepancies;
-    int lowestPathLengthDiscrepancy = std::numeric_limits<int>::max();
-    int lowestPathLengthDiscrepancyIndex = 0;
-    for (int i = 0; i < bestCoveragePaths.size(); ++i)
-    {
-        int pathLength = bestCoveragePaths[i].getLength();
-        int pathLengthDiscrepancy = abs(pathLength - m_length);
-        pathLengthDiscrepancies.push_back(pathLengthDiscrepancy);
-
-        if (pathLengthDiscrepancy < lowestPathLengthDiscrepancy)
-        {
-            lowestPathLengthDiscrepancy = pathLengthDiscrepancy;
-            lowestPathLengthDiscrepancyIndex = i;
-        }
-    }
-
-    //Select paths which have the lowest discrepancy.  This will be one, or
-    //possibly more if multiple paths tie.
-    QList<Path> lowestDiscrepancyPaths;
-    for (int i = 0; i < bestCoveragePaths.size(); ++i)
-    {
-        if (pathLengthDiscrepancies[i] == lowestPathLengthDiscrepancy)
-            lowestDiscrepancyPaths.push_back(bestCoveragePaths[i]);
-    }
-
-    //If only one path has the best coverage, it wins and is the query path.
-    if (lowestDiscrepancyPaths.size() == 1)
-    {
-        m_path = lowestDiscrepancyPaths[0];
-        return;
-    }
-
-    //If the code got here, then multiple paths tied for best coverage AND for
-    //lowest path length discrepency.  Now we use read depth as a tie breaker.
-    double highestReadDepth = 0.0;
-    int highestReadDepthIndex = 0;
-    for (int i = 0; i < lowestDiscrepancyPaths.size(); ++i)
-    {
-        int readDepth = lowestDiscrepancyPaths[i].getMeanReadDepth();
-
-        if (readDepth > highestReadDepth)
-        {
-            highestReadDepth = readDepth;
-            highestReadDepthIndex = i;
-        }
-    }
-
-    //We don't bother looking for ties here and just assign the single path
-    //with the highest read depth as the winner.
-    m_path = lowestDiscrepancyPaths[highestReadDepthIndex];
+    m_bestPath = m_paths[bestSummedBitScoreIndex];
 }

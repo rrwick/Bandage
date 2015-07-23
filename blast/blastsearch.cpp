@@ -75,7 +75,7 @@ void BlastSearch::buildHitsFromBlastOutput()
         int nodeStart = alignmentParts[8].toInt();
         int nodeEnd = alignmentParts[9].toInt();
         double eValue = alignmentParts[10].toDouble();
-        int bitScore = alignmentParts[11].toInt();
+        double bitScore = alignmentParts[11].toDouble();
 
         //Only save BLAST hits that are on forward strands.
         if (nodeStart > nodeEnd)

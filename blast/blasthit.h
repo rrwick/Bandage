@@ -34,7 +34,7 @@ public:
              double percentIdentity, int alignmentLength,
              int numberMismatches, int numberGapOpens,
              int queryStart, int queryEnd,
-             int nodeStart, int nodeEnd, double eValue, int bitScore);
+             int nodeStart, int nodeEnd, double eValue, double bitScore);
     BlastHit();
 
     BlastQuery * m_query;
@@ -48,7 +48,7 @@ public:
     int m_nodeStart;
     int m_nodeEnd;
     double m_eValue;
-    int m_bitScore;
+    double m_bitScore;
 
     double m_nodeStartFraction;
     double m_nodeEndFraction;

@@ -608,3 +608,46 @@ double Path::getMeanReadDepth()
 
     return depthTimesLengthSum / nodeLengthTotal;
 }
+
+
+
+bool Path::areIdentical(Path other)
+{
+    return (m_nodes == other.m_nodes &&
+            m_startType == other.m_startType &&
+            m_startPosition == other.m_startPosition &&
+            m_endType == other.m_endType &&
+            m_endPosition == other.m_endPosition);
+}
+
+
+
+//This function checks to see if this path is actually a sub-path (i.e.
+//entirely contained within) the other given path.
+//It ignores start/end type and position, looking only at the nodes.
+//It will also return true if the paths are identical.
+bool Path::hasNodeSubset(Path other)
+{
+    //To contain this path, the other path should be have an equal or larger
+    //number of nodes.
+    int nodeCountDifference = other.m_nodes.size() - m_nodes.size();
+    if (nodeCountDifference < 0)
+        return false;
+    
+    //If the paths have the same number of nodes, check to see if they are
+    //identical.
+    if (nodeCountDifference == 0)
+        return (m_nodes == other.m_nodes);
+    
+    //If the code got here, then the other path has more nodes than this path.
+    //We now see if we can find an ordered set of nodes in the other path that
+    //matches this path's nodes.
+    for (int i = 0; i <= nodeCountDifference; ++i)
+    {
+        QList<DeBruijnNode *> otherPathNodeSubset = other.m_nodes.mid(i, m_nodes.size());
+        if (m_nodes == otherPathNodeSubset)
+            return true;
+    }
+    
+    return false;
+}
