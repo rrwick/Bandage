@@ -56,6 +56,8 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
 
     path.m_nodes = nodes;
 
+    path.m_startEndType = ENTIRE_NODE;
+
     int targetNumberOfEdges = path.m_nodes.size() - 1;
     if (circular)
         ++targetNumberOfEdges;
@@ -99,6 +101,8 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
 
 void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific)
 {
+    m_startEndType = ENTIRE_NODE;
+
     if (nodes.isEmpty())
         return;
 
@@ -234,7 +238,8 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
         return true;
     }
 
-    //If the code got here, then there are multiple ways of adding the node, so we fail.
+    //If the code got here, then there are multiple ways of adding the node, so
+    //we fail.
     return false;
 }
 
@@ -262,8 +267,8 @@ bool Path::checkForOtherEdges()
         }
     }
 
-    //If this list of edges is greater than the number of edges in the path, then
-    //other edges exist.
+    //If this list of edges is greater than the number of edges in the path,
+    //then other edges exist.
     return allConnectingEdges.size() > m_edges.size();
 }
 
@@ -281,9 +286,9 @@ QByteArray Path::getPathSequence()
     QByteArray sequence;
     QByteArray firstNodeSequence = m_nodes[0]->m_sequence;
 
-    //If the path is circular, we trim the overlap from
-    //the first node so it is flush with the end.
-    //If the path is linear, we include the whole first node.
+    //If the path is circular, we trim the overlap from the first node so it is
+    //flush with the end.  If the path is linear, we include the whole first
+    //node.
     if (isCircular())
     {
         int overlap = m_edges.back()->m_overlap;
@@ -291,9 +296,19 @@ QByteArray Path::getPathSequence()
         if (rightChars > 0)
             sequence += firstNodeSequence.right(rightChars);
     }
-    else
-        sequence += firstNodeSequence;
 
+    //If the path is linear, then we begin either with the entire first node
+    //sequence or part of it, depending on the PathStartEndType.
+    else if (m_startEndType == ENTIRE_NODE)
+        sequence += firstNodeSequence;
+    else
+    {
+        int rightChars = firstNodeSequence.length() - m_startPosition + 1;
+        sequence += firstNodeSequence.right(rightChars);
+    }
+
+    //The middle nodes are not affected by whether or not the path is circular
+    //or has partial node ends.
     for (int i = 1; i < m_nodes.size(); ++i)
     {
         int overlap = m_edges[i-1]->m_overlap;
@@ -301,6 +316,15 @@ QByteArray Path::getPathSequence()
         int rightChars = nodeSequence.length() - overlap;
         if (rightChars > 0)
             sequence += nodeSequence.right(rightChars);
+    }
+
+    //If the PathStartEndType is PART_OF_NODE, then we have to trim off the
+    //appropriate amount from the end.
+    if (!isCircular() && m_startEndType == PART_OF_NODE)
+    {
+        DeBruijnNode * lastNode = m_nodes.back();
+        int amountToTrim = lastNode->m_sequence.length() - m_endPosition;
+        sequence.chop(amountToTrim);
     }
 
     return sequence;

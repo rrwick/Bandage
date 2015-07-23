@@ -17,6 +17,7 @@
 
 
 #include "blastquery.h"
+#include "../program/settings.h"
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
     m_name(name), m_sequence(sequence), m_searchedFor(false)
@@ -80,11 +81,44 @@ void BlastQuery::clearSearchResults()
 }
 
 
-//This function tries to find a path through
-//the graph which covers the maximal amount of the query.
+//This function tries to find a path through the graph which covers the maximal
+//amount of the query.
 void BlastQuery::findQueryPath()
 {
-    int test = 5;
+    //Find all possible path starts within an acceptable distance from the query
+    //start.
+    QList<BlastHit *> possibleStarts;
+    double acceptableStartFraction = 1.0 - g_settings->queryRequiredCoverage;
+    for (int i = 0; i < m_hits.size(); ++i)
+    {
+        BlastHit * hit = m_hits[i].data();
+        if (hit->m_queryStartFraction < acceptableStartFraction)
+            possibleStarts.push_back(hit);
+    }
+
+    //Find all possible path ends.
+    QList<BlastHit *> possibleEnds;
+    double acceptableEndFraction = g_settings->queryRequiredCoverage;
+    for (int i = 0; i < m_hits.size(); ++i)
+    {
+        BlastHit * hit = m_hits[i].data();
+        if (hit->m_queryEndFraction > acceptableEndFraction)
+            possibleEnds.push_back(hit);
+    }
+
+    //For each possible start, find paths to each possible end.
+    for (int i = 0; i < possibleStarts.size(); ++i)
+    {
+        BlastHit * start = possibleStarts[i];
+        for (int j = 0; j < possibleEnds.size(); ++j)
+        {
+            BlastHit * end = possibleEnds[j];
+
+
+
+        }
+    }
+
 
 
 

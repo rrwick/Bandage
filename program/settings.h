@@ -124,6 +124,11 @@ public:
     int minAutoFindEdgeOverlap;
     int maxAutoFindEdgeOverlap;
 
+    //These control how accurate a BLAST query's hits must be for the query to
+    //have a successful path.
+    double queryRequiredCoverage;
+    double queryAllowedLengthDiscrepancy;
+
     //This flag is true when the 'Specify exact path...' dialog is visible.
     bool pathDialogIsVisible;
 
