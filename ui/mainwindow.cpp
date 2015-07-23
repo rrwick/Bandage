@@ -152,7 +152,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
-    connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
+    connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastQueryChanged()));
     connect(ui->actionControls_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
@@ -1487,7 +1487,7 @@ void MainWindow::setupBlastQueryComboBox()
     QStringList comboBoxItems;
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits.size() > 0)
             comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
     }
 
@@ -1507,9 +1507,9 @@ void MainWindow::setupBlastQueryComboBox()
 }
 
 
-void MainWindow::blastTargetChanged()
+void MainWindow::blastQueryChanged()
 {
-    g_blastSearch->blastTargetChanged(ui->blastQueryComboBox->currentText());
+    g_blastSearch->blastQueryChanged(ui->blastQueryComboBox->currentText());
     g_graphicsView->viewport()->update();
 }
 

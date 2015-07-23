@@ -110,7 +110,7 @@ private slots:
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
     void openBlastSearchDialog();
-    void blastTargetChanged();
+    void blastQueryChanged();
     void showHidePanels();
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();

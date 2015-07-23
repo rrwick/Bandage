@@ -19,8 +19,7 @@
 #include "blastquery.h"
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
-    m_name(name), m_sequence(sequence),
-    m_hits(0), m_searchedFor(false)
+    m_name(name), m_sequence(sequence), m_searchedFor(false)
 {
     m_length = sequence.length();
     autoSetSequenceType();
@@ -77,5 +76,5 @@ QString BlastQuery::getTypeString()
 void BlastQuery::clearSearchResults()
 {
     m_searchedFor = false;
-    m_hits = 0;
+    m_hits.clear();
 }

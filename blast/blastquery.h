@@ -23,6 +23,9 @@
 #include <QString>
 #include <QColor>
 #include "../program/globals.h"
+#include "blasthit.h"
+#include <QList>
+#include <QSharedPointer>
 
 class BlastQuery : public QObject
 {
@@ -35,7 +38,7 @@ public:
     QString m_name;
     QString m_sequence;
     int m_length;
-    int m_hits;
+    QList< QSharedPointer<BlastHit> > m_hits;
     bool m_searchedFor;
     QColor m_colour;
     SequenceType m_sequenceType;

@@ -103,7 +103,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     }
 
     //If results already exist, display them and move to step 4.
-    if (g_blastSearch->m_hits.size() > 0)
+    if (g_blastSearch->m_allHits.size() > 0)
     {
         fillHitsTable();
         setUiStep(BLAST_SEARCH_COMPLETE);
@@ -137,7 +137,7 @@ void BlastSearchDialog::clearBlastHits()
 
 void BlastSearchDialog::fillTablesAfterBlastSearch()
 {
-    if (g_blastSearch->m_hits.size() == 0)
+    if (g_blastSearch->m_allHits.empty())
         QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
 
     fillQueriesTable();
@@ -175,7 +175,7 @@ void BlastSearchDialog::fillQueriesTable()
         //If the search hasn't yet been run, don't put a number in the hits column.
         QTableWidgetItem * hits;
         if (query->m_searchedFor)
-            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits));
+            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
         else
             hits = new QTableWidgetItem("-");
         hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -202,7 +202,7 @@ void BlastSearchDialog::fillHitsTable()
 {
     ui->blastHitsTableWidget->clearContents();
 
-    int hitCount = int(g_blastSearch->m_hits.size());
+    int hitCount = g_blastSearch->m_allHits.size();
     ui->blastHitsTableWidget->setRowCount(hitCount);
 
     if (hitCount == 0)
@@ -210,7 +210,7 @@ void BlastSearchDialog::fillHitsTable()
 
     for (int i = 0; i < hitCount; ++i)
     {
-        BlastHit * hit = &(g_blastSearch->m_hits[i]);
+        BlastHit * hit = g_blastSearch->m_allHits[i].data();
 
         QTableWidgetItem * queryColour = new QTableWidgetItem();
         queryColour->setFlags(Qt::ItemIsEnabled);
@@ -420,12 +420,10 @@ void BlastSearchDialog::clearSelectedQueries()
         return;
     }
 
-    bool hitsExist = (g_blastSearch->m_hits.size() > 0);
-
     g_blastSearch->clearSomeQueries(queriesToRemove);
 
     fillQueriesTable();
-    if (hitsExist)
+    if (g_blastSearch->m_allHits.size() > 0)
         fillHitsTable();
 }
 
@@ -537,7 +535,7 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     ui->blastQueriesTableWidget->resizeColumns();
 
     //Rebuild the hits table, if necessary, to show the new name.
-    if (query->m_hits > 0)
+    if (query->m_hits.size() > 0)
         fillHitsTable();
 
     ui->blastQueriesTableWidget->blockSignals(false);

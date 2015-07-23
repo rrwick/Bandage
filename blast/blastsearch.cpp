@@ -38,7 +38,7 @@ BlastSearch::~BlastSearch()
 
 void BlastSearch::clearBlastHits()
 {
-    m_hits.clear();
+    m_allHits.clear();
     m_blastQueries.clearSearchResults();
     m_blastOutput = "";
 }
@@ -50,16 +50,16 @@ void BlastSearch::cleanUp()
     emptyTempDirectory();
 }
 
-//This function uses the contents of m_blastOutput to construct
-//the BlastHit objects.
+//This function uses the contents of m_blastOutput (the raw output from the
+//BLAST search) to construct the BlastHit objects.
 void BlastSearch::buildHitsFromBlastOutput()
 {
     QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
 
     for (int i = 0; i < blastHitList.size(); ++i)
     {
-        QString hit = blastHitList[i];
-        QStringList alignmentParts = hit.split('\t');
+        QString hitString = blastHitList[i];
+        QStringList alignmentParts = hitString.split('\t');
 
         if (alignmentParts.size() < 12)
             return;
@@ -92,12 +92,21 @@ void BlastSearch::buildHitsFromBlastOutput()
         if (query == 0)
             return;
 
-        g_blastSearch->m_hits.push_back(BlastHit(query, node, percentIdentity, alignmentLength,
-                                                 numberMismatches, numberGapOpens, queryStart, queryEnd,
-                                                 nodeStart, nodeEnd, eValue, bitScore));
+        QSharedPointer<BlastHit> hit(new BlastHit(query, node, percentIdentity, alignmentLength,
+                                                  numberMismatches, numberGapOpens, queryStart, queryEnd,
+                                                  nodeStart, nodeEnd, eValue, bitScore));
 
-        ++(query->m_hits);
+        m_allHits.push_back(hit);
+        query->m_hits.push_back(hit);
     }
+}
+
+
+//This function looks at each BLAST query and tries to find a path through
+//the graph which covers the maximal amount of the query.
+void BlastSearch::findQueryPaths()
+{
+
 }
 
 
@@ -158,13 +167,13 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 {
     //Remove any hits that are for queries that will be deleted.
-    std::vector<BlastHit>::iterator i;
-    for (i = m_hits.begin(); i != m_hits.end(); )
+    QList< QSharedPointer<BlastHit> >::iterator i = m_allHits.begin();
+    while (i != m_allHits.end())
     {
-        BlastQuery * hitQuery = i->m_query;
+        BlastQuery * hitQuery = (*i)->m_query;
         bool hitIsForDeletedQuery = (std::find(queriesToRemove.begin(), queriesToRemove.end(), hitQuery) != queriesToRemove.end());
         if (hitIsForDeletedQuery)
-            i = m_hits.erase(i);
+            i = m_allHits.erase(i);
         else
             ++i;
     }
@@ -214,7 +223,7 @@ QString BlastSearch::doAutoBlastSearch()
     if (runBlastSearchWorker.m_error != "")
         return runBlastSearchWorker.m_error;
 
-    blastTargetChanged("all");
+    blastQueryChanged("all");
 
     return "";
 }
@@ -252,7 +261,7 @@ QString BlastSearch::cleanQueryName(QString queryName)
     return queryName;
 }
 
-void BlastSearch::blastTargetChanged(QString queryName)
+void BlastSearch::blastQueryChanged(QString queryName)
 {
     g_assemblyGraph->clearAllBlastHitPointers();
 
@@ -271,9 +280,9 @@ void BlastSearch::blastTargetChanged(QString queryName)
     for (size_t i = 0; i < queries.size(); ++i)
     {
         BlastQuery * currentQuery = queries[i];
-        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        for (int j = 0; j < g_blastSearch->m_allHits.size(); ++j)
         {
-            BlastHit * hit = &(g_blastSearch->m_hits[j]);
+            BlastHit * hit = g_blastSearch->m_allHits[j].data();
             if (hit->m_query == currentQuery)
                 hit->m_node->m_blastHits.push_back(hit);
         }
