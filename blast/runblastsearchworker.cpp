@@ -58,6 +58,7 @@ void RunBlastSearchWorker::runBlastSearch()
 
     //If the code got here, then the search completed successfully.
     g_blastSearch->buildHitsFromBlastOutput();
+    g_blastSearch->findQueryPaths();
     g_blastSearch->m_blastQueries.searchOccurred();
     m_error = "";
     emit finishedSearch(m_error);

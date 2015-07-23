@@ -78,3 +78,14 @@ void BlastQuery::clearSearchResults()
     m_searchedFor = false;
     m_hits.clear();
 }
+
+
+//This function tries to find a path through
+//the graph which covers the maximal amount of the query.
+void BlastQuery::findQueryPath()
+{
+    int test = 5;
+
+
+
+}

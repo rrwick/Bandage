@@ -51,6 +51,7 @@ public:
     void clearSearchResults();
     int getQueryCount(SequenceType sequenceType);
     bool isQueryPresent(BlastQuery * query);
+    void findQueryPaths();
 
     std::vector<QColor> presetColours;
 

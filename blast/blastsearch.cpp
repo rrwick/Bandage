@@ -106,7 +106,7 @@ void BlastSearch::buildHitsFromBlastOutput()
 //the graph which covers the maximal amount of the query.
 void BlastSearch::findQueryPaths()
 {
-
+    m_blastQueries.findQueryPaths();
 }
 
 
@@ -159,8 +159,6 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 
     return (find.exitCode() == 0);
 }
-
-
 
 
 

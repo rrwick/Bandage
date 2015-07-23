@@ -203,6 +203,16 @@ bool BlastQueries::isQueryPresent(BlastQuery * query)
 }
 
 
+//This function looks at each BLAST query and tries to find a path through
+//the graph which covers the maximal amount of the query.
+void BlastQueries::findQueryPaths()
+{
+    for (size_t i = 0; i < m_queries.size(); ++i)
+        m_queries[i]->findQueryPath();
+}
+
+
+
 void BlastQueries::createPresetColours()
 {
     presetColours.push_back(QColor("#306FF8"));

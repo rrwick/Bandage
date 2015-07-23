@@ -45,6 +45,7 @@ public:
 
     QString getTypeString();
     void clearSearchResults();
+    void findQueryPath();
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
