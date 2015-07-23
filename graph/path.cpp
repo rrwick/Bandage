@@ -19,6 +19,8 @@
 #include "path.h"
 #include "debruijnnode.h"
 #include "debruijnedge.h"
+#include "../blast/blasthit.h"
+#include "../blast/blastquery.h"
 
 
 //These will try to produce a path using the given nodes.
@@ -553,4 +555,56 @@ QList<Path> Path::extendPathInAllPossibleWays()
     }
 
     return returnList;
+}
+
+
+//This function follows a path, returning the BLAST hits it finds for the given
+//query.  It requires that the hits occur in order, i.e. that each hit in the
+//path begins later in the query than the previous hit.
+QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
+{
+    QList<BlastHit *> returnList;
+
+    BlastHit * previousHit = 0;
+    for (int i = 0; i < m_nodes.size(); ++i)
+    {
+        DeBruijnNode * node = m_nodes[i];
+
+        QList<BlastHit *> hitsThisNode;
+        for (int j = 0; j < query->m_hits.size(); ++j)
+        {
+            BlastHit * hit = query->m_hits[j].data();
+            if (hit->m_node == node)
+                hitsThisNode.push_back(hit);
+        }
+
+        std::sort(hitsThisNode.begin(), hitsThisNode.end(),
+                  BlastHit::compareTwoBlastHitPointers);
+
+        for (int j = 0; j < hitsThisNode.size(); ++j)
+        {
+            BlastHit * hit = hitsThisNode[j];
+            if (previousHit == 0 ||
+                    hit->m_queryStart > previousHit->m_queryStart)
+                returnList.push_back(hit);
+            previousHit = hit;
+        }
+    }
+
+    return returnList;
+}
+
+
+double Path::getMeanReadDepth()
+{
+    long double depthTimesLengthSum = 0.0;
+    int nodeLengthTotal = 0;
+    for (int i = 0; i < m_nodes.size(); ++i)
+    {
+        DeBruijnNode * node = m_nodes[i];
+        depthTimesLengthSum += node->m_coverage * node->m_length;
+        nodeLengthTotal += node->m_length;
+    }
+
+    return depthTimesLengthSum / nodeLengthTotal;
 }

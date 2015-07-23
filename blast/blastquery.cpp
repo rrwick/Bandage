@@ -137,13 +137,99 @@ void BlastQuery::findQueryPath()
         }
     }
 
+    //If there were no paths which succeeded, then this query gets no path (i.e.
+    //an empty path)
+    if (possiblePaths.empty())
+    {
+        m_path = Path();
+        return;
+    }
 
+    //Determine the fraction of the query which is covered for each Path.
+    QList<double> queryCoverages;
+    double bestCoverage = 0.0;
+    int bestCoveragePathIndex = 0;
+    for (int i = 0; i < possiblePaths.size(); ++i)
+    {
+        double coverage = 0.0;
+        QList<BlastHit *> pathHits = possiblePaths[i].getBlastHitsForQuery(this);
+        for (int j = 0; j < pathHits.size(); ++j)
+            coverage += pathHits[j]->getQueryCoverageFraction();
+        queryCoverages.push_back(coverage);
 
+        if (coverage > bestCoverage)
+        {
+            bestCoverage = coverage;
+            bestCoveragePathIndex = i;
+        }
+    }
 
+    //Select paths which have the best coverage.  This will be one, or possibly
+    //more if multiple paths tie.
+    QList<Path> bestCoveragePaths;
+    for (int i = 0; i < possiblePaths.size(); ++i)
+    {
+        if (queryCoverages[i] == bestCoverage)
+            bestCoveragePaths.push_back(possiblePaths[i]);
+    }
 
-    int test = 5;
+    //If only one path has the best coverage, it wins and is the query path.
+    if (bestCoveragePaths.size() == 1)
+    {
+        m_path = bestCoveragePaths[0];
+        return;
+    }
 
+    //If the code got here, then multiple paths tied for best coverage.  Now
+    //judge them based on the accuracy of their length, relative to the query.
+    QList<double> pathLengthDiscrepancies;
+    int lowestPathLengthDiscrepancy = std::numeric_limits<int>::max();
+    int lowestPathLengthDiscrepancyIndex = 0;
+    for (int i = 0; i < bestCoveragePaths.size(); ++i)
+    {
+        int pathLength = bestCoveragePaths[i].getLength();
+        int pathLengthDiscrepancy = abs(pathLength - m_length);
+        pathLengthDiscrepancies.push_back(pathLengthDiscrepancy);
 
+        if (pathLengthDiscrepancy < lowestPathLengthDiscrepancy)
+        {
+            lowestPathLengthDiscrepancy = pathLengthDiscrepancy;
+            lowestPathLengthDiscrepancyIndex = i;
+        }
+    }
 
+    //Select paths which have the lowest discrepancy.  This will be one, or
+    //possibly more if multiple paths tie.
+    QList<Path> lowestDiscrepancyPaths;
+    for (int i = 0; i < bestCoveragePaths.size(); ++i)
+    {
+        if (pathLengthDiscrepancies[i] == lowestPathLengthDiscrepancy)
+            lowestDiscrepancyPaths.push_back(bestCoveragePaths[i]);
+    }
 
+    //If only one path has the best coverage, it wins and is the query path.
+    if (lowestDiscrepancyPaths.size() == 1)
+    {
+        m_path = lowestDiscrepancyPaths[0];
+        return;
+    }
+
+    //If the code got here, then multiple paths tied for best coverage AND for
+    //lowest path length discrepency.  Now we use read depth as a tie breaker.
+    double highestReadDepth = 0.0;
+    int highestReadDepthIndex = 0;
+    for (int i = 0; i < lowestDiscrepancyPaths.size(); ++i)
+    {
+        int readDepth = lowestDiscrepancyPaths[i].getMeanReadDepth();
+
+        if (readDepth > highestReadDepth)
+        {
+            highestReadDepth = readDepth;
+            highestReadDepthIndex = i;
+        }
+    }
+
+    //We don't bother looking for ties here and just assign the single path
+    //with the highest read depth as the winner.
+    m_path = lowestDiscrepancyPaths[highestReadDepthIndex];
 }

@@ -28,6 +28,9 @@
 class DeBruijnNode;
 class DeBruijnEdge;
 
+class BlastHit;
+class BlastQuery;
+
 class Path
 {
 public:
@@ -71,6 +74,9 @@ public:
 
     bool canNodeFitOnEnd(DeBruijnNode * node);
     bool canNodeFitAtStart(DeBruijnNode * node);
+
+    QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query);
+    double getMeanReadDepth();
 
 private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,

@@ -91,3 +91,16 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
 
     return returnVector;
 }
+
+
+bool BlastHit::compareTwoBlastHitPointers(BlastHit * a, BlastHit * b)
+{
+    return a->m_queryStart < b->m_queryStart;
+}
+
+
+double BlastHit::getQueryCoverageFraction()
+{
+    int queryRegionSize = m_queryEnd - m_queryStart;
+    return double(queryRegionSize) / m_query->m_length;
+}
