@@ -94,7 +94,6 @@ void BlastQuery::findQueryPath()
     int minLength = int(queryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
     int maxLength = int(queryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
 
-
     //Find all possible path starts within an acceptable distance from the query
     //start.
     QList<BlastHit *> possibleStarts;
@@ -169,24 +168,24 @@ void BlastQuery::findQueryPath()
         return;
     }
 
-    //If there are multiple paths, we choose the best one by summing the bit
-    //scores for the hits on each path and choosing the largest.
-    double bestSummedBitScore = 0.0;
-    double bestSummedBitScoreIndex = 0.0;
+    //If there are multiple paths, we choose the best one by multiplying the
+    //e-values for the hits on each path and choosing the smallest.
+    long double bestEValueProduct = std::numeric_limits<double>::max();
+    double bestEValueProductIndex = 0.0;
     for (int i = 0; i < m_paths.size(); ++i)
     {
-        double summedBitScore = 0.0;
+        long double eValueProduct = 1.0;
         QList<BlastHit *> pathHits = m_paths[i].getBlastHitsForQuery(this);
         for (int j = 0; j < pathHits.size(); ++j)
-            summedBitScore += pathHits[j]->m_bitScore;
+            eValueProduct *= pathHits[j]->m_eValue;
 
-        if (summedBitScore > bestSummedBitScore)
+        if (eValueProduct < bestEValueProduct)
         {
-            bestSummedBitScore = summedBitScore;
-            bestSummedBitScoreIndex = i;
+            bestEValueProduct = eValueProduct;
+            bestEValueProductIndex = i;
         }
     }
-    m_bestPath = m_paths[bestSummedBitScoreIndex];
+    m_bestPath = m_paths[bestEValueProductIndex];
 }
 
 
