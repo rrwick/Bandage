@@ -172,12 +172,29 @@ void BlastSearchDialog::fillQueriesTable()
         QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
         length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        //If the search hasn't yet been run, don't put a number in the hits column.
+        //If the search hasn't yet been run, some of the columns will just have
+        //a dash.
         QTableWidgetItem * hits;
+        QTableWidgetItem * percent;
+        QTableWidgetItem * bestPath;
+
         if (query->m_searchedFor)
+        {
             hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
+            percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
+            Path path = query->m_bestPath;
+            if (path.isEmpty())
+                bestPath = new QTableWidgetItem("-");
+            else
+                bestPath = new QTableWidgetItem(path.getString());
+        }
         else
+        {
             hits = new QTableWidgetItem("-");
+            percent = new QTableWidgetItem("-");
+            bestPath = new QTableWidgetItem("-");
+        }
+
         hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ColourButton * colourButton = new ColourButton();
@@ -190,6 +207,8 @@ void BlastSearchDialog::fillQueriesTable()
         ui->blastQueriesTableWidget->setItem(i, 2, type);
         ui->blastQueriesTableWidget->setItem(i, 3, length);
         ui->blastQueriesTableWidget->setItem(i, 4, hits);
+        ui->blastQueriesTableWidget->setItem(i, 5, percent);
+        ui->blastQueriesTableWidget->setItem(i, 6, bestPath);
     }
 
     ui->blastQueriesTableWidget->resizeColumns();

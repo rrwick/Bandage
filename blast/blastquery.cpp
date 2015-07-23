@@ -186,3 +186,28 @@ void BlastQuery::findQueryPath()
     }
     m_bestPath = m_paths[bestSummedBitScoreIndex];
 }
+
+
+double BlastQuery::fractionCoveredByHits()
+{
+    int hitBases = 0;
+    for (int i =0; i < m_length; ++i)
+    {
+        if (positionInAHit(i))
+            ++hitBases;
+    }
+
+    return double(hitBases) / m_length;
+}
+
+
+bool BlastQuery::positionInAHit(int position)
+{
+    for (int i = 0; i < m_hits.size(); ++i)
+    {
+        BlastHit * hit = m_hits[i].data();
+        if (position >= hit->m_queryStart && position <= hit->m_queryEnd)
+            return true;
+    }
+    return false;
+}

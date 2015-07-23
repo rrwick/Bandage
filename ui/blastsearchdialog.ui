@@ -110,6 +110,16 @@
        <string>Hits</string>
       </property>
      </column>
+     <column>
+      <property name="text">
+       <string>Percent found</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Best node or path</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item row="11" column="1">

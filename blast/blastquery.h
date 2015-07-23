@@ -48,12 +48,14 @@ public:
     QString getTypeString();
     void clearSearchResults();
     void findQueryPath();
+    double fractionCoveredByHits();
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
 
 private:
     void autoSetSequenceType();
+    bool positionInAHit(int position);
 };
 
 #endif // BLASTQUERY_H
