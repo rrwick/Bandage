@@ -89,6 +89,8 @@ void BlastQuery::findQueryPath()
 {
     //Determine the acceptable path length range for this query.
     int queryLength = m_sequence.length();
+    if (m_sequenceType == PROTEIN)
+        queryLength *= 3;
     int minLength = int(queryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
     int maxLength = int(queryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
 
