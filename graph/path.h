@@ -41,14 +41,22 @@ public:
     static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes,
                                      bool circular);
 
+
+    static QList<Path> getAllPossiblePaths(DeBruijnNode * startNode,
+                                           int startPosition,
+                                           DeBruijnNode * endNode,
+                                           int endPosition, int nodeSearchDepth,
+                                           int minDistance, int maxDistance);
+
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
 
-    //If m_startEndType is PART_OF_NODE, then the Path sequence can begin and
+    //If start/end type is PART_OF_NODE, then the Path sequence can begin and
     //end in particular indices of the first and last node.  These indices are
     //1-based, i.e. if m_startPosition is 1 the entire first node is included.
-    PathStartEndType m_startEndType;
+    PathStartEndType m_startType;
     int m_startPosition;
+    PathStartEndType m_endType;
     int m_endPosition;
 
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
@@ -58,6 +66,7 @@ public:
     QString getFasta();
     bool checkForOtherEdges();
     QString getString();
+    int getLength();
 
     bool canNodeFitOnEnd(DeBruijnNode * node);
     bool canNodeFitAtStart(DeBruijnNode * node);
