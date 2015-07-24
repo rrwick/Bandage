@@ -184,6 +184,12 @@ void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 
 void BlastSearch::emptyTempDirectory()
 {
+    //Safety checks
+    if (g_blastSearch->m_tempDirectory == "")
+        return;
+    if (!g_blastSearch->m_tempDirectory.contains("bandage_temp"))
+        return;
+
     QDir tempDirectory(m_tempDirectory);
     tempDirectory.setNameFilters(QStringList() << "*.*");
     tempDirectory.setFilter(QDir::Files);
