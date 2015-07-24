@@ -171,7 +171,6 @@ void BlastQuery::findQueryPath()
     //If there are multiple paths, we choose the best one by multiplying the
     //e-values for the hits on each path and choosing the smallest.
     long double bestEValueProduct = std::numeric_limits<long double>::max();
-    double bestEValueProductIndex = 0.0;
     QList<Path> bestPaths;
     for (int i = 0; i < m_paths.size(); ++i)
     {
