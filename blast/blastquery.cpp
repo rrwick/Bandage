@@ -237,9 +237,10 @@ double BlastQuery::getRelativeLengthDiscrepancy(Path path)
 double BlastQuery::fractionCoveredByHits()
 {
     int hitBases = 0;
-    for (int i =0; i < m_length; ++i)
+    for (int i = 0; i < m_length; ++i)
     {
-        if (positionInAHit(i))
+        //Add one to the index because BLAST results use 1-based indexing.
+        if (positionInAHit(i+1))
             ++hitBases;
     }
 
@@ -247,6 +248,8 @@ double BlastQuery::fractionCoveredByHits()
 }
 
 
+//This accepts a position with 1-based indexing, which is what BLAST results
+//use.
 bool BlastQuery::positionInAHit(int position)
 {
     for (int i = 0; i < m_hits.size(); ++i)
