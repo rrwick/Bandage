@@ -237,7 +237,12 @@ void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
     {
         QApplication::processEvents();
 
-        QString queryName = cleanQueryName(queryNames[i]);
+        //We only use the part of the query name up to the first space.
+        QStringList queryNameParts = queryNames[i].split(" ");
+        QString queryName;
+        if (queryNameParts.size() > 0)
+            queryName = cleanQueryName(queryNameParts[0]);
+
         g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                               querySequences[i]));
     }
