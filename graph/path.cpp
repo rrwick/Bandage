@@ -574,7 +574,7 @@ QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
         for (int j = 0; j < query->m_hits.size(); ++j)
         {
             BlastHit * hit = query->m_hits[j].data();
-            if (hit->m_node == node)
+            if (hit->m_node->m_name == node->m_name)
                 hitsThisNode.push_back(hit);
         }
 
@@ -584,10 +584,22 @@ QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
         for (int j = 0; j < hitsThisNode.size(); ++j)
         {
             BlastHit * hit = hitsThisNode[j];
-            if (previousHit == 0 ||
-                    hit->m_queryStart > previousHit->m_queryStart)
-                returnList.push_back(hit);
-            previousHit = hit;
+
+            //First check to make sure the hits are within the path.  This means
+            //if we are in the first or last nodes of the path, we need to make
+            //sure that our hit is contained within the start/end positions.
+            if ( (i != 0 || hit->m_nodeStart >= m_startPosition) &&
+                    (i != m_nodes.size()-1 || hit->m_nodeEnd <= m_endPosition))
+            {
+                //Now make sure that the hit follows the previous hit in the
+                //query.
+                if (previousHit == 0 ||
+                        hit->m_queryStart > previousHit->m_queryStart)
+                {
+                    returnList.push_back(hit);
+                    previousHit = hit;
+                }
+            }
         }
     }
 

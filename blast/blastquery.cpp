@@ -163,62 +163,23 @@ void BlastQuery::findQueryPath()
             m_paths.push_back(possiblePaths[i]);
     }
 
-    //If there were no paths which succeeded, then this query gets no path (i.e.
-    //an empty path)
-    if (m_paths.empty())
+    //Now we sort the paths from best to worst.  Since I can't normally use a
+    //member function in std::sort, I just do a simple bubble sort here.
+    bool swapped = true;
+    int j = 0;
+    while (swapped)
     {
-        m_bestPath = Path();
-        return;
-    }
-
-    //NOW WE SORT THE PATHS USING FIRST THEIR E-VALUE PRODUCTS AND NEXT USING
-    //LENGTH DISCREPANCY.
-
-    //If there are multiple paths, we choose the best one by multiplying the
-    //e-values for the hits on each path and choosing the smallest.
-    long double bestEValueProduct = std::numeric_limits<long double>::max();
-    QList<Path> bestPaths;
-    for (int i = 0; i < m_paths.size(); ++i)
-    {
-        long double eValueProduct = getPathEValueProduct(m_paths[i]);
-
-        if (eValueProduct < bestEValueProduct)
+        swapped = false;
+        j++;
+        for (int i = 0; i < m_paths.size() - j; i++)
         {
-            bestEValueProduct = eValueProduct;
-            bestPaths.clear();
-            bestPaths.push_back(m_paths[i]);
-        }
-        else if (eValueProduct == bestEValueProduct)
-            bestPaths.push_back(m_paths[i]);
-    }
-
-    //If there is just one path with the best e-value product, then it is the
-    //best path and we are done.
-    if (bestPaths.size() == 1)
-    {
-        m_bestPath = bestPaths[0];
-        return;
-    }
-
-    //But it's possible that there are multiple paths which have the best
-    //e-value product.  This can easily occur when two different paths contain
-    //the same hits.
-    //To choose, we first look for the one which has a length that most
-    //closely matches the length of the query spanned by hits.
-    double lowestDiscrepancy = std::numeric_limits<double>::max();
-    int lowestDiscrepancyIndex = 0;
-    for (int i = 0; i < bestPaths.size(); ++i)
-    {
-        double relativeDiscrepancy = getRelativeLengthDiscrepancy(bestPaths[i]);
-
-        if (relativeDiscrepancy < lowestDiscrepancy)
-        {
-            lowestDiscrepancy = relativeDiscrepancy;
-            lowestDiscrepancyIndex = i;
+            if (comparePaths(m_paths[i+1], m_paths[i]))
+            {
+                m_paths.swap(i, i+1);
+                swapped = true;
+            }
         }
     }
-
-    m_bestPath = bestPaths[lowestDiscrepancyIndex];
 }
 
 
@@ -295,4 +256,23 @@ bool BlastQuery::positionInAHit(int position)
             return true;
     }
     return false;
+}
+
+
+//This function returns the paths in string form, if any exist.
+QString BlastQuery::getPathsString()
+{
+    if (m_paths.empty())
+        return "-";
+
+    QString pathsString;
+
+    for (int i = 0; i < m_paths.size(); ++i)
+    {
+        pathsString += m_paths[i].getString();
+        if (i < m_paths.size() - 1)
+            pathsString += "; ";
+    }
+
+    return pathsString;
 }

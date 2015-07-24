@@ -43,12 +43,12 @@ public:
     QColor m_colour;
     SequenceType m_sequenceType;
     QList<Path> m_paths;
-    Path m_bestPath;
 
     QString getTypeString();
     void clearSearchResults();
     void findQueryPath();
     double fractionCoveredByHits();
+    QString getPathsString();
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}

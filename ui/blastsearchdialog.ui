@@ -117,7 +117,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Best node or path</string>
+       <string>Nodes/paths</string>
       </property>
      </column>
     </widget>

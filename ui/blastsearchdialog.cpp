@@ -176,23 +176,19 @@ void BlastSearchDialog::fillQueriesTable()
         //a dash.
         QTableWidgetItem * hits;
         QTableWidgetItem * percent;
-        QTableWidgetItem * bestPath;
+        QTableWidgetItem * paths;
 
         if (query->m_searchedFor)
         {
             hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
             percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
-            Path path = query->m_bestPath;
-            if (path.isEmpty())
-                bestPath = new QTableWidgetItem("-");
-            else
-                bestPath = new QTableWidgetItem(path.getString());
+            paths = new QTableWidgetItem(query->getPathsString());
         }
         else
         {
             hits = new QTableWidgetItem("-");
             percent = new QTableWidgetItem("-");
-            bestPath = new QTableWidgetItem("-");
+            paths = new QTableWidgetItem("-");
         }
 
         hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -208,7 +204,7 @@ void BlastSearchDialog::fillQueriesTable()
         ui->blastQueriesTableWidget->setItem(i, 3, length);
         ui->blastQueriesTableWidget->setItem(i, 4, hits);
         ui->blastQueriesTableWidget->setItem(i, 5, percent);
-        ui->blastQueriesTableWidget->setItem(i, 6, bestPath);
+        ui->blastQueriesTableWidget->setItem(i, 6, paths);
     }
 
     ui->blastQueriesTableWidget->resizeColumns();
