@@ -83,6 +83,9 @@ void BlastQuery::clearSearchResults()
 }
 
 
+
+
+
 //This function tries to find a path through the graph which covers the maximal
 //amount of the query.
 void BlastQuery::findQueryPath()
@@ -168,16 +171,16 @@ void BlastQuery::findQueryPath()
         return;
     }
 
+    //NOW WE SORT THE PATHS USING FIRST THEIR E-VALUE PRODUCTS AND NEXT USING
+    //LENGTH DISCREPANCY.
+
     //If there are multiple paths, we choose the best one by multiplying the
     //e-values for the hits on each path and choosing the smallest.
     long double bestEValueProduct = std::numeric_limits<long double>::max();
     QList<Path> bestPaths;
     for (int i = 0; i < m_paths.size(); ++i)
     {
-        long double eValueProduct = 1.0;
-        QList<BlastHit *> pathHits = m_paths[i].getBlastHitsForQuery(this);
-        for (int j = 0; j < pathHits.size(); ++j)
-            eValueProduct *= pathHits[j]->m_eValue;
+        long double eValueProduct = getPathEValueProduct(m_paths[i]);
 
         if (eValueProduct < bestEValueProduct)
         {
@@ -206,18 +209,7 @@ void BlastQuery::findQueryPath()
     int lowestDiscrepancyIndex = 0;
     for (int i = 0; i < bestPaths.size(); ++i)
     {
-        QList<BlastHit *> pathHits = m_paths[i].getBlastHitsForQuery(this);
-        if (pathHits.empty())
-            continue;
-
-        int queryStart = pathHits.front()->m_queryStart;
-        int queryEnd = pathHits.back()->m_queryEnd;
-        int hitQueryLength = queryEnd - queryStart;
-        if (m_sequenceType == PROTEIN)
-            hitQueryLength *= 3;
-
-        int discrepancy = abs(m_paths[i].getLength() - hitQueryLength);
-        double relativeDiscrepancy = double(discrepancy) / hitQueryLength;
+        double relativeDiscrepancy = getRelativeLengthDiscrepancy(bestPaths[i]);
 
         if (relativeDiscrepancy < lowestDiscrepancy)
         {
@@ -226,7 +218,58 @@ void BlastQuery::findQueryPath()
         }
     }
 
-    m_bestPath = m_paths[lowestDiscrepancyIndex];
+    m_bestPath = bestPaths[lowestDiscrepancyIndex];
+}
+
+
+//This function compares two paths using their hits for this query.  It is used
+//for sorting the query's paths.  It compares first using the e-value product
+//of all the hits, and if they are the same, it uses the length discrepancy.
+bool BlastQuery::comparePaths(Path a, Path b)
+{
+    long double aEValueProduct = getPathEValueProduct(a);
+    long double bEValueProduct = getPathEValueProduct(b);
+
+    if (aEValueProduct != bEValueProduct)
+        return aEValueProduct < bEValueProduct;
+
+    //If the code got here, then the two paths have the same evalue product,
+    //probably because they contain the same hits.  In this case, we use their
+    //length discrepency.
+
+    return getRelativeLengthDiscrepancy(a) < getRelativeLengthDiscrepancy(b);
+}
+
+//This function looks at all of the hits in the path for this query and
+//multiplies the evalues together.
+long double BlastQuery::getPathEValueProduct(Path path)
+{
+    long double eValueProduct = 1.0;
+    QList<BlastHit *> pathHits = path.getBlastHitsForQuery(this);
+    for (int j = 0; j < pathHits.size(); ++j)
+        eValueProduct *= pathHits[j]->m_eValue;
+
+    return eValueProduct;
+}
+
+
+//This function looks at the length of the given path and compares it to how
+//long the path should be for the hits it contains (i.e. if the path perfectly
+//matched up the query).
+double BlastQuery::getRelativeLengthDiscrepancy(Path path)
+{
+    QList<BlastHit *> pathHits = path.getBlastHitsForQuery(this);
+    if (pathHits.empty())
+        return std::numeric_limits<double>::max();
+
+    int queryStart = pathHits.front()->m_queryStart;
+    int queryEnd = pathHits.back()->m_queryEnd;
+    int hitQueryLength = queryEnd - queryStart;
+    if (m_sequenceType == PROTEIN)
+        hitQueryLength *= 3;
+
+    int discrepancy = abs(path.getLength() - hitQueryLength);
+    return double(discrepancy) / hitQueryLength;
 }
 
 

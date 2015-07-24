@@ -56,6 +56,9 @@ public slots:
 private:
     void autoSetSequenceType();
     bool positionInAHit(int position);
+    bool comparePaths(Path a, Path b);
+    long double getPathEValueProduct(Path path);
+    double getRelativeLengthDiscrepancy(Path path);
 };
 
 #endif // BLASTQUERY_H
