@@ -218,7 +218,10 @@ MainWindow::~MainWindow()
     delete m_graphicsViewZoom;
     delete ui;
 
-    QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+    if (g_blastSearch->m_tempDirectory != "" &&
+            QDir(g_blastSearch->m_tempDirectory).exists() &&
+            QDir(g_blastSearch->m_tempDirectory).dirName().contains("bandage_temp"))
+        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
 
 

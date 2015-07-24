@@ -27,7 +27,7 @@
 #include "../graph/debruijnnode.h"
 
 BlastSearch::BlastSearch() :
-    m_blastQueries()
+    m_blastQueries(), m_tempDirectory("bandage_temp/")
 {
 }
 
