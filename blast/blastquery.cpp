@@ -170,8 +170,9 @@ void BlastQuery::findQueryPath()
 
     //If there are multiple paths, we choose the best one by multiplying the
     //e-values for the hits on each path and choosing the smallest.
-    long double bestEValueProduct = std::numeric_limits<double>::max();
+    long double bestEValueProduct = std::numeric_limits<long double>::max();
     double bestEValueProductIndex = 0.0;
+    QList<Path> bestPaths;
     for (int i = 0; i < m_paths.size(); ++i)
     {
         long double eValueProduct = 1.0;
@@ -182,10 +183,51 @@ void BlastQuery::findQueryPath()
         if (eValueProduct < bestEValueProduct)
         {
             bestEValueProduct = eValueProduct;
-            bestEValueProductIndex = i;
+            bestPaths.clear();
+            bestPaths.push_back(m_paths[i]);
+        }
+        else if (eValueProduct == bestEValueProduct)
+            bestPaths.push_back(m_paths[i]);
+    }
+
+    //If there is just one path with the best e-value product, then it is the
+    //best path and we are done.
+    if (bestPaths.size() == 1)
+    {
+        m_bestPath = bestPaths[0];
+        return;
+    }
+
+    //But it's possible that there are multiple paths which have the best
+    //e-value product.  This can easily occur when two different paths contain
+    //the same hits.
+    //To choose, we first look for the one which has a length that most
+    //closely matches the length of the query spanned by hits.
+    double lowestDiscrepancy = std::numeric_limits<double>::max();
+    int lowestDiscrepancyIndex = 0;
+    for (int i = 0; i < bestPaths.size(); ++i)
+    {
+        QList<BlastHit *> pathHits = m_paths[i].getBlastHitsForQuery(this);
+        if (pathHits.empty())
+            continue;
+
+        int queryStart = pathHits.front()->m_queryStart;
+        int queryEnd = pathHits.back()->m_queryEnd;
+        int hitQueryLength = queryEnd - queryStart;
+        if (m_sequenceType == PROTEIN)
+            hitQueryLength *= 3;
+
+        int discrepancy = abs(m_paths[i].getLength() - hitQueryLength);
+        double relativeDiscrepancy = double(discrepancy) / hitQueryLength;
+
+        if (relativeDiscrepancy < lowestDiscrepancy)
+        {
+            lowestDiscrepancy = relativeDiscrepancy;
+            lowestDiscrepancyIndex = i;
         }
     }
-    m_bestPath = m_paths[bestEValueProductIndex];
+
+    m_bestPath = m_paths[lowestDiscrepancyIndex];
 }
 
 
