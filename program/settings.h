@@ -24,6 +24,8 @@
 #include "globals.h"
 #include <QString>
 
+class DeBruijnNode;
+
 class Settings
 {
 public:
@@ -104,7 +106,6 @@ public:
 
     QColor noBlastHitsColour;
 
-
     bool autoCoverageValue;
     double lowCoverageValue;
     QColor lowCoverageColour;
@@ -121,8 +122,23 @@ public:
                                       || displayNodeCsvData;}
     int getBasePairsPerSegment();
 
+    //These specify the range of overlaps to look for when Bandage determines
+    //edge overlaps automatically.
     int minAutoFindEdgeOverlap;
     int maxAutoFindEdgeOverlap;
+
+    //This flag is true when the 'Specify exact path...' dialog is visible.
+    bool pathDialogIsVisible;
+
+    //These store the user input the 'Specify exact path...' dialog so it is
+    //retained between uses.
+    QString userSpecifiedPath;
+    bool userSpecifiedPathCircular;
+
+    //This stores the list of nodes the user has entered in the 'Specify exact
+    //path...' dialog.  It is used when drawing nodes to see if they need to
+    //be highlighted.
+    QList<DeBruijnNode *> userSpecifiedPathNodes;
 };
 
 #endif // SETTINGS_H

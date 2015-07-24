@@ -26,6 +26,7 @@
 #include <QMap>
 #include "../program/globals.h"
 #include "../ui/mygraphicsscene.h"
+#include "path.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;

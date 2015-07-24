@@ -91,10 +91,10 @@ Settings::Settings()
     contiguousStrandSpecificColour = QColor(0, 155, 0);
     contiguousEitherStrandColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 240, 190);
-    notContiguousColour = QColor(230, 230, 230);
+    notContiguousColour = QColor(220, 220, 220);
     contiguityStartingColour = QColor(0, 255, 0);
 
-    noBlastHitsColour = QColor(230, 230, 230);
+    noBlastHitsColour = QColor(220, 220, 220);
 
     autoCoverageValue = true;
     lowCoverageValue = 5.0;
@@ -110,6 +110,10 @@ Settings::Settings()
 
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
+
+    pathDialogIsVisible = false;
+    userSpecifiedPath = "";
+    userSpecifiedPathCircular = false;
 }
 
 

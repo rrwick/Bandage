@@ -19,5 +19,7 @@
         <file>select-none.png</file>
         <file>copy.png</file>
         <file>zoom.png</file>
+        <file>cross-128.png</file>
+        <file>specify-path.png</file>
     </qresource>
 </RCC>

@@ -60,11 +60,14 @@
 #include <limits>
 #include <QDesktopServices>
 #include <QSvgGenerator>
+#include "../graph/path.h"
+#include "pathspecifydialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)"),
-    m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad)
+    m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad),
+    m_uiState(NO_GRAPH_LOADED)
 {
     ui->setupUi(this);
 
@@ -101,7 +104,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->selectedNodesTextEdit->setFixedHeight(ui->selectedNodesTextEdit->sizeHint().height() / 2.5);
     ui->selectedEdgesTextEdit->setFixedHeight(ui->selectedEdgesTextEdit->sizeHint().height() / 2.5);
 
-    enableDisableUiElements(NO_GRAPH_LOADED);
+    setUiState(NO_GRAPH_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
@@ -130,6 +133,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(m_graphicsViewZoom, SIGNAL(zoomed()), this, SLOT(zoomedWithMouseWheel()));
     connect(ui->actionCopy_selected_node_sequences_to_clipboard, SIGNAL(triggered()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(ui->actionSave_selected_node_sequences_to_FASTA, SIGNAL(triggered()), this, SLOT(saveSelectedSequencesToFile()));
+    connect(ui->actionCopy_selected_node_path_to_clipboard, SIGNAL(triggered(bool)), this, SLOT(copySelectedPathToClipboard()));
+    connect(ui->actionSave_selected_node_path_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveSelectedPathToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
     connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
     connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
@@ -166,6 +171,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
+    connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -228,6 +234,10 @@ void MainWindow::cleanUp()
     g_blastSearch->cleanUp();
     g_assemblyGraph->cleanUp();
     setWindowTitle("Bandage");
+
+    g_settings->userSpecifiedPath = "";
+    g_settings->userSpecifiedPathCircular = false;
+    g_settings->userSpecifiedPathNodes = QList<DeBruijnNode *>();
 }
 
 void MainWindow::loadCSV(QString fullFileName)
@@ -348,7 +358,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);
 
-        enableDisableUiElements(GRAPH_LOADED);
+        setUiState(GRAPH_LOADED);
         setWindowTitle("Bandage - " + fullFileName);
 
         g_assemblyGraph->determineGraphInfo();
@@ -366,7 +376,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         resetScene();
         cleanUp();
         clearGraphDetails();
-        enableDisableUiElements(NO_GRAPH_LOADED);
+        setUiState(NO_GRAPH_LOADED);
     }
 }
 
@@ -672,7 +682,7 @@ void MainWindow::graphLayoutFinished()
     zoomToFitScene();
     selectionChanged();
 
-    enableDisableUiElements(GRAPH_DRAWN);
+    setUiState(GRAPH_DRAWN);
 
     //Move the focus to the view so the user can use keyboard controls to navigate.
     g_graphicsView->setFocus();
@@ -831,11 +841,10 @@ void MainWindow::zoomToFitRect(QRectF rect)
 void MainWindow::copySelectedSequencesToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "Copy selected sequences", "No nodes are selected.\n\n"
-                                                                  "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
+        QMessageBox::information(this, "Copy sequences to clipboard", "No nodes are selected.\n\n"
+                                                                      "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
         return;
     }
 
@@ -857,17 +866,16 @@ void MainWindow::copySelectedSequencesToClipboard()
 void MainWindow::saveSelectedSequencesToFile()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "Save selected sequences", "No nodes are selected.\n\n"
+        QMessageBox::information(this, "Save sequences to FASTA", "No nodes are selected.\n\n"
                                                                   "You must first select nodes in the graph before you can save their sequences to a FASTA file.");
         return;
     }
 
     QString defaultFileNameAndPath = g_settings->rememberedPath + "/selected_sequences.fasta";
 
-    QString fullFileName = QFileDialog::getSaveFileName(this, "Save selected sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save node sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
 
     if (fullFileName != "") //User did not hit cancel
     {
@@ -876,14 +884,75 @@ void MainWindow::saveSelectedSequencesToFile()
         QTextStream out(&file);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
-        {
             out << selectedNodes[i]->getFasta();
-            if (i != selectedNodes.size() - 1)
-                out << "\n";
-        }
+
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
+
+void MainWindow::copySelectedPathToClipboard()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Copy path sequence to clipboard", "No nodes are selected.\n\n"
+                                                                          "You must first select nodes in the graph which define a unambiguous "
+                                                                          "path before you can copy their path sequence to the clipboard.");
+        return;
+    }
+
+    Path nodePath = Path::makeFromUnorderedNodes(selectedNodes, g_settings->doubleMode);
+    if (nodePath.isEmpty())
+    {
+        QMessageBox::information(this, "Copy path sequence to clipboard", "Invalid path.\n\n"
+                                                                          "To use copy a path sequence to the clipboard, the nodes must follow "
+                                                                          "an unambiguous path through the graph.\n\n"
+                                                                          "Complex paths can be defined using the '" + ui->actionSpecify_exact_path_for_copy_save->text() +
+                                                                          "' tool.");
+        return;
+    }
+
+    QClipboard * clipboard = QApplication::clipboard();
+    clipboard->setText(nodePath.getPathSequence());
+}
+
+
+
+void MainWindow::saveSelectedPathToFile()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Save path sequence to FASTA", "No nodes are selected.\n\n"
+                                                                      "You must first select nodes in the graph which define a unambiguous "
+                                                                      "path before you can save their path sequence to a FASTA file.");
+        return;
+    }
+    Path nodePath = Path::makeFromUnorderedNodes(selectedNodes, g_settings->doubleMode);
+    if (nodePath.isEmpty())
+    {
+        QMessageBox::information(this, "Save path sequence to FASTA", "Invalid path.\n\n"
+                                                                      "To use copy a path sequence to the clipboard, the nodes must follow "
+                                                                      "an unambiguous path through the graph.\n\n"
+                                                                      "Complex paths can be defined using the '" + ui->actionSpecify_exact_path_for_copy_save->text() +
+                                                                      "' tool.");
+        return;
+    }
+
+    QString defaultFileNameAndPath = g_settings->rememberedPath + "/path_sequence.fasta";
+
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save path sequence", defaultFileNameAndPath, "FASTA (*.fasta)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+        out << nodePath.getFasta();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    }
+}
+
 
 
 
@@ -978,6 +1047,9 @@ QString MainWindow::getDefaultImageFileName()
 
 void MainWindow::saveImageCurrentView()
 {
+    if (!checkForImageSave())
+        return;
+
     QString defaultFileNameAndPath = getDefaultImageFileName();
 
     QString selectedFilter = m_imageFilter;
@@ -1028,6 +1100,9 @@ void MainWindow::saveImageCurrentView()
 
 void MainWindow::saveImageEntireScene()
 {
+    if (!checkForImageSave())
+        return;
+
     QString defaultFileNameAndPath = getDefaultImageFileName();
 
     QString selectedFilter = m_imageFilter;
@@ -1059,7 +1134,32 @@ void MainWindow::saveImageEntireScene()
         QPainter painter;
         if (pixelImage)
         {
-            QImage image(g_absoluteZoom * m_scene->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
+            QSize imageSize = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+
+            if (imageSize.width() > 32767 || imageSize.height() > 32767)
+            {
+                QString error = "Images can not be taller or wider than 32767 pixels, but at the "
+                                "current zoom level, the image to be saved would be ";
+                error += QString::number(imageSize.width()) + "x" + QString::number(imageSize.height()) + " pixels.\n\n";
+                error += "Please reduce the zoom level before saving the entire scene to image or use the SVG format.";
+
+                QMessageBox::information(this, "Image too large", error);
+                return;
+            }
+
+            if (imageSize.width() * imageSize.height() > 50000000) //50 megapixels is used as an arbitrary large image cutoff
+            {
+                QString warning = "At the current zoom level, the image will be ";
+                warning += QString::number(imageSize.width()) + "x" + QString::number(imageSize.height()) + " pixels. ";
+                warning += "An image of this large size may take significant time and space to save.\n\n"
+                           "The image size can be reduced by decreasing the zoom level or using the SVG format.\n\n"
+                           "Do you want to continue saving the image?";
+                QMessageBox::StandardButton response = QMessageBox::question(this, "Large image", warning);
+                if (response == QMessageBox::No || response == QMessageBox::Cancel)
+                    return;
+            }
+
+            QImage image(imageSize, QImage::Format_ARGB32);
             image.fill(Qt::white);
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
@@ -1091,6 +1191,25 @@ void MainWindow::saveImageEntireScene()
     }
 }
 
+
+
+//This function makes sure that a graph is loaded and drawn so that an image can be saved.
+//It returns true if everything is fine.  If things aren't ready, it displays a message
+//to the user and returns false.
+bool MainWindow::checkForImageSave()
+{
+    if (m_uiState == NO_GRAPH_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first load and then draw a graph before you can save an image to file.");
+        return false;
+    }
+    if (m_uiState == GRAPH_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first draw the graph before you can save an image to file.");
+        return false;
+    }
+    return true;
+}
 
 
 void MainWindow::setTextDisplaySettings()
@@ -1559,8 +1678,10 @@ void MainWindow::setInfoTexts()
 
 
 
-void MainWindow::enableDisableUiElements(UiState uiState)
+void MainWindow::setUiState(UiState uiState)
 {
+    m_uiState = uiState;
+
     switch (uiState)
     {
     case NO_GRAPH_LOADED:
@@ -1570,19 +1691,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSave_image_current_view->setEnabled(false);
-        ui->actionSave_image_entire_scene->setEnabled(false);
-        ui->actionSelect_all->setEnabled(false);
-        ui->actionSelect_none->setEnabled(false);
-        ui->actionInvert_selection->setEnabled(false);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
-        ui->actionSelect_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
-        ui->actionBring_selected_nodes_to_front->setEnabled(false);
-        ui->actionZoom_to_selection->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(false);
         ui->csvCheckBox->setEnabled(false);
         break;
@@ -1593,19 +1701,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(false);
-        ui->actionSave_image_current_view->setEnabled(false);
-        ui->actionSave_image_entire_scene->setEnabled(false);
-        ui->actionSelect_all->setEnabled(false);
-        ui->actionSelect_none->setEnabled(false);
-        ui->actionInvert_selection->setEnabled(false);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(false);
-        ui->actionSelect_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(false);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(false);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(false);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(false);
-        ui->actionBring_selected_nodes_to_front->setEnabled(false);
-        ui->actionZoom_to_selection->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(true);
         ui->csvCheckBox->setEnabled(false);
         break;
@@ -1616,18 +1711,6 @@ void MainWindow::enableDisableUiElements(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionSearchWidget->setEnabled(true);
-        ui->actionSave_image_current_view->setEnabled(true);
-        ui->actionSave_image_entire_scene->setEnabled(true);
-        ui->actionSelect_all->setEnabled(true);
-        ui->actionSelect_none->setEnabled(true);
-        ui->actionInvert_selection->setEnabled(true);
-        ui->actionSelect_nodes_with_BLAST_hits->setEnabled(true);
-        ui->actionSelect_contiguous_nodes->setEnabled(true);
-        ui->actionSelect_possibly_contiguous_nodes->setEnabled(true);
-        ui->actionSelect_not_contiguous_nodes->setEnabled(true);
-        ui->actionCopy_selected_node_sequences_to_clipboard->setEnabled(true);
-        ui->actionSave_selected_node_sequences_to_FASTA->setEnabled(true);
-        ui->actionBring_selected_nodes_to_front->setEnabled(true);
         ui->actionZoom_to_selection->setEnabled(true);
         ui->actionLoad_CSV->setEnabled(true);
         break;
@@ -1648,7 +1731,11 @@ void MainWindow::bringSelectedNodesToFront()
 
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select nodes in the graph before using "
+                                                            "the 'Bring selected nodes to front' function.");
         return;
+    }
 
     double topZ = m_scene->getTopZValue();
     double newZ = topZ + 1.0;
@@ -1764,7 +1851,11 @@ void MainWindow::zoomToSelection()
 {
     QList<QGraphicsItem *> selection = m_scene->selectedItems();
     if (selection.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select nodes in the graph before using "
+                                                            "the 'Zoom to fit selection' function.");
         return;
+    }
 
     QRectF boundingBox;
     for (int i = 0; i < selection.size(); ++i)
@@ -1921,4 +2012,16 @@ void MainWindow::showEvent(QShowEvent *ev)
 void MainWindow::startingNodesExactMatchChanged()
 {
     g_settings->startingNodesExactMatch = ui->startingNodesExactMatchRadioButton->isChecked();
+}
+
+
+void MainWindow::openPathSpecifyDialog()
+{
+    //Don't open a second dialog if one's already up.
+    if (g_settings->pathDialogIsVisible)
+        return;
+
+    PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
+    connect(g_graphicsView, SIGNAL(doubleClickedNode(DeBruijnNode*)), pathSpecifyDialog, SLOT(addNodeName(DeBruijnNode*)));
+    pathSpecifyDialog->show();
 }

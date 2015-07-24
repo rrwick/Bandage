@@ -64,7 +64,9 @@ SOURCES += \
     ui/colourbutton.cpp \
     blast/blastquery.cpp \
     blast/runblastsearchworker.cpp \
-    blast/blastsearch.cpp
+    blast/blastsearch.cpp \
+    graph/path.cpp \
+    ui/pathspecifydialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -101,7 +103,9 @@ HEADERS  += \
     ui/mytablewidget.h \
     blast/buildblastdatabaseworker.h \
     ui/colourbutton.h \
-    blast/runblastsearchworker.h
+    blast/runblastsearchworker.h \
+    graph/path.h \
+    ui/pathspecifydialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -109,7 +113,8 @@ FORMS    += \
     ui/aboutdialog.ui \
     ui/enteroneblastquerydialog.ui \
     ui/blastsearchdialog.ui \
-    ui/myprogressdialog.ui
+    ui/myprogressdialog.ui \
+    ui/pathspecifydialog.ui
 
 
 # These includes are configured assuming that the OGDF

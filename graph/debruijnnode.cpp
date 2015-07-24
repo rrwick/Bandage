@@ -311,12 +311,13 @@ QByteArray DeBruijnNode::getFasta()
     {
         fasta += m_sequence.at(i);
         ++charactersOnLine;
-        if (charactersOnLine >= 60)
+        if (charactersOnLine >= 70)
         {
             fasta += "\n";
             charactersOnLine = 0;
         }
     }
+    fasta += "\n";
 
     return fasta;
 }
@@ -419,3 +420,43 @@ bool DeBruijnNode::isNegativeNode()
 }
 
 
+
+//This function checks to see if the passed node leads into
+//this node.  If so, it returns the connecting edge.  If not,
+//it returns a null pointer.
+DeBruijnEdge * DeBruijnNode::doesNodeLeadIn(DeBruijnNode * node)
+{
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (edge->m_startingNode == node && edge->m_endingNode == this)
+            return edge;
+    }
+    return 0;
+}
+
+//This function checks to see if the passed node leads away from
+//this node.  If so, it returns the connecting edge.  If not,
+//it returns a null pointer.
+DeBruijnEdge * DeBruijnNode::doesNodeLeadAway(DeBruijnNode * node)
+{
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (edge->m_startingNode == this && edge->m_endingNode == node)
+            return edge;
+    }
+    return 0;
+}
+
+
+bool DeBruijnNode::isNodeConnected(DeBruijnNode * node)
+{
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (edge->m_startingNode == node || edge->m_endingNode == node)
+            return true;
+    }
+    return false;
+}

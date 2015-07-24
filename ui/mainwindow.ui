@@ -1717,12 +1717,6 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
     <addaction name="menuSelect_nodes_based_on_contiguity"/>
-    <addaction name="separator"/>
-    <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
-    <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
-    <addaction name="separator"/>
-    <addaction name="actionCopy_selected_node_path_to_clipboard"/>
-    <addaction name="actionSave_selected_node_path_to_FASTA"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1731,10 +1725,22 @@
     <addaction name="actionAbout"/>
     <addaction name="actionBandage_website"/>
    </widget>
+   <widget class="QMenu" name="menuOutput">
+    <property name="title">
+     <string>Output</string>
+    </property>
+    <addaction name="actionCopy_selected_node_sequences_to_clipboard"/>
+    <addaction name="actionSave_selected_node_sequences_to_FASTA"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopy_selected_node_path_to_clipboard"/>
+    <addaction name="actionSave_selected_node_path_to_FASTA"/>
+    <addaction name="actionSpecify_exact_path_for_copy_save"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuView"/>
    <addaction name="menuSelection"/>
+   <addaction name="menuOutput"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1749,7 +1755,7 @@
   </action>
   <action name="actionSave_image_current_view">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../images/images.qrc">
@@ -1788,7 +1794,7 @@
   </action>
   <action name="actionSave_image_entire_scene">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../images/images.qrc">
@@ -1826,7 +1832,10 @@
      <normaloff>:/icons/bring-to-front.png</normaloff>:/icons/bring-to-front.png</iconset>
    </property>
    <property name="text">
-    <string>Bring selected node(s) to front</string>
+    <string>Bring selected nodes to front</string>
+   </property>
+   <property name="toolTip">
+    <string>Bring selected nodes to front</string>
    </property>
   </action>
   <action name="actionSelect_nodes_with_BLAST_hits">
@@ -1835,7 +1844,10 @@
      <normaloff>:/icons/BLAST.png</normaloff>:/icons/BLAST.png</iconset>
    </property>
    <property name="text">
-    <string>Select node(s) with BLAST hits</string>
+    <string>Select nodes with BLAST hits</string>
+   </property>
+   <property name="toolTip">
+    <string>Select nodes with BLAST hits</string>
    </property>
   </action>
   <action name="actionSelect_all">
@@ -1862,7 +1874,10 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node sequence(s) to clipboard</string>
+    <string>Copy node sequences to clipboard</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy node sequences to clipboard</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -1874,7 +1889,10 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node sequence(s) to FASTA</string>
+    <string>Save node sequences to FASTA</string>
+   </property>
+   <property name="toolTip">
+    <string>Save node sequences to FASTA</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -1940,7 +1958,7 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node path to clipboard</string>
+    <string>Copy node path sequence to clipboard</string>
    </property>
   </action>
   <action name="actionSave_selected_node_path_to_FASTA">
@@ -1949,7 +1967,16 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node path to FASTA</string>
+    <string>Save node path sequence to FASTA</string>
+   </property>
+  </action>
+  <action name="actionSpecify_exact_path_for_copy_save">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/specify-path.png</normaloff>:/icons/specify-path.png</iconset>
+   </property>
+   <property name="text">
+    <string>Specify exact path for copy/save</string>
    </property>
   </action>
   <action name="actionLoad_CSV">
