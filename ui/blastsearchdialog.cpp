@@ -585,6 +585,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
         ui->blastQueriesTableWidget->setEnabled(false);
+        ui->blastQueriesTableInfoText->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -612,6 +613,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
         ui->blastQueriesTableWidget->setEnabled(false);
+        ui->blastQueriesTableInfoText->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -639,6 +641,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -666,6 +669,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -693,6 +697,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -720,6 +725,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -766,6 +772,32 @@ void BlastSearchDialog::setInfoTexts()
                                               "For protein queries, tblastn will be used instead of blastn.");
     ui->clearSelectedQueriesInfoText->setInfoText("Click this button to remove any selected queries in the below list.");
     ui->clearAllQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
+    ui->blastQueriesTableInfoText->setInfoText("The BLAST queries are displayed in this table. Before a BLAST search "
+                                               "is run, some information about the queries is not yet available and "
+                                               "will show a dash.<br><br>"
+                                               "Colour: Each query is automatically assigned a colour which is used for the "
+                                               "'Blast hits (solid)' graph colour scheme. This colour can be changed by "
+                                               "clicking in the table cell.<br><br>"
+                                               "Query name: If a query is loaded from a FASTA file, its name is the sequence "
+                                               "ID (the text between the '>' and the first space in the description line). "
+                                               "Query names are editable by double clicking in their table cell.<br><br>"
+                                               "Type: This is either 'nucl' for nucleotide sequences or 'prot' for protein "
+                                               "sequences. Nucleotide sequences will be searched for using blastn, while "
+                                               "protein sequences will be search for with tblastn. Both types can be used "
+                                               "simultaneously.<br><br>"
+                                               "Length: This is the length of the query, in bases (for nucleotide queries) "
+                                               "or amino acids (for protein queries).<br><br>"
+                                               "Hits: This is the number of BLAST hits acquired for the query.<br><br>"
+                                               "Percent found: This is the total fraction of the query captured by all of "
+                                               "the BLAST hits. However, the hits may not be proximal to each other. For "
+                                               "example, if the first half a query was found in one part of the graph and "
+                                               "the second half in a different part, this value would still be 100&.<br><br>"
+                                               "Nodes/paths: These are the possible paths through the graph which "
+                                               "represent the entire query, as defined by the 'BLAST query paths' settings. "
+                                               "If a query is contained within a single node, the path will just be one "
+                                               "node name. If the query spans multiple nodes, the path will be a comma-"
+                                               "delimited list. If there are multiple paths, they are separated with "
+                                               "semicolons.");
 }
 
 
