@@ -633,17 +633,23 @@ bool Path::areIdentical(Path other)
 }
 
 
+bool Path::haveSameNodes(Path other)
+{
+    return (m_nodes == other.m_nodes);
+}
+
+
 
 //This function checks to see if this path is actually a sub-path (i.e.
 //entirely contained within) the other given path.
 //It ignores start/end type and position, looking only at the nodes.
-//It will also return true if the paths are identical.
+//If the two paths have the same nodes, it will return false.
 bool Path::hasNodeSubset(Path other)
 {
-    //To contain this path, the other path should be have an equal or larger
-    //number of nodes.
+    //To contain this path, the other path should be have a larger number of
+    //nodes.
     int nodeCountDifference = other.m_nodes.size() - m_nodes.size();
-    if (nodeCountDifference < 0)
+    if (nodeCountDifference <= 0)
         return false;
     
     //If the paths have the same number of nodes, check to see if they are

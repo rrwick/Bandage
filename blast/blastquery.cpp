@@ -86,8 +86,7 @@ void BlastQuery::clearSearchResults()
 
 
 
-//This function tries to find a path through the graph which covers the maximal
-//amount of the query.
+//This function tries to find the paths through the graph which cover the query.
 void BlastQuery::findQueryPath()
 {
     //Determine the acceptable path length range for this query.
@@ -135,7 +134,7 @@ void BlastQuery::findQueryPath()
             possiblePaths.append(Path::getAllPossiblePaths(startNode,
                                                            startPosition,
                                                            endNode, endPosition,
-                                                           g_settings->maxPathNodes - 1,
+                                                           g_settings->maxQueryPathNodes - 1,
                                                            minLength,
                                                            maxLength));
         }
@@ -263,17 +262,18 @@ bool BlastQuery::positionInAHit(int position)
 
 
 //This function returns the paths in string form, if any exist.
-QString BlastQuery::getPathsString()
+QString BlastQuery::getPathsString(int max)
 {
     if (m_paths.empty())
         return "-";
 
     QString pathsString;
 
-    for (int i = 0; i < m_paths.size(); ++i)
+    int count = std::min(m_paths.size(), max);
+    for (int i = 0; i < count; ++i)
     {
         pathsString += m_paths[i].getString();
-        if (i < m_paths.size() - 1)
+        if (i < count - 1)
             pathsString += "; ";
     }
 

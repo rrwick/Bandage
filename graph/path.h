@@ -79,6 +79,7 @@ public:
     double getMeanReadDepth();
     
     bool areIdentical(Path other);
+    bool haveSameNodes(Path other);
     bool hasNodeSubset(Path other);
 
 private:

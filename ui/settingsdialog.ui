@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-2060</y>
         <width>431</width>
-        <height>2690</height>
+        <height>2724</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -180,6 +180,22 @@
        </item>
        <item row="25" column="1">
         <widget class="InfoTextWidget" name="outlineColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="99" column="1">
+        <widget class="InfoTextWidget" name="requiredCoverageInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -519,6 +535,22 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="88" column="1">
+        <widget class="InfoTextWidget" name="contiguitySearchDepthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
         </widget>
        </item>
        <item row="45" column="2">
@@ -1105,7 +1137,7 @@
          </property>
         </widget>
        </item>
-       <item row="102" column="2">
+       <item row="103" column="2">
         <spacer name="verticalSpacer_12">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1975,6 +2007,38 @@
          </property>
         </widget>
        </item>
+       <item row="101" column="1">
+        <widget class="InfoTextWidget" name="maxPathNodesInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="100" column="1">
+        <widget class="InfoTextWidget" name="allowedLengthDiscrepancyInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
        <item row="98" column="0" colspan="5">
         <widget class="QLabel" name="blastQueryPathsDescriptionLabel">
          <property name="text">
@@ -2617,8 +2681,21 @@
          </property>
         </widget>
        </item>
-       <item row="88" column="1">
-        <widget class="InfoTextWidget" name="contiguitySearchDepthInfoText" native="true">
+       <item row="102" column="2">
+        <widget class="QLabel" name="label_49">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Max paths:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="102" column="1">
+        <widget class="InfoTextWidget" name="maxPathsInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -2633,51 +2710,13 @@
          </property>
         </widget>
        </item>
-       <item row="99" column="1">
-        <widget class="InfoTextWidget" name="requiredCoverageInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="102" column="3">
+        <widget class="QSpinBox" name="maxPathsSpinBox">
+         <property name="minimum">
+          <number>1</number>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="100" column="1">
-        <widget class="InfoTextWidget" name="allowedLengthDiscrepancyInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="101" column="1">
-        <widget class="InfoTextWidget" name="maxPathNodesInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
+         <property name="maximum">
+          <number>100</number>
          </property>
         </widget>
        </item>

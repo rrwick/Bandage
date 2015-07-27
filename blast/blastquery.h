@@ -48,7 +48,7 @@ public:
     void clearSearchResults();
     void findQueryPath();
     double fractionCoveredByHits();
-    QString getPathsString();
+    QString getPathsString(int max);
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}

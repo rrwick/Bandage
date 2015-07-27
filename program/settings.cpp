@@ -111,7 +111,8 @@ Settings::Settings()
 
     queryRequiredCoverage = 0.95;
     queryAllowedLengthDiscrepancy = 0.05;
-    maxPathNodes = 6;
+    maxQueryPathNodes = 6;
+    maxQueryPaths = 4;
 
     pathDialogIsVisible = false;
     userSpecifiedPath = "";

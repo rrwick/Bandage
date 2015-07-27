@@ -182,7 +182,7 @@ void BlastSearchDialog::fillQueriesTable()
         {
             hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
             percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
-            paths = new QTableWidgetItem(query->getPathsString());
+            paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
         }
         else
         {

@@ -157,7 +157,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
     doubleFunctionPointer(&settings->queryRequiredCoverage, ui->requiredCoverageSpinBox, true);
     doubleFunctionPointer(&settings->queryAllowedLengthDiscrepancy, ui->allowedLengthDiscrepancySpinBox, true);
-    intFunctionPointer(&settings->maxPathNodes, ui->maxPathNodesSpinBox);
+    intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
+    intFunctionPointer(&settings->maxQueryPaths, ui->maxPathsSpinBox);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -339,6 +340,10 @@ void SettingsDialog::setInfoTexts()
     ui->maxPathNodesInfoText->setInfoText("This controls the maximum number of nodes in BLAST query paths.<br><br>"
                                           "A higher value will allow for paths containing more nodes, at a performance "
                                           "cost.");
+    ui->maxPathsInfoText->setInfoText("This sets the maximum number of paths that will be displayed for any given "
+                                      "BLAST query.<br><br>"
+                                      "For example, if set to 1, then only the top BLAST path will be shown for "
+                                      "each query.");
 }
 
 
