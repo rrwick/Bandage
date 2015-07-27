@@ -160,58 +160,64 @@ void BlastSearchDialog::fillQueriesTable()
     ui->blastQueriesTableWidget->setRowCount(queryCount);
 
     for (int i = 0; i < queryCount; ++i)
-    {
-        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
-
-        QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
-        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-
-        QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
-        type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
-        length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        //If the search hasn't yet been run, some of the columns will just have
-        //a dash.
-        QTableWidgetItem * hits;
-        QTableWidgetItem * percent;
-        QTableWidgetItem * paths;
-
-        if (query->m_searchedFor)
-        {
-            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
-            percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
-            paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
-        }
-        else
-        {
-            hits = new QTableWidgetItem("-");
-            percent = new QTableWidgetItem("-");
-            paths = new QTableWidgetItem("-");
-        }
-
-        hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        percent->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-
-        ColourButton * colourButton = new ColourButton();
-        colourButton->setColour(query->m_colour);
-        connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
-        connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
-
-        ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
-        ui->blastQueriesTableWidget->setItem(i, 1, name);
-        ui->blastQueriesTableWidget->setItem(i, 2, type);
-        ui->blastQueriesTableWidget->setItem(i, 3, length);
-        ui->blastQueriesTableWidget->setItem(i, 4, hits);
-        ui->blastQueriesTableWidget->setItem(i, 5, percent);
-        ui->blastQueriesTableWidget->setItem(i, 6, paths);
-    }
+        makeQueryRow(i);
 
     ui->blastQueriesTableWidget->resizeColumns();
 
     ui->blastQueriesTableWidget->blockSignals(false);
+}
+
+void BlastSearchDialog::makeQueryRow(int row)
+{
+    if (row >= int(g_blastSearch->m_blastQueries.m_queries.size()))
+        return;
+
+    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+
+    QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+    name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+    QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
+    type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
+    length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    //If the search hasn't yet been run, some of the columns will just have
+    //a dash.
+    QTableWidgetItem * hits;
+    QTableWidgetItem * percent;
+    QTableWidgetItem * paths;
+
+    if (query->m_searchedFor)
+    {
+        hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
+        percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
+        paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
+    }
+    else
+    {
+        hits = new QTableWidgetItem("-");
+        percent = new QTableWidgetItem("-");
+        paths = new QTableWidgetItem("-");
+    }
+
+    hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    percent->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+    ColourButton * colourButton = new ColourButton();
+    colourButton->setColour(query->m_colour);
+    connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
+    connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
+
+    ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
+    ui->blastQueriesTableWidget->setItem(row, 1, name);
+    ui->blastQueriesTableWidget->setItem(row, 2, type);
+    ui->blastQueriesTableWidget->setItem(row, 3, length);
+    ui->blastQueriesTableWidget->setItem(row, 4, hits);
+    ui->blastQueriesTableWidget->setItem(row, 5, percent);
+    ui->blastQueriesTableWidget->setItem(row, 6, paths);
 }
 
 
@@ -534,26 +540,30 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     //the cell value again if the new name isn't unique.
     ui->blastQueriesTableWidget->blockSignals(true);
 
-    //We are only interested in when a query name is changed.
-    if (column != 1)
-        return;
+    //If a query name was changed, then we actually adjust that query name.
+    if (column == 1)
+    {
+        QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
+        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-    QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
-    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+        QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
 
-    QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
+        //It's possible that the user gave the query a non-unique name, in which
+        //case we now have to adjust it.
+        if (uniqueName != newName)
+            ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
 
-    //It's possible that the user gave the query a non-unique name, in which
-    //case we now have to adjust it.
-    if (uniqueName != newName)
-        ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
+        //Resize the query table columns, as the name new might take up more or less space.
+        ui->blastQueriesTableWidget->resizeColumns();
 
-    //Resize the query table columns, as the name new might take up more or less space.
-    ui->blastQueriesTableWidget->resizeColumns();
+        //Rebuild the hits table, if necessary, to show the new name.
+        if (query->m_hits.size() > 0)
+            fillHitsTable();
+    }
 
-    //Rebuild the hits table, if necessary, to show the new name.
-    if (query->m_hits.size() > 0)
-        fillHitsTable();
+    //If anything else was changed, we want to change it back to what it was.
+    else
+        makeQueryRow(row);
 
     ui->blastQueriesTableWidget->blockSignals(false);
 }
