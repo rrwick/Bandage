@@ -128,7 +128,7 @@ public:
     //each BLAST query.
     double queryRequiredCoverage;
     double queryAllowedLengthDiscrepancy;
-    int queryPathSearchDepth;
+    int maxPathNodes;
 
     //This flag is true when the 'Specify exact path...' dialog is visible.
     bool pathDialogIsVisible;

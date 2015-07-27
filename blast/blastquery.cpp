@@ -135,7 +135,7 @@ void BlastQuery::findQueryPath()
             possiblePaths.append(Path::getAllPossiblePaths(startNode,
                                                            startPosition,
                                                            endNode, endPosition,
-                                                           g_settings->queryPathSearchDepth,
+                                                           g_settings->maxPathNodes - 1,
                                                            minLength,
                                                            maxLength));
         }

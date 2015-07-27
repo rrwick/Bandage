@@ -109,9 +109,9 @@ Settings::Settings()
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
-    queryRequiredCoverage = 0.9;
-    queryAllowedLengthDiscrepancy = 0.1;
-    queryPathSearchDepth = 5;
+    queryRequiredCoverage = 0.95;
+    queryAllowedLengthDiscrepancy = 0.05;
+    maxPathNodes = 6;
 
     pathDialogIsVisible = false;
     userSpecifiedPath = "";

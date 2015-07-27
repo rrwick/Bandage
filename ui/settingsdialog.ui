@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>516</width>
+    <width>402</width>
     <height>693</height>
    </rect>
   </property>
@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-1762</y>
-        <width>499</width>
-        <height>2407</height>
+        <y>-2060</y>
+        <width>431</width>
+        <height>2690</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -180,22 +180,6 @@
        </item>
        <item row="25" column="1">
         <widget class="InfoTextWidget" name="outlineColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="88" column="1">
-        <widget class="InfoTextWidget" name="contiguitySearchDepthInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1069,6 +1053,19 @@
          </property>
         </widget>
        </item>
+       <item row="87" column="0" colspan="5">
+        <widget class="QLabel" name="contiguityColourSchemeDescriptionLabel">
+         <property name="text">
+          <string>These settings control the node colours when the 'Colour by contiguity' colour scheme is used.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="69" column="0" colspan="5">
         <widget class="QLabel" name="coverageColourSchemeDescriptionLabel">
          <property name="text">
@@ -1095,6 +1092,74 @@
          </property>
         </widget>
        </item>
+       <item row="96" column="0" colspan="5">
+        <widget class="QLabel" name="blastQueryPathsHeadingLabel">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>BLAST query paths</string>
+         </property>
+        </widget>
+       </item>
+       <item row="102" column="2">
+        <spacer name="verticalSpacer_12">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="99" column="3">
+        <widget class="QDoubleSpinBox" name="requiredCoverageSpinBox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="minimum">
+          <double>50.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="99" column="2">
+        <widget class="QLabel" name="label_31">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Required coverage:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="100" column="3">
+        <widget class="QDoubleSpinBox" name="allowedLengthDiscrepancySpinBox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <double>50.000000000000000</double>
+         </property>
+        </widget>
+       </item>
        <item row="70" column="3">
         <widget class="ColourButton" name="lowCoverageColourButton">
          <property name="text">
@@ -1106,6 +1171,16 @@
         <widget class="ColourButton" name="contiguousStrandSpecificColourButton">
          <property name="text">
           <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="101" column="3">
+        <widget class="QSpinBox" name="maxPathNodesSpinBox">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>50</number>
          </property>
         </widget>
        </item>
@@ -1900,6 +1975,19 @@
          </property>
         </widget>
        </item>
+       <item row="98" column="0" colspan="5">
+        <widget class="QLabel" name="blastQueryPathsDescriptionLabel">
+         <property name="text">
+          <string>These settings control how Bandage searches for query paths after conducting a BLAST search. The found paths are displayed in the BLAST queries table in the BLAST search window.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="10" column="0" colspan="5">
         <widget class="QLabel" name="nodeWidthDescriptionLabel">
          <property name="text">
@@ -2480,16 +2568,116 @@
          </property>
         </widget>
        </item>
-       <item row="87" column="0" colspan="5">
-        <widget class="QLabel" name="contiguityColourSchemeDescriptionLabel">
+       <item row="100" column="2">
+        <widget class="QLabel" name="label_33">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>These settings control the node colours when the 'Colour by contiguity' colour scheme is used.</string>
+          <string>Max length discrepancy:</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+        </widget>
+       </item>
+       <item row="95" column="2">
+        <spacer name="verticalSpacer_11">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="wordWrap">
-          <bool>true</bool>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="97" column="0" colspan="5">
+        <widget class="Line" name="line_11">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="101" column="2">
+        <widget class="QLabel" name="label_35">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Max path nodes:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="88" column="1">
+        <widget class="InfoTextWidget" name="contiguitySearchDepthInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="99" column="1">
+        <widget class="InfoTextWidget" name="requiredCoverageInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="100" column="1">
+        <widget class="InfoTextWidget" name="allowedLengthDiscrepancyInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="101" column="1">
+        <widget class="InfoTextWidget" name="maxPathNodesInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
          </property>
         </widget>
        </item>

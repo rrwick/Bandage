@@ -155,6 +155,9 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->maybeContiguousColour, ui->maybeContiguousColourButton);
     colourFunctionPointer(&settings->notContiguousColour, ui->notContiguousColourButton);
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
+    doubleFunctionPointer(&settings->queryRequiredCoverage, ui->requiredCoverageSpinBox, true);
+    doubleFunctionPointer(&settings->queryAllowedLengthDiscrepancy, ui->allowedLengthDiscrepancySpinBox, true);
+    intFunctionPointer(&settings->maxPathNodes, ui->maxPathNodesSpinBox);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -327,6 +330,15 @@ void SettingsDialog::setInfoTexts()
                                                  "are not determined to be contiguous with the starting node(s).");
     ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the "
                                                       "starting node(s).");
+
+    ui->requiredCoverageInfoText->setInfoText("This is the fraction of a BLAST query which must be present in a graph path.<br><br>"
+                                              "Set to a higher value to make BLAST query paths more stringent.");
+    ui->allowedLengthDiscrepancyInfoText->setInfoText("This is the allowed difference in length between a BLAST query and "
+                                                      "its path in the graph.<br><br>"
+                                                      "Set to a lower value to make BLAST query paths more stringent.");
+    ui->maxPathNodesInfoText->setInfoText("This controls the maximum number of nodes in BLAST query paths.<br><br>"
+                                          "A higher value will allow for paths containing more nodes, at a performance "
+                                          "cost.");
 }
 
 
