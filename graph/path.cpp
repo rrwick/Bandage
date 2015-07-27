@@ -21,6 +21,8 @@
 #include "debruijnedge.h"
 #include "../blast/blasthit.h"
 #include "../blast/blastquery.h"
+#include <QRegularExpression>
+#include "assemblygraph.h"
 
 
 //These will try to produce a path using the given nodes.
@@ -97,6 +99,103 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
             path.m_edges.clear();
             return path;
         }
+    }
+
+    return path;
+}
+
+
+
+Path Path::makeFromString(QString pathString, bool circular,
+                          QList<DeBruijnNode *> * nodesInGraph,
+                          QStringList * nodesNotInGraph,
+                          PathStringFailure * pathStringFailure)
+{
+    Path path;
+
+    QRegularExpression re("^(?:\\(([0-9]+)\\) )*((?:[^,]+[-\\+], )*[^,]+[-\\+])(?: \\(([0-9]+)\\))*$");
+    QRegularExpressionMatch match = re.match(pathString);
+
+    //If the string failed to match the regex, return an empty path.
+    if (!match.hasMatch())
+    {
+        *pathStringFailure = IMPROPER_FORMAT;
+        return path;
+    }
+
+    QString startPosString = match.captured(1);
+    QString nodeListString = match.captured(2);
+    QString endPosString = match.captured(3);
+
+    //Circular paths cannot have start and end positions.
+    if (circular && (startPosString != "" || endPosString != ""))
+    {
+        *pathStringFailure = CIRCULAR_WITH_START_AND_END;
+        return path;
+    }
+
+    //Make sure there is at least one proposed node name listed.
+    QStringList nodeNameList = nodeListString.simplified().split(",", QString::SkipEmptyParts);
+    if (nodeNameList.empty())
+    {
+        *pathStringFailure = IMPROPER_FORMAT;
+        return path;
+    }
+
+    //Find which node names are and are not actually in the graph.
+    for (int i = 0; i < nodeNameList.size(); ++i)
+    {
+        QString nodeName = nodeNameList[i].simplified();
+        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
+            nodesInGraph->push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
+        else
+            nodesNotInGraph->push_back(nodeName);
+    }
+
+    //If the path contains nodes not in the graph, we fail.
+    if (nodesNotInGraph->size() > 0)
+    {
+        *pathStringFailure = NODES_NOT_IN_GRAPH;
+        return path;
+    }
+
+    //If the code got here, then the list at least consists of valid nodes.
+    //We now use it to create a Path object.
+    path = Path::makeFromOrderedNodes(*nodesInGraph, circular);
+
+    //If the path is empty, then we don't have to worry about start/end
+    //positions and we just return it.
+    if (path.isEmpty())
+        return path;
+
+    //If the code got here, then a path was made, and now we must check whether
+    //the start/end points are valid.
+    if (startPosString.length() > 0)
+    {
+        DeBruijnNode * firstNode = path.m_nodes.front();
+        int startPos = startPosString.toInt();
+        if (startPos > firstNode->m_length)
+        {
+            *pathStringFailure = START_POS_NOT_IN_NODE;
+            return Path();
+        }
+
+        path.m_startType = PART_OF_NODE;
+        path.m_startPosition = startPos;
+    }
+
+    if (endPosString.length() > 0)
+    {
+        DeBruijnNode * lastNode = path.m_nodes.back();
+        int endPos = endPosString.toInt();
+        if (endPos > lastNode->m_length)
+        {
+            *pathStringFailure = END_POS_NOT_IN_NODE;
+            return Path();
+        }
+
+        path.m_endType = PART_OF_NODE;
+        path.m_endPosition = endPos;
     }
 
     return path;
@@ -369,7 +468,7 @@ int Path::getLength()
 QString Path::getFasta()
 {
     //The description line is a comma-delimited list of the nodes in the path
-    QString fasta = ">" + getStringNoSpaces();
+    QString fasta = ">" + getString(false);
 
     if (isCircular())
         fasta += "(circular)";
@@ -394,32 +493,32 @@ QString Path::getFasta()
 
 
 
-QString Path::getString()
+QString Path::getString(bool spaces)
 {
     QString output;
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         if (i == 0 && m_startType == PART_OF_NODE)
-            output += "(" + QString::number(m_startPosition) + ") ";
+        {
+            output += "(" + QString::number(m_startPosition) + ")";
+            if (spaces)
+                output += " ";
+        }
 
         output += m_nodes[i]->m_name;
         if (i < m_nodes.size() - 1)
-            output += ", ";
+        {
+            output += ",";
+            if (spaces)
+                output += " ";
+        }
 
         if (i == m_nodes.size() - 1 && m_endType == PART_OF_NODE)
-            output += " (" + QString::number(m_endPosition) + ")";
-    }
-    return output;
-}
-
-QString Path::getStringNoSpaces()
-{
-    QString output;
-    for (int i = 0; i < m_nodes.size(); ++i)
-    {
-        output += m_nodes[i]->m_name;
-        if (i < m_nodes.size() - 1)
-            output += ",";
+        {
+            if (spaces)
+                output += " ";
+            output += "(" + QString::number(m_endPosition) + ")";
+        }
     }
     return output;
 }

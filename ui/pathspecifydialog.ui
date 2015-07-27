@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>558</width>
-    <height>355</height>
+    <width>545</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,10 @@
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Define a path by providing an ordered list of exact nodes, with their directionality, separated by commas. Example: 5+, 6-, 41+
+      <string>Define a path by providing an ordered list of exact nodes, with their directionality, separated by commas.  You can optionally specify a start position for the first node and/or an end position for the last node by enclosing a number in parentheses at the beginning and/or end.
+
+Example without start/end positions: 5+, 6-, 41+
+Example with start/end positions: (3039) 5+, 6-, 41+ (1023)
 
 Double clicking on a node in the graph will add it to the list. As directionality is important, it may be helpful to do this when the graph is drawn in double mode.</string>
      </property>

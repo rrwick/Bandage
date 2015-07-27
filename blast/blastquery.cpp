@@ -272,7 +272,7 @@ QString BlastQuery::getPathsString(int max)
     int count = std::min(m_paths.size(), max);
     for (int i = 0; i < count; ++i)
     {
-        pathsString += m_paths[i].getString();
+        pathsString += m_paths[i].getString(true);
         if (i < count - 1)
             pathsString += "; ";
     }

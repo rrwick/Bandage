@@ -23,6 +23,7 @@
 #include <QList>
 #include <vector>
 #include <QString>
+#include <QStringList>
 #include "../program/globals.h"
 
 class DeBruijnNode;
@@ -43,6 +44,10 @@ public:
                                        bool strandSpecific);
     static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes,
                                      bool circular);
+    static Path makeFromString(QString pathString, bool circular,
+                               QList<DeBruijnNode *> * nodesInGraph,
+                               QStringList * nodesNotInGraph,
+                               PathStringFailure * pathStringFailure);
 
 
     static QList<Path> getAllPossiblePaths(DeBruijnNode * startNode,
@@ -68,8 +73,7 @@ public:
     QByteArray getPathSequence();
     QString getFasta();
     bool checkForOtherEdges();
-    QString getString();
-    QString getStringNoSpaces();
+    QString getString(bool spaces);
     int getLength();
     QList<Path> extendPathInAllPossibleWays();
 
