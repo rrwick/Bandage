@@ -399,9 +399,15 @@ QString Path::getString()
     QString output;
     for (int i = 0; i < m_nodes.size(); ++i)
     {
+        if (i == 0 && m_startType == PART_OF_NODE)
+            output += "(" + QString::number(m_startPosition) + ") ";
+
         output += m_nodes[i]->m_name;
         if (i < m_nodes.size() - 1)
             output += ", ";
+
+        if (i == m_nodes.size() - 1 && m_endType == PART_OF_NODE)
+            output += " (" + QString::number(m_endPosition) + ")";
     }
     return output;
 }

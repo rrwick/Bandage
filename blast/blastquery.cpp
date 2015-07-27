@@ -142,7 +142,7 @@ void BlastQuery::findQueryPath()
 
     //We now want to throw out any paths which are sub-paths of other, larger
     //paths.
-    QList<Path> noSubPaths;
+    m_paths = QList<Path>();
     for (int i = 0; i < possiblePaths.size(); ++i)
     {
         bool throwOut = false;
@@ -159,38 +159,7 @@ void BlastQuery::findQueryPath()
             }
         }
         if (!throwOut)
-            noSubPaths.push_back(possiblePaths[i]);
-    }
-
-    //We now throw out any paths that have the exact same nodes as other paths.
-    m_paths = QList<Path>();
-    for (int i = 0; i < noSubPaths.size(); ++i)
-    {
-        bool throwOut = false;
-        for (int j = 0; j < noSubPaths.size(); ++j)
-        {
-            //No need to compare a path with itself.
-            if (i == j)
-                continue;
-
-            //If two paths have the same nodes...
-            if (possiblePaths[i].haveSameNodes(possiblePaths[j]))
-            {
-                int iLength = possiblePaths[i].getLength();
-                int jLength = possiblePaths[j].getLength();
-
-                //If the two paths are the same length, throw out the one with
-                //the smaller index (an arbitrary choice).
-                //If they have different lengths, throw out the shorter one.
-                if ((iLength == jLength && i < j) || (iLength < jLength))
-                {
-                    throwOut = true;
-                    break;
-                }
-            }
-        }
-        if (!throwOut)
-            m_paths.push_back(noSubPaths[i]);
+            m_paths.push_back(possiblePaths[i]);
     }
 
     //Now we sort the paths from best to worst.  Since I can't normally use a
