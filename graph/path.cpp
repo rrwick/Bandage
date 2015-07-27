@@ -553,7 +553,12 @@ bool Path::isCircular()
 bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
 {
     if (isEmpty())
+    {
+        QList<DeBruijnNode *> nodeList;
+        nodeList.push_back(node);
+        *extendedPath = Path::makeFromOrderedNodes(nodeList, false);
         return true;
+    }
     if (isCircular())
         return false;
 
@@ -577,7 +582,12 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
 bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath)
 {
     if (isEmpty())
+    {
+        QList<DeBruijnNode *> nodeList;
+        nodeList.push_back(node);
+        *extendedPath = Path::makeFromOrderedNodes(nodeList, false);
         return true;
+    }
     if (isCircular())
         return false;
 
