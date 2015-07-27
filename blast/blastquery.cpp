@@ -190,7 +190,7 @@ void BlastQuery::findQueryPath()
             }
         }
         if (!throwOut)
-            m_paths.push_back(possiblePaths[i]);
+            m_paths.push_back(noSubPaths[i]);
     }
 
     //Now we sort the paths from best to worst.  Since I can't normally use a
