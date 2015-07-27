@@ -176,29 +176,32 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     QString pathText = ui->pathTextEdit->toPlainText();
 
     //If the node fits on the end of the path add it there.
-    if (m_path.canNodeFitOnEnd(node))
-    {
-        if (pathText.length() > 0)
-            pathText += ", ";
-        pathText += node->m_name;
-    }
+    Path extendedPath = m_path;
+    if (m_path.canNodeFitOnEnd(node, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If not, try the front of the path.
-    else if (m_path.canNodeFitAtStart(node))
-        pathText = node->m_name + ", " + pathText;
+    else if (m_path.canNodeFitAtStart(node, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If neither of these work, try the reverse complement, first
     //at the end and then at the front.
     //But only do this if we are in single mode.
-    else if (!g_settings->doubleMode && m_path.canNodeFitOnEnd(node->m_reverseComplement))
-        pathText += ", " + node->m_reverseComplement->m_name;
-    else if (!g_settings->doubleMode && m_path.canNodeFitAtStart(node->m_reverseComplement))
-        pathText = node->m_reverseComplement->m_name + ", " + pathText;
+    else if (!g_settings->doubleMode &&
+             m_path.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
+        pathText = extendedPath.getString(true);
+    else if (!g_settings->doubleMode &&
+             m_path.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If all of the above failed, just add the node to the end of
     //the list, which will make the list invalid.
     else
-        pathText += ", " + node->m_name;
+    {
+        Path pathCopy = m_path;
+        pathCopy.m_endType = ENTIRE_NODE;
+        pathText = pathCopy.getString(true) + ", " + node->m_name;
+    }
 
     ui->pathTextEdit->setPlainText(pathText);
 }

@@ -548,7 +548,9 @@ bool Path::isCircular()
 
 //These functions test whether the specified node could be added to
 //the end/front of the path to form a larger valid path.
-bool Path::canNodeFitOnEnd(DeBruijnNode * node)
+//If so, they set the path pointed to by extendedPath to equal the new, larger
+//path.
+bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
 {
     if (isEmpty())
         return true;
@@ -560,13 +562,19 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node)
     {
         DeBruijnEdge * edge = lastNode->m_edges[i];
         if (edge->m_startingNode == lastNode && edge->m_endingNode == node)
+        {
+            *extendedPath = *this;
+            extendedPath->m_edges.push_back(edge);
+            extendedPath->m_nodes.push_back(node);
+            extendedPath->m_endType = ENTIRE_NODE;
             return true;
+        }
     }
 
     return false;
 }
 
-bool Path::canNodeFitAtStart(DeBruijnNode * node)
+bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath)
 {
     if (isEmpty())
         return true;
@@ -578,7 +586,13 @@ bool Path::canNodeFitAtStart(DeBruijnNode * node)
     {
         DeBruijnEdge * edge = firstNode->m_edges[i];
         if (edge->m_startingNode == node && edge->m_endingNode == firstNode)
+        {
+            *extendedPath = *this;
+            extendedPath->m_edges.push_front(edge);
+            extendedPath->m_nodes.push_front(node);
+            extendedPath->m_startType = ENTIRE_NODE;
             return true;
+        }
     }
 
     return false;

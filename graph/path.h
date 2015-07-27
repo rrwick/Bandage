@@ -77,8 +77,8 @@ public:
     int getLength();
     QList<Path> extendPathInAllPossibleWays();
 
-    bool canNodeFitOnEnd(DeBruijnNode * node);
-    bool canNodeFitAtStart(DeBruijnNode * node);
+    bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath);
+    bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath);
 
     QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query);
     double getMeanReadDepth();
