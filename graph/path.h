@@ -69,6 +69,7 @@ public:
     QString getFasta();
     bool checkForOtherEdges();
     QString getString();
+    QString getStringNoSpaces();
     int getLength();
     QList<Path> extendPathInAllPossibleWays();
 

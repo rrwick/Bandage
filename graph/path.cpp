@@ -369,10 +369,10 @@ int Path::getLength()
 QString Path::getFasta()
 {
     //The description line is a comma-delimited list of the nodes in the path
-    QString fasta = ">" + getString();
+    QString fasta = ">" + getStringNoSpaces();
 
     if (isCircular())
-        fasta += " (circular)";
+        fasta += "(circular)";
     fasta += "\n";
 
     QString pathSequence = getPathSequence();
@@ -402,6 +402,18 @@ QString Path::getString()
         output += m_nodes[i]->m_name;
         if (i < m_nodes.size() - 1)
             output += ", ";
+    }
+    return output;
+}
+
+QString Path::getStringNoSpaces()
+{
+    QString output;
+    for (int i = 0; i < m_nodes.size(); ++i)
+    {
+        output += m_nodes[i]->m_name;
+        if (i < m_nodes.size() - 1)
+            output += ",";
     }
     return output;
 }
