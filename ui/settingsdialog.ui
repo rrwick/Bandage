@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-2060</y>
+        <y>0</y>
         <width>431</width>
         <height>2690</height>
        </rect>
@@ -1978,7 +1978,7 @@
        <item row="98" column="0" colspan="5">
         <widget class="QLabel" name="blastQueryPathsDescriptionLabel">
          <property name="text">
-          <string>These settings control how Bandage searches for query paths after conducting a BLAST search. The found paths are displayed in the BLAST queries table in the BLAST search window.</string>
+          <string>These settings control how Bandage searches for query paths after conducting a BLAST search. It is necessary to rerun a BLAST search to see the effect of changing these settings.</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
