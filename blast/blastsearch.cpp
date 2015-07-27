@@ -233,8 +233,11 @@ QString BlastSearch::doAutoBlastSearch()
 }
 
 
-void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
+//This function returns the number of queries loaded from the FASTA file.
+int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
 {
+    int queriesBefore = int(g_blastSearch->m_blastQueries.m_queries.size());
+
     std::vector<QString> queryNames;
     std::vector<QString> querySequences;
     readFastaFile(fullFileName, &queryNames, &querySequences);
@@ -252,6 +255,9 @@ void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
         g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                               querySequences[i]));
     }
+
+    int queriesAfter = int(g_blastSearch->m_blastQueries.m_queries.size());
+    return queriesAfter - queriesBefore;
 }
 
 

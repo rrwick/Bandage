@@ -370,16 +370,20 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
-
-    fillQueriesTable();
-    clearBlastHits();
-    g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    int queriesLoaded = g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
+    if (queriesLoaded > 0)
+    {
+        fillQueriesTable();
+        clearBlastHits();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        setUiStep(READY_FOR_BLAST_SEARCH);
+    }
 
     progress->close();
     delete progress;
 
-    setUiStep(READY_FOR_BLAST_SEARCH);
+    if (queriesLoaded == 0)
+        QMessageBox::information(this, "No queries loaded", "No queries could be loaded from the specified file.");
 }
 
 

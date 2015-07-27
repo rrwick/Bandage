@@ -54,7 +54,7 @@ public:
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void emptyTempDirectory();
     QString doAutoBlastSearch();
-    void loadBlastQueriesFromFastaFile(QString fullFileName);
+    int loadBlastQueriesFromFastaFile(QString fullFileName);
     QString cleanQueryName(QString queryName);
     void blastQueryChanged(QString queryName);
 };
