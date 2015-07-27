@@ -193,7 +193,7 @@ void BlastSearchDialog::fillQueriesTable()
 
         hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         percent->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
         ColourButton * colourButton = new ColourButton();
         colourButton->setColour(query->m_colour);
