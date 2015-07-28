@@ -89,12 +89,9 @@ void BlastQuery::clearSearchResults()
 //This function tries to find the paths through the graph which cover the query.
 void BlastQuery::findQueryPath()
 {
-    //Determine the acceptable path length range for this query.
     int queryLength = m_sequence.length();
     if (m_sequenceType == PROTEIN)
         queryLength *= 3;
-    int minLength = int(queryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
-    int maxLength = int(queryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
 
     //Find all possible path starts within an acceptable distance from the query
     //start.
@@ -103,7 +100,7 @@ void BlastQuery::findQueryPath()
     for (int i = 0; i < m_hits.size(); ++i)
     {
         BlastHit * hit = m_hits[i].data();
-        if (hit->m_queryStartFraction < acceptableStartFraction)
+        if (hit->m_queryStartFraction <= acceptableStartFraction)
             possibleStarts.push_back(hit);
     }
 
@@ -113,7 +110,7 @@ void BlastQuery::findQueryPath()
     for (int i = 0; i < m_hits.size(); ++i)
     {
         BlastHit * hit = m_hits[i].data();
-        if (hit->m_queryEndFraction > acceptableEndFraction)
+        if (hit->m_queryEndFraction >= acceptableEndFraction)
             possibleEnds.push_back(hit);
     }
 
@@ -131,6 +128,16 @@ void BlastQuery::findQueryPath()
             DeBruijnNode * endNode = end->m_node;
             int endPosition = end->m_nodeEnd;
 
+            //Assuming there is a path from the start hit to the end hit,
+            //determine the ideal length.  This is the query length minus the
+            //parts of the query not covered by the start and end.
+            int partialQueryLength = queryLength;
+            partialQueryLength -= start->m_queryStart - 1;
+            partialQueryLength -= queryLength - end->m_queryEnd;
+
+            int minLength = int(partialQueryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
+            int maxLength = int(partialQueryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
+
             possiblePaths.append(Path::getAllPossiblePaths(startNode,
                                                            startPosition,
                                                            endNode, endPosition,
@@ -140,26 +147,38 @@ void BlastQuery::findQueryPath()
         }
     }
 
+    //We now want to throw out any paths for which the hits do not cover a
+    //sufficient amount of the query.
+    QList<Path> sufficientCoveragePaths;
+    for (int i = 0; i < possiblePaths.size(); ++i)
+    {
+        QList<BlastHit *> pathHits = possiblePaths[i].getBlastHitsForQuery(this);
+        double fractionCovered = fractionCoveredByHits(&pathHits);
+        if (fractionCovered >= g_settings->queryRequiredCoverage)
+            sufficientCoveragePaths.push_back(possiblePaths[i]);
+
+    }
+
     //We now want to throw out any paths which are sub-paths of other, larger
     //paths.
     m_paths = QList<Path>();
-    for (int i = 0; i < possiblePaths.size(); ++i)
+    for (int i = 0; i < sufficientCoveragePaths.size(); ++i)
     {
         bool throwOut = false;
-        for (int j = 0; j < possiblePaths.size(); ++j)
+        for (int j = 0; j < sufficientCoveragePaths.size(); ++j)
         {
             //No need to compare a path with itself.
             if (i == j)
                 continue;
 
-            if (possiblePaths[i].hasNodeSubset(possiblePaths[j]))
+            if (sufficientCoveragePaths[i].hasNodeSubset(sufficientCoveragePaths[j]))
             {
                 throwOut = true;
                 break;
             }
         }
         if (!throwOut)
-            m_paths.push_back(possiblePaths[i]);
+            m_paths.push_back(sufficientCoveragePaths[i]);
     }
 
     //Now we sort the paths from best to worst.  Since I can't normally use a
@@ -233,14 +252,26 @@ double BlastQuery::getRelativeLengthDiscrepancy(Path path)
 }
 
 
-double BlastQuery::fractionCoveredByHits()
+
+//This function returns the fraction of the query that is covered by BLAST hits.
+//If a list of BLAST hits is passed to the function, it only looks in those
+//hits.  If no such list is passed, it looks in all hits for this query.
+double BlastQuery::fractionCoveredByHits(QList<BlastHit *> * hitsToCheck)
 {
     int hitBases = 0;
     for (int i = 0; i < m_length; ++i)
     {
         //Add one to the index because BLAST results use 1-based indexing.
-        if (positionInAHit(i+1))
-            ++hitBases;
+        if (hitsToCheck == 0)
+        {
+            if (positionInAnyHit(i+1))
+                ++hitBases;
+        }
+        else
+        {
+            if (positionInHitList(i+1, hitsToCheck))
+                ++hitBases;
+        }
     }
 
     return double(hitBases) / m_length;
@@ -249,11 +280,22 @@ double BlastQuery::fractionCoveredByHits()
 
 //This accepts a position with 1-based indexing, which is what BLAST results
 //use.
-bool BlastQuery::positionInAHit(int position)
+bool BlastQuery::positionInAnyHit(int position)
 {
     for (int i = 0; i < m_hits.size(); ++i)
     {
         BlastHit * hit = m_hits[i].data();
+        if (position >= hit->m_queryStart && position <= hit->m_queryEnd)
+            return true;
+    }
+    return false;
+}
+
+bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck)
+{
+    for (int i = 0; i < hitsToCheck->size(); ++i)
+    {
+        BlastHit * hit = (*hitsToCheck)[i];
         if (position >= hit->m_queryStart && position <= hit->m_queryEnd)
             return true;
     }

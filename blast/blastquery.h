@@ -47,7 +47,7 @@ public:
     QString getTypeString();
     void clearSearchResults();
     void findQueryPath();
-    double fractionCoveredByHits();
+    double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0);
     QString getPathsString(int max);
 
 public slots:
@@ -55,7 +55,8 @@ public slots:
 
 private:
     void autoSetSequenceType();
-    bool positionInAHit(int position);
+    bool positionInAnyHit(int position);
+    bool positionInHitList(int position, QList<BlastHit *> * hitsToCheck);
     bool comparePaths(Path a, Path b);
     long double getPathEValueProduct(Path path);
     double getRelativeLengthDiscrepancy(Path path);

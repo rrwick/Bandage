@@ -40,9 +40,9 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     int nodeLength = m_node->m_length;
     int queryLength = m_query->m_length;
 
-    m_nodeStartFraction = double(nodeStart) / nodeLength;
+    m_nodeStartFraction = double(nodeStart - 1) / nodeLength;
     m_nodeEndFraction = double(nodeEnd) / nodeLength;
-    m_queryStartFraction = double(queryStart) / queryLength;
+    m_queryStartFraction = double(queryStart - 1) / queryLength;
     m_queryEndFraction = double(queryEnd) / queryLength;
 }
 

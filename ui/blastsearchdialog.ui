@@ -654,7 +654,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Nodes/paths</string>
+       <string>Paths</string>
       </property>
      </column>
     </widget>
