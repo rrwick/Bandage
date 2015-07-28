@@ -163,7 +163,6 @@ void BlastQuery::findQueryPath()
         double fractionCovered = fractionCoveredByHits(&pathHits);
         if (fractionCovered >= g_settings->queryRequiredCoverage)
             sufficientCoveragePaths.push_back(possiblePaths[i]);
-
     }
 
     //We now want to throw out any paths which are sub-paths of other, larger
