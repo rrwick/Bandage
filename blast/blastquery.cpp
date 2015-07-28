@@ -132,8 +132,15 @@ void BlastQuery::findQueryPath()
             //determine the ideal length.  This is the query length minus the
             //parts of the query not covered by the start and end.
             int partialQueryLength = queryLength;
-            partialQueryLength -= start->m_queryStart - 1;
-            partialQueryLength -= queryLength - end->m_queryEnd;
+            int pathStart = start->m_queryStart - 1;
+            int pathEnd = end->m_queryEnd;
+            if (m_sequenceType == PROTEIN)
+            {
+                pathStart *= 3;
+                pathEnd *= 3;
+            }
+            partialQueryLength -= pathStart;
+            partialQueryLength -= queryLength - pathEnd;
 
             int minLength = int(partialQueryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
             int maxLength = int(partialQueryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
