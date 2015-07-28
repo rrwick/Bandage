@@ -32,7 +32,7 @@ MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
 {
     setDragMode(QGraphicsView::RubberBandDrag);
     setAntialiasing(g_settings->antialiasing);
-    setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
 

@@ -1180,21 +1180,6 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
-    //If any of the nodes have text displayed, then it is necessary to set the
-    //viewport update to full.  This is because the text may not stay within
-    //the GraphicsItemNode's bounding rectangle, and if not, artefacts would
-    //occur when nodes are moved.
-    //This change means that graphics performance will be somewhat worse when
-    //nodes have text displayed.
-    if (g_settings->displayNodeCustomLabels ||
-            g_settings->displayNodeNames ||
-            g_settings->displayNodeLengths ||
-            g_settings->displayNodeCoverages ||
-            g_settings->displayBlastHits)
-        g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    else
-        g_graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
-
     g_graphicsView->viewport()->update();
 }
 
