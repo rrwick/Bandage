@@ -1188,7 +1188,8 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromString(QString nodeNamesS
 //Given a list of node names (as strings), this function will return all nodes which match
 //those names exactly.  The last +/- on the end of the node name is optional - if missing
 //both + and - nodes will be returned.
-std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList,
+                                                                 std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -1236,7 +1237,8 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nod
     return returnVector;
 }
 
-std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList,
+                                                                   std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 

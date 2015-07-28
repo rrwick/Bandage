@@ -57,7 +57,7 @@ public:
 
     Path m_queryPath;
 
-    std::vector<BlastHitPart> getBlastHitParts(bool reverse);
+    std::vector<BlastHitPart> getBlastHitParts(bool reverse, double scaledNodeLength);
     bool onForwardStrand() {return m_queryStart < m_queryEnd;}
     double getNodeCentreFraction() {return (m_nodeStartFraction + m_nodeEndFraction) / 2.0;}
     static bool compareTwoBlastHitPointers(BlastHit * a, BlastHit * b);

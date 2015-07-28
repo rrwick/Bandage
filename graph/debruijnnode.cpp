@@ -366,20 +366,20 @@ bool DeBruijnNode::thisNodeOrReverseComplementHasBlastHits()
     return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;
 }
 
-std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode()
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode(double scaledNodeLength)
 {
     std::vector<BlastHitPart> returnVector;
 
     for (size_t i = 0; i < m_blastHits.size(); ++i)
     {
-        std::vector<BlastHitPart> hitParts = m_blastHits[i]->getBlastHitParts(false);
+        std::vector<BlastHitPart> hitParts = m_blastHits[i]->getBlastHitParts(false, scaledNodeLength);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
 
     return returnVector;
 }
 
-std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement()
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength)
 {
     DeBruijnNode * positiveNode = this;
     DeBruijnNode * negativeNode = m_reverseComplement;
@@ -392,12 +392,12 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
     std::vector<BlastHitPart> returnVector;
     for (size_t i = 0; i < positiveNode->m_blastHits.size(); ++i)
     {
-        std::vector<BlastHitPart> hitParts = positiveNode->m_blastHits[i]->getBlastHitParts(false);
+        std::vector<BlastHitPart> hitParts = positiveNode->m_blastHits[i]->getBlastHitParts(false, scaledNodeLength);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
     for (size_t i = 0; i < negativeNode->m_blastHits.size(); ++i)
     {
-        std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true);
+        std::vector<BlastHitPart> hitParts = negativeNode->m_blastHits[i]->getBlastHitParts(true, scaledNodeLength);
         returnVector.insert(returnVector.end(), hitParts.begin(), hitParts.end());
     }
 

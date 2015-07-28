@@ -46,7 +46,7 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     m_queryEndFraction = double(queryEnd) / queryLength;
 }
 
-std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
+std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse, double scaledNodeLength)
 {
     std::vector<BlastHitPart> returnVector;
 
@@ -54,7 +54,15 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
     //of BlastHitParts - each small and with a different colour of the rainbow.
     if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR)
     {
+        double scaledHitLength = (m_nodeEndFraction - m_nodeStartFraction) * scaledNodeLength;
+
         int partCount = ceil(g_settings->blastRainbowPartsPerQuery * fabs(m_queryStartFraction - m_queryEndFraction));
+
+        //If there are way more parts than the scaled hit length, that means
+        //that a single part will be much less than a pixel in length.  This
+        //isn't desirable, so reduce the partCount in these cases.
+        if (partCount > scaledHitLength * 2.0)
+            partCount = int(scaledHitLength * 2.0);
 
         double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
         double querySpacing = (m_queryEndFraction - m_queryStartFraction) / partCount;
