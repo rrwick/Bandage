@@ -103,7 +103,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     }
 
     //If results already exist, display them and move to step 4.
-    if (g_blastSearch->m_hits.size() > 0)
+    if (g_blastSearch->m_allHits.size() > 0)
     {
         fillHitsTable();
         setUiStep(BLAST_SEARCH_COMPLETE);
@@ -137,7 +137,7 @@ void BlastSearchDialog::clearBlastHits()
 
 void BlastSearchDialog::fillTablesAfterBlastSearch()
 {
-    if (g_blastSearch->m_hits.size() == 0)
+    if (g_blastSearch->m_allHits.empty())
         QMessageBox::information(this, "No hits", "No BLAST hits were found for the given queries and parameters.");
 
     fillQueriesTable();
@@ -160,41 +160,64 @@ void BlastSearchDialog::fillQueriesTable()
     ui->blastQueriesTableWidget->setRowCount(queryCount);
 
     for (int i = 0; i < queryCount; ++i)
-    {
-        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
-
-        QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
-        name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-
-        QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
-        type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
-        length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        //If the search hasn't yet been run, don't put a number in the hits column.
-        QTableWidgetItem * hits;
-        if (query->m_searchedFor)
-            hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits));
-        else
-            hits = new QTableWidgetItem("-");
-        hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        ColourButton * colourButton = new ColourButton();
-        colourButton->setColour(query->m_colour);
-        connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
-        connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
-
-        ui->blastQueriesTableWidget->setCellWidget(i, 0, colourButton);
-        ui->blastQueriesTableWidget->setItem(i, 1, name);
-        ui->blastQueriesTableWidget->setItem(i, 2, type);
-        ui->blastQueriesTableWidget->setItem(i, 3, length);
-        ui->blastQueriesTableWidget->setItem(i, 4, hits);
-    }
+        makeQueryRow(i);
 
     ui->blastQueriesTableWidget->resizeColumns();
 
     ui->blastQueriesTableWidget->blockSignals(false);
+}
+
+void BlastSearchDialog::makeQueryRow(int row)
+{
+    if (row >= int(g_blastSearch->m_blastQueries.m_queries.size()))
+        return;
+
+    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+
+    QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+    name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+    QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
+    type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
+    length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    //If the search hasn't yet been run, some of the columns will just have
+    //a dash.
+    QTableWidgetItem * hits;
+    QTableWidgetItem * percent;
+    QTableWidgetItem * paths;
+
+    if (query->m_searchedFor)
+    {
+        hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
+        percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
+        paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
+    }
+    else
+    {
+        hits = new QTableWidgetItem("-");
+        percent = new QTableWidgetItem("-");
+        paths = new QTableWidgetItem("-");
+    }
+
+    hits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    percent->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+
+    ColourButton * colourButton = new ColourButton();
+    colourButton->setColour(query->m_colour);
+    connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
+    connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
+
+    ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
+    ui->blastQueriesTableWidget->setItem(row, 1, name);
+    ui->blastQueriesTableWidget->setItem(row, 2, type);
+    ui->blastQueriesTableWidget->setItem(row, 3, length);
+    ui->blastQueriesTableWidget->setItem(row, 4, hits);
+    ui->blastQueriesTableWidget->setItem(row, 5, percent);
+    ui->blastQueriesTableWidget->setItem(row, 6, paths);
 }
 
 
@@ -202,7 +225,7 @@ void BlastSearchDialog::fillHitsTable()
 {
     ui->blastHitsTableWidget->clearContents();
 
-    int hitCount = int(g_blastSearch->m_hits.size());
+    int hitCount = g_blastSearch->m_allHits.size();
     ui->blastHitsTableWidget->setRowCount(hitCount);
 
     if (hitCount == 0)
@@ -210,7 +233,7 @@ void BlastSearchDialog::fillHitsTable()
 
     for (int i = 0; i < hitCount; ++i)
     {
-        BlastHit * hit = &(g_blastSearch->m_hits[i]);
+        BlastHit * hit = g_blastSearch->m_allHits[i].data();
 
         QTableWidgetItem * queryColour = new QTableWidgetItem();
         queryColour->setFlags(Qt::ItemIsEnabled);
@@ -237,7 +260,7 @@ void BlastSearchDialog::fillHitsTable()
         nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * eValue = new QTableWidgetItem(QString::number(hit->m_eValue));
         eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        QTableWidgetItem * bitScore = new QTableWidgetItem(formatIntForDisplay(hit->m_bitScore));
+        QTableWidgetItem * bitScore = new QTableWidgetItem(QString::number(hit->m_bitScore));
         bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
@@ -347,16 +370,20 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
     progress->setWindowModality(Qt::WindowModal);
     progress->show();
 
-    g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
-
-    fillQueriesTable();
-    clearBlastHits();
-    g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+    int queriesLoaded = g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
+    if (queriesLoaded > 0)
+    {
+        fillQueriesTable();
+        clearBlastHits();
+        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        setUiStep(READY_FOR_BLAST_SEARCH);
+    }
 
     progress->close();
     delete progress;
 
-    setUiStep(READY_FOR_BLAST_SEARCH);
+    if (queriesLoaded == 0)
+        QMessageBox::information(this, "No queries loaded", "No queries could be loaded from the specified file.");
 }
 
 
@@ -420,12 +447,10 @@ void BlastSearchDialog::clearSelectedQueries()
         return;
     }
 
-    bool hitsExist = (g_blastSearch->m_hits.size() > 0);
-
     g_blastSearch->clearSomeQueries(queriesToRemove);
 
     fillQueriesTable();
-    if (hitsExist)
+    if (g_blastSearch->m_allHits.size() > 0)
         fillHitsTable();
 }
 
@@ -519,26 +544,30 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     //the cell value again if the new name isn't unique.
     ui->blastQueriesTableWidget->blockSignals(true);
 
-    //We are only interested in when a query name is changed.
-    if (column != 1)
-        return;
+    //If a query name was changed, then we actually adjust that query name.
+    if (column == 1)
+    {
+        QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
+        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-    QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
-    BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
+        QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
 
-    QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
+        //It's possible that the user gave the query a non-unique name, in which
+        //case we now have to adjust it.
+        if (uniqueName != newName)
+            ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
 
-    //It's possible that the user gave the query a non-unique name, in which
-    //case we now have to adjust it.
-    if (uniqueName != newName)
-        ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
+        //Resize the query table columns, as the name new might take up more or less space.
+        ui->blastQueriesTableWidget->resizeColumns();
 
-    //Resize the query table columns, as the name new might take up more or less space.
-    ui->blastQueriesTableWidget->resizeColumns();
+        //Rebuild the hits table, if necessary, to show the new name.
+        if (query->m_hits.size() > 0)
+            fillHitsTable();
+    }
 
-    //Rebuild the hits table, if necessary, to show the new name.
-    if (query->m_hits > 0)
-        fillHitsTable();
+    //If anything else was changed, we want to change it back to what it was.
+    else
+        makeQueryRow(row);
 
     ui->blastQueriesTableWidget->blockSignals(false);
 }
@@ -570,6 +599,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
         ui->blastQueriesTableWidget->setEnabled(false);
+        ui->blastQueriesTableInfoText->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -597,6 +627,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(false);
         ui->enterQueryManuallyButton->setEnabled(false);
         ui->blastQueriesTableWidget->setEnabled(false);
+        ui->blastQueriesTableInfoText->setEnabled(false);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -624,6 +655,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(false);
         ui->parametersLabel->setEnabled(false);
         ui->parametersLineEdit->setEnabled(false);
@@ -651,6 +683,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -678,6 +711,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -705,6 +739,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->loadQueriesFromFastaButton->setEnabled(true);
         ui->enterQueryManuallyButton->setEnabled(true);
         ui->blastQueriesTableWidget->setEnabled(true);
+        ui->blastQueriesTableInfoText->setEnabled(true);
         ui->step3Label->setEnabled(true);
         ui->parametersLabel->setEnabled(true);
         ui->parametersLineEdit->setEnabled(true);
@@ -751,6 +786,32 @@ void BlastSearchDialog::setInfoTexts()
                                               "For protein queries, tblastn will be used instead of blastn.");
     ui->clearSelectedQueriesInfoText->setInfoText("Click this button to remove any selected queries in the below list.");
     ui->clearAllQueriesInfoText->setInfoText("Click this button to remove all queries in the below list.");
+    ui->blastQueriesTableInfoText->setInfoText("The BLAST queries are displayed in this table. Before a BLAST search "
+                                               "is run, some information about the queries is not yet available and "
+                                               "will show a dash.<br><br>"
+                                               "Colour: Each query is automatically assigned a colour which is used for the "
+                                               "'Blast hits (solid)' graph colour scheme. This colour can be changed by "
+                                               "clicking in the table cell.<br><br>"
+                                               "Query name: If a query is loaded from a FASTA file, its name is the sequence "
+                                               "ID (the text between the '>' and the first space in the description line). "
+                                               "Query names are editable by double clicking in their table cell.<br><br>"
+                                               "Type: This is either 'nucl' for nucleotide sequences or 'prot' for protein "
+                                               "sequences. Nucleotide sequences will be searched for using blastn, while "
+                                               "protein sequences will be search for with tblastn. Both types can be used "
+                                               "simultaneously.<br><br>"
+                                               "Length: This is the length of the query, in bases (for nucleotide queries) "
+                                               "or amino acids (for protein queries).<br><br>"
+                                               "Hits: This is the number of BLAST hits acquired for the query.<br><br>"
+                                               "Percent found: This is the total fraction of the query captured by all of "
+                                               "the BLAST hits. However, the hits may not be proximal to each other. For "
+                                               "example, if the first half a query was found in one part of the graph and "
+                                               "the second half in a different part, this value would still be 100&.<br><br>"
+                                               "Nodes/paths: These are the possible paths through the graph which "
+                                               "represent the entire query, as defined by the 'BLAST query paths' settings. "
+                                               "If a query is contained within a single node, the path will just be one "
+                                               "node name. If the query spans multiple nodes, the path will be a comma-"
+                                               "delimited list. If there are multiple paths, they are separated with "
+                                               "semicolons.");
 }
 
 

@@ -25,6 +25,7 @@ class BlastQuery;
 #include <QString>
 #include "blasthitpart.h"
 #include <vector>
+#include "../graph/path.h"
 
 class BlastHit
 {
@@ -33,7 +34,7 @@ public:
              double percentIdentity, int alignmentLength,
              int numberMismatches, int numberGapOpens,
              int queryStart, int queryEnd,
-             int nodeStart, int nodeEnd, double eValue, int bitScore);
+             int nodeStart, int nodeEnd, double eValue, double bitScore);
     BlastHit();
 
     BlastQuery * m_query;
@@ -47,16 +48,20 @@ public:
     int m_nodeStart;
     int m_nodeEnd;
     double m_eValue;
-    int m_bitScore;
+    double m_bitScore;
 
     double m_nodeStartFraction;
     double m_nodeEndFraction;
     double m_queryStartFraction;
     double m_queryEndFraction;
 
-    std::vector<BlastHitPart> getBlastHitParts(bool reverse);
+    Path m_queryPath;
+
+    std::vector<BlastHitPart> getBlastHitParts(bool reverse, double scaledNodeLength);
     bool onForwardStrand() {return m_queryStart < m_queryEnd;}
     double getNodeCentreFraction() {return (m_nodeStartFraction + m_nodeEndFraction) / 2.0;}
+    static bool compareTwoBlastHitPointers(BlastHit * a, BlastHit * b);
+    double getQueryCoverageFraction();
 };
 
 #endif // BLASTHIT_H

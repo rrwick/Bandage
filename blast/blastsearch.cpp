@@ -27,7 +27,7 @@
 #include "../graph/debruijnnode.h"
 
 BlastSearch::BlastSearch() :
-    m_blastQueries()
+    m_blastQueries(), m_tempDirectory("bandage_temp/")
 {
 }
 
@@ -38,7 +38,7 @@ BlastSearch::~BlastSearch()
 
 void BlastSearch::clearBlastHits()
 {
-    m_hits.clear();
+    m_allHits.clear();
     m_blastQueries.clearSearchResults();
     m_blastOutput = "";
 }
@@ -50,16 +50,16 @@ void BlastSearch::cleanUp()
     emptyTempDirectory();
 }
 
-//This function uses the contents of m_blastOutput to construct
-//the BlastHit objects.
+//This function uses the contents of m_blastOutput (the raw output from the
+//BLAST search) to construct the BlastHit objects.
 void BlastSearch::buildHitsFromBlastOutput()
 {
     QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
 
     for (int i = 0; i < blastHitList.size(); ++i)
     {
-        QString hit = blastHitList[i];
-        QStringList alignmentParts = hit.split('\t');
+        QString hitString = blastHitList[i];
+        QStringList alignmentParts = hitString.split('\t');
 
         if (alignmentParts.size() < 12)
             return;
@@ -75,7 +75,7 @@ void BlastSearch::buildHitsFromBlastOutput()
         int nodeStart = alignmentParts[8].toInt();
         int nodeEnd = alignmentParts[9].toInt();
         double eValue = alignmentParts[10].toDouble();
-        int bitScore = alignmentParts[11].toInt();
+        double bitScore = alignmentParts[11].toDouble();
 
         //Only save BLAST hits that are on forward strands.
         if (nodeStart > nodeEnd)
@@ -92,12 +92,21 @@ void BlastSearch::buildHitsFromBlastOutput()
         if (query == 0)
             return;
 
-        g_blastSearch->m_hits.push_back(BlastHit(query, node, percentIdentity, alignmentLength,
-                                                 numberMismatches, numberGapOpens, queryStart, queryEnd,
-                                                 nodeStart, nodeEnd, eValue, bitScore));
+        QSharedPointer<BlastHit> hit(new BlastHit(query, node, percentIdentity, alignmentLength,
+                                                  numberMismatches, numberGapOpens, queryStart, queryEnd,
+                                                  nodeStart, nodeEnd, eValue, bitScore));
 
-        ++(query->m_hits);
+        m_allHits.push_back(hit);
+        query->m_hits.push_back(hit);
     }
+}
+
+
+//This function looks at each BLAST query and tries to find a path through
+//the graph which covers the maximal amount of the query.
+void BlastSearch::findQueryPaths()
+{
+    m_blastQueries.findQueryPaths();
 }
 
 
@@ -153,18 +162,16 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 
 
 
-
-
 void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 {
     //Remove any hits that are for queries that will be deleted.
-    std::vector<BlastHit>::iterator i;
-    for (i = m_hits.begin(); i != m_hits.end(); )
+    QList< QSharedPointer<BlastHit> >::iterator i = m_allHits.begin();
+    while (i != m_allHits.end())
     {
-        BlastQuery * hitQuery = i->m_query;
+        BlastQuery * hitQuery = (*i)->m_query;
         bool hitIsForDeletedQuery = (std::find(queriesToRemove.begin(), queriesToRemove.end(), hitQuery) != queriesToRemove.end());
         if (hitIsForDeletedQuery)
-            i = m_hits.erase(i);
+            i = m_allHits.erase(i);
         else
             ++i;
     }
@@ -177,6 +184,12 @@ void BlastSearch::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
 
 void BlastSearch::emptyTempDirectory()
 {
+    //Safety checks
+    if (g_blastSearch->m_tempDirectory == "")
+        return;
+    if (!g_blastSearch->m_tempDirectory.contains("bandage_temp"))
+        return;
+
     QDir tempDirectory(m_tempDirectory);
     tempDirectory.setNameFilters(QStringList() << "*.*");
     tempDirectory.setFilter(QDir::Files);
@@ -214,14 +227,17 @@ QString BlastSearch::doAutoBlastSearch()
     if (runBlastSearchWorker.m_error != "")
         return runBlastSearchWorker.m_error;
 
-    blastTargetChanged("all");
+    blastQueryChanged("all");
 
     return "";
 }
 
 
-void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
+//This function returns the number of queries loaded from the FASTA file.
+int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
 {
+    int queriesBefore = int(g_blastSearch->m_blastQueries.m_queries.size());
+
     std::vector<QString> queryNames;
     std::vector<QString> querySequences;
     readFastaFile(fullFileName, &queryNames, &querySequences);
@@ -230,10 +246,18 @@ void BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
     {
         QApplication::processEvents();
 
-        QString queryName = cleanQueryName(queryNames[i]);
+        //We only use the part of the query name up to the first space.
+        QStringList queryNameParts = queryNames[i].split(" ");
+        QString queryName;
+        if (queryNameParts.size() > 0)
+            queryName = cleanQueryName(queryNameParts[0]);
+
         g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                               querySequences[i]));
     }
+
+    int queriesAfter = int(g_blastSearch->m_blastQueries.m_queries.size());
+    return queriesAfter - queriesBefore;
 }
 
 
@@ -252,7 +276,7 @@ QString BlastSearch::cleanQueryName(QString queryName)
     return queryName;
 }
 
-void BlastSearch::blastTargetChanged(QString queryName)
+void BlastSearch::blastQueryChanged(QString queryName)
 {
     g_assemblyGraph->clearAllBlastHitPointers();
 
@@ -271,9 +295,9 @@ void BlastSearch::blastTargetChanged(QString queryName)
     for (size_t i = 0; i < queries.size(); ++i)
     {
         BlastQuery * currentQuery = queries[i];
-        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        for (int j = 0; j < g_blastSearch->m_allHits.size(); ++j)
         {
-            BlastHit * hit = &(g_blastSearch->m_hits[j]);
+            BlastHit * hit = g_blastSearch->m_allHits[j].data();
             if (hit->m_query == currentQuery)
                 hit->m_node->m_blastHits.push_back(hit);
         }

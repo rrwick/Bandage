@@ -50,18 +50,6 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
     *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
     *out << endl;
-    *out << "          BLAST search" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
-    *out << "                              sequences to be used as BLAST queries (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
-    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "                              Format BLAST parameters exactly as they would be" << endl;
-    *out << "                              used for blastn/tblastn on the command line, and" << endl;
-    *out << "                              enclose them in quotes." << endl;
-    *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --double            Draw graph in double mode (default: off)" << endl;
@@ -143,6 +131,33 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              coverage value (default: " + getColourName(g_settings->highCoverageColour.name()) + ")" << endl;
     *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
     *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
+    *out << endl;
+    *out << "          BLAST search" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
+    *out << "                              sequences to be used as BLAST queries (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
+    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
+    *out << "                              none)" << endl;
+    *out << "                              Format BLAST parameters exactly as they would be" << endl;
+    *out << "                              used for blastn/tblastn on the command line, and" << endl;
+    *out << "                              enclose them in quotes." << endl;
+    *out << endl;
+    *out << "          BLAST query paths" << endl;
+    *out << "          ---------------------------------------------------------------------" << endl;
+    *out << "          These settings control how Bandage searches for query paths after" << endl;
+    *out << "          conducting a BLAST search." << endl;
+    *out << "          --reqcov <float>    Required fraction of a BLAST query which must be" << endl;
+    *out << "                              covered by a graph path (0.5 to 1.0, default:" << endl;
+    *out << "                              " + QString::number(g_settings->queryRequiredCoverage) + ")" << endl;
+    *out << "          --lendis <float>    Maximum allowed relative length discrepancy" << endl;
+    *out << "                              between a BLAST query and its path in the graph" << endl;
+    *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->queryAllowedLengthDiscrepancy) + ")" << endl;
+    *out << "          --pathnodes <int>   The number of allowed nodes in a BLAST query path" << endl;
+    *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
+    *out << "          --maxpaths <int>    The number of BLAST query paths displayed to the" << endl;
+    *out << "                              user (1 to 100, default: " << QString::number(g_settings->maxQueryPaths) + ")" << endl;
     *out << endl;
 }
 
@@ -245,6 +260,15 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
 
     error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--reqcov", arguments, 0.5, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--lendis", arguments, 0.0, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--pathnodes", arguments, 1, 50);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--maxpaths", arguments, 1, 100);
     if (error.length() > 0) return error;
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
@@ -388,6 +412,15 @@ void parseSettings(QStringList arguments)
         g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
         g_settings->autoCoverageValue = false;
     }
+
+    if (isOptionPresent("--reqcov", &arguments))
+        g_settings->queryRequiredCoverage = getFloatOption("--reqcov", &arguments);
+    if (isOptionPresent("--lendis", &arguments))
+        g_settings->queryAllowedLengthDiscrepancy = getFloatOption("--lendis", &arguments);
+    if (isOptionPresent("--pathnodes", &arguments))
+        g_settings->maxQueryPathNodes = getIntOption("--pathnodes", &arguments);
+    if (isOptionPresent("--maxpaths", &arguments))
+        g_settings->maxQueryPaths = getIntOption("--maxpaths", &arguments);
 }
 
 
@@ -977,5 +1010,8 @@ bool createBlastTempDirectory()
 
 void deleteBlastTempDirectory()
 {
-    QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+    if (g_blastSearch->m_tempDirectory != "" &&
+            QDir(g_blastSearch->m_tempDirectory).exists() &&
+            QDir(g_blastSearch->m_tempDirectory).dirName().contains("bandage_temp"))
+        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }

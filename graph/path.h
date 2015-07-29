@@ -23,9 +23,14 @@
 #include <QList>
 #include <vector>
 #include <QString>
+#include <QStringList>
+#include "../program/globals.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;
+
+class BlastHit;
+class BlastQuery;
 
 class Path
 {
@@ -33,14 +38,33 @@ public:
     Path() {}
 
     //Named constructors
-    static Path makeFromUnorderedNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
-    static Path makeFromUnorderedNodes(std::vector<DeBruijnNode *> nodes, bool strandSpecific);
-    static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular);
+    static Path makeFromUnorderedNodes(QList<DeBruijnNode *> nodes,
+                                       bool strandSpecific);
+    static Path makeFromUnorderedNodes(std::vector<DeBruijnNode *> nodes,
+                                       bool strandSpecific);
+    static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes,
+                                     bool circular);
+    static Path makeFromString(QString pathString, bool circular,
+                               QList<DeBruijnNode *> * nodesInGraph,
+                               QStringList * nodesNotInGraph,
+                               PathStringFailure * pathStringFailure);
+
+
+    static QList<Path> getAllPossiblePaths(DeBruijnNode * startNode,
+                                           int startPosition,
+                                           DeBruijnNode * endNode,
+                                           int endPosition, int nodeSearchDepth,
+                                           int minDistance, int maxDistance);
 
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
 
+    //If start/end type is PART_OF_NODE, then the Path sequence can begin and
+    //end in particular indices of the first and last node.  These indices are
+    //1-based, i.e. if m_startPosition is 1 the entire first node is included.
+    PathStartEndType m_startType;
     int m_startPosition;
+    PathStartEndType m_endType;
     int m_endPosition;
 
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
@@ -49,13 +73,23 @@ public:
     QByteArray getPathSequence();
     QString getFasta();
     bool checkForOtherEdges();
-    QString getString();
+    QString getString(bool spaces);
+    int getLength();
+    QList<Path> extendPathInAllPossibleWays();
 
-    bool canNodeFitOnEnd(DeBruijnNode * node);
-    bool canNodeFitAtStart(DeBruijnNode * node);
+    bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath);
+    bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath);
+
+    QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query);
+    double getMeanReadDepth();
+    
+    bool areIdentical(Path other);
+    bool haveSameNodes(Path other);
+    bool hasNodeSubset(Path other);
 
 private:
-    void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes, bool strandSpecific);
+    void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
+                                       bool strandSpecific);
 };
 
 #endif // PATH_H

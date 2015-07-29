@@ -285,8 +285,6 @@ void AssemblyGraph::clearAllBlastHitPointers()
     }
 }
 
-
-
 void AssemblyGraph::determineGraphInfo()
 {
     m_shortestContig = std::numeric_limits<long long>::max();
@@ -1273,7 +1271,8 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromString(QString nodeNamesS
 //Given a list of node names (as strings), this function will return all nodes which match
 //those names exactly.  The last +/- on the end of the node name is optional - if missing
 //both + and - nodes will be returned.
-std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList,
+                                                                 std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -1321,7 +1320,8 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nod
     return returnVector;
 }
 
-std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph)
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList,
+                                                                   std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -1369,15 +1369,14 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryNa
     else
         queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(queryName));
 
-    //Add the blast hit pointers to nodes that have a hit for
-    //the selected target(s).
+    //Add pointers to nodes that have a hit for the selected target(s).
     for (size_t i = 0; i < queries.size(); ++i)
     {
         BlastQuery * currentQuery = queries[i];
-        for (size_t j = 0; j < g_blastSearch->m_hits.size(); ++j)
+        for (int j = 0; j < g_blastSearch->m_allHits.size(); ++j)
         {
-            if (g_blastSearch->m_hits[j].m_query == currentQuery)
-                returnVector.push_back(g_blastSearch->m_hits[j].m_node);
+            if (g_blastSearch->m_allHits[j]->m_query == currentQuery)
+                returnVector.push_back(g_blastSearch->m_allHits[j]->m_node);
         }
     }
 

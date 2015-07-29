@@ -76,58 +76,52 @@ void PathSpecifyDialog::checkPathValidity()
         return;
     }
 
-    //Make sure there is at least one proposed node name listed.
-    QStringList nodeNameList = ui->pathTextEdit->toPlainText().simplified().split(",", QString::SkipEmptyParts);
-    if (nodeNameList.empty())
-    {
-        ui->validPathLabel->setText("Invalid path: no nodes specified");
-        setPathValidityUiElements(false);
-        return;
-    }
-
-    //Find which node names are and are not actually in the graph.
-    QList<DeBruijnNode *> pathNodes;
+    //Create a path from the user-supplied string.
+    PathStringFailure pathStringFailure;
+    QString pathText = ui->pathTextEdit->toPlainText().simplified();
+    QList<DeBruijnNode *> nodesInGraph;
     QStringList nodesNotInGraph;
-    for (int i = 0; i < nodeNameList.size(); ++i)
-    {
-        QString nodeName = nodeNameList[i].simplified();
-        if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-            pathNodes.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
-        else
-            nodesNotInGraph.push_back(nodeName);
-    }
+    m_path = Path::makeFromString(pathText,
+                                  ui->circularPathCheckBox->isChecked(),
+                                  &nodesInGraph, &nodesNotInGraph,
+                                  &pathStringFailure);
 
     //Save the pathNodes in settings, as they are used to determine whether
     //the nodes should be highlighted when drawn.
-    g_settings->userSpecifiedPathNodes = pathNodes;
+    g_settings->userSpecifiedPathNodes = nodesInGraph;
 
-    //If any nodes aren't in the graph, the path isn't valid.
-    if (!nodesNotInGraph.empty())
-    {
-        QString nodesNotInGraphString;
-        for (int i = 0; i < nodesNotInGraph.size(); ++i)
-        {
-            nodesNotInGraphString += nodesNotInGraph[i];
-            if (i < nodesNotInGraph.size() - 1)
-                nodesNotInGraphString += ", ";
-        }
-        ui->validPathLabel->setText("Invalid path: the following nodes are not in the graph: " + nodesNotInGraphString);
-        setPathValidityUiElements(false);
-        return;
-    }
-
-    //If the code got here, then the list at least consists of valid nodes.
-    //We now use it to create a Path object.
-    m_path = Path::makeFromOrderedNodes(pathNodes, ui->circularPathCheckBox->isChecked());
-
-    //If the Path turned out to be empty, that means that makeFromOrderedNodes
-    //failed because they do not form a Path.
+    //If the Path turned out to be empty, that means that makeFromString failed.
     if (m_path.isEmpty())
     {
-        if (ui->circularPathCheckBox->isChecked())
-            ui->validPathLabel->setText("Invalid path: the nodes do not form a circular path in the graph");
+        if (pathText == "")
+            ui->validPathLabel->setText("No path specified");
+
+        if (pathStringFailure == IMPROPER_FORMAT)
+            ui->validPathLabel->setText("Invalid path: the text is not "
+                                        "formatted correctly");
+
+        else if (pathStringFailure == NODES_NOT_IN_GRAPH)
+        {
+            QString nodesNotInGraphString;
+            for (int i = 0; i < nodesNotInGraph.size(); ++i)
+            {
+                nodesNotInGraphString += nodesNotInGraph[i];
+                if (i < nodesNotInGraph.size() - 1)
+                    nodesNotInGraphString += ", ";
+            }
+            ui->validPathLabel->setText("Invalid path: the following nodes are not in the graph: " + nodesNotInGraphString);
+        }
+
+        else if (pathStringFailure == PATH_NOT_CIRCULAR)
+            ui->validPathLabel->setText("Invalid path: the nodes do not form "
+                                        "a circular path");
+
+        else if (pathStringFailure == CIRCULAR_WITH_START_AND_END)
+            ui->validPathLabel->setText("Invalid path: circular paths cannot "
+                                        "contain start or end positions");
+
         else
-            ui->validPathLabel->setText("Invalid path: the nodes do not form a path in the graph");
+            ui->validPathLabel->setText("Invalid path");
         setPathValidityUiElements(false);
     }
 
@@ -182,29 +176,32 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     QString pathText = ui->pathTextEdit->toPlainText();
 
     //If the node fits on the end of the path add it there.
-    if (m_path.canNodeFitOnEnd(node))
-    {
-        if (pathText.length() > 0)
-            pathText += ", ";
-        pathText += node->m_name;
-    }
+    Path extendedPath = m_path;
+    if (m_path.canNodeFitOnEnd(node, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If not, try the front of the path.
-    else if (m_path.canNodeFitAtStart(node))
-        pathText = node->m_name + ", " + pathText;
+    else if (m_path.canNodeFitAtStart(node, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If neither of these work, try the reverse complement, first
     //at the end and then at the front.
     //But only do this if we are in single mode.
-    else if (!g_settings->doubleMode && m_path.canNodeFitOnEnd(node->m_reverseComplement))
-        pathText += ", " + node->m_reverseComplement->m_name;
-    else if (!g_settings->doubleMode && m_path.canNodeFitAtStart(node->m_reverseComplement))
-        pathText = node->m_reverseComplement->m_name + ", " + pathText;
+    else if (!g_settings->doubleMode &&
+             m_path.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
+        pathText = extendedPath.getString(true);
+    else if (!g_settings->doubleMode &&
+             m_path.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
+        pathText = extendedPath.getString(true);
 
     //If all of the above failed, just add the node to the end of
     //the list, which will make the list invalid.
     else
-        pathText += ", " + node->m_name;
+    {
+        Path pathCopy = m_path;
+        pathCopy.m_endType = ENTIRE_NODE;
+        pathText = pathCopy.getString(true) + ", " + node->m_name;
+    }
 
     ui->pathTextEdit->setPlainText(pathText);
 }

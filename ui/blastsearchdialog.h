@@ -57,6 +57,7 @@ private:
     void loadBlastQueriesFromFastaFile(QString fullFileName);
     void buildBlastDatabase(bool separateThread);
     void runBlastSearches(bool separateThread);
+    void makeQueryRow(int row);
 
 private slots:
     void buildBlastDatabaseInThread();

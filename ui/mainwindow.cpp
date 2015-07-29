@@ -155,7 +155,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
-    connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastTargetChanged()));
+    connect(ui->blastQueryComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(blastQueryChanged()));
     connect(ui->actionControls_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->actionSelection_panel, SIGNAL(toggled(bool)), this, SLOT(showHidePanels()));
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
@@ -221,7 +221,10 @@ MainWindow::~MainWindow()
     delete m_graphicsViewZoom;
     delete ui;
 
-    QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+    if (g_blastSearch->m_tempDirectory != "" &&
+            QDir(g_blastSearch->m_tempDirectory).exists() &&
+            QDir(g_blastSearch->m_tempDirectory).dirName().contains("bandage_temp"))
+        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
 
 
@@ -1223,22 +1226,6 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeCsvDataCol = ui->csvComboBox->currentIndex();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
-    //If any of the nodes have text displayed, then it is necessary to set the
-    //viewport update to full.  This is because the text may not stay within
-    //the GraphicsItemNode's bounding rectangle, and if not, artefacts would
-    //occur when nodes are moved.
-    //This change means that graphics performance will be somewhat worse when
-    //nodes have text displayed.
-    if (g_settings->displayNodeCustomLabels ||
-            g_settings->displayNodeNames ||
-            g_settings->displayNodeLengths ||
-            g_settings->displayNodeCoverages ||
-            g_settings->displayNodeCsvData ||
-            g_settings->displayBlastHits)
-        g_graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    else
-        g_graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
-
     g_graphicsView->viewport()->update();
 }
 
@@ -1534,7 +1521,7 @@ void MainWindow::setupBlastQueryComboBox()
     QStringList comboBoxItems;
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits > 0)
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits.size() > 0)
             comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
     }
 
@@ -1554,9 +1541,9 @@ void MainWindow::setupBlastQueryComboBox()
 }
 
 
-void MainWindow::blastTargetChanged()
+void MainWindow::blastQueryChanged()
 {
-    g_blastSearch->blastTargetChanged(ui->blastQueryComboBox->currentText());
+    g_blastSearch->blastQueryChanged(ui->blastQueryComboBox->currentText());
     g_graphicsView->viewport()->update();
 }
 

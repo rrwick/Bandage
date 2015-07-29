@@ -23,6 +23,9 @@
 #include <QString>
 #include <QColor>
 #include "../program/globals.h"
+#include "blasthit.h"
+#include <QList>
+#include <QSharedPointer>
 
 class BlastQuery : public QObject
 {
@@ -35,19 +38,28 @@ public:
     QString m_name;
     QString m_sequence;
     int m_length;
-    int m_hits;
+    QList< QSharedPointer<BlastHit> > m_hits;
     bool m_searchedFor;
     QColor m_colour;
     SequenceType m_sequenceType;
+    QList<Path> m_paths;
 
     QString getTypeString();
     void clearSearchResults();
+    void findQueryPath();
+    double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0);
+    QString getPathsString(int max);
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
 
 private:
     void autoSetSequenceType();
+    bool positionInAnyHit(int position);
+    bool positionInHitList(int position, QList<BlastHit *> * hitsToCheck);
+    bool comparePaths(Path a, Path b);
+    long double getPathEValueProduct(Path path);
+    double getRelativeLengthDiscrepancy(Path path);
 };
 
 #endif // BLASTQUERY_H

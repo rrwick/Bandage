@@ -29,7 +29,7 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
                    int numberMismatches, int numberGapOpens,
                    int queryStart, int queryEnd,
                    int nodeStart, int nodeEnd,
-                   double eValue, int bitScore) :
+                   double eValue, double bitScore) :
     m_query(query), m_node(node),
     m_percentIdentity(percentIdentity), m_alignmentLength(alignmentLength),
     m_numberMismatches(numberMismatches), m_numberGapOpens(numberGapOpens),
@@ -40,13 +40,13 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     int nodeLength = m_node->m_length;
     int queryLength = m_query->m_length;
 
-    m_nodeStartFraction = double(nodeStart) / nodeLength;
+    m_nodeStartFraction = double(nodeStart - 1) / nodeLength;
     m_nodeEndFraction = double(nodeEnd) / nodeLength;
-    m_queryStartFraction = double(queryStart) / queryLength;
+    m_queryStartFraction = double(queryStart - 1) / queryLength;
     m_queryEndFraction = double(queryEnd) / queryLength;
 }
 
-std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
+std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse, double scaledNodeLength)
 {
     std::vector<BlastHitPart> returnVector;
 
@@ -54,7 +54,15 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
     //of BlastHitParts - each small and with a different colour of the rainbow.
     if (g_settings->nodeColourScheme == BLAST_HITS_RAINBOW_COLOUR)
     {
+        double scaledHitLength = (m_nodeEndFraction - m_nodeStartFraction) * scaledNodeLength;
+
         int partCount = ceil(g_settings->blastRainbowPartsPerQuery * fabs(m_queryStartFraction - m_queryEndFraction));
+
+        //If there are way more parts than the scaled hit length, that means
+        //that a single part will be much less than a pixel in length.  This
+        //isn't desirable, so reduce the partCount in these cases.
+        if (partCount > scaledHitLength * 2.0)
+            partCount = int(scaledHitLength * 2.0);
 
         double nodeSpacing = (m_nodeEndFraction - m_nodeStartFraction) / partCount;
         double querySpacing = (m_queryEndFraction - m_queryStartFraction) / partCount;
@@ -90,4 +98,17 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse)
     }
 
     return returnVector;
+}
+
+
+bool BlastHit::compareTwoBlastHitPointers(BlastHit * a, BlastHit * b)
+{
+    return a->m_queryStart < b->m_queryStart;
+}
+
+
+double BlastHit::getQueryCoverageFraction()
+{
+    int queryRegionSize = m_queryEnd - m_queryStart;
+    return double(queryRegionSize) / m_query->m_length;
 }

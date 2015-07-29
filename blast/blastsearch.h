@@ -23,6 +23,8 @@
 #include "blastqueries.h"
 #include <vector>
 #include <QString>
+#include <QList>
+#include <QSharedPointer>
 
 //This is a class to hold all BLAST search related stuff.
 //An instance of it is made available to the whole program
@@ -35,25 +37,26 @@ public:
     ~BlastSearch();
 
     BlastQueries m_blastQueries;
-    std::vector<BlastHit> m_hits;
     QString m_blastOutput;
     bool m_cancelBuildBlastDatabase;
     bool m_cancelRunBlastSearch;
     QProcess * m_makeblastdb;
     QProcess * m_blast;
     QString m_tempDirectory;
+    QList< QSharedPointer<BlastHit> > m_allHits;
 
     void clearBlastHits();
     void cleanUp();
     void buildHitsFromBlastOutput();
+    void findQueryPaths();
     QString getNodeNameFromString(QString nodeString);
     bool findProgram(QString programName, QString * command);
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void emptyTempDirectory();
     QString doAutoBlastSearch();
-    void loadBlastQueriesFromFastaFile(QString fullFileName);
+    int loadBlastQueriesFromFastaFile(QString fullFileName);
     QString cleanQueryName(QString queryName);
-    void blastTargetChanged(QString queryName);
+    void blastQueryChanged(QString queryName);
 };
 
 #endif // BLASTSEARCH_H

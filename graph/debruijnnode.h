@@ -77,8 +77,8 @@ public:
 
     bool thisNodeHasBlastHits();
     bool thisNodeOrReverseComplementHasBlastHits();
-    std::vector<BlastHitPart> getBlastHitPartsForThisNode();
-    std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement();
+    std::vector<BlastHitPart> getBlastHitPartsForThisNode(double scaledNodeLength);
+    std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength);
     std::vector<DeBruijnNode *> getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths,
                                                          bool includeReverseComplements);
     bool doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeReverseComplement);
@@ -88,6 +88,9 @@ public:
     DeBruijnEdge * doesNodeLeadIn(DeBruijnNode * node);
     DeBruijnEdge * doesNodeLeadAway(DeBruijnNode * node);
     bool isNodeConnected(DeBruijnNode * node);
+
+    std::vector<DeBruijnEdge *> getEnteringEdges();
+    std::vector<DeBruijnEdge *> getLeavingEdges();
 };
 
 #endif // DEBRUIJNNODE_H

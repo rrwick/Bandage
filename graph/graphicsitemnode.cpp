@@ -109,15 +109,21 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     {
         std::vector<BlastHitPart> parts;
 
+        //The scaled node length is passed to the function which makes the
+        //BlastHitPart objects, because we don't want those parts to be much
+        //less than 1 pixel in size, which isn't necessary and can cause weird
+        //visual artefacts.
+        double scaledNodeLength = getNodePathLength() * g_absoluteZoom;
+
         if (g_settings->doubleMode)
         {
             if (m_deBruijnNode->thisNodeHasBlastHits())
-                parts = m_deBruijnNode->getBlastHitPartsForThisNode();
+                parts = m_deBruijnNode->getBlastHitPartsForThisNode(scaledNodeLength);
         }
         else
         {
             if (m_deBruijnNode->thisNodeOrReverseComplementHasBlastHits())
-                parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement();
+                parts = m_deBruijnNode->getBlastHitPartsForThisNodeOrReverseComplement(scaledNodeLength);
         }
 
         QPen partPen;
