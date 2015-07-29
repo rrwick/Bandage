@@ -83,6 +83,7 @@ public:
     void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
+    QStringList splitCsv(QString line, QString sep=",");
     bool loadCSV(QString filename, QStringList * columns,QString * errormsg);
 
     std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,

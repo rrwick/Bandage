@@ -951,29 +951,74 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
     return false;
 }
 
+/* split a qstring according to CSV rules
+ *
+ * @param line  line of a csv
+ * @param sep   field separator to use
+ * @result      list of fields with escaping removed
+ */
+QStringList AssemblyGraph::splitCsv(QString line, QString sep)
+{
+    QStringList list;
+    QRegExp rx("(\"(?:[^\"]|\"\")*\"|[^"+sep+"]*)");
+    int pos = 0;
+
+    while (rx.indexIn(line, pos) != -1)
+    {
+        QString field = rx.cap().replace("\"\"","\"");
+        if (field[0] == '"' && field[field.length()-1] == '"')
+            field=field.mid(1,field.length()-2);
+        list << field;
+        pos += rx.matchedLength() +1;
+    }
+    return list;
+}
+
+/* load data from CSV and add to deBruijnGraphNodes
+ *
+ * @param filename  the full path of the file to be loaded
+ * @param *columns  will contain the names of each column after loading data
+ *                  (to add these to the GUI)
+ * @param *errormsg if not empty, message to be displayed to user containing warning
+ *                  or other information
+ * @returns         true/false if loading data worked
+ */
 bool AssemblyGraph::loadCSV(QString filename, QStringList* columns, QString* errormsg)
 {
-    QString sep = "\t";
-
-    int unmatched_nodes = 0;
     QFile inputFile(filename);
-
     if (!inputFile.open(QIODevice::ReadOnly))
+    {
+        *errormsg = "Unable to read from specified file.";
         return false;
-
+    }
     QTextStream in(&inputFile);
-    *columns = in.readLine().split(sep);
+    QString line = in.readLine();
+
+    // guess at separator; this assumes that any tab in the first line means
+    // we have a tab separated file
+    QString sep = "\t";
+    if (line.split(sep).length() == 1)
+    {
+        sep = ",";
+        if (line.split(sep).length() == 1)
+        {
+            *errormsg = "Neither tab nor comma in first line?! Please check file format.";
+            return false;
+        }
+    }
+
+    int unmatched_nodes = 0; // keep a counter for lines in file that can't be matched to nodes
+
+    QRegExp rx("^[^_]*_([0-9]*)[_ ]");
+
+    *columns = splitCsv(line,sep);
     while (!in.atEnd())
     {
         QApplication::processEvents();
 
-        QString line = in.readLine();
-        QStringList cols = line.split(sep);
-        QString nameCol = cols.at(0);
-        QString nodeFullName = nameCol.split(" ").at(0);
-        std::cout << nodeFullName.toStdString() << std::endl;
-        QString nodeName = nodeFullName.split("_").at(1);
-
+        QStringList cols = splitCsv(in.readLine(),sep);
+        rx.indexIn(cols.at(0));
+        QString nodeName = rx.cap(1);
         if (m_deBruijnGraphNodes.contains(nodeName+"+"))
         {
             m_deBruijnGraphNodes[nodeName+"+"]->m_csvData = cols;
@@ -981,7 +1026,6 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList* columns, QString* err
         else {
             unmatched_nodes ++;
         }
-        // FIXME: chop \r\n
     }
 
     if (unmatched_nodes)
