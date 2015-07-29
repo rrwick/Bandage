@@ -113,7 +113,7 @@ Path Path::makeFromString(QString pathString, bool circular,
 {
     Path path;
 
-    QRegularExpression re("^(?:\\(([0-9]+)\\) )*((?:[^,]+[-\\+], )*[^,]+[-\\+])(?: \\(([0-9]+)\\))*$");
+    QRegularExpression re("^(?:\\(([0-9]+)\\) ?)*((?:[^,]+[-\\+], ?)*[^,]+[-\\+])(?: ?\\(([0-9]+)\\))*$");
     QRegularExpressionMatch match = re.match(pathString);
 
     //If the string failed to match the regex, return an empty path.
