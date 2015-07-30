@@ -50,7 +50,7 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
         }
 
         i.next();
-        if (i.value()->m_length > 0)
+        if (i.value()->getLength() > 0)
         {
             out << i.value()->getFasta();
             out << "\n";

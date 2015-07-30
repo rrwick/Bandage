@@ -37,7 +37,7 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     m_nodeStart(nodeStart), m_nodeEnd(nodeEnd),
     m_eValue(eValue), m_bitScore(bitScore)
 {
-    int nodeLength = m_node->m_length;
+    int nodeLength = m_node->getLength();
     int queryLength = m_query->m_length;
 
     m_nodeStartFraction = double(nodeStart - 1) / nodeLength;

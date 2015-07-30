@@ -437,7 +437,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
         if (i != int(selectedNodes.size()) - 1)
             selectedNodeListText += ", ";
 
-        totalLength += selectedNodes[i]->m_length;
+        totalLength += selectedNodes[i]->getLength();
     }
 
     selectedNodeLengthText = formatIntForDisplay(totalLength);

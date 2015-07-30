@@ -224,8 +224,8 @@ double AssemblyGraph::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
             continue;
 
         ++nodeCount;
-        totalLength += node->m_length;
-        coverageSum += node->m_length * node->m_coverage;
+        totalLength += node->getLength();
+        coverageSum += node->getLength() * node->m_coverage;
 
     }
 
@@ -297,7 +297,7 @@ void AssemblyGraph::determineGraphInfo()
     while (i.hasNext())
     {
         i.next();
-        long long nodeLength = i.value()->m_length;
+        long long nodeLength = i.value()->getLength();
 
         if (nodeLength < m_shortestContig)
             m_shortestContig = nodeLength;
@@ -428,8 +428,8 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 QByteArray sequence = in.readLine().toLocal8Bit();
                 QByteArray revCompSequence = in.readLine().toLocal8Bit();
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
                 m_deBruijnGraphNodes.insert(posNodeName, node);
@@ -507,11 +507,6 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
                 QByteArray revCompSequence = getReverseComplement(sequence);
 
-                //If there is an attribute holding the sequence length, we'll use
-                //that.  If there isn't, then we'll just look at the length of the
-                //sequence string.
-                int nodeLength = sequence.length();
-
                 //If there is an attribute holding the coverage, we'll use that.
                 //If there isn't, then we'll use zero.
                 double nodeCoverage = 0.0;
@@ -521,14 +516,12 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
-                    else if (part.left(5) == "LN:i:")
-                        nodeLength = part.right(part.length() - 5).toInt();
                     else if (part.left(5) == "KC:f:")
                         nodeCoverage = part.right(part.length() - 5).toDouble();
                 }
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeLength, nodeCoverage, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeLength, nodeCoverage, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeCoverage, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeCoverage, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
                 m_deBruijnGraphNodes.insert(posNodeName, node);
@@ -624,7 +617,6 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
             QApplication::processEvents();
 
             QString nodeName;
-            int nodeLength;
             double nodeCoverage;
 
             QString line = in.readLine();
@@ -652,8 +644,6 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                 else
                     nodeName += "+";
 
-                nodeLength = thisNodeDetails.at(3).toInt();
-
                 QString nodeCoverageString = thisNodeDetails.at(5);
                 if (negativeNode)
                 {
@@ -664,7 +654,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                 nodeCoverage = nodeCoverageString.toDouble();
 
                 //Make the node
-                node = new DeBruijnNode(nodeName, nodeLength, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
+                node = new DeBruijnNode(nodeName, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
                 m_deBruijnGraphNodes.insert(nodeName, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
@@ -750,7 +740,7 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
-        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_length, node->m_coverage,
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_coverage,
                                                   getReverseComplement(node->m_sequence));
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
@@ -863,7 +853,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeLength, 0.0, nodeSequence);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, 0.0, nodeSequence);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 

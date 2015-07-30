@@ -28,9 +28,8 @@
 #include <set>
 #include <QApplication>
 
-DeBruijnNode::DeBruijnNode(QString name, int length, double coverage, QByteArray sequence) :
+DeBruijnNode::DeBruijnNode(QString name, double coverage, QByteArray sequence) :
     m_name(name),
-    m_length(length),
     m_coverage(coverage),
     m_coverageRelativeToMeanDrawnCoverage(1.0),
     m_sequence(sequence),
@@ -91,7 +90,7 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph)
     //Each node in the Velvet sense is made up of multiple nodes in the
     //OGDF sense.  This way, Velvet nodes appear as lines whose length
     //corresponds to the sequence length.
-    int numberOfGraphEdges = ceil(double(m_length) / g_settings->getBasePairsPerSegment());
+    int numberOfGraphEdges = ceil(double(getLength()) / g_settings->getBasePairsPerSegment());
     if (numberOfGraphEdges == 0)
         numberOfGraphEdges = 1;
     int numberOfGraphNodes = numberOfGraphEdges + 1;
@@ -300,7 +299,7 @@ QByteArray DeBruijnNode::getFasta()
     fasta += "NODE_";
     fasta += m_name;
     fasta += "_length_";
-    fasta += QString::number(m_length);
+    fasta += QString::number(getLength());
     fasta += "_cov_";
     fasta += QString::number(m_coverage);
     fasta += "\n";

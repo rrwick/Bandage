@@ -34,11 +34,10 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(QString name, int length, double coverage, QByteArray sequence);
+    DeBruijnNode(QString name, double coverage, QByteArray sequence);
     ~DeBruijnNode();
 
     QString m_name;
-    int m_length;
     double m_coverage;
     double m_coverageRelativeToMeanDrawnCoverage;
     QByteArray m_sequence;
@@ -54,6 +53,7 @@ public:
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
 
+    int getLength() {return m_sequence.length();}
     void addEdge(DeBruijnEdge * edge);
     void resetNode();
     bool hasGraphicsItem() {return m_graphicsItemNode != 0;}

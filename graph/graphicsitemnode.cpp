@@ -762,7 +762,7 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << nodeName;
     }
     if (g_settings->displayNodeLengths)
-        nodeText << formatIntForDisplay(m_deBruijnNode->m_length) + " bp";
+        nodeText << formatIntForDisplay(m_deBruijnNode->getLength()) + " bp";
     if (g_settings->displayNodeCoverages)
         nodeText << formatDoubleForDisplay(m_deBruijnNode->m_coverage, 1) + "x";
 

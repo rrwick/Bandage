@@ -174,7 +174,7 @@ Path Path::makeFromString(QString pathString, bool circular,
     {
         DeBruijnNode * firstNode = path.m_nodes.front();
         int startPos = startPosString.toInt();
-        if (startPos > firstNode->m_length)
+        if (startPos > firstNode->getLength())
         {
             *pathStringFailure = START_POS_NOT_IN_NODE;
             return Path();
@@ -188,7 +188,7 @@ Path Path::makeFromString(QString pathString, bool circular,
     {
         DeBruijnNode * lastNode = path.m_nodes.back();
         int endPos = endPosString.toInt();
-        if (endPos > lastNode->m_length)
+        if (endPos > lastNode->getLength())
         {
             *pathStringFailure = END_POS_NOT_IN_NODE;
             return Path();
@@ -448,7 +448,7 @@ int Path::getLength()
 {
     int length = 0;
     for (int i = 0; i < m_nodes.size(); ++i)
-        length += m_nodes[i]->m_length;
+        length += m_nodes[i]->getLength();
 
     for (int i = 0; i < m_edges.size(); ++i)
         length -= m_edges[i]->m_overlap;
@@ -755,8 +755,8 @@ double Path::getMeanReadDepth()
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         DeBruijnNode * node = m_nodes[i];
-        depthTimesLengthSum += node->m_coverage * node->m_length;
-        nodeLengthTotal += node->m_length;
+        depthTimesLengthSum += node->m_coverage * node->getLength();
+        nodeLengthTotal += node->getLength();
     }
 
     return depthTimesLengthSum / nodeLengthTotal;
