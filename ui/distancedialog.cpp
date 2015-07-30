@@ -18,7 +18,7 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
 
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits.size() > 0)
+        if (g_blastSearch->m_blastQueries.m_queries[i]->m_paths.size() > 0)
             comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
     }
 
@@ -59,5 +59,10 @@ void DistanceDialog::findPaths()
         QMessageBox::information(this, "Same query", "The two selected queries are the same. To find paths between queries, you must select two different queries.");
         return;
     }
+
+
+
+
+
 
 }
