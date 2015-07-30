@@ -43,6 +43,7 @@ public:
     ogdf::Graph * m_ogdfGraph;
     ogdf::GraphAttributes * m_graphAttributes;
 
+    int m_kmer;
     int m_nodeCount;
     int m_edgeCount;
     long long m_totalLength;

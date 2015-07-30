@@ -35,7 +35,7 @@
 
 
 AssemblyGraph::AssemblyGraph() :
-    m_contiguitySearchDone(false)
+    m_kmer(0), m_contiguitySearchDone(false)
 {
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
@@ -388,6 +388,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
     m_graphFileType = LAST_GRAPH;
 
+    bool firstLine = true;
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
     {
@@ -396,6 +397,15 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         {
             QApplication::processEvents();
             QString line = in.readLine();
+
+            if (firstLine)
+            {
+                QStringList firstLineParts = line.split(QRegExp("\\s+"));
+                if (firstLineParts.size() > 2)
+                m_kmer = firstLineParts[2].toInt();
+                firstLine = false;
+            }
+
             if (line.startsWith("NODE"))
             {
                 QStringList nodeDetails = line.split(QRegExp("\\s+"));
