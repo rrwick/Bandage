@@ -127,6 +127,7 @@ private slots:
     void afterMainWindowShow();
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();
+    void openDistanceDialog();
 
 protected:
       void showEvent(QShowEvent *ev);

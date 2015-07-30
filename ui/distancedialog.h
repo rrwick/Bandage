@@ -17,6 +17,9 @@ public:
 
 private:
     Ui::DistanceDialog *ui;
+
+private slots:
+    void findPaths();
 };
 
 #endif // DISTANCEDIALOG_H

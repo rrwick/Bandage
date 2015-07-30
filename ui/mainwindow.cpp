@@ -62,6 +62,7 @@
 #include <QSvgGenerator>
 #include "../graph/path.h"
 #include "pathspecifydialog.h"
+#include "distancedialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -169,6 +170,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
+    connect(ui->actionDistance_between_queries, SIGNAL(triggered(bool)), this, SLOT(openDistanceDialog()));
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -1959,4 +1961,11 @@ void MainWindow::openPathSpecifyDialog()
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
     connect(g_graphicsView, SIGNAL(doubleClickedNode(DeBruijnNode*)), pathSpecifyDialog, SLOT(addNodeName(DeBruijnNode*)));
     pathSpecifyDialog->show();
+}
+
+
+void MainWindow::openDistanceDialog()
+{
+    DistanceDialog distanceDialog(this);
+    distanceDialog.exec();
 }
