@@ -22,7 +22,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Bandage
 TEMPLATE = app
 
-# Delete the following line if building on OS X 10.7
 CONFIG += c++11
 
 target.path += /usr/local/bin
@@ -66,7 +65,8 @@ SOURCES += \
     blast/runblastsearchworker.cpp \
     blast/blastsearch.cpp \
     graph/path.cpp \
-    ui/pathspecifydialog.cpp
+    ui/pathspecifydialog.cpp \
+    ui/distancedialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -105,7 +105,8 @@ HEADERS  += \
     ui/colourbutton.h \
     blast/runblastsearchworker.h \
     graph/path.h \
-    ui/pathspecifydialog.h
+    ui/pathspecifydialog.h \
+    ui/distancedialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -114,7 +115,8 @@ FORMS    += \
     ui/enteroneblastquerydialog.ui \
     ui/blastsearchdialog.ui \
     ui/myprogressdialog.ui \
-    ui/pathspecifydialog.ui
+    ui/pathspecifydialog.ui \
+    ui/distancedialog.ui
 
 
 # These includes are configured assuming that the OGDF
@@ -136,6 +138,7 @@ win32:RC_FILE = images/myapp.rc
 
 
 macx:ICON = images/application.icns
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
 RESOURCES += \
     images/images.qrc
