@@ -949,11 +949,14 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
     return false;
 }
 
-/* split a qstring according to CSV rules
+/* Split a QString according to CSV rules
  *
  * @param line  line of a csv
  * @param sep   field separator to use
  * @result      list of fields with escaping removed
+ *
+ * Known Bugs: CSV (as per RFC4180) allows multi-line fields (\r\n between "..."), which
+ *             can't be parsed line-by line an hence isn't supported.
  */
 QStringList AssemblyGraph::splitCsv(QString line, QString sep)
 {
@@ -972,7 +975,7 @@ QStringList AssemblyGraph::splitCsv(QString line, QString sep)
     return list;
 }
 
-/* load data from CSV and add to deBruijnGraphNodes
+/* Load data from CSV and add to deBruijnGraphNodes
  *
  * @param filename  the full path of the file to be loaded
  * @param *columns  will contain the names of each column after loading data
@@ -1007,6 +1010,8 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList* columns, QString* err
 
     int unmatched_nodes = 0; // keep a counter for lines in file that can't be matched to nodes
 
+    // Regex to capture node number from ID field.
+    // Works for "NODE_xxx_..." or "k123_xxx ..."
     QRegExp rx("^[^_]*_([0-9]*)[_ ]");
 
     *columns = splitCsv(line,sep);
