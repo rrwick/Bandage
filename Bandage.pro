@@ -66,7 +66,8 @@ SOURCES += \
     blast/blastsearch.cpp \
     graph/path.cpp \
     ui/pathspecifydialog.cpp \
-    ui/distancedialog.cpp
+    ui/distancedialog.cpp \
+    graph/graphlocation.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -106,7 +107,8 @@ HEADERS  += \
     blast/runblastsearchworker.h \
     graph/path.h \
     ui/pathspecifydialog.h \
-    ui/distancedialog.h
+    ui/distancedialog.h \
+    graph/graphlocation.h
 
 FORMS    += \
     ui/mainwindow.ui \

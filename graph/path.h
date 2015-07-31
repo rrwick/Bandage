@@ -49,7 +49,6 @@ public:
                                QStringList * nodesNotInGraph,
                                PathStringFailure * pathStringFailure);
 
-
     static QList<Path> getAllPossiblePaths(DeBruijnNode * startNode,
                                            int startPosition,
                                            DeBruijnNode * endNode,

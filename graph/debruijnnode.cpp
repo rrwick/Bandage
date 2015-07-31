@@ -483,3 +483,16 @@ std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges()
     }
     return returnVector;
 }
+
+
+
+std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes()
+{
+    std::vector<DeBruijnEdge *> leavingEdges = getLeavingEdges();
+
+    std::vector<DeBruijnNode *> returnVector;
+    for (size_t i = 0; i < leavingEdges.size(); ++i)
+        returnVector.push_back(leavingEdges[i]->m_endingNode);
+
+    return returnVector;
+}
