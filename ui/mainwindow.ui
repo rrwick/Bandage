@@ -1752,6 +1752,9 @@
    <property name="text">
     <string>Load graph</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionSave_image_current_view">
    <property name="enabled">
