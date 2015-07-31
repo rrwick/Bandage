@@ -621,7 +621,7 @@ QList<Path> Path::getAllPossiblePaths(GraphLocation startLocation,
 
     Path startPath;
     startPath.addNode(startLocation.getNode(), true);
-    startPath.m_startLocation = GraphLocation::startOfNode(startLocation.getNode());
+    startPath.m_startLocation = startLocation;
     startPath.m_endLocation = GraphLocation::endOfNode(startLocation.getNode());
     unfinishedPaths.push_back(startPath);
 
@@ -689,6 +689,7 @@ QList<Path> Path::extendPathInAllPossibleWays()
         Path newPath(*this);
         newPath.m_edges.push_back(nextEdge);
         newPath.m_nodes.push_back(nextNode);
+        newPath.m_endLocation = GraphLocation::endOfNode(nextNode);
 
         returnList.push_back(newPath);
     }
