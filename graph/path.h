@@ -36,9 +36,8 @@ class BlastQuery;
 class Path
 {
 public:
+    //CREATORS
     Path() {}
-
-    //Named constructors
     static Path makeFromUnorderedNodes(QList<DeBruijnNode *> nodes,
                                        bool strandSpecific);
     static Path makeFromUnorderedNodes(std::vector<DeBruijnNode *> nodes,
@@ -50,42 +49,41 @@ public:
                                QStringList * nodesNotInGraph,
                                PathStringFailure * pathStringFailure);
 
+    //ACCESSORS
+    bool isEmpty() const {return m_nodes.empty();}
+    bool isCircular() const;
+    bool areIdentical(Path other) const;
+    bool haveSameNodes(Path other) const;
+    bool hasNodeSubset(Path other) const;
+    QByteArray getPathSequence() const;
+    QString getFasta() const;
+    QString getString(bool spaces) const;
+    int getLength() const;
+    QList<Path> extendPathInAllPossibleWays() const;
+    bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const;
+    bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const;
+    QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query) const;
+    double getMeanReadDepth() const;
+
+    //MODIFERS
+    bool addNode(DeBruijnNode * newNode, bool strandSpecific);
+    void extendPathToIncludeEntirityOfNodes();
+
+    //STATIC
     static QList<Path> getAllPossiblePaths(GraphLocation startLocation,
                                            GraphLocation endLocation,
                                            int nodeSearchDepth,
                                            int minDistance, int maxDistance);
 
+private:
+    GraphLocation m_startLocation;
+    GraphLocation m_endLocation;
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
 
-    GraphLocation m_startLocation;
-    GraphLocation m_endLocation;
-
-    bool addNode(DeBruijnNode * newNode, bool strandSpecific);
-    bool isEmpty() {return m_nodes.empty();}
-    bool isCircular();
-    QByteArray getPathSequence();
-    QString getFasta();
-    bool checkForOtherEdges();
-    QString getString(bool spaces) const;
-    int getLength();
-    QList<Path> extendPathInAllPossibleWays();
-
-    bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath);
-    bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath);
-
-    QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query);
-    double getMeanReadDepth();
-    
-    bool areIdentical(Path other);
-    bool haveSameNodes(Path other);
-    bool hasNodeSubset(Path other);
-
-    void extendPathToIncludeEntirityOfNodes();
-
-private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
                                        bool strandSpecific);
+    bool checkForOtherEdges();
 };
 
 #endif // PATH_H

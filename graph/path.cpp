@@ -404,7 +404,7 @@ bool Path::checkForOtherEdges()
 //This function extracts the sequence for the whole path.  It uses the overlap
 //value in the edges to remove sequences that are duplicated at the end of one
 //node and the start of the next.
-QByteArray Path::getPathSequence()
+QByteArray Path::getPathSequence() const
 {
     if (m_nodes.empty())
         return "";
@@ -447,7 +447,7 @@ QByteArray Path::getPathSequence()
 }
 
 
-int Path::getLength()
+int Path::getLength() const
 {
     int length = 0;
     for (int i = 0; i < m_nodes.size(); ++i)
@@ -465,7 +465,7 @@ int Path::getLength()
 }
 
 
-QString Path::getFasta()
+QString Path::getFasta() const
 {
     //The description line is a comma-delimited list of the nodes in the path
     QString fasta = ">" + getString(false);
@@ -525,7 +525,7 @@ QString Path::getString(bool spaces) const
 
 
 //This function tests whether the last node in the path leads into the first.
-bool Path::isCircular()
+bool Path::isCircular() const
 {
     if (isEmpty())
         return false;
@@ -550,7 +550,7 @@ bool Path::isCircular()
 //the end/front of the path to form a larger valid path.
 //If so, they set the path pointed to by extendedPath to equal the new, larger
 //path.
-bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
+bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const
 {
     if (isEmpty())
     {
@@ -579,7 +579,7 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
     return false;
 }
 
-bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath)
+bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const
 {
     if (isEmpty())
     {
@@ -667,7 +667,7 @@ QList<Path> Path::getAllPossiblePaths(GraphLocation startLocation,
 //This function takes the current path and extends it in all possible ways by
 //adding one more node, then returning a list of the new paths.  How many paths
 //it returns depends on the number of edges leaving the last node in the path.
-QList<Path> Path::extendPathInAllPossibleWays()
+QList<Path> Path::extendPathInAllPossibleWays() const
 {
     QList<Path> returnList;
 
@@ -701,7 +701,7 @@ QList<Path> Path::extendPathInAllPossibleWays()
 //This function follows a path, returning the BLAST hits it finds for the given
 //query.  It requires that the hits occur in order, i.e. that each hit in the
 //path begins later in the query than the previous hit.
-QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
+QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query) const
 {
     QList<BlastHit *> returnList;
 
@@ -748,7 +748,7 @@ QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
 }
 
 
-double Path::getMeanReadDepth()
+double Path::getMeanReadDepth() const
 {
     long double depthTimesLengthSum = 0.0;
     int nodeLengthTotal = 0;
@@ -764,7 +764,7 @@ double Path::getMeanReadDepth()
 
 
 
-bool Path::areIdentical(Path other)
+bool Path::areIdentical(Path other) const
 {
     return (m_nodes == other.m_nodes &&
             m_startLocation.areIdentical(other.m_startLocation) &&
@@ -772,7 +772,7 @@ bool Path::areIdentical(Path other)
 }
 
 
-bool Path::haveSameNodes(Path other)
+bool Path::haveSameNodes(Path other) const
 {
     return (m_nodes == other.m_nodes);
 }
@@ -783,7 +783,7 @@ bool Path::haveSameNodes(Path other)
 //entirely contained within) the other given path.
 //It ignores start/end type and position, looking only at the nodes.
 //If the two paths have the same nodes, it will return false.
-bool Path::hasNodeSubset(Path other)
+bool Path::hasNodeSubset(Path other) const
 {
     //To contain this path, the other path should be have a larger number of
     //nodes.
