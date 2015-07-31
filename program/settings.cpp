@@ -115,7 +115,8 @@ Settings::Settings()
     maxQueryPaths = 4;
 
     pathDialogIsVisible = false;
-    userSpecifiedPath = "";
+    userSpecifiedPath = Path();
+    userSpecifiedPathString = "";
     userSpecifiedPathCircular = false;
 }
 

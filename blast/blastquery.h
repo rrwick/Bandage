@@ -60,7 +60,6 @@ public:
     void findQueryPaths();
 
 public slots:
-    //MODIFIERS
     void setColour(QColor newColour) {m_colour = newColour;}
 
 private:
@@ -71,7 +70,6 @@ private:
     QColor m_colour;
     SequenceType m_sequenceType;
     QList<Path> m_paths;
-
 
     void autoSetSequenceType();
     bool positionInAnyHit(int position) const;

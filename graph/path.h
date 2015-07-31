@@ -64,6 +64,10 @@ public:
     bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const;
     QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query) const;
     double getMeanReadDepth() const;
+    bool containsNode(DeBruijnNode * node) const;
+    bool containsEntireNode(DeBruijnNode * node) const;
+    void partOfNodeContained(DeBruijnNode * node, double * startFraction,
+                             double * endFraction) const;
 
     //MODIFERS
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);

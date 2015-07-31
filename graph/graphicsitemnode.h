@@ -80,9 +80,6 @@ public:
                                                                 std::vector<QPointF> * blastHitLocation);
     void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
 
-private:
-    bool pathHighlightNode(DeBruijnNode * node);
-
 };
 
 #endif // GRAPHICSITEMNODE_H

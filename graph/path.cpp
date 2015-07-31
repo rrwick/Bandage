@@ -819,3 +819,67 @@ void Path::extendPathToIncludeEntirityOfNodes()
     m_startLocation = GraphLocation::startOfNode(m_nodes.front());
     m_endLocation = GraphLocation::endOfNode(m_nodes.back());
 }
+
+
+bool Path::containsNode(DeBruijnNode * node) const
+{
+    return m_nodes.contains(node);
+}
+
+bool Path::containsEntireNode(DeBruijnNode * node) const
+{
+    if (m_nodes.empty())
+        return false;
+
+    if (m_nodes.front() == node && m_startLocation.isAtStartOfNode())
+        return true;
+
+    if (m_nodes.back() == node && m_endLocation.isAtEndOfNode())
+        return true;
+
+    for (int i = 1; i < m_nodes.size() - 1; ++i)
+    {
+        if (m_nodes[i] == node)
+            return true;
+    }
+
+    return false;
+}
+
+
+
+void Path::partOfNodeContained(DeBruijnNode * node, double * startFraction,
+                               double * endFraction) const
+{
+    *startFraction = 0.0;
+    *endFraction = 0.0;
+
+    if (!containsNode(node))
+        return;
+
+    if (containsEntireNode(node))
+    {
+        *endFraction = 1.0;
+        return;
+    }
+
+    //If the code got here, then the path only contains part of the node, so
+    //it must be either the first or last node of the path.
+    if (node == m_nodes.front())
+    {
+        *endFraction = 1.0;
+        if (node->getLength() == 0)
+            return;
+        *startFraction = double(m_startLocation.getPosition()) / node->getLength();
+        return;
+    }
+
+    else if (node == m_nodes.back())
+    {
+        *startFraction = 0.0;
+        if (node->getLength() == 0)
+            return;
+        *endFraction = double(m_endLocation.getPosition()) / node->getLength();
+        return;
+    }
+}

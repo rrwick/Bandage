@@ -23,6 +23,7 @@
 #include <QFont>
 #include "globals.h"
 #include <QString>
+#include "../graph/path.h"
 
 class DeBruijnNode;
 
@@ -136,13 +137,9 @@ public:
 
     //These store the user input the 'Specify exact path...' dialog so it is
     //retained between uses.
-    QString userSpecifiedPath;
+    Path userSpecifiedPath;
+    QString userSpecifiedPathString;
     bool userSpecifiedPathCircular;
-
-    //This stores the list of nodes the user has entered in the 'Specify exact
-    //path...' dialog.  It is used when drawing nodes to see if they need to
-    //be highlighted.
-    QList<DeBruijnNode *> userSpecifiedPathNodes;
 };
 
 #endif // SETTINGS_H

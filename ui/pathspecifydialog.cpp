@@ -34,7 +34,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
-    ui->pathTextEdit->setPlainText(g_settings->userSpecifiedPath);
+    ui->pathTextEdit->setPlainText(g_settings->userSpecifiedPathString);
     ui->circularPathCheckBox->setChecked(g_settings->userSpecifiedPathCircular);
     g_settings->pathDialogIsVisible = true;
     checkPathValidity();
@@ -60,9 +60,9 @@ PathSpecifyDialog::~PathSpecifyDialog()
 
 void PathSpecifyDialog::checkPathValidity()
 {
-    g_settings->userSpecifiedPath = ui->pathTextEdit->toPlainText();
+    g_settings->userSpecifiedPathString = ui->pathTextEdit->toPlainText();
     g_settings->userSpecifiedPathCircular = ui->circularPathCheckBox->isChecked();
-    g_settings->userSpecifiedPathNodes = QList<DeBruijnNode *>();
+    g_settings->userSpecifiedPath = Path();
 
     //Clear out the Path object.  If the string makes a valid path,
     //it will be rebuilt.
@@ -85,10 +85,7 @@ void PathSpecifyDialog::checkPathValidity()
                                   ui->circularPathCheckBox->isChecked(),
                                   &nodesInGraph, &nodesNotInGraph,
                                   &pathStringFailure);
-
-    //Save the pathNodes in settings, as they are used to determine whether
-    //the nodes should be highlighted when drawn.
-    g_settings->userSpecifiedPathNodes = nodesInGraph;
+    g_settings->userSpecifiedPath = m_path;
 
     //If the Path turned out to be empty, that means that makeFromString failed.
     if (m_path.isEmpty())
