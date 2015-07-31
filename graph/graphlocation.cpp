@@ -63,7 +63,7 @@ GraphLocation GraphLocation::reverseComplementLocation() const
     //For Velvet graphs, the reverse complement location is shifted by the k-mer
     //size and may not even be on the same node!
     if (g_assemblyGraph->m_graphFileType == LAST_GRAPH)
-        newLocation.moveLocation(g_assemblyGraph->m_kmer);
+        newLocation.moveLocation(-g_assemblyGraph->m_kmer + 1);
 
     if (newLocation.isValid())
         return newLocation;
@@ -74,6 +74,15 @@ GraphLocation GraphLocation::reverseComplementLocation() const
 
 
 void GraphLocation::moveLocation(int change)
+{
+    if (change > 0)
+        moveForward(change);
+    else if (change < 0)
+        moveBackward(-change);
+}
+
+
+void GraphLocation::moveForward(int change)
 {
     //See if there are enough bases left in this node to move by the
     //required amount.  If so, we're done!
@@ -91,7 +100,42 @@ void GraphLocation::moveLocation(int change)
     {
         DeBruijnNode * node = downstreamNodes[i];
         GraphLocation nextNodeLocation = GraphLocation::startOfNode(node);
-        nextNodeLocation.moveLocation(change - basesLeftInNode);
+        nextNodeLocation.moveForward(change - basesLeftInNode - 1);
+
+        if (nextNodeLocation.isValid())
+        {
+            m_node = nextNodeLocation.getNode();
+            m_position = nextNodeLocation.getPosition();
+            return;
+        }
+    }
+
+    //If the code got here, then we failed to move and we make this a null
+    //position.
+    m_node = 0;
+    m_position = 0;
+    return;
+}
+
+void GraphLocation::moveBackward(int change)
+{
+    //See if there are enough bases left in this node to move by the
+    //required amount.  If so, we're done!
+    int basesLeftInNode = m_position - 1;
+    if (change <= basesLeftInNode)
+    {
+        m_position -= change;
+        return;
+    }
+
+    //If there aren't enough bases left, then we recursively try with the
+    //next nodes.
+    std::vector<DeBruijnNode *> upstreamNodes = m_node->getUpstreamNodes();
+    for (size_t i = 0; i < upstreamNodes.size(); ++i)
+    {
+        DeBruijnNode * node = upstreamNodes[i];
+        GraphLocation nextNodeLocation = GraphLocation::endOfNode(node);
+        nextNodeLocation.moveBackward(change - basesLeftInNode - 1);
 
         if (nextNodeLocation.isValid())
         {

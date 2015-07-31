@@ -496,3 +496,15 @@ std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes()
 
     return returnVector;
 }
+
+
+std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes()
+{
+    std::vector<DeBruijnEdge *> enteringEdges = getEnteringEdges();
+
+    std::vector<DeBruijnNode *> returnVector;
+    for (size_t i = 0; i < enteringEdges.size(); ++i)
+        returnVector.push_back(enteringEdges[i]->m_startingNode);
+
+    return returnVector;
+}

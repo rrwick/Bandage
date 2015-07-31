@@ -28,6 +28,8 @@ public:
 private:
     DeBruijnNode * m_node;
     int m_position;
+    void moveForward(int change);
+    void moveBackward(int change);
 };
 
 #endif // GRAPHLOCATION_H

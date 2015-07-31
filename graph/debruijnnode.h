@@ -92,6 +92,7 @@ public:
     std::vector<DeBruijnEdge *> getLeavingEdges();
 
     std::vector<DeBruijnNode *> getDownstreamNodes();
+    std::vector<DeBruijnNode *> getUpstreamNodes();
 };
 
 #endif // DEBRUIJNNODE_H

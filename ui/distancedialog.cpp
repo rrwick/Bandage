@@ -4,6 +4,8 @@
 #include "../program/globals.h"
 #include "../blast/blastsearch.h"
 #include <QMessageBox>
+#include "../graph/graphlocation.h"
+#include "../graph/assemblygraph.h"
 
 DistanceDialog::DistanceDialog(QWidget *parent) :
     QDialog(parent),
