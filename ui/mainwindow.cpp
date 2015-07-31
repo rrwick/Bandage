@@ -1451,7 +1451,7 @@ void MainWindow::openBlastSearchDialog()
     //query was previously selected), leave the combo box a index 0.
     if (beforeQuery != 0 && g_blastSearch->m_blastQueries.isQueryPresent(beforeQuery))
     {
-        int indexOfQuery = ui->blastQueryComboBox->findText(beforeQuery->m_name);
+        int indexOfQuery = ui->blastQueryComboBox->findText(beforeQuery->getName());
         if (indexOfQuery != -1)
             ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
     }
@@ -1477,8 +1477,8 @@ void MainWindow::setupBlastQueryComboBox()
     QStringList comboBoxItems;
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_hits.size() > 0)
-            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
+        if (g_blastSearch->m_blastQueries.m_queries[i]->hasHits())
+            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->getName());
     }
 
     if (comboBoxItems.size() > 1)

@@ -45,7 +45,7 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        if (m_queries[i]->m_name == queryName)
+        if (m_queries[i]->getName() == queryName)
             return m_queries[i];
     }
     return 0;
@@ -54,12 +54,12 @@ BlastQuery * BlastQueries::getQueryFromName(QString queryName)
 
 void BlastQueries::addQuery(BlastQuery * newQuery)
 {
-    newQuery->m_name = getUniqueName(newQuery->m_name);
+    newQuery->setName(getUniqueName(newQuery->getName()));
 
     //Give the new query a colour
     int colourIndex = m_queries.size();
     colourIndex %= presetColours.size();
-    newQuery->m_colour = presetColours[colourIndex];
+    newQuery->setColour(presetColours[colourIndex]);
 
     m_queries.push_back(newQuery);
     updateTempFiles();
@@ -71,9 +71,9 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
 //wasn't unique.
 QString BlastQueries::renameQuery(BlastQuery * newQuery, QString newName)
 {
-    newQuery->m_name = getUniqueName(newName);
+    newQuery->setName(getUniqueName(newName));
     updateTempFiles();
-    return newQuery->m_name;
+    return newQuery->getName();
 }
 
 
@@ -138,10 +138,10 @@ void BlastQueries::writeTempFile(QSharedPointer<QFile> file, SequenceType sequen
     QTextStream out(file.data());
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        if (m_queries[i]->m_sequenceType == sequenceType)
+        if (m_queries[i]->getSequenceType() == sequenceType)
         {
-            out << ">" << m_queries[i]->m_name << "\n";
-            out << m_queries[i]->m_sequence;
+            out << ">" << m_queries[i]->getName() << "\n";
+            out << m_queries[i]->getSequence();
             out << "\n";
         }
     }
@@ -152,7 +152,7 @@ void BlastQueries::writeTempFile(QSharedPointer<QFile> file, SequenceType sequen
 void BlastQueries::searchOccurred()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
-        m_queries[i]->m_searchedFor = true;
+        m_queries[i]->setAsSearchedFor();
 }
 
 
@@ -167,7 +167,7 @@ int BlastQueries::getQueryCount(SequenceType sequenceType)
     int count = 0;
     for (size_t i = 0; i < m_queries.size(); ++i)
     {
-        if (m_queries[i]->m_sequenceType == sequenceType)
+        if (m_queries[i]->getSequenceType() == sequenceType)
             ++count;
     }
     return count;
@@ -208,7 +208,7 @@ bool BlastQueries::isQueryPresent(BlastQuery * query)
 void BlastQueries::findQueryPaths()
 {
     for (size_t i = 0; i < m_queries.size(); ++i)
-        m_queries[i]->findQueryPath();
+        m_queries[i]->findQueryPaths();
 }
 
 

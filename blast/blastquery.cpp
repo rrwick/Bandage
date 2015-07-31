@@ -24,7 +24,6 @@
 BlastQuery::BlastQuery(QString name, QString sequence) :
     m_name(name), m_sequence(sequence), m_searchedFor(false)
 {
-    m_length = sequence.length();
     autoSetSequenceType();
 }
 
@@ -67,7 +66,7 @@ void BlastQuery::autoSetSequenceType()
 }
 
 
-QString BlastQuery::getTypeString()
+QString BlastQuery::getTypeString() const
 {
     if (m_sequenceType == NUCLEOTIDE)
         return "nucl";
@@ -87,7 +86,7 @@ void BlastQuery::clearSearchResults()
 
 
 //This function tries to find the paths through the graph which cover the query.
-void BlastQuery::findQueryPath()
+void BlastQuery::findQueryPaths()
 {
     int queryLength = m_sequence.length();
     if (m_sequenceType == PROTEIN)
@@ -259,10 +258,14 @@ double BlastQuery::getRelativeLengthDiscrepancy(Path path)
 //This function returns the fraction of the query that is covered by BLAST hits.
 //If a list of BLAST hits is passed to the function, it only looks in those
 //hits.  If no such list is passed, it looks in all hits for this query.
-double BlastQuery::fractionCoveredByHits(QList<BlastHit *> * hitsToCheck)
+double BlastQuery::fractionCoveredByHits(QList<BlastHit *> * hitsToCheck) const
 {
     int hitBases = 0;
-    for (int i = 0; i < m_length; ++i)
+    int queryLength = getLength();
+    if (queryLength == 0)
+        return 0.0;
+
+    for (int i = 0; i < queryLength; ++i)
     {
         //Add one to the index because BLAST results use 1-based indexing.
         if (hitsToCheck == 0)
@@ -277,13 +280,13 @@ double BlastQuery::fractionCoveredByHits(QList<BlastHit *> * hitsToCheck)
         }
     }
 
-    return double(hitBases) / m_length;
+    return double(hitBases) / queryLength;
 }
 
 
 //This accepts a position with 1-based indexing, which is what BLAST results
 //use.
-bool BlastQuery::positionInAnyHit(int position)
+bool BlastQuery::positionInAnyHit(int position) const
 {
     for (int i = 0; i < m_hits.size(); ++i)
     {
@@ -294,7 +297,7 @@ bool BlastQuery::positionInAnyHit(int position)
     return false;
 }
 
-bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck)
+bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck) const
 {
     for (int i = 0; i < hitsToCheck->size(); ++i)
     {
@@ -307,7 +310,7 @@ bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck
 
 
 //This function returns the paths in string form, if any exist.
-QString BlastQuery::getPathsString(int max)
+QString BlastQuery::getPathsString(int max) const
 {
     if (m_paths.empty())
         return "-";

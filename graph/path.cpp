@@ -493,7 +493,7 @@ QString Path::getFasta()
 
 
 
-QString Path::getString(bool spaces)
+QString Path::getString(bool spaces) const
 {
     QString output;
     for (int i = 0; i < m_nodes.size(); ++i)
@@ -711,9 +711,10 @@ QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
         DeBruijnNode * node = m_nodes[i];
 
         QList<BlastHit *> hitsThisNode;
-        for (int j = 0; j < query->m_hits.size(); ++j)
+        QList< QSharedPointer<BlastHit> > queryHits = query->getHits();
+        for (int j = 0; j < queryHits.size(); ++j)
         {
-            BlastHit * hit = query->m_hits[j].data();
+            BlastHit * hit = queryHits[j].data();
             if (hit->m_node->m_name == node->m_name)
                 hitsThisNode.push_back(hit);
         }

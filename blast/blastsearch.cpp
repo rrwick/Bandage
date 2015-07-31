@@ -97,7 +97,7 @@ void BlastSearch::buildHitsFromBlastOutput()
                                                   nodeStart, nodeEnd, eValue, bitScore));
 
         m_allHits.push_back(hit);
-        query->m_hits.push_back(hit);
+        query->addHit(hit);
     }
 }
 

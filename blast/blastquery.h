@@ -32,31 +32,50 @@ class BlastQuery : public QObject
     Q_OBJECT
 
 public:
+    //CREATORS
     BlastQuery() {}
     BlastQuery(QString name, QString sequence);
 
+    //ACCESSORS
+    QString getName() const {return m_name;}
+    QString getSequence() const {return m_sequence;}
+    int getLength() const {return m_sequence.length();}
+    bool hasHits() const {return m_hits.size() > 0;}
+    int hitCount() const {return m_hits.size();}
+    QList< QSharedPointer<BlastHit> > getHits() const {return m_hits;}
+    bool wasSearchedFor() const {return m_searchedFor;}
+    QColor getColour() const {return m_colour;}
+    SequenceType getSequenceType() const {return m_sequenceType;}
+    QList<Path> getPaths() const {return m_paths;}
+    int getPathCount() const {return m_paths.size();}
+    QString getTypeString() const;
+    double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
+    QString getPathsString(int max) const;
+
+    //MODIFIERS
+    void setName(QString newName) {m_name = newName;}
+    void addHit(QSharedPointer<BlastHit> newHit) {m_hits.push_back(newHit);}
+    void clearSearchResults();
+    void setAsSearchedFor() {m_searchedFor = true;}
+    void findQueryPaths();
+
+public slots:
+    //MODIFIERS
+    void setColour(QColor newColour) {m_colour = newColour;}
+
+private:
     QString m_name;
     QString m_sequence;
-    int m_length;
     QList< QSharedPointer<BlastHit> > m_hits;
     bool m_searchedFor;
     QColor m_colour;
     SequenceType m_sequenceType;
     QList<Path> m_paths;
 
-    QString getTypeString();
-    void clearSearchResults();
-    void findQueryPath();
-    double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0);
-    QString getPathsString(int max);
 
-public slots:
-    void setColour(QColor newColour) {m_colour = newColour;}
-
-private:
     void autoSetSequenceType();
-    bool positionInAnyHit(int position);
-    bool positionInHitList(int position, QList<BlastHit *> * hitsToCheck);
+    bool positionInAnyHit(int position) const;
+    bool positionInHitList(int position, QList<BlastHit *> * hitsToCheck) const;
     bool comparePaths(Path a, Path b);
     long double getPathEValueProduct(Path path);
     double getRelativeLengthDiscrepancy(Path path);

@@ -67,7 +67,7 @@ public:
     QByteArray getPathSequence();
     QString getFasta();
     bool checkForOtherEdges();
-    QString getString(bool spaces);
+    QString getString(bool spaces) const;
     int getLength();
     QList<Path> extendPathInAllPossibleWays();
 

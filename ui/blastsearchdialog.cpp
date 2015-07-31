@@ -174,13 +174,13 @@ void BlastSearchDialog::makeQueryRow(int row)
 
     BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-    QTableWidgetItem * name = new QTableWidgetItem(query->m_name);
+    QTableWidgetItem * name = new QTableWidgetItem(query->getName());
     name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
     QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
     type->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-    QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->m_length));
+    QTableWidgetItem * length = new QTableWidgetItem(formatIntForDisplay(query->getLength()));
     length->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
     //If the search hasn't yet been run, some of the columns will just have
@@ -189,9 +189,9 @@ void BlastSearchDialog::makeQueryRow(int row)
     QTableWidgetItem * percent;
     QTableWidgetItem * paths;
 
-    if (query->m_searchedFor)
+    if (query->wasSearchedFor())
     {
-        hits = new QTableWidgetItem(formatIntForDisplay(query->m_hits.size()));
+        hits = new QTableWidgetItem(formatIntForDisplay(query->hitCount()));
         percent = new QTableWidgetItem(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
         paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
     }
@@ -207,7 +207,7 @@ void BlastSearchDialog::makeQueryRow(int row)
     paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
     ColourButton * colourButton = new ColourButton();
-    colourButton->setColour(query->m_colour);
+    colourButton->setColour(query->getColour());
     connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
     connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
 
@@ -237,8 +237,8 @@ void BlastSearchDialog::fillHitsTable()
 
         QTableWidgetItem * queryColour = new QTableWidgetItem();
         queryColour->setFlags(Qt::ItemIsEnabled);
-        queryColour->setBackground(hit->m_query->m_colour);
-        QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->m_name);
+        queryColour->setBackground(hit->m_query->getColour());
+        QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->getName());
         queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
         nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -561,7 +561,7 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
         ui->blastQueriesTableWidget->resizeColumns();
 
         //Rebuild the hits table, if necessary, to show the new name.
-        if (query->m_hits.size() > 0)
+        if (query->hasHits())
             fillHitsTable();
     }
 

@@ -38,7 +38,7 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
     m_eValue(eValue), m_bitScore(bitScore)
 {
     int nodeLength = m_node->getLength();
-    int queryLength = m_query->m_length;
+    int queryLength = m_query->getLength();
 
     m_nodeStartFraction = double(nodeStart - 1) / nodeLength;
     m_nodeEndFraction = double(nodeEnd) / nodeLength;
@@ -92,9 +92,9 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse, double scaled
     else
     {
         if (reverse)
-            returnVector.push_back(BlastHitPart(m_query->m_colour, 1.0 - m_nodeStartFraction, 1.0 - m_nodeEndFraction));
+            returnVector.push_back(BlastHitPart(m_query->getColour(), 1.0 - m_nodeStartFraction, 1.0 - m_nodeEndFraction));
         else
-            returnVector.push_back(BlastHitPart(m_query->m_colour, m_nodeStartFraction, m_nodeEndFraction));
+            returnVector.push_back(BlastHitPart(m_query->getColour(), m_nodeStartFraction, m_nodeEndFraction));
     }
 
     return returnVector;
@@ -110,7 +110,12 @@ bool BlastHit::compareTwoBlastHitPointers(BlastHit * a, BlastHit * b)
 double BlastHit::getQueryCoverageFraction()
 {
     int queryRegionSize = m_queryEnd - m_queryStart;
-    return double(queryRegionSize) / m_query->m_length;
+    int queryLength = m_query->getLength();
+
+    if (queryLength == 0)
+        return 0.0;
+    else
+        return double(queryRegionSize) / queryLength;
 }
 
 

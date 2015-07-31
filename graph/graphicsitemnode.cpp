@@ -910,7 +910,7 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNode(std::vector<QString> 
     for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
     {
         BlastHit * hit = m_deBruijnNode->m_blastHits[i];
-        blastHitText->push_back(hit->m_query->m_name);
+        blastHitText->push_back(hit->m_query->getName());
         blastHitLocation->push_back(findLocationOnPath(hit->getNodeCentreFraction()));
     }
 
@@ -924,7 +924,7 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(st
     for (size_t i = 0; i < m_deBruijnNode->m_reverseComplement->m_blastHits.size(); ++i)
     {
         BlastHit * hit = m_deBruijnNode->m_reverseComplement->m_blastHits[i];
-        blastHitText->push_back(hit->m_query->m_name);
+        blastHitText->push_back(hit->m_query->getName());
         blastHitLocation->push_back(findLocationOnPath(1.0 - hit->getNodeCentreFraction()));
     }
 }

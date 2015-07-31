@@ -20,8 +20,8 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
 
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
-        if (g_blastSearch->m_blastQueries.m_queries[i]->m_paths.size() > 0)
-            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->m_name);
+        if (g_blastSearch->m_blastQueries.m_queries[i]->getPathCount() > 0)
+            comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->getName());
     }
 
     ui->query1ComboBox->addItems(comboBoxItems);
