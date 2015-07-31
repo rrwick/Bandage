@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include "../program/globals.h"
+#include "graphlocation.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;
@@ -49,22 +50,16 @@ public:
                                QStringList * nodesNotInGraph,
                                PathStringFailure * pathStringFailure);
 
-    static QList<Path> getAllPossiblePaths(DeBruijnNode * startNode,
-                                           int startPosition,
-                                           DeBruijnNode * endNode,
-                                           int endPosition, int nodeSearchDepth,
+    static QList<Path> getAllPossiblePaths(GraphLocation startLocation,
+                                           GraphLocation endLocation,
+                                           int nodeSearchDepth,
                                            int minDistance, int maxDistance);
 
     QList<DeBruijnNode *> m_nodes;
     QList<DeBruijnEdge *> m_edges;
 
-    //If start/end type is PART_OF_NODE, then the Path sequence can begin and
-    //end in particular indices of the first and last node.  These indices are
-    //1-based, i.e. if m_startPosition is 1 the entire first node is included.
-    PathStartEndType m_startType;
-    int m_startPosition;
-    PathStartEndType m_endType;
-    int m_endPosition;
+    GraphLocation m_startLocation;
+    GraphLocation m_endLocation;
 
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
     bool isEmpty() {return m_nodes.empty();}
@@ -85,6 +80,8 @@ public:
     bool areIdentical(Path other);
     bool haveSameNodes(Path other);
     bool hasNodeSubset(Path other);
+
+    void extendPathToIncludeEntirityOfNodes();
 
 private:
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,

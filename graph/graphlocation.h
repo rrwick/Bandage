@@ -8,6 +8,7 @@ class GraphLocation
 {
 public:
     //CREATORS
+    GraphLocation();
     GraphLocation(DeBruijnNode * node, int position);
     static GraphLocation startOfNode(DeBruijnNode * node);
     static GraphLocation endOfNode(DeBruijnNode * node);
@@ -20,6 +21,9 @@ public:
     bool isNull() const;
     GraphLocation reverseComplementLocation() const;
     char getBase() const;
+    bool isAtStartOfNode() const;
+    bool isAtEndOfNode() const;
+    bool areIdentical(GraphLocation other) const;
 
     //MODIFERS
     void moveLocation(int change);

@@ -119,14 +119,12 @@ void BlastQuery::findQueryPath()
     for (int i = 0; i < possibleStarts.size(); ++i)
     {
         BlastHit * start = possibleStarts[i];
-        DeBruijnNode * startNode = start->m_node;
-        int startPosition = start->m_nodeStart;
+        GraphLocation startLocation = start->getHitStart();
 
         for (int j = 0; j < possibleEnds.size(); ++j)
         {
             BlastHit * end = possibleEnds[j];
-            DeBruijnNode * endNode = end->m_node;
-            int endPosition = end->m_nodeEnd;
+            GraphLocation endLocation = end->getHitEnd();
 
             //Assuming there is a path from the start hit to the end hit,
             //determine the ideal length.  This is the query length minus the
@@ -145,9 +143,8 @@ void BlastQuery::findQueryPath()
             int minLength = int(partialQueryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
             int maxLength = int(partialQueryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
 
-            possiblePaths.append(Path::getAllPossiblePaths(startNode,
-                                                           startPosition,
-                                                           endNode, endPosition,
+            possiblePaths.append(Path::getAllPossiblePaths(startLocation,
+                                                           endLocation,
                                                            g_settings->maxQueryPathNodes - 1,
                                                            minLength,
                                                            maxLength));

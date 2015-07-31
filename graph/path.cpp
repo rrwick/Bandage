@@ -62,9 +62,6 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
 
     path.m_nodes = nodes;
 
-    path.m_startType = ENTIRE_NODE;
-    path.m_endType = ENTIRE_NODE;
-
     int targetNumberOfEdges = path.m_nodes.size() - 1;
     if (circular)
         ++targetNumberOfEdges;
@@ -100,6 +97,13 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
             return path;
         }
     }
+
+    if (path.m_nodes.empty())
+        return path;
+
+    //If the code got here, then the path building was successful.
+    path.m_startLocation = GraphLocation::startOfNode(path.m_nodes.front());
+    path.m_endLocation = GraphLocation::endOfNode(path.m_nodes.back());
 
     return path;
 }
@@ -170,9 +174,11 @@ Path Path::makeFromString(QString pathString, bool circular,
 
     //If the code got here, then a path was made, and now we must check whether
     //the start/end points are valid.
+    DeBruijnNode * firstNode = path.m_nodes.front();
+    DeBruijnNode * lastNode = path.m_nodes.back();
+
     if (startPosString.length() > 0)
     {
-        DeBruijnNode * firstNode = path.m_nodes.front();
         int startPos = startPosString.toInt();
         if (startPos > firstNode->getLength())
         {
@@ -180,13 +186,14 @@ Path Path::makeFromString(QString pathString, bool circular,
             return Path();
         }
 
-        path.m_startType = PART_OF_NODE;
-        path.m_startPosition = startPos;
+        path.m_startLocation = GraphLocation(firstNode, startPos);
     }
+    else
+        path.m_startLocation = GraphLocation::startOfNode(firstNode);
+
 
     if (endPosString.length() > 0)
     {
-        DeBruijnNode * lastNode = path.m_nodes.back();
         int endPos = endPosString.toInt();
         if (endPos > lastNode->getLength())
         {
@@ -194,9 +201,10 @@ Path Path::makeFromString(QString pathString, bool circular,
             return Path();
         }
 
-        path.m_endType = PART_OF_NODE;
-        path.m_endPosition = endPos;
+        path.m_endLocation = GraphLocation(lastNode, endPos);
     }
+    else
+        path.m_endLocation = GraphLocation::endOfNode(firstNode);
 
     return path;
 }
@@ -206,9 +214,6 @@ Path Path::makeFromString(QString pathString, bool circular,
 void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
                                          bool strandSpecific)
 {
-    m_startType = ENTIRE_NODE;
-    m_endType = ENTIRE_NODE;
-
     if (nodes.isEmpty())
         return;
 
@@ -242,7 +247,15 @@ void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
     {
         m_nodes.clear();
         m_edges.clear();
+        return;
     }
+
+    if (m_nodes.empty())
+        return;
+
+    //If the code got here, then the path building was successful.
+    m_startLocation = GraphLocation::startOfNode(m_nodes.front());
+    m_endLocation = GraphLocation::endOfNode(m_nodes.back());
 }
 
 
@@ -411,14 +424,9 @@ QByteArray Path::getPathSequence()
     }
 
     //If the path is linear, then we begin either with the entire first node
-    //sequence or part of it, depending on the PathStartEndType.
-    else if (m_startType == ENTIRE_NODE)
-        sequence += firstNodeSequence;
-    else
-    {
-        int rightChars = firstNodeSequence.length() - m_startPosition + 1;
-        sequence += firstNodeSequence.right(rightChars);
-    }
+    //sequence or part of it.
+    int rightChars = firstNodeSequence.length() - m_startLocation.getPosition() + 1;
+    sequence += firstNodeSequence.right(rightChars);
 
     //The middle nodes are not affected by whether or not the path is circular
     //or has partial node ends.
@@ -431,14 +439,9 @@ QByteArray Path::getPathSequence()
             sequence += nodeSequence.right(rightChars);
     }
 
-    //If the end type is PART_OF_NODE, then we have to trim off the appropriate
-    //amount from the end.
-    if (!isCircular() && m_endType == PART_OF_NODE)
-    {
-        DeBruijnNode * lastNode = m_nodes.back();
-        int amountToTrim = lastNode->m_sequence.length() - m_endPosition;
-        sequence.chop(amountToTrim);
-    }
+    DeBruijnNode * lastNode = m_nodes.back();
+    int amountToTrim = lastNode->m_sequence.length() - m_endLocation.getPosition();
+    sequence.chop(amountToTrim);
 
     return sequence;
 }
@@ -453,13 +456,10 @@ int Path::getLength()
     for (int i = 0; i < m_edges.size(); ++i)
         length -= m_edges[i]->m_overlap;
 
-    if (m_startType == PART_OF_NODE)
-        length -= m_startPosition - 1;
-    if (m_endType == PART_OF_NODE)
-    {
-        DeBruijnNode * lastNode = m_nodes.back();
-        length -= lastNode->m_sequence.length() - m_endPosition;
-    }
+    length -= m_startLocation.getPosition() - 1;
+
+    DeBruijnNode * lastNode = m_nodes.back();
+    length -= lastNode->m_sequence.length() - m_endLocation.getPosition();
 
     return length;
 }
@@ -498,9 +498,9 @@ QString Path::getString(bool spaces)
     QString output;
     for (int i = 0; i < m_nodes.size(); ++i)
     {
-        if (i == 0 && m_startType == PART_OF_NODE)
+        if (i == 0 && !m_startLocation.isAtStartOfNode())
         {
-            output += "(" + QString::number(m_startPosition) + ")";
+            output += "(" + QString::number(m_startLocation.getPosition()) + ")";
             if (spaces)
                 output += " ";
         }
@@ -513,11 +513,11 @@ QString Path::getString(bool spaces)
                 output += " ";
         }
 
-        if (i == m_nodes.size() - 1 && m_endType == PART_OF_NODE)
+        if (i == m_nodes.size() - 1 && !m_endLocation.isAtEndOfNode())
         {
             if (spaces)
                 output += " ";
-            output += "(" + QString::number(m_endPosition) + ")";
+            output += "(" + QString::number(m_endLocation.getPosition()) + ")";
         }
     }
     return output;
@@ -571,7 +571,7 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath)
             *extendedPath = *this;
             extendedPath->m_edges.push_back(edge);
             extendedPath->m_nodes.push_back(node);
-            extendedPath->m_endType = ENTIRE_NODE;
+            extendedPath->m_endLocation = GraphLocation::endOfNode(node);
             return true;
         }
     }
@@ -600,7 +600,7 @@ bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath)
             *extendedPath = *this;
             extendedPath->m_edges.push_front(edge);
             extendedPath->m_nodes.push_front(node);
-            extendedPath->m_startType = ENTIRE_NODE;
+            extendedPath->m_startLocation = GraphLocation::startOfNode(node);
             return true;
         }
     }
@@ -611,19 +611,18 @@ bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath)
 
 //This function builds all possible paths between the given start and end,
 //within the given restrictions.
-QList<Path> Path::getAllPossiblePaths(DeBruijnNode * startNode,
-                                      int startPosition, DeBruijnNode * endNode,
-                                      int endPosition, int nodeSearchDepth,
+QList<Path> Path::getAllPossiblePaths(GraphLocation startLocation,
+                                      GraphLocation endLocation,
+                                      int nodeSearchDepth,
                                       int minDistance, int maxDistance)
 {
     QList<Path> finishedPaths;
     QList<Path> unfinishedPaths;
 
     Path startPath;
-    startPath.addNode(startNode, true);
-    startPath.m_startType = PART_OF_NODE;
-    startPath.m_startPosition = startPosition;
-    startPath.m_endType = ENTIRE_NODE;
+    startPath.addNode(startLocation.getNode(), true);
+    startPath.m_startLocation = GraphLocation::startOfNode(startLocation.getNode());
+    startPath.m_endLocation = GraphLocation::endOfNode(startLocation.getNode());
     unfinishedPaths.push_back(startPath);
 
     for (int i = 0; i <= nodeSearchDepth; ++i)
@@ -636,11 +635,10 @@ QList<Path> Path::getAllPossiblePaths(DeBruijnNode * startNode,
         while (j != unfinishedPaths.end())
         {
             DeBruijnNode * lastNode = (*j).m_nodes.back();
-            if (lastNode == endNode)
+            if (lastNode == endLocation.getNode())
             {
                 Path potentialFinishedPath = *j;
-                potentialFinishedPath.m_endType = PART_OF_NODE;
-                potentialFinishedPath.m_endPosition = endPosition;
+                potentialFinishedPath.m_endLocation = endLocation;
                 int length = potentialFinishedPath.getLength();
                 if (length >= minDistance && length <= maxDistance)
                     finishedPaths.push_back(potentialFinishedPath);
@@ -729,8 +727,8 @@ QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query)
             //First check to make sure the hits are within the path.  This means
             //if we are in the first or last nodes of the path, we need to make
             //sure that our hit is contained within the start/end positions.
-            if ( (i != 0 || hit->m_nodeStart >= m_startPosition) &&
-                    (i != m_nodes.size()-1 || hit->m_nodeEnd <= m_endPosition))
+            if ( (i != 0 || hit->m_nodeStart >= m_startLocation.getPosition()) &&
+                    (i != m_nodes.size()-1 || hit->m_nodeEnd <= m_endLocation.getPosition()))
             {
                 //Now make sure that the hit follows the previous hit in the
                 //query.
@@ -767,10 +765,8 @@ double Path::getMeanReadDepth()
 bool Path::areIdentical(Path other)
 {
     return (m_nodes == other.m_nodes &&
-            m_startType == other.m_startType &&
-            m_startPosition == other.m_startPosition &&
-            m_endType == other.m_endType &&
-            m_endPosition == other.m_endPosition);
+            m_startLocation.areIdentical(other.m_startLocation) &&
+            m_endLocation.areIdentical(other.m_endLocation));
 }
 
 
@@ -809,4 +805,15 @@ bool Path::hasNodeSubset(Path other)
     }
     
     return false;
+}
+
+
+
+void Path::extendPathToIncludeEntirityOfNodes()
+{
+    if (m_nodes.empty())
+        return;
+
+    m_startLocation = GraphLocation::startOfNode(m_nodes.front());
+    m_endLocation = GraphLocation::endOfNode(m_nodes.back());
 }

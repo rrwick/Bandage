@@ -112,3 +112,14 @@ double BlastHit::getQueryCoverageFraction()
     int queryRegionSize = m_queryEnd - m_queryStart;
     return double(queryRegionSize) / m_query->m_length;
 }
+
+
+GraphLocation BlastHit::getHitStart() const
+{
+    return GraphLocation(m_node, m_nodeStart);
+}
+
+GraphLocation BlastHit::getHitEnd() const
+{
+    return GraphLocation(m_node, m_nodeEnd);
+}

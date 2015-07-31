@@ -4,6 +4,14 @@
 #include "assemblygraph.h"
 #include "../program/globals.h"
 
+
+
+GraphLocation::GraphLocation() :
+    m_node(0), m_position(0)
+{
+
+}
+
 GraphLocation::GraphLocation(DeBruijnNode * node, int position) :
     m_node(node), m_position(position)
 {
@@ -161,3 +169,19 @@ char GraphLocation::getBase() const
         return m_node->m_sequence.at(m_position - 1);
 }
 
+
+
+bool GraphLocation::isAtStartOfNode() const
+{
+    return (isValid() && m_position == 1);
+}
+
+bool GraphLocation::isAtEndOfNode() const
+{
+    return (isValid() && m_position == m_node->getLength());
+}
+
+bool GraphLocation::areIdentical(GraphLocation other) const
+{
+    return (m_node == other.m_node && m_position == other.m_position);
+}

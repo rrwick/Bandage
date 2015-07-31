@@ -26,6 +26,7 @@ class BlastQuery;
 #include "blasthitpart.h"
 #include <vector>
 #include "../graph/path.h"
+#include "../graph/graphlocation.h"
 
 class BlastHit
 {
@@ -62,6 +63,8 @@ public:
     double getNodeCentreFraction() {return (m_nodeStartFraction + m_nodeEndFraction) / 2.0;}
     static bool compareTwoBlastHitPointers(BlastHit * a, BlastHit * b);
     double getQueryCoverageFraction();
+    GraphLocation getHitStart() const;
+    GraphLocation getHitEnd() const;
 };
 
 #endif // BLASTHIT_H

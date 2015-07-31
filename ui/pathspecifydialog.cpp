@@ -199,7 +199,7 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     else
     {
         Path pathCopy = m_path;
-        pathCopy.m_endType = ENTIRE_NODE;
+        pathCopy.extendPathToIncludeEntirityOfNodes();
         pathText = pathCopy.getString(true) + ", " + node->m_name;
     }
 
