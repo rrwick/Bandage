@@ -60,6 +60,7 @@ private:
     void makeQueryRow(int row);
 
 private slots:
+    void afterWindowShow();
     void buildBlastDatabaseInThread();
     void loadBlastQueriesFromFastaFileButtonClicked();
     void enterQueryManually();

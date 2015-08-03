@@ -31,7 +31,7 @@ public:
     void resizeColumns();
 
 protected:
-    void resizeEvent(QResizeEvent * event);
+    void showEvent(QShowEvent * event);
 };
 
 #endif // MYTABLEWIDGET_H

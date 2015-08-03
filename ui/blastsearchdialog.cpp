@@ -78,8 +78,6 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     font.setBold(true);
     ui->blastQueriesTableWidget->horizontalHeader()->setFont(font);
     ui->blastHitsTableWidget->horizontalHeader()->setFont(font);
-    ui->blastQueriesTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->blastHitsTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
 
     //If a BLAST database already exists, move to step 2.
@@ -127,6 +125,13 @@ BlastSearchDialog::~BlastSearchDialog()
 }
 
 
+
+void BlastSearchDialog::afterWindowShow()
+{
+    ui->blastQueriesTableWidget->resizeColumns();
+    ui->blastHitsTableWidget->resizeColumns();
+}
+
 void BlastSearchDialog::clearBlastHits()
 {
     g_blastSearch->clearBlastHits();
@@ -163,6 +168,7 @@ void BlastSearchDialog::fillQueriesTable()
         makeQueryRow(i);
 
     ui->blastQueriesTableWidget->resizeColumns();
+    ui->blastQueriesTableWidget->setSortingEnabled(true);
 
     ui->blastQueriesTableWidget->blockSignals(false);
 }
@@ -280,6 +286,7 @@ void BlastSearchDialog::fillHitsTable()
 
     ui->blastHitsTableWidget->resizeColumns();
     ui->blastHitsTableWidget->setEnabled(true);
+    ui->blastHitsTableWidget->setSortingEnabled(true);
 }
 
 void BlastSearchDialog::buildBlastDatabaseInThread()

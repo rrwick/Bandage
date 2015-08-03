@@ -26,15 +26,7 @@ MyTableWidget::MyTableWidget(QWidget * parent) :
     QTableWidget(parent)
 {
     verticalHeader ()->hide();
-}
-
-
-
-
-void MyTableWidget::resizeEvent(QResizeEvent * event)
-{
-    resizeColumns();
-    QTableWidget::resizeEvent(event);
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 }
 
 
@@ -75,4 +67,11 @@ void MyTableWidget::resizeColumns()
     }
     int lastColumnWidth = tableWidth - newTotalColumnWidth;
     horizontalHeader()->resizeSection(columnCount() - 1, lastColumnWidth);
+}
+
+
+void MyTableWidget::showEvent(QShowEvent * event)
+{
+    QTableWidget::showEvent(event);
+    resizeColumns();
 }
