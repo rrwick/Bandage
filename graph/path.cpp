@@ -217,7 +217,7 @@ Path Path::makeFromString(QString pathString, bool circular,
         path.m_endLocation = GraphLocation(lastNode, endPos);
     }
     else
-        path.m_endLocation = GraphLocation::endOfNode(firstNode);
+        path.m_endLocation = GraphLocation::endOfNode(lastNode);
 
     return path;
 }

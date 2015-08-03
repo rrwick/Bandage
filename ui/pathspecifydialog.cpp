@@ -40,7 +40,9 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     checkPathValidity();
 
     ui->circularPathInfoText->setInfoText("Tick this box to indicate that the path is circular, i.e. there is an edge connecting the "
-                                          "last node in the list to the first.");
+                                          "last node in the list to the first.<br><br>"
+                                          "Circular paths must contain the entirety of their nodes and therefore cannot contain "
+                                          "start/end positions.");
 
     connect(ui->pathTextEdit, SIGNAL(textChanged()), this, SLOT(checkPathValidity()));
     connect(ui->pathTextEdit, SIGNAL(textChanged()), g_graphicsView->viewport(), SLOT(update()));
@@ -67,7 +69,7 @@ void PathSpecifyDialog::checkPathValidity()
 
     //Clear out the Path object.  If the string makes a valid path,
     //it will be rebuilt.
-    m_path = Path();
+    g_settings->userSpecifiedPath = Path();
 
     //If there is no graph loaded, then no path can be valid.
     if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
@@ -80,13 +82,12 @@ void PathSpecifyDialog::checkPathValidity()
     //Create a path from the user-supplied string.
     QString pathStringFailure;
     QString pathText = ui->pathTextEdit->toPlainText().simplified();
-    m_path = Path::makeFromString(pathText,
-                                  ui->circularPathCheckBox->isChecked(),
-                                  &pathStringFailure);
-    g_settings->userSpecifiedPath = m_path;
+    g_settings->userSpecifiedPath = Path::makeFromString(pathText,
+                                                         ui->circularPathCheckBox->isChecked(),
+                                                         &pathStringFailure);
 
     //If the Path turned out to be empty, that means that makeFromString failed.
-    if (m_path.isEmpty())
+    if (g_settings->userSpecifiedPath.isEmpty())
     {
         if (pathText == "")
             ui->validPathLabel->setText("No path specified");
@@ -121,7 +122,7 @@ void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
 void PathSpecifyDialog::copyPathToClipboard()
 {
     QClipboard * clipboard = QApplication::clipboard();
-    clipboard->setText(m_path.getPathSequence());
+    clipboard->setText(g_settings->userSpecifiedPath.getPathSequence());
 }
 
 
@@ -136,7 +137,7 @@ void PathSpecifyDialog::savePathToFile()
         QFile file(fullFileName);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
-        out << m_path.getFasta();
+        out << g_settings->userSpecifiedPath.getFasta();
         g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
@@ -147,32 +148,26 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     QString pathText = ui->pathTextEdit->toPlainText();
 
     //If the node fits on the end of the path add it there.
-    Path extendedPath = m_path;
-    if (m_path.canNodeFitOnEnd(node, &extendedPath))
+    Path extendedPath = g_settings->userSpecifiedPath;
+    if (g_settings->userSpecifiedPath.canNodeFitOnEnd(node, &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If not, try the front of the path.
-    else if (m_path.canNodeFitAtStart(node, &extendedPath))
+    else if (g_settings->userSpecifiedPath.canNodeFitAtStart(node, &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If neither of these work, try the reverse complement, first
     //at the end and then at the front.
     //But only do this if we are in single mode.
     else if (!g_settings->doubleMode &&
-             m_path.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
+             g_settings->userSpecifiedPath.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
         pathText = extendedPath.getString(true);
     else if (!g_settings->doubleMode &&
-             m_path.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
+             g_settings->userSpecifiedPath.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
         pathText = extendedPath.getString(true);
 
-    //If all of the above failed, just add the node to the end of
-    //the list, which will make the list invalid.
-    else
-    {
-        Path pathCopy = m_path;
-        pathCopy.extendPathToIncludeEntirityOfNodes();
-        pathText = pathCopy.getString(true) + ", " + node->m_name;
-    }
+    //If all of the above failed, we do nothing.  I.e. if the node cannot be
+    //added to the path, it isn't added to the text.
 
     ui->pathTextEdit->setPlainText(pathText);
 }

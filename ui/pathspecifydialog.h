@@ -39,7 +39,6 @@ public slots:
     void addNodeName(DeBruijnNode * node);
 
 private:
-    Path m_path;
     Ui::PathSpecifyDialog *ui;
     void setPathValidityUiElements(bool pathValid);
 
