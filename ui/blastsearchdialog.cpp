@@ -157,6 +157,7 @@ void BlastSearchDialog::fillQueriesTable()
     //Turn off table widget signals for this function so the
     //queryCellChanged slot doesn't get called.
     ui->blastQueriesTableWidget->blockSignals(true);
+    ui->blastQueriesTableWidget->setSortingEnabled(false);
 
     ui->blastQueriesTableWidget->clearContents();
 
@@ -172,6 +173,7 @@ void BlastSearchDialog::fillQueriesTable()
     ui->blastQueriesTableWidget->resizeColumns();
     ui->blastQueriesTableWidget->setSortingEnabled(true);
 
+    ui->blastQueriesTableWidget->setSortingEnabled(true);
     ui->blastQueriesTableWidget->blockSignals(false);
 }
 
@@ -214,12 +216,14 @@ void BlastSearchDialog::makeQueryRow(int row)
     percent->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     paths->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
+    QTableWidgetItem * colour = new QTableWidgetItem(query->getColour().name());
     ColourButton * colourButton = new ColourButton();
     colourButton->setColour(query->getColour());
     connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
     connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
 
     ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
+    ui->blastQueriesTableWidget->setItem(row, 0, colour);
     ui->blastQueriesTableWidget->setItem(row, 1, name);
     ui->blastQueriesTableWidget->setItem(row, 2, type);
     ui->blastQueriesTableWidget->setItem(row, 3, length);
@@ -232,6 +236,7 @@ void BlastSearchDialog::makeQueryRow(int row)
 void BlastSearchDialog::fillHitsTable()
 {
     ui->blastHitsTableWidget->clearContents();
+    ui->blastHitsTableWidget->setSortingEnabled(false);
 
     int hitCount = g_blastSearch->m_allHits.size();
     ui->blastHitsTableWidget->setRowCount(hitCount);
