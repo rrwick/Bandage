@@ -83,6 +83,8 @@ public:
 private:
     void pathHighlightNode1(QPainter * painter);
     void pathHighlightNode2(QPainter * painter, DeBruijnNode * node, bool reverse);
+    void pathHighlightNode3(QPainter * painter, QPainterPath highlightPath);
+    QPainterPath buildPartialHighlightPath(double startFraction, double endFraction, bool reverse);
 
 };
 

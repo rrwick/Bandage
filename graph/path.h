@@ -64,8 +64,11 @@ public:
     double getMeanReadDepth() const;
     bool containsNode(DeBruijnNode * node) const;
     bool containsEntireNode(DeBruijnNode * node) const;
-    void partOfNodeContained(DeBruijnNode * node, double * startFraction,
-                             double * endFraction) const;
+    bool isInMiddleOfPath(DeBruijnNode * node) const;
+    bool isStartingNode(DeBruijnNode * node) const;
+    bool isEndingNode(DeBruijnNode * node) const;
+    double getStartFraction() const;
+    double getEndFraction() const;
 
     //MODIFERS
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);

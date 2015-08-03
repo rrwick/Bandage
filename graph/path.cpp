@@ -861,38 +861,48 @@ bool Path::containsEntireNode(DeBruijnNode * node) const
 
 
 
-void Path::partOfNodeContained(DeBruijnNode * node, double * startFraction,
-                               double * endFraction) const
+
+bool Path::isInMiddleOfPath(DeBruijnNode * node) const
 {
-    *startFraction = 0.0;
-    *endFraction = 0.0;
+    return containsNode(node) && !isStartingNode(node) && !isEndingNode(node);
+}
 
-    if (!containsNode(node))
-        return;
 
-    if (containsEntireNode(node))
-    {
-        *endFraction = 1.0;
-        return;
-    }
+bool Path::isStartingNode(DeBruijnNode * node) const
+{
+    if (m_nodes.empty())
+        return false;
+    return m_nodes.front() == node;
+}
 
-    //If the code got here, then the path only contains part of the node, so
-    //it must be either the first or last node of the path.
-    if (node == m_nodes.front())
-    {
-        *endFraction = 1.0;
-        if (node->getLength() == 0)
-            return;
-        *startFraction = double(m_startLocation.getPosition() - 1) / node->getLength();
-        return;
-    }
+bool Path::isEndingNode(DeBruijnNode * node) const
+{
+    if (m_nodes.empty())
+        return false;
+    return m_nodes.back() == node;
+}
 
-    else if (node == m_nodes.back())
-    {
-        *startFraction = 0.0;
-        if (node->getLength() == 0)
-            return;
-        *endFraction = double(m_endLocation.getPosition()) / node->getLength();
-        return;
-    }
+
+double Path::getStartFraction() const
+{
+    if (m_nodes.empty())
+        return 0.0;
+
+    int firstNodeLength = m_nodes.front()->getLength();
+    if (firstNodeLength == 0)
+        return 0.0;
+
+    return double(m_startLocation.getPosition() - 1) / firstNodeLength;
+}
+
+double Path::getEndFraction() const
+{
+    if (m_nodes.empty())
+        return 1.0;
+
+    int lastNodeLength = m_nodes.back()->getLength();
+    if (lastNodeLength == 0)
+        return 1.0;
+
+    return double(m_endLocation.getPosition()) / lastNodeLength;
 }
