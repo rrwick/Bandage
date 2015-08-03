@@ -35,7 +35,10 @@ MyTableWidget::MyTableWidget(QWidget * parent) :
 
 void MyTableWidget::resizeColumns()
 {
+    //If sorting is enabled, the columns are given way too much space.
+    setSortingEnabled(false);
     resizeColumnsToContents();
+    setSortingEnabled(true);
 
     //Set the first column to a minimum size, as it will hold the colour
     //for both queries and hits.
