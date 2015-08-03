@@ -438,8 +438,11 @@ QByteArray Path::getPathSequence() const
 
     //If the path is linear, then we begin either with the entire first node
     //sequence or part of it.
-    int rightChars = firstNodeSequence.length() - m_startLocation.getPosition() + 1;
-    sequence += firstNodeSequence.right(rightChars);
+    else
+    {
+        int rightChars = firstNodeSequence.length() - m_startLocation.getPosition() + 1;
+        sequence += firstNodeSequence.right(rightChars);
+    }
 
     //The middle nodes are not affected by whether or not the path is circular
     //or has partial node ends.
