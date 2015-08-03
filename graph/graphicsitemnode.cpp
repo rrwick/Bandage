@@ -943,9 +943,8 @@ void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
                                           DeBruijnNode * node,
                                           bool reverse)
 {
-    //If the node is in the middle of the path, then we shade and
-    //outline the whole thing.
-    if (g_settings->userSpecifiedPath.isInMiddleOfPath(node))
+    int numberOfTimesInMiddle = g_settings->userSpecifiedPath.numberOfOccurrencesInMiddleOfPath(node);
+    for (int i = 0; i < numberOfTimesInMiddle; ++i)
         pathHighlightNode3(painter, shape());
 
     if (g_settings->userSpecifiedPath.isStartingNode(node))

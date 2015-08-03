@@ -868,6 +868,19 @@ bool Path::isInMiddleOfPath(DeBruijnNode * node) const
 }
 
 
+//This function counts the number of times the node is in the path, not
+//counting the first or last nodes.
+int Path::numberOfOccurrencesInMiddleOfPath(DeBruijnNode * node) const
+{
+    int count = 0;
+    for (int i = 1; i < m_nodes.size() - 1; ++i)
+    {
+        if (m_nodes[i] == node)
+            ++count;
+    }
+    return count;
+}
+
 bool Path::isStartingNode(DeBruijnNode * node) const
 {
     if (m_nodes.empty())

@@ -65,6 +65,7 @@ public:
     bool containsNode(DeBruijnNode * node) const;
     bool containsEntireNode(DeBruijnNode * node) const;
     bool isInMiddleOfPath(DeBruijnNode * node) const;
+    int numberOfOccurrencesInMiddleOfPath(DeBruijnNode * node) const;
     bool isStartingNode(DeBruijnNode * node) const;
     bool isEndingNode(DeBruijnNode * node) const;
     double getStartFraction() const;
