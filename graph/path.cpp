@@ -870,7 +870,7 @@ void Path::partOfNodeContained(DeBruijnNode * node, double * startFraction,
         *endFraction = 1.0;
         if (node->getLength() == 0)
             return;
-        *startFraction = double(m_startLocation.getPosition()) / node->getLength();
+        *startFraction = double(m_startLocation.getPosition() - 1) / node->getLength();
         return;
     }
 
