@@ -70,6 +70,7 @@ public:
     bool isEndingNode(DeBruijnNode * node) const;
     double getStartFraction() const;
     double getEndFraction() const;
+    int getNodeCount() const;
 
     //MODIFERS
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);

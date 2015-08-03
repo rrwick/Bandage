@@ -947,10 +947,20 @@ void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
     for (int i = 0; i < numberOfTimesInMiddle; ++i)
         pathHighlightNode3(painter, shape());
 
-    if (g_settings->userSpecifiedPath.isStartingNode(node))
+    bool isStartingNode = g_settings->userSpecifiedPath.isStartingNode(node);
+    bool isEndingNode = g_settings->userSpecifiedPath.isEndingNode(node);
+
+    //If this is the onely node in the path, then we limit the highlighting to the appropriate region.
+    if (isStartingNode && isEndingNode && g_settings->userSpecifiedPath.getNodeCount() == 1)
+    {
+        pathHighlightNode3(painter, buildPartialHighlightPath(g_settings->userSpecifiedPath.getStartFraction(), g_settings->userSpecifiedPath.getEndFraction(), reverse));
+        return;
+    }
+
+    if (isStartingNode)
         pathHighlightNode3(painter, buildPartialHighlightPath(g_settings->userSpecifiedPath.getStartFraction(), 1.0, reverse));
 
-    if (g_settings->userSpecifiedPath.isEndingNode(node))
+    if (isEndingNode)
         pathHighlightNode3(painter, buildPartialHighlightPath(0.0, g_settings->userSpecifiedPath.getEndFraction(), reverse));
 }
 

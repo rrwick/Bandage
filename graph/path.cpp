@@ -919,3 +919,9 @@ double Path::getEndFraction() const
 
     return double(m_endLocation.getPosition()) / lastNodeLength;
 }
+
+
+int Path::getNodeCount() const
+{
+    return m_nodes.size();
+}
