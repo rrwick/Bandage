@@ -32,6 +32,7 @@ public:
 
 protected:
     void showEvent(QShowEvent * event);
+    void keyPressEvent(QKeyEvent* event);
 };
 
 #endif // MYTABLEWIDGET_H
