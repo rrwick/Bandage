@@ -100,6 +100,9 @@ Settings::Settings()
     highCoverageValue = 50.0;
     highCoverageColour = QColor(255, 0, 0);
 
+    pathHighlightShadingColour = QColor(0, 0, 0, 60);
+    pathHighlightOutlineColour = QColor(0, 0, 0);
+
     blastSearchParameters = "";
 
     rememberedPath = QDir::homePath();

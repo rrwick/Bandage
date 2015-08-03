@@ -142,7 +142,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
             partPen.setColor(parts[i].m_colour);
             painter->setPen(partPen);
 
-            painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart, parts[i].m_nodeFractionEnd));
+            painter->drawPath(makePartialPath(parts[i].m_nodeFractionStart,
+                                              parts[i].m_nodeFractionEnd));
         }
         painter->setClipping(false);
     }
@@ -159,7 +160,8 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
     if (outlineThickness > 0.0)
     {
         outlinePath = outlinePath.simplified();
-        QPen outlinePen(QBrush(outlineColour), outlineThickness, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+        QPen outlinePen(QBrush(outlineColour), outlineThickness, Qt::SolidLine,
+                        Qt::SquareCap, Qt::RoundJoin);
         painter->setPen(outlinePen);
         painter->drawPath(outlinePath);
     }
@@ -167,15 +169,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
     //Draw the path highlighting outline, if appropriate
     if (g_settings->pathDialogIsVisible)
-    {
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-        //NEED TO WORK ON THIS CODE!!!!!
-    }
+        pathHighlightNode1(painter);
 
 
     //Draw node labels if there are any to display.
@@ -926,4 +920,82 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(st
         blastHitText->push_back(hit->m_query->getName());
         blastHitLocation->push_back(findLocationOnPath(1.0 - hit->getNodeCentreFraction()));
     }
+}
+
+
+
+
+//This function outlines and shades the appropriate part of a node if it is
+//in the user-specified path.
+void GraphicsItemNode::pathHighlightNode1(QPainter * painter)
+{
+    if (g_settings->userSpecifiedPath.containsNode(m_deBruijnNode))
+        pathHighlightNode2(painter, m_deBruijnNode, false);
+
+    if (!g_settings->doubleMode &&
+            g_settings->userSpecifiedPath.containsNode(m_deBruijnNode->m_reverseComplement))
+        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true);
+}
+
+
+
+//This function outlines and shades the appropriate part of a node if it is
+//in the user-specified path.
+void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
+                                          DeBruijnNode * node,
+                                          bool reverse)
+{
+    QBrush shadingBrush(g_settings->pathHighlightShadingColour);
+
+    QPainterPath pathOutline;
+
+    //If the entirety of the node is in the the path, then we shade and
+    //outline the whole thing.
+    if (g_settings->userSpecifiedPath.containsEntireNode(node))
+        pathOutline = shape();
+
+    //If only part of the node is in the path, then we must only outline and
+    //shade the appropriate part.
+    else
+    {
+        double startFraction, endFraction;
+        g_settings->userSpecifiedPath.partOfNodeContained(node,
+                                                          &startFraction,
+                                                          &endFraction);
+
+        if (reverse)
+        {
+            startFraction = 1.0 - startFraction;
+            endFraction = 1.0 - endFraction;
+            std::swap(startFraction, endFraction);
+        }
+
+        QPainterPath partialPath = makePartialPath(startFraction,
+                                                   endFraction);
+
+        QPainterPathStroker stroker;
+
+        //If the node has an arrow, we need to do a path intersection with the
+        //shape to make sure the arrowhead is part of the path.  Adding a bit
+        //to the width seems to help with the intersection.
+        if (m_hasArrow)
+            stroker.setWidth(m_width + 0.1);
+        else
+            stroker.setWidth(m_width);
+
+        stroker.setCapStyle(Qt::FlatCap);
+        stroker.setJoinStyle(Qt::RoundJoin);
+        pathOutline = stroker.createStroke(partialPath);
+
+        if (m_hasArrow)
+            pathOutline = pathOutline.intersected(shape());
+    }
+
+    painter->fillPath(pathOutline, shadingBrush);
+    pathOutline = pathOutline.simplified();
+    QPen outlinePen(QBrush(g_settings->pathHighlightOutlineColour),
+                    g_settings->selectionThickness, Qt::SolidLine,
+                    Qt::SquareCap, Qt::RoundJoin);
+    painter->setPen(outlinePen);
+    painter->drawPath(pathOutline);
 }

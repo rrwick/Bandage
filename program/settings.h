@@ -111,6 +111,9 @@ public:
     double highCoverageValue;
     QColor highCoverageColour;
 
+    QColor pathHighlightShadingColour;
+    QColor pathHighlightOutlineColour;
+
     QString blastSearchParameters;
 
     QString rememberedPath;
@@ -135,7 +138,7 @@ public:
     //This flag is true when the 'Specify exact path...' dialog is visible.
     bool pathDialogIsVisible;
 
-    //These store the user input the 'Specify exact path...' dialog so it is
+    //These store the user input in the 'Specify exact path...' dialog so it is
     //retained between uses.
     Path userSpecifiedPath;
     QString userSpecifiedPathString;
