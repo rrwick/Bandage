@@ -45,6 +45,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     connect(ui->pathTextEdit, SIGNAL(textChanged()), this, SLOT(checkPathValidity()));
     connect(ui->pathTextEdit, SIGNAL(textChanged()), g_graphicsView->viewport(), SLOT(update()));
     connect(ui->circularPathCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkPathValidity()));
+    connect(ui->circularPathCheckBox, SIGNAL(toggled(bool)), g_graphicsView->viewport(), SLOT(update()));
     connect(ui->copyButton, SIGNAL(clicked(bool)), this, SLOT(copyPathToClipboard()));
     connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(savePathToFile()));
     connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
@@ -77,13 +78,10 @@ void PathSpecifyDialog::checkPathValidity()
     }
 
     //Create a path from the user-supplied string.
-    PathStringFailure pathStringFailure;
+    QString pathStringFailure;
     QString pathText = ui->pathTextEdit->toPlainText().simplified();
-    QList<DeBruijnNode *> nodesInGraph;
-    QStringList nodesNotInGraph;
     m_path = Path::makeFromString(pathText,
                                   ui->circularPathCheckBox->isChecked(),
-                                  &nodesInGraph, &nodesNotInGraph,
                                   &pathStringFailure);
     g_settings->userSpecifiedPath = m_path;
 
@@ -92,33 +90,9 @@ void PathSpecifyDialog::checkPathValidity()
     {
         if (pathText == "")
             ui->validPathLabel->setText("No path specified");
-
-        if (pathStringFailure == IMPROPER_FORMAT)
-            ui->validPathLabel->setText("Invalid path: the text is not "
-                                        "formatted correctly");
-
-        else if (pathStringFailure == NODES_NOT_IN_GRAPH)
-        {
-            QString nodesNotInGraphString;
-            for (int i = 0; i < nodesNotInGraph.size(); ++i)
-            {
-                nodesNotInGraphString += nodesNotInGraph[i];
-                if (i < nodesNotInGraph.size() - 1)
-                    nodesNotInGraphString += ", ";
-            }
-            ui->validPathLabel->setText("Invalid path: the following nodes are not in the graph: " + nodesNotInGraphString);
-        }
-
-        else if (pathStringFailure == PATH_NOT_CIRCULAR)
-            ui->validPathLabel->setText("Invalid path: the nodes do not form "
-                                        "a circular path");
-
-        else if (pathStringFailure == CIRCULAR_WITH_START_AND_END)
-            ui->validPathLabel->setText("Invalid path: circular paths cannot "
-                                        "contain start or end positions");
-
         else
-            ui->validPathLabel->setText("Invalid path");
+            ui->validPathLabel->setText("Invalid path: " + pathStringFailure);
+
         setPathValidityUiElements(false);
     }
 

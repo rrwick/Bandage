@@ -45,9 +45,7 @@ public:
     static Path makeFromOrderedNodes(QList<DeBruijnNode *> nodes,
                                      bool circular);
     static Path makeFromString(QString pathString, bool circular,
-                               QList<DeBruijnNode *> * nodesInGraph,
-                               QStringList * nodesNotInGraph,
-                               PathStringFailure * pathStringFailure);
+                               QString * pathStringFailure);
 
     //ACCESSORS
     bool isEmpty() const {return m_nodes.empty();}

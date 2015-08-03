@@ -23,6 +23,7 @@
 #include "../blast/blastquery.h"
 #include <QRegularExpression>
 #include "assemblygraph.h"
+#include <QStringList>
 
 
 //These will try to produce a path using the given nodes.
@@ -111,9 +112,7 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
 
 
 Path Path::makeFromString(QString pathString, bool circular,
-                          QList<DeBruijnNode *> * nodesInGraph,
-                          QStringList * nodesNotInGraph,
-                          PathStringFailure * pathStringFailure)
+                          QString * pathStringFailure)
 {
     Path path;
 
@@ -123,7 +122,7 @@ Path Path::makeFromString(QString pathString, bool circular,
     //If the string failed to match the regex, return an empty path.
     if (!match.hasMatch())
     {
-        *pathStringFailure = IMPROPER_FORMAT;
+        *pathStringFailure = "the text is not formatted correctly";
         return path;
     }
 
@@ -134,7 +133,7 @@ Path Path::makeFromString(QString pathString, bool circular,
     //Circular paths cannot have start and end positions.
     if (circular && (startPosString != "" || endPosString != ""))
     {
-        *pathStringFailure = CIRCULAR_WITH_START_AND_END;
+        *pathStringFailure = "circular paths cannot contain start or end positions";
         return path;
     }
 
@@ -142,35 +141,49 @@ Path Path::makeFromString(QString pathString, bool circular,
     QStringList nodeNameList = nodeListString.simplified().split(",", QString::SkipEmptyParts);
     if (nodeNameList.empty())
     {
-        *pathStringFailure = IMPROPER_FORMAT;
+        *pathStringFailure = "the text is not formatted correctly";
         return path;
     }
 
-    //Find which node names are and are not actually in the graph.
+    //Find which node names are and are not actually in the graph. 
+    QList<DeBruijnNode *> nodesInGraph;
+    QStringList nodesNotInGraph;
     for (int i = 0; i < nodeNameList.size(); ++i)
     {
         QString nodeName = nodeNameList[i].simplified();
         if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-            nodesInGraph->push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
+            nodesInGraph.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
         else
-            nodesNotInGraph->push_back(nodeName);
+            nodesNotInGraph.push_back(nodeName);
     }
 
     //If the path contains nodes not in the graph, we fail.
-    if (nodesNotInGraph->size() > 0)
+    if (nodesNotInGraph.size() > 0)
     {
-        *pathStringFailure = NODES_NOT_IN_GRAPH;
+        *pathStringFailure = "the following nodes are not in the graph: ";
+        for (int i = 0; i < nodesNotInGraph.size(); ++i)
+        {
+            *pathStringFailure += nodesNotInGraph[i];
+            if (i != nodesNotInGraph.size() - 1)
+                *pathStringFailure += ", ";
+        }
         return path;
     }
 
     //If the code got here, then the list at least consists of valid nodes.
     //We now use it to create a Path object.
-    path = Path::makeFromOrderedNodes(*nodesInGraph, circular);
+    path = Path::makeFromOrderedNodes(nodesInGraph, circular);
 
     //If the path is empty, then we don't have to worry about start/end
     //positions and we just return it.
     if (path.isEmpty())
+    {
+        if (circular)
+            *pathStringFailure = "the nodes do not form a circular path";
+        else
+            *pathStringFailure = "the nodes do not form a path";
         return path;
+    }
 
     //If the code got here, then a path was made, and now we must check whether
     //the start/end points are valid.
@@ -180,9 +193,9 @@ Path Path::makeFromString(QString pathString, bool circular,
     if (startPosString.length() > 0)
     {
         int startPos = startPosString.toInt();
-        if (startPos > firstNode->getLength())
+        if (startPos < 1 || startPos > firstNode->getLength())
         {
-            *pathStringFailure = START_POS_NOT_IN_NODE;
+            *pathStringFailure = "starting node position not valid";
             return Path();
         }
 
@@ -195,9 +208,9 @@ Path Path::makeFromString(QString pathString, bool circular,
     if (endPosString.length() > 0)
     {
         int endPos = endPosString.toInt();
-        if (endPos > lastNode->getLength())
+        if (endPos < 1 || endPos > lastNode->getLength())
         {
-            *pathStringFailure = END_POS_NOT_IN_NODE;
+            *pathStringFailure = "ending node position not valid";
             return Path();
         }
 

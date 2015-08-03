@@ -50,10 +50,6 @@ enum BlastUiState {BLAST_DB_NOT_YET_BUILT, BLAST_DB_BUILD_IN_PROGRESS,
 enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE};
 enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
                       AUTO_DETERMINED_EXACT_OVERLAP};
-enum PathStringFailure {IMPROPER_FORMAT, NODES_NOT_IN_GRAPH,
-                        PATH_NOT_CIRCULAR, CIRCULAR_WITH_START_AND_END,
-                        START_POS_NOT_IN_NODE, END_POS_NOT_IN_NODE};
-
 
 extern QSharedPointer<Settings> g_settings;
 extern MyGraphicsView * g_graphicsView;
