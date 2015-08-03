@@ -67,7 +67,9 @@ SOURCES += \
     graph/path.cpp \
     ui/pathspecifydialog.cpp \
     ui/distancedialog.cpp \
-    graph/graphlocation.cpp
+    graph/graphlocation.cpp \
+    ui/tablewidgetitemint.cpp \
+    ui/tablewidgetitemdouble.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -108,7 +110,9 @@ HEADERS  += \
     graph/path.h \
     ui/pathspecifydialog.h \
     ui/distancedialog.h \
-    graph/graphlocation.h
+    graph/graphlocation.h \
+    ui/tablewidgetitemint.h \
+    ui/tablewidgetitemdouble.h
 
 FORMS    += \
     ui/mainwindow.ui \
