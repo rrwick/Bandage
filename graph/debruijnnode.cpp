@@ -90,7 +90,7 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph)
     //Each node in the Velvet sense is made up of multiple nodes in the
     //OGDF sense.  This way, Velvet nodes appear as lines whose length
     //corresponds to the sequence length.
-    int numberOfGraphEdges = ceil(double(getLength()) / g_settings->getBasePairsPerSegment());
+    int numberOfGraphEdges = ceil(double(getLength()) / getBasePairsPerSegment());
     if (numberOfGraphEdges == 0)
         numberOfGraphEdges = 1;
     int numberOfGraphNodes = numberOfGraphEdges + 1;
@@ -507,4 +507,14 @@ std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes()
         returnVector.push_back(enteringEdges[i]->m_startingNode);
 
     return returnVector;
+}
+
+
+
+int DeBruijnNode::getBasePairsPerSegment()
+{
+    if (g_settings->nodeLengthMode == AUTO_NODE_LENGTH)
+        return g_settings->autoBasePairsPerSegment;
+    else
+        return g_settings->manualBasePairsPerSegment;
 }

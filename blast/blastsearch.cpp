@@ -25,6 +25,7 @@
 #include "../program/settings.h"
 #include <QApplication>
 #include "../graph/debruijnnode.h"
+#include "../program/memory.h"
 
 BlastSearch::BlastSearch() :
     m_blastQueries(), m_tempDirectory("bandage_temp/")
@@ -222,7 +223,7 @@ QString BlastSearch::doAutoBlastSearch()
     if (!findProgram("tblastn", &tblastnCommand))
         return "Error: The program tblastn was not found.  Please install NCBI BLAST to use this feature.";
 
-    RunBlastSearchWorker runBlastSearchWorker(blastnCommand, tblastnCommand, g_settings->blastSearchParameters);;
+    RunBlastSearchWorker runBlastSearchWorker(blastnCommand, tblastnCommand, g_memory->blastSearchParameters);;
     runBlastSearchWorker.runBlastSearch();
     if (runBlastSearchWorker.m_error != "")
         return runBlastSearchWorker.m_error;

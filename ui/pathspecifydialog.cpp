@@ -35,9 +35,9 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
-    ui->pathTextEdit->setPlainText(g_settings->userSpecifiedPathString);
-    ui->circularPathCheckBox->setChecked(g_settings->userSpecifiedPathCircular);
-    g_settings->pathDialogIsVisible = true;
+    ui->pathTextEdit->setPlainText(g_memory->userSpecifiedPathString);
+    ui->circularPathCheckBox->setChecked(g_memory->userSpecifiedPathCircular);
+    g_memory->pathDialogIsVisible = true;
     checkPathValidity();
 
     ui->circularPathInfoText->setInfoText("Tick this box to indicate that the path is circular, i.e. there is an edge connecting the "
@@ -56,7 +56,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
 
 PathSpecifyDialog::~PathSpecifyDialog()
 {
-    g_settings->pathDialogIsVisible = false;
+    g_memory->pathDialogIsVisible = false;
     delete ui;
 }
 
@@ -64,13 +64,13 @@ PathSpecifyDialog::~PathSpecifyDialog()
 
 void PathSpecifyDialog::checkPathValidity()
 {
-    g_settings->userSpecifiedPathString = ui->pathTextEdit->toPlainText();
-    g_settings->userSpecifiedPathCircular = ui->circularPathCheckBox->isChecked();
-    g_settings->userSpecifiedPath = Path();
+    g_memory->userSpecifiedPathString = ui->pathTextEdit->toPlainText();
+    g_memory->userSpecifiedPathCircular = ui->circularPathCheckBox->isChecked();
+    g_memory->userSpecifiedPath = Path();
 
     //Clear out the Path object.  If the string makes a valid path,
     //it will be rebuilt.
-    g_settings->userSpecifiedPath = Path();
+    g_memory->userSpecifiedPath = Path();
 
     //If there is no graph loaded, then no path can be valid.
     if (g_assemblyGraph->m_deBruijnGraphNodes.size() == 0)
@@ -83,12 +83,12 @@ void PathSpecifyDialog::checkPathValidity()
     //Create a path from the user-supplied string.
     QString pathStringFailure;
     QString pathText = ui->pathTextEdit->toPlainText().simplified();
-    g_settings->userSpecifiedPath = Path::makeFromString(pathText,
+    g_memory->userSpecifiedPath = Path::makeFromString(pathText,
                                                          ui->circularPathCheckBox->isChecked(),
                                                          &pathStringFailure);
 
     //If the Path turned out to be empty, that means that makeFromString failed.
-    if (g_settings->userSpecifiedPath.isEmpty())
+    if (g_memory->userSpecifiedPath.isEmpty())
     {
         if (pathText == "")
             ui->validPathLabel->setText("No path specified");
@@ -123,7 +123,7 @@ void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
 void PathSpecifyDialog::copyPathToClipboard()
 {
     QClipboard * clipboard = QApplication::clipboard();
-    clipboard->setText(g_settings->userSpecifiedPath.getPathSequence());
+    clipboard->setText(g_memory->userSpecifiedPath.getPathSequence());
 }
 
 
@@ -138,7 +138,7 @@ void PathSpecifyDialog::savePathToFile()
         QFile file(fullFileName);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
-        out << g_settings->userSpecifiedPath.getFasta();
+        out << g_memory->userSpecifiedPath.getFasta();
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
@@ -149,22 +149,22 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     QString pathText = ui->pathTextEdit->toPlainText();
 
     //If the node fits on the end of the path add it there.
-    Path extendedPath = g_settings->userSpecifiedPath;
-    if (g_settings->userSpecifiedPath.canNodeFitOnEnd(node, &extendedPath))
+    Path extendedPath = g_memory->userSpecifiedPath;
+    if (g_memory->userSpecifiedPath.canNodeFitOnEnd(node, &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If not, try the front of the path.
-    else if (g_settings->userSpecifiedPath.canNodeFitAtStart(node, &extendedPath))
+    else if (g_memory->userSpecifiedPath.canNodeFitAtStart(node, &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If neither of these work, try the reverse complement, first
     //at the end and then at the front.
     //But only do this if we are in single mode.
     else if (!g_settings->doubleMode &&
-             g_settings->userSpecifiedPath.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
+             g_memory->userSpecifiedPath.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
         pathText = extendedPath.getString(true);
     else if (!g_settings->doubleMode &&
-             g_settings->userSpecifiedPath.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
+             g_memory->userSpecifiedPath.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If all of the above failed, we do nothing.  I.e. if the node cannot be

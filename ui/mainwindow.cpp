@@ -238,9 +238,9 @@ void MainWindow::cleanUp()
     g_assemblyGraph->cleanUp();
     setWindowTitle("Bandage");
 
-    g_settings->userSpecifiedPath = Path();
-    g_settings->userSpecifiedPathString = "";
-    g_settings->userSpecifiedPathCircular = false;
+    g_memory->userSpecifiedPath = Path();
+    g_memory->userSpecifiedPathString = "";
+    g_memory->userSpecifiedPathCircular = false;
 }
 
 
@@ -1956,7 +1956,7 @@ void MainWindow::startingNodesExactMatchChanged()
 void MainWindow::openPathSpecifyDialog()
 {
     //Don't open a second dialog if one's already up.
-    if (g_settings->pathDialogIsVisible)
+    if (g_memory->pathDialogIsVisible)
         return;
 
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);

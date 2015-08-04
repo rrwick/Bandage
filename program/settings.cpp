@@ -103,9 +103,6 @@ Settings::Settings()
     pathHighlightShadingColour = QColor(0, 0, 0, 60);
     pathHighlightOutlineColour = QColor(0, 0, 0);
 
-    blastSearchParameters = "";
-
-
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
@@ -113,18 +110,4 @@ Settings::Settings()
     queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
     maxQueryPaths = 4;
-
-    pathDialogIsVisible = false;
-    userSpecifiedPath = Path();
-    userSpecifiedPathString = "";
-    userSpecifiedPathCircular = false;
-}
-
-
-int Settings::getBasePairsPerSegment()
-{
-    if (nodeLengthMode == AUTO_NODE_LENGTH)
-        return autoBasePairsPerSegment;
-    else
-        return manualBasePairsPerSegment;
 }

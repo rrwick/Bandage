@@ -93,6 +93,9 @@ public:
 
     std::vector<DeBruijnNode *> getDownstreamNodes();
     std::vector<DeBruijnNode *> getUpstreamNodes();
+
+private:
+    int getBasePairsPerSegment();
 };
 
 #endif // DEBRUIJNNODE_H

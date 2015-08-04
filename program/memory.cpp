@@ -9,5 +9,12 @@ Memory::Memory()
 
     commandLineCommand = NO_COMMAND;
 
+    blastSearchParameters = "";
+
+    pathDialogIsVisible = false;
+
+    userSpecifiedPath = Path();
+    userSpecifiedPathString = "";
+    userSpecifiedPathCircular = false;
 }
 

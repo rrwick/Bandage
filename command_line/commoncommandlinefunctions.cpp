@@ -302,7 +302,7 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--query", &arguments))
         g_settings->blastQueryFilename = getStringOption("--query", &arguments);
     if (isOptionPresent("--blastp", &arguments))
-        g_settings->blastSearchParameters = getStringOption("--blastp", &arguments);
+        g_memory->blastSearchParameters = getStringOption("--blastp", &arguments);
 
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 

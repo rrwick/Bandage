@@ -58,7 +58,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     ui->blastQueriesTableWidget->m_smallFirstColumn = true;
 
     //Load any previous parameters the user might have entered when previously using this dialog.
-    ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
+    ui->parametersLineEdit->setText(g_memory->blastSearchParameters);
 
     //If the dialog is given an autoQuery parameter, then it will
     //carry out the entire process on its own.
@@ -540,7 +540,7 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     {
         m_blastSearchConducted = true;
         fillTablesAfterBlastSearch();
-        g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
+        g_memory->blastSearchParameters = ui->parametersLineEdit->text().simplified();
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
 }

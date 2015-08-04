@@ -43,6 +43,7 @@
 #include "assemblygraph.h"
 #include <cmath>
 #include <QFontMetrics>
+#include "../program/memory.h"
 
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
@@ -168,12 +169,12 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
 
     //Draw the path highlighting outline, if appropriate
-    if (g_settings->pathDialogIsVisible)
+    if (g_memory->pathDialogIsVisible)
         pathHighlightNode1(painter);
 
 
     //Draw node labels if there are any to display.
-    if (g_settings->anyNodeDisplayText())
+    if (anyNodeDisplayText())
     {
         QStringList nodeText = getNodeText();
         QPainterPath textPath;
@@ -929,11 +930,11 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(st
 //in the user-specified path.
 void GraphicsItemNode::pathHighlightNode1(QPainter * painter)
 {
-    if (g_settings->userSpecifiedPath.containsNode(m_deBruijnNode))
+    if (g_memory->userSpecifiedPath.containsNode(m_deBruijnNode))
         pathHighlightNode2(painter, m_deBruijnNode, false);
 
     if (!g_settings->doubleMode &&
-            g_settings->userSpecifiedPath.containsNode(m_deBruijnNode->m_reverseComplement))
+            g_memory->userSpecifiedPath.containsNode(m_deBruijnNode->m_reverseComplement))
         pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true);
 }
 
@@ -943,25 +944,25 @@ void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
                                           DeBruijnNode * node,
                                           bool reverse)
 {
-    int numberOfTimesInMiddle = g_settings->userSpecifiedPath.numberOfOccurrencesInMiddleOfPath(node);
+    int numberOfTimesInMiddle = g_memory->userSpecifiedPath.numberOfOccurrencesInMiddleOfPath(node);
     for (int i = 0; i < numberOfTimesInMiddle; ++i)
         pathHighlightNode3(painter, shape());
 
-    bool isStartingNode = g_settings->userSpecifiedPath.isStartingNode(node);
-    bool isEndingNode = g_settings->userSpecifiedPath.isEndingNode(node);
+    bool isStartingNode = g_memory->userSpecifiedPath.isStartingNode(node);
+    bool isEndingNode = g_memory->userSpecifiedPath.isEndingNode(node);
 
     //If this is the onely node in the path, then we limit the highlighting to the appropriate region.
-    if (isStartingNode && isEndingNode && g_settings->userSpecifiedPath.getNodeCount() == 1)
+    if (isStartingNode && isEndingNode && g_memory->userSpecifiedPath.getNodeCount() == 1)
     {
-        pathHighlightNode3(painter, buildPartialHighlightPath(g_settings->userSpecifiedPath.getStartFraction(), g_settings->userSpecifiedPath.getEndFraction(), reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(g_memory->userSpecifiedPath.getStartFraction(), g_memory->userSpecifiedPath.getEndFraction(), reverse));
         return;
     }
 
     if (isStartingNode)
-        pathHighlightNode3(painter, buildPartialHighlightPath(g_settings->userSpecifiedPath.getStartFraction(), 1.0, reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(g_memory->userSpecifiedPath.getStartFraction(), 1.0, reverse));
 
     if (isEndingNode)
-        pathHighlightNode3(painter, buildPartialHighlightPath(0.0, g_settings->userSpecifiedPath.getEndFraction(), reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(0.0, g_memory->userSpecifiedPath.getEndFraction(), reverse));
 }
 
 
@@ -1013,4 +1014,13 @@ QPainterPath GraphicsItemNode::buildPartialHighlightPath(double startFraction,
         highlightPath = highlightPath.intersected(shape());
 
     return highlightPath;
+}
+
+
+bool GraphicsItemNode::anyNodeDisplayText()
+{
+    return g_settings->displayNodeCustomLabels ||
+            g_settings->displayNodeNames ||
+            g_settings->displayNodeLengths ||
+            g_settings->displayNodeCoverages;
 }

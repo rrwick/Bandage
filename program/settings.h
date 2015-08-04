@@ -114,11 +114,6 @@ public:
     QColor pathHighlightShadingColour;
     QColor pathHighlightOutlineColour;
 
-    QString blastSearchParameters;
-
-    bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
-    int getBasePairsPerSegment();
-
     //These specify the range of overlaps to look for when Bandage determines
     //edge overlaps automatically.
     int minAutoFindEdgeOverlap;
@@ -130,15 +125,6 @@ public:
     double queryAllowedLengthDiscrepancy;
     int maxQueryPathNodes;
     int maxQueryPaths;
-
-    //This flag is true when the 'Specify exact path...' dialog is visible.
-    bool pathDialogIsVisible;
-
-    //These store the user input in the 'Specify exact path...' dialog so it is
-    //retained between uses.
-    Path userSpecifiedPath;
-    QString userSpecifiedPathString;
-    bool userSpecifiedPathCircular;
 };
 
 #endif // SETTINGS_H
