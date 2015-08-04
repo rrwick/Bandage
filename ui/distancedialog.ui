@@ -15,6 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="infoLabel">
+     <property name="text">
+      <string>This tool will find possible paths between two BLAST queries.</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
@@ -29,32 +36,45 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="2" column="2" colspan="2">
-       <widget class="QPushButton" name="findPathsButton">
+      <item row="1" column="4">
+       <widget class="QLabel" name="query2PathLabel">
         <property name="text">
-         <string>Find paths</string>
+         <string>path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QComboBox" name="query1PathComboBox"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="query1Label">
+        <property name="text">
+         <string>Query 1:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="query2Label">
+        <property name="text">
+         <string>Query 2:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="query1PathLabel">
+        <property name="text">
+         <string>path:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="3">
        <widget class="QComboBox" name="query2ComboBox"/>
       </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Query 2:</string>
-        </property>
-       </widget>
+      <item row="1" column="5">
+       <widget class="QComboBox" name="query2PathComboBox"/>
       </item>
       <item row="0" column="3">
        <widget class="QComboBox" name="query1ComboBox"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Query 1:</string>
-        </property>
-       </widget>
       </item>
       <item row="0" column="1">
        <spacer name="horizontalSpacer">
@@ -69,7 +89,7 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="4">
+      <item row="0" column="6">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -86,15 +106,140 @@
     </widget>
    </item>
    <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="query2Label_3">
+        <property name="text">
+         <string>Maximum nodes in path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="minPathDistanceSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000000000</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="maxNodesSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000000000</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="maxPathDistanceSpinBox">
+        <property name="maximum">
+         <number>1000000000</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>1000000000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="query1Label_2">
+        <property name="text">
+         <string>Minimum path distance (bp):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="query2Label_2">
+        <property name="text">
+         <string>Maximum path distance (bp):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="findPathsButton">
+     <property name="text">
+      <string>Find paths</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTableWidget" name="tableWidget">
      <column>
       <property name="text">
-       <string>Distance</string>
+       <string>Orientation</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Orientation</string>
+       <string>Distance</string>
       </property>
      </column>
      <column>

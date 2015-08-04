@@ -20,6 +20,8 @@ private:
 
 private slots:
     void findPaths();
+    void query1Changed();
+    void query2Changed();
 };
 
 #endif // DISTANCEDIALOG_H

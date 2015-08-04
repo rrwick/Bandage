@@ -71,6 +71,8 @@ public:
     double getStartFraction() const;
     double getEndFraction() const;
     int getNodeCount() const;
+    GraphLocation getStartLocation() const {return m_startLocation;}
+    GraphLocation getEndLocation() const {return m_endLocation;}
 
     //MODIFERS
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);
