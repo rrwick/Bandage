@@ -94,6 +94,8 @@ public:
     void setAllEdgesExactOverlap(int overlap);
     void autoDetermineAllEdgesExactOverlap();
 
+    static void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
+
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
@@ -107,6 +109,7 @@ private:
     std::vector<int> makeOverlapCountVector();
     int getLengthFromCigar(QString cigar);
     int getCigarCount(QString cigarCode, QString cigar);
+    QString getOppositeNodeName(QString nodeName);
 };
 
 #endif // ASSEMBLYGRAPH_H

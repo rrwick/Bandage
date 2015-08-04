@@ -51,19 +51,20 @@ enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE};
 enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
                       AUTO_DETERMINED_EXACT_OVERLAP};
 
+//Some of the program's larger components are made global so they don't have
+//to be passed around as parameters.
 extern QSharedPointer<Settings> g_settings;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
 extern QSharedPointer<BlastSearch> g_blastSearch;
 extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 
+
+//Functions for formatting numbers are used in many places, and are made global.
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
-QString getOppositeNodeName(QString nodeName);
 
-void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
-QString convertGraphFileTypeToString(GraphFileType graphFileType);
 
 #endif // GLOBALS_H

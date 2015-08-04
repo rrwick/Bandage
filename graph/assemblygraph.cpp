@@ -1426,3 +1426,66 @@ std::vector<int> AssemblyGraph::makeOverlapCountVector()
 
     return overlapCounts;
 }
+
+
+//The function returns a node name, replacing "+" at the end with "-" or
+//vice-versa.
+QString AssemblyGraph::getOppositeNodeName(QString nodeName)
+{
+    QChar lastChar = nodeName.at(nodeName.size() - 1);
+    nodeName.chop(1);
+
+    if (lastChar == '-')
+        return nodeName + "+";
+    else
+        return nodeName + "-";
+}
+
+
+void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
+{
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QString name = "";
+        QString sequence = "";
+
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+
+            QString line = in.readLine();
+
+            if (line.length() == 0)
+                continue;
+
+            if (line.at(0) == '>')
+            {
+                //If there is a current sequence, add it to the vectors now.
+                if (name.length() > 0)
+                {
+                    names->push_back(name);
+                    sequences->push_back(sequence);
+                }
+
+                line.remove(0, 1); //Remove '>' from start
+                name = line;
+                sequence = "";
+            }
+
+            else //It's a sequence line
+                sequence += line.simplified();
+        }
+
+        //Add the last target to the results now.
+        if (name.length() > 0)
+        {
+            names->push_back(name);
+            sequences->push_back(sequence);
+        }
+
+        inputFile.close();
+    }
+}
+

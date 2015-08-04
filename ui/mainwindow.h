@@ -84,6 +84,7 @@ private:
     void setGraphScopeComboBox(GraphScope graphScope);
     void setupBlastQueryComboBox();
     bool checkForImageSave();
+    QString convertGraphFileTypeToString(GraphFileType graphFileType);
 
 private slots:
     void loadGraph(QString fullFileName = "");
