@@ -26,6 +26,7 @@
 #include <QProcess>
 
 QSharedPointer<Settings> g_settings;
+QSharedPointer<Memory> g_memory;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;
 QSharedPointer<BlastSearch> g_blastSearch;

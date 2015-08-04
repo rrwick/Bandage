@@ -63,6 +63,7 @@
 #include "../graph/path.h"
 #include "pathspecifydialog.h"
 #include "distancedialog.h"
+#include "../program/memory.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -247,7 +248,7 @@ void MainWindow::loadGraph(QString fullFileName)
 {
     QString selectedFilter = "Any supported graph (*)";
     if (fullFileName == "")
-        fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_settings->rememberedPath,
+        fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_memory->rememberedPath,
                                                     "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta)",
                                                     &selectedFilter);
 
@@ -324,7 +325,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
 
         g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 
     catch (...)
@@ -834,7 +835,7 @@ void MainWindow::saveSelectedSequencesToFile()
         return;
     }
 
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/selected_sequences.fasta";
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/selected_sequences.fasta";
 
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save node sequences", defaultFileNameAndPath, "FASTA (*.fasta)");
 
@@ -847,7 +848,7 @@ void MainWindow::saveSelectedSequencesToFile()
         for (size_t i = 0; i < selectedNodes.size(); ++i)
             out << selectedNodes[i]->getFasta();
 
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
@@ -900,7 +901,7 @@ void MainWindow::saveSelectedPathToFile()
         return;
     }
 
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/path_sequence.fasta";
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/path_sequence.fasta";
 
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save path sequence", defaultFileNameAndPath, "FASTA (*.fasta)");
 
@@ -910,7 +911,7 @@ void MainWindow::saveSelectedPathToFile()
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
         out << nodePath.getFasta();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 
@@ -991,7 +992,7 @@ void MainWindow::determineContiguityFromSelectedNode()
 
 QString MainWindow::getDefaultImageFileName()
 {
-    QString fileNameAndPath = g_settings->rememberedPath + "/graph";
+    QString fileNameAndPath = g_memory->rememberedPath + "/graph";
 
     if (m_imageFilter == "PNG (*.png)")
         fileNameAndPath += ".png";
@@ -1039,7 +1040,7 @@ void MainWindow::saveImageCurrentView()
             painter.setRenderHint(QPainter::TextAntialiasing);
             g_graphicsView->render(&painter);
             image.save(fullFileName);
-            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+            g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
         }
         else //SVG
@@ -1128,7 +1129,7 @@ void MainWindow::saveImageEntireScene()
             m_scene->setSceneRectangle();
             m_scene->render(&painter);
             image.save(fullFileName);
-            g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+            g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
         }
         else //SVG

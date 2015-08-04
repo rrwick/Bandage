@@ -22,6 +22,7 @@
 #include <QDir>
 #include "../blast/blastsearch.h"
 #include <QCoreApplication>
+#include "../program/memory.h"
 
 
 void printSettingsUsage(QTextStream * out)
@@ -181,7 +182,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--distance", arguments, 0, 100);
     if (error.length() > 0) return error;
 
-    if (isOptionPresent("--query", arguments) && g_settings->commandLineCommand == NO_COMMAND)
+    if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND)
         return "The --query option can only be used with Bandage load and Bandage image";
 
     error = checkOptionForFile("--query", arguments);

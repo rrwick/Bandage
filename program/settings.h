@@ -116,10 +116,6 @@ public:
 
     QString blastSearchParameters;
 
-    QString rememberedPath;
-
-    CommandLineCommand commandLineCommand;
-
     bool anyNodeDisplayText() {return displayNodeCustomLabels || displayNodeNames || displayNodeLengths || displayNodeCoverages;}
     int getBasePairsPerSegment();
 

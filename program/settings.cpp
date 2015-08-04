@@ -105,9 +105,6 @@ Settings::Settings()
 
     blastSearchParameters = "";
 
-    rememberedPath = QDir::homePath();
-
-    commandLineCommand = NO_COMMAND;
 
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;

@@ -69,7 +69,8 @@ SOURCES += \
     ui/distancedialog.cpp \
     graph/graphlocation.cpp \
     ui/tablewidgetitemint.cpp \
-    ui/tablewidgetitemdouble.cpp
+    ui/tablewidgetitemdouble.cpp \
+    program/memory.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -112,7 +113,8 @@ HEADERS  += \
     ui/distancedialog.h \
     graph/graphlocation.h \
     ui/tablewidgetitemint.h \
-    ui/tablewidgetitemdouble.h
+    ui/tablewidgetitemdouble.h \
+    program/memory.h
 
 FORMS    += \
     ui/mainwindow.ui \

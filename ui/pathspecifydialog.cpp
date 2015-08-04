@@ -26,6 +26,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include "mygraphicsview.h"
+#include "../program/memory.h"
 
 PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     QDialog(parent),
@@ -129,7 +130,7 @@ void PathSpecifyDialog::copyPathToClipboard()
 
 void PathSpecifyDialog::savePathToFile()
 {
-    QString defaultFileNameAndPath = g_settings->rememberedPath + "/path_sequence.fasta";
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/path_sequence.fasta";
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save path sequence", defaultFileNameAndPath, "FASTA (*.fasta)");
 
     if (fullFileName != "") //User did not hit cancel
@@ -138,7 +139,7 @@ void PathSpecifyDialog::savePathToFile()
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream out(&file);
         out << g_settings->userSpecifiedPath.getFasta();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
 }
 

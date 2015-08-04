@@ -25,6 +25,7 @@
 #include <QSharedPointer>
 
 class Settings;
+class Memory;
 class MyGraphicsView;
 class BlastSearch;
 class AssemblyGraph;
@@ -51,9 +52,11 @@ enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE};
 enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
                       AUTO_DETERMINED_EXACT_OVERLAP};
 
-//Some of the program's larger components are made global so they don't have
+
+//Some of the program's common components are made global so they don't have
 //to be passed around as parameters.
 extern QSharedPointer<Settings> g_settings;
+extern QSharedPointer<Memory> g_memory;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;
 extern QSharedPointer<BlastSearch> g_blastSearch;
@@ -65,6 +68,8 @@ QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
+
+//The following are used as
 
 
 #endif // GLOBALS_H

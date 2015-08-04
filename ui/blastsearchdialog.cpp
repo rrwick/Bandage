@@ -28,6 +28,7 @@
 #include <QStandardItemModel>
 #include "../program/globals.h"
 #include "../program/settings.h"
+#include "../program/memory.h"
 #include "../graph/debruijnnode.h"
 #include <QMessageBox>
 #include <QDir>
@@ -371,7 +372,7 @@ void BlastSearchDialog::buildBlastDatabaseCancelled()
 
 void BlastSearchDialog::loadBlastQueriesFromFastaFileButtonClicked()
 {
-    QStringList fullFileNames = QFileDialog::getOpenFileNames(this, "Load queries FASTA", g_settings->rememberedPath);
+    QStringList fullFileNames = QFileDialog::getOpenFileNames(this, "Load queries FASTA", g_memory->rememberedPath);
 
     if (fullFileNames.size() > 0) //User did not hit cancel
     {
@@ -391,7 +392,7 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
     {
         fillQueriesTable();
         clearBlastHits();
-        g_settings->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
         setUiStep(READY_FOR_BLAST_SEARCH);
     }
 

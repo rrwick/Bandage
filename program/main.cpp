@@ -27,6 +27,7 @@
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
+#include "../program/memory.h"
 #include "../program/globals.h"
 #include "../blast/blastsearch.h"
 #include "../graph/assemblygraph.h"
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 
     //Create the important global objects.
     g_settings.reset(new Settings());
+    g_memory.reset(new Memory());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
     g_graphicsView = new MyGraphicsView();
@@ -81,13 +83,13 @@ int main(int argc, char *argv[])
         if (first == "load")
         {
             arguments.pop_front();
-            g_settings->commandLineCommand = BANDAGE_LOAD;
+            g_memory->commandLineCommand = BANDAGE_LOAD;
             return bandageLoad(&a, arguments);
         }
         else if (first == "image")
         {
             arguments.pop_front();
-            g_settings->commandLineCommand = BANDAGE_IMAGE;
+            g_memory->commandLineCommand = BANDAGE_IMAGE;
             return bandageImage(arguments);
         }
 //        else if (first == "contiguous")
