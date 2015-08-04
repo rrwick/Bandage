@@ -29,10 +29,12 @@ public:
     explicit MyTableWidget(QWidget *parent = 0);
 
     void resizeColumns();
+    bool m_smallFirstColumn;
 
 protected:
     void showEvent(QShowEvent * event);
     void keyPressEvent(QKeyEvent* event);
+
 };
 
 #endif // MYTABLEWIDGET_H

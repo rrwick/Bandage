@@ -7,6 +7,7 @@
 #include "../graph/graphlocation.h"
 #include "../graph/assemblygraph.h"
 #include "../graph/path.h"
+#include "tablewidgetitemint.h"
 
 DistanceDialog::DistanceDialog(QWidget *parent) :
     QDialog(parent),
@@ -68,47 +69,105 @@ void DistanceDialog::findPaths()
         return;
     }
 
-    Path query1Path = query1->getPaths()[ui->query1PathComboBox->currentIndex()];
-    Path query2Path = query2->getPaths()[ui->query1PathComboBox->currentIndex()];
-
     int pathSearchDepth = ui->maxNodesSpinBox->value() - 1;
     int minDistance = ui->minPathDistanceSpinBox->value();
     int maxDistance = ui->maxPathDistanceSpinBox->value();
+
+    QList<Path> query1Paths;
+    if (ui->query1PathComboBox->currentIndex() == 0)
+        query1Paths = query1->getPaths();
+    else
+        query1Paths.push_back(query1->getPaths()[ui->query1PathComboBox->currentIndex() - 1]);
+
+    QList<Path> query2Paths;
+    if (ui->query2PathComboBox->currentIndex() == 0)
+        query2Paths = query2->getPaths();
+    else
+        query2Paths.push_back(query2->getPaths()[ui->query2PathComboBox->currentIndex() - 1]);
 
     QStringList orientations;
     QList<int> distances;
     QList<Path> paths;
 
-    //First orientation to check: 1-> 2->
-    GraphLocation start = query1Path.getEndLocation();
-    GraphLocation end = query2Path.getStartLocation();
-    paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-    while (orientations.size() < paths.size())
-        orientations.push_back("1-> 2->");
+    for (int i = 0; i < query1Paths.size(); ++i)
+    {
+        Path query1Path = query1Paths[i];
 
-    //Second orientation to check: 2-> 1->
-    start = query2Path.getEndLocation();
-    end = query1Path.getStartLocation();
-    paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-    while (orientations.size() < paths.size())
-        orientations.push_back("2-> 1->");
+        for (int j = 0; j < query2Paths.size(); ++j)
+        {
+            Path query2Path = query2Paths[j];
 
-    //Third orientation to check: 1-> <-2
-    start = query1Path.getEndLocation();
-    end = query2Path.getEndLocation().reverseComplementLocation();
-    paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-    while (orientations.size() < paths.size())
-        orientations.push_back("1-> <-2");
+            //First orientation to check: 1-> 2->
+            if (ui->orientation1CheckBox->isChecked())
+            {
+                GraphLocation start = query1Path.getEndLocation();
+                GraphLocation end = query2Path.getStartLocation();
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("1-> 2->");
+            }
 
-    //Fourth orientation to check: <-1 2->
-    start = query1Path.getStartLocation().reverseComplementLocation();
-    end = query2Path.getEndLocation();
-    paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-    while (orientations.size() < paths.size())
-        orientations.push_back("<-1 2->");
+            //Second orientation to check: 2-> 1->
+            if (ui->orientation2CheckBox->isChecked())
+            {
+                GraphLocation start = query2Path.getEndLocation();
+                GraphLocation end = query1Path.getStartLocation();
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("2-> 1->");
+            }
+
+            //Third orientation to check: 1-> <-2
+            if (ui->orientation3CheckBox->isChecked())
+            {
+                GraphLocation start = query1Path.getEndLocation();
+                GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("1-> <-2");
+            }
+
+            //Fourth orientation to check: <-1 2->
+            if (ui->orientation4CheckBox->isChecked())
+            {
+                GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
+                GraphLocation end = query2Path.getEndLocation();
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("<-1 2->");
+            }
+        }
+    }
 
     for (int i = 0; i < paths.size(); ++i)
         distances.push_back(paths[i].getLength());
+
+
+    //Now that the results are in, we display them in the table widget.
+
+    ui->resultsTableWidget->clearContents();
+    ui->resultsTableWidget->setSortingEnabled(false);
+    int pathCount = paths.size();
+    ui->resultsTableWidget->setRowCount(pathCount);
+
+    for (int i = 0; i < pathCount; ++i)
+    {
+        QTableWidgetItem * orientation = new QTableWidgetItem(orientations[i]);
+        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        TableWidgetItemInt * distance = new TableWidgetItemInt(formatIntForDisplay(distances[i]));
+        distance->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        QTableWidgetItem * path = new QTableWidgetItem(paths[i].getString(true));
+        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        ui->resultsTableWidget->setItem(i, 0, orientation);
+        ui->resultsTableWidget->setItem(i, 1, distance);
+        ui->resultsTableWidget->setItem(i, 2, path);
+    }
+
+    ui->resultsTableWidget->resizeColumns();
+    ui->resultsTableWidget->setSortingEnabled(true);
 }
 
 
@@ -122,6 +181,7 @@ void DistanceDialog::query1Changed()
         return;
 
     QStringList comboBoxItems;
+    comboBoxItems.push_back("all");
     QList<Path> paths = query1->getPaths();
     for (int i = 0; i < paths.size(); ++i)
         comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
@@ -138,6 +198,7 @@ void DistanceDialog::query2Changed()
         return;
 
     QStringList comboBoxItems;
+    comboBoxItems.push_back("all");
     QList<Path> paths = query2->getPaths();
     for (int i = 0; i < paths.size(); ++i)
         comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));

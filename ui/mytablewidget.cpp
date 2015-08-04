@@ -26,7 +26,7 @@
 #include <QClipboard>
 
 MyTableWidget::MyTableWidget(QWidget * parent) :
-    QTableWidget(parent)
+    QTableWidget(parent), m_smallFirstColumn(false)
 {
     verticalHeader ()->hide();
     horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
@@ -40,10 +40,11 @@ void MyTableWidget::resizeColumns()
     resizeColumnsToContents();
     setSortingEnabled(true);
 
-    //Set the first column to a minimum size, as it will hold the colour
-    //for both queries and hits.
+    //For some table widgets, we set the first column to a minimum size, as it
+    //will hold the colour for both queries and hits.
     int minColumnWidth = horizontalHeader()->minimumSectionSize();
-    horizontalHeader()->resizeSection(0, minColumnWidth);
+    if (m_smallFirstColumn)
+        horizontalHeader()->resizeSection(0, minColumnWidth);
 
     std::vector<int> columnWidths;
     int oldTotalColumnWidth = 0;

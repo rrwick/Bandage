@@ -53,6 +53,8 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
 
 {
     ui->setupUi(this);
+    ui->blastHitsTableWidget->m_smallFirstColumn = true;
+    ui->blastQueriesTableWidget->m_smallFirstColumn = true;
 
     //Load any previous parameters the user might have entered when previously using this dialog.
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
