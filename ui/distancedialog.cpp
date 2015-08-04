@@ -131,7 +131,7 @@ void DistanceDialog::findPaths()
             if (ui->orientation4CheckBox->isChecked())
             {
                 GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
-                GraphLocation end = query2Path.getEndLocation();
+                GraphLocation end = query2Path.getStartLocation();
                 paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
                 while (orientations.size() < paths.size())
                     orientations.push_back("<-1 2->");
