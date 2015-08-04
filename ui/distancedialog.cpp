@@ -73,6 +73,12 @@ void DistanceDialog::findPaths()
     int minDistance = ui->minPathDistanceSpinBox->value();
     int maxDistance = ui->maxPathDistanceSpinBox->value();
 
+    if (minDistance > maxDistance)
+    {
+        QMessageBox::information(this, "Min greater than max", "The minimum path distance must be less than or equal to the maximum path distance.");
+        return;
+    }
+
     QList<Path> query1Paths;
     if (ui->query1PathComboBox->currentIndex() == 0)
         query1Paths = query1->getPaths();
@@ -139,15 +145,14 @@ void DistanceDialog::findPaths()
         }
     }
 
-    for (int i = 0; i < paths.size(); ++i)
+    int pathCount = paths.size();
+    for (int i = 0; i < pathCount; ++i)
         distances.push_back(paths[i].getLength());
-
 
     //Now that the results are in, we display them in the table widget.
 
     ui->resultsTableWidget->clearContents();
     ui->resultsTableWidget->setSortingEnabled(false);
-    int pathCount = paths.size();
     ui->resultsTableWidget->setRowCount(pathCount);
 
     for (int i = 0; i < pathCount; ++i)
@@ -168,6 +173,9 @@ void DistanceDialog::findPaths()
 
     ui->resultsTableWidget->resizeColumns();
     ui->resultsTableWidget->setSortingEnabled(true);
+
+    if (pathCount == 0)
+        QMessageBox::information(this, "No paths", "No paths were found between the two given queries.");
 }
 
 
