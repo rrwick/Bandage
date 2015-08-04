@@ -110,4 +110,10 @@ Settings::Settings()
     queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
     maxQueryPaths = 4;
+
+    blastSearchParameters = "";
+
+    distancePathSearchDepth = 10;
+    minDistancePathLength = 0;
+    maxDistancePathLength = 1000000000;
 }

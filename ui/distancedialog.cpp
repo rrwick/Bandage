@@ -8,39 +8,46 @@
 #include "../graph/assemblygraph.h"
 #include "../graph/path.h"
 #include "tablewidgetitemint.h"
+#include "../program/memory.h"
+#include "../program/settings.h"
 
 DistanceDialog::DistanceDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DistanceDialog)
 {
     ui->setupUi(this);
+    loadSettings();
 
+    //Fill the query combo boxes with any BLAST queries that have paths.
     ui->query1ComboBox->clear();
     ui->query2ComboBox->clear();
-
     QStringList comboBoxItems;
-
     for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
     {
         if (g_blastSearch->m_blastQueries.m_queries[i]->getPathCount() > 0)
             comboBoxItems.push_back(g_blastSearch->m_blastQueries.m_queries[i]->getName());
     }
-
     ui->query1ComboBox->addItems(comboBoxItems);
     ui->query2ComboBox->addItems(comboBoxItems);
 
-    if (comboBoxItems.size() > 1)
-    {
-        ui->query1ComboBox->setCurrentIndex(0);
-        ui->query2ComboBox->setCurrentIndex(1);
-    }
+    //Load the previously used combobox choices.
+    if (ui->query1ComboBox->count() > g_memory->distancePathSearchQuery1)
+        ui->query1ComboBox->setCurrentIndex(g_memory->distancePathSearchQuery1);
+    if (ui->query2ComboBox->count() > g_memory->distancePathSearchQuery2)
+        ui->query2ComboBox->setCurrentIndex(g_memory->distancePathSearchQuery2);
 
     query1Changed();
     query2Changed();
 
+    if (!g_memory->distanceSearchPaths.empty())
+        fillResultsTable();
+
     connect(ui->findPathsButton, SIGNAL(clicked(bool)), this, SLOT(findPaths()));
     connect(ui->query1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(query1Changed()));
     connect(ui->query2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(query2Changed()));
+    connect(ui->maxNodesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
+    connect(ui->maxPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
+    connect(ui->minPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
 }
 
 DistanceDialog::~DistanceDialog()
@@ -69,9 +76,9 @@ void DistanceDialog::findPaths()
         return;
     }
 
-    int pathSearchDepth = ui->maxNodesSpinBox->value() - 1;
-    int minDistance = ui->minPathDistanceSpinBox->value();
-    int maxDistance = ui->maxPathDistanceSpinBox->value();
+    int pathSearchDepth = g_settings->distancePathSearchDepth;
+    int minDistance = g_settings->minDistancePathLength;
+    int maxDistance = g_settings->maxDistancePathLength;
 
     if (minDistance > maxDistance)
     {
@@ -91,9 +98,9 @@ void DistanceDialog::findPaths()
     else
         query2Paths.push_back(query2->getPaths()[ui->query2PathComboBox->currentIndex() - 1]);
 
-    QStringList orientations;
-    QList<int> distances;
-    QList<Path> paths;
+    g_memory->distanceSearchOrientations.clear();
+    g_memory->distanceSearchDistances.clear();
+    g_memory->distanceSearchPaths.clear();
 
     for (int i = 0; i < query1Paths.size(); ++i)
     {
@@ -108,9 +115,9 @@ void DistanceDialog::findPaths()
             {
                 GraphLocation start = query1Path.getEndLocation();
                 GraphLocation end = query2Path.getStartLocation();
-                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (orientations.size() < paths.size())
-                    orientations.push_back("1-> 2->");
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("1-> 2->");
             }
 
             //Second orientation to check: 2-> 1->
@@ -118,9 +125,9 @@ void DistanceDialog::findPaths()
             {
                 GraphLocation start = query2Path.getEndLocation();
                 GraphLocation end = query1Path.getStartLocation();
-                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (orientations.size() < paths.size())
-                    orientations.push_back("2-> 1->");
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("2-> 1->");
             }
 
             //Third orientation to check: 1-> <-2
@@ -128,9 +135,9 @@ void DistanceDialog::findPaths()
             {
                 GraphLocation start = query1Path.getEndLocation();
                 GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
-                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (orientations.size() < paths.size())
-                    orientations.push_back("1-> <-2");
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("1-> <-2");
             }
 
             //Fourth orientation to check: <-1 2->
@@ -138,41 +145,18 @@ void DistanceDialog::findPaths()
             {
                 GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
                 GraphLocation end = query2Path.getStartLocation();
-                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (orientations.size() < paths.size())
-                    orientations.push_back("<-1 2->");
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("<-1 2->");
             }
         }
     }
 
-    int pathCount = paths.size();
+    int pathCount = g_memory->distanceSearchPaths.size();
     for (int i = 0; i < pathCount; ++i)
-        distances.push_back(paths[i].getLength());
+        g_memory->distanceSearchDistances.push_back(g_memory->distanceSearchPaths[i].getLength());
 
-    //Now that the results are in, we display them in the table widget.
-
-    ui->resultsTableWidget->clearContents();
-    ui->resultsTableWidget->setSortingEnabled(false);
-    ui->resultsTableWidget->setRowCount(pathCount);
-
-    for (int i = 0; i < pathCount; ++i)
-    {
-        QTableWidgetItem * orientation = new QTableWidgetItem(orientations[i]);
-        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        TableWidgetItemInt * distance = new TableWidgetItemInt(formatIntForDisplay(distances[i]));
-        distance->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        QTableWidgetItem * path = new QTableWidgetItem(paths[i].getString(true));
-        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-        ui->resultsTableWidget->setItem(i, 0, orientation);
-        ui->resultsTableWidget->setItem(i, 1, distance);
-        ui->resultsTableWidget->setItem(i, 2, path);
-    }
-
-    ui->resultsTableWidget->resizeColumns();
-    ui->resultsTableWidget->setSortingEnabled(true);
+    fillResultsTable();
 
     if (pathCount == 0)
         QMessageBox::information(this, "No paths", "No paths were found between the two given queries.");
@@ -212,4 +196,50 @@ void DistanceDialog::query2Changed()
         comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
 
     ui->query2PathComboBox->addItems(comboBoxItems);
+}
+
+
+
+void DistanceDialog::fillResultsTable()
+{
+    int pathCount = g_memory->distanceSearchPaths.size();
+
+    ui->resultsTableWidget->clearContents();
+    ui->resultsTableWidget->setSortingEnabled(false);
+    ui->resultsTableWidget->setRowCount(pathCount);
+
+    for (int i = 0; i < pathCount; ++i)
+    {
+        QTableWidgetItem * orientation = new QTableWidgetItem(g_memory->distanceSearchOrientations[i]);
+        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        TableWidgetItemInt * distance = new TableWidgetItemInt(formatIntForDisplay(g_memory->distanceSearchDistances[i]));
+        distance->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        QTableWidgetItem * path = new QTableWidgetItem(g_memory->distanceSearchPaths[i].getString(true));
+        orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        ui->resultsTableWidget->setItem(i, 0, orientation);
+        ui->resultsTableWidget->setItem(i, 1, distance);
+        ui->resultsTableWidget->setItem(i, 2, path);
+    }
+
+    ui->resultsTableWidget->resizeColumns();
+    ui->resultsTableWidget->setSortingEnabled(true);
+}
+
+
+
+void DistanceDialog::loadSettings()
+{
+    ui->maxNodesSpinBox->setValue(g_settings->distancePathSearchDepth + 1);
+    ui->minPathDistanceSpinBox->setValue(g_settings->minDistancePathLength);
+    ui->maxPathDistanceSpinBox->setValue(g_settings->maxDistancePathLength);
+}
+
+void DistanceDialog::saveSettings()
+{
+    g_settings->distancePathSearchDepth = ui->maxNodesSpinBox->value() - 1;
+    g_settings->minDistancePathLength = ui->minPathDistanceSpinBox->value();
+    g_settings->maxDistancePathLength = ui->maxPathDistanceSpinBox->value();
 }

@@ -32,6 +32,7 @@
 #include "../blast/blastsearch.h"
 #include <ogdf/energybased/FMMMLayout.h>
 #include "../program/graphlayoutworker.h"
+#include "../program/memory.h"
 
 
 AssemblyGraph::AssemblyGraph() :
@@ -976,6 +977,7 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
     }
 
     determineGraphInfo();
+    g_memory->clearGraphSpecificMemory();
     return true;
 }
 

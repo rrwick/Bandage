@@ -125,6 +125,14 @@ public:
     double queryAllowedLengthDiscrepancy;
     int maxQueryPathNodes;
     int maxQueryPaths;
+
+    //This holds the BLAST search parameters that a user can change before
+    //running a BLAST search.
+    QString blastSearchParameters;
+
+    int distancePathSearchDepth;
+    int minDistancePathLength;
+    int maxDistancePathLength;
 };
 
 #endif // SETTINGS_H

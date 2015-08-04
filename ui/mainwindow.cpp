@@ -326,6 +326,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        g_memory->clearGraphSpecificMemory();
     }
 
     catch (...)
