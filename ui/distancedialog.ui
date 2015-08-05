@@ -17,7 +17,10 @@
    <item>
     <widget class="QLabel" name="infoLabel">
      <property name="text">
-      <string>This tool will find possible paths between two BLAST queries.</string>
+      <string>This tool will find possible paths between two BLAST queries. It requires that you first search for at least two BLAST queries and that Bandage finds at least one graph path for each query. </string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

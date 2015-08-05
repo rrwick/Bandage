@@ -312,9 +312,9 @@ void DistanceDialog::saveSettings()
 
 void DistanceDialog::setInfoTexts()
 {
-    ui->queriesInfoText->setInfoText("Select two different BLAST queries here for which to find "
-                                     "the distance between. Only queries that have at least one "
-                                     "graph path may be used.<br><br>"
+    ui->queriesInfoText->setInfoText("Select two different BLAST queries here for which you want to find "
+                                     "the distance between. Queries are only available if Bandage has "
+                                     "found at least one graph path.<br><br>"
                                      "If a query has more than one graph path, then you can use "
                                      "all of the paths in the search or you can select only one.");
 
