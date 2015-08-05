@@ -1245,7 +1245,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>280</width>
+         <width>251</width>
          <height>1063</height>
         </rect>
        </property>
@@ -1986,6 +1986,7 @@
   <tabstop>doubleNodesRadioButton</tabstop>
   <tabstop>drawGraphButton</tabstop>
   <tabstop>zoomSpinBox</tabstop>
+  <tabstop>nodeWidthSpinBox</tabstop>
   <tabstop>coloursComboBox</tabstop>
   <tabstop>contiguityButton</tabstop>
   <tabstop>nodeCustomLabelsCheckBox</tabstop>
@@ -2001,8 +2002,12 @@
   <tabstop>selectionSearchNodesLineEdit</tabstop>
   <tabstop>selectionSearchNodesExactMatchRadioButton</tabstop>
   <tabstop>selectionSearchNodesPartialMatchRadioButton</tabstop>
+  <tabstop>selectNodesButton</tabstop>
+  <tabstop>selectedNodesTextEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
   <tabstop>setNodeCustomLabelButton</tabstop>
+  <tabstop>removeNodeButton</tabstop>
+  <tabstop>selectedEdgesTextEdit</tabstop>
  </tabstops>
  <resources>
   <include location="../images/images.qrc"/>
