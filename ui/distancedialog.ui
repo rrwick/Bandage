@@ -36,46 +36,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="4">
-       <widget class="QLabel" name="query2PathLabel">
-        <property name="text">
-         <string>path:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QComboBox" name="query1PathComboBox"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="query1Label">
-        <property name="text">
-         <string>Query 1:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLabel" name="query2Label">
-        <property name="text">
-         <string>Query 2:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="query1PathLabel">
-        <property name="text">
-         <string>path:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QComboBox" name="query2ComboBox"/>
-      </item>
-      <item row="1" column="5">
-       <widget class="QComboBox" name="query2PathComboBox"/>
-      </item>
-      <item row="0" column="3">
-       <widget class="QComboBox" name="query1ComboBox"/>
-      </item>
       <item row="0" column="1">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -89,7 +49,44 @@
         </property>
        </spacer>
       </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="query2Label">
+        <property name="text">
+         <string>Query 2:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QComboBox" name="query1ComboBox"/>
+      </item>
       <item row="0" column="6">
+       <widget class="QComboBox" name="query1PathComboBox"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QComboBox" name="query2ComboBox"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="query1Label">
+        <property name="text">
+         <string>Query 1:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="query2PathLabel">
+        <property name="text">
+         <string>path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="query1PathLabel">
+        <property name="text">
+         <string>path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -101,6 +98,25 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="1" column="6">
+       <widget class="QComboBox" name="query2PathComboBox"/>
+      </item>
+      <item row="0" column="2" rowspan="2">
+       <widget class="InfoTextWidget" name="queriesInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -140,40 +156,21 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="query2Label_3">
+      <item row="0" column="2">
+       <widget class="QLabel" name="maxNodesLabel">
         <property name="text">
          <string>Maximum nodes in path:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="minPathDistanceSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>1000000000</number>
-        </property>
-        <property name="singleStep">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QSpinBox" name="maxNodesSpinBox">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>1000000000</number>
-        </property>
-        <property name="value">
-         <number>5</number>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="2">
+       <widget class="QLabel" name="maxPathDistanceLabel">
+        <property name="text">
+         <string>Maximum path distance (bp):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
        <widget class="QSpinBox" name="maxPathDistanceSpinBox">
         <property name="maximum">
          <number>1000000000</number>
@@ -186,21 +183,14 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="query1Label_2">
+      <item row="1" column="2">
+       <widget class="QLabel" name="minPathDistanceLabel">
         <property name="text">
          <string>Minimum path distance (bp):</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="query2Label_2">
-        <property name="text">
-         <string>Maximum path distance (bp):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
+      <item row="0" column="4">
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -212,6 +202,80 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="1" column="3">
+       <widget class="QSpinBox" name="minPathDistanceSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000000000</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QSpinBox" name="maxNodesSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>1000000000</number>
+        </property>
+        <property name="value">
+         <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="InfoTextWidget" name="maxNodesInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="InfoTextWidget" name="minPathDistanceInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="InfoTextWidget" name="maxPathDistanceInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -226,21 +290,8 @@
    <item>
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="8">
-       <spacer name="horizontalSpacer_6">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>68</width>
-          <height>15</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="1" column="4">
-       <spacer name="horizontalSpacer_8">
+       <spacer name="horizontalSpacer_7">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -255,30 +306,52 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="3">
-       <widget class="QCheckBox" name="orientation2CheckBox">
+      <item row="1" column="7">
+       <widget class="QCheckBox" name="orientation3CheckBox">
         <property name="text">
-         <string>2-&gt; 1-&gt;</string>
+         <string>1-&gt; &lt;-2</string>
         </property>
         <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
       </item>
+      <item row="1" column="8">
+       <spacer name="horizontalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>10</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="1" column="1">
+       <widget class="InfoTextWidget" name="orientationsInfoText" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
        <widget class="QCheckBox" name="orientation1CheckBox">
         <property name="text">
          <string>1-&gt; 2-&gt;</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7">
-       <widget class="QCheckBox" name="orientation4CheckBox">
-        <property name="text">
-         <string>&lt;-1 2-&gt;</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -298,33 +371,10 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1" colspan="7">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Valid query orientations:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <spacer name="horizontalSpacer_7">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>10</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="1" column="5">
-       <widget class="QCheckBox" name="orientation3CheckBox">
+       <widget class="QCheckBox" name="orientation2CheckBox">
         <property name="text">
-         <string>1-&gt; &lt;-2</string>
+         <string>2-&gt; 1-&gt;</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -332,7 +382,7 @@
        </widget>
       </item>
       <item row="1" column="6">
-       <spacer name="horizontalSpacer_9">
+       <spacer name="horizontalSpacer_8">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -347,14 +397,44 @@
         </property>
        </spacer>
       </item>
+      <item row="1" column="10">
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>68</width>
+          <height>15</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="9">
+       <widget class="QCheckBox" name="orientation4CheckBox">
+        <property name="text">
+         <string>&lt;-1 2-&gt;</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="orientationsLabel">
+        <property name="text">
+         <string>Query orientations:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="9">
+       <widget class="QPushButton" name="findPathsButton">
+        <property name="text">
+         <string>Find paths</string>
+        </property>
+       </widget>
+      </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="findPathsButton">
-     <property name="text">
-      <string>Find paths</string>
-     </property>
     </widget>
    </item>
    <item>
@@ -394,7 +474,28 @@
    <extends>QTableWidget</extends>
    <header>mytablewidget.h</header>
   </customwidget>
+  <customwidget>
+   <class>InfoTextWidget</class>
+   <extends>QWidget</extends>
+   <header>infotextwidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>query1ComboBox</tabstop>
+  <tabstop>query1PathComboBox</tabstop>
+  <tabstop>query2ComboBox</tabstop>
+  <tabstop>query2PathComboBox</tabstop>
+  <tabstop>maxNodesSpinBox</tabstop>
+  <tabstop>minPathDistanceSpinBox</tabstop>
+  <tabstop>maxPathDistanceSpinBox</tabstop>
+  <tabstop>orientation1CheckBox</tabstop>
+  <tabstop>orientation2CheckBox</tabstop>
+  <tabstop>orientation3CheckBox</tabstop>
+  <tabstop>orientation4CheckBox</tabstop>
+  <tabstop>findPathsButton</tabstop>
+  <tabstop>resultsTableWidget</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -404,8 +505,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>254</x>
+     <y>742</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -420,8 +521,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>322</x>
+     <y>742</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

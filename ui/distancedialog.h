@@ -24,6 +24,7 @@ private:
     void loadSettings();
     void fillResultsTable();
     void fillPathComboBox(BlastQuery * query, QComboBox * comboBox);
+    void setInfoTexts();
 
 private slots:
     void findPaths();

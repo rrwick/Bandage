@@ -24,6 +24,7 @@
 #include <QRegularExpression>
 #include "assemblygraph.h"
 #include <QStringList>
+#include <QApplication>
 
 
 //These will try to produce a path using the given nodes.
@@ -643,6 +644,8 @@ QList<Path> Path::getAllPossiblePaths(GraphLocation startLocation,
 
     for (int i = 0; i <= nodeSearchDepth; ++i)
     {
+        QApplication::processEvents();
+
         //Look at each of the unfinished paths to see if they end with the end
         //node.  If so, see if it has the appropriate length.
         //If it does, it will go into the final returned list.

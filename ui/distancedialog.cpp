@@ -10,6 +10,7 @@
 #include "tablewidgetitemint.h"
 #include "../program/memory.h"
 #include "../program/settings.h"
+#include "myprogressdialog.h"
 
 DistanceDialog::DistanceDialog(QWidget *parent) :
     QDialog(parent),
@@ -17,6 +18,7 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     loadSettings();
+    setInfoTexts();
 
     //Fill the query combo boxes with any BLAST queries that have paths.
     ui->query1ComboBox->clear();
@@ -153,52 +155,61 @@ void DistanceDialog::findPaths()
     g_memory->distanceSearchDistances.clear();
     g_memory->distanceSearchPaths.clear();
 
-    for (int i = 0; i < query1Paths.size(); ++i)
+    //Run the path search.  This is in a separate code block so the progress
+    //dialog is destroyed when the search is finished.
     {
-        Path query1Path = query1Paths[i];
+        //Display a progress dialog.
+        MyProgressDialog progress(this, "Finding paths between queries...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
 
-        for (int j = 0; j < query2Paths.size(); ++j)
+        for (int i = 0; i < query1Paths.size(); ++i)
         {
-            Path query2Path = query2Paths[j];
+            Path query1Path = query1Paths[i];
 
-            //First orientation to check: 1-> 2->
-            if (ui->orientation1CheckBox->isChecked())
+            for (int j = 0; j < query2Paths.size(); ++j)
             {
-                GraphLocation start = query1Path.getEndLocation();
-                GraphLocation end = query2Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("1-> 2->");
-            }
+                Path query2Path = query2Paths[j];
 
-            //Second orientation to check: 2-> 1->
-            if (ui->orientation2CheckBox->isChecked())
-            {
-                GraphLocation start = query2Path.getEndLocation();
-                GraphLocation end = query1Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("2-> 1->");
-            }
+                //First orientation to check: 1-> 2->
+                if (ui->orientation1CheckBox->isChecked())
+                {
+                    GraphLocation start = query1Path.getEndLocation();
+                    GraphLocation end = query2Path.getStartLocation();
+                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                        g_memory->distanceSearchOrientations.push_back("1-> 2->");
+                }
 
-            //Third orientation to check: 1-> <-2
-            if (ui->orientation3CheckBox->isChecked())
-            {
-                GraphLocation start = query1Path.getEndLocation();
-                GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("1-> <-2");
-            }
+                //Second orientation to check: 2-> 1->
+                if (ui->orientation2CheckBox->isChecked())
+                {
+                    GraphLocation start = query2Path.getEndLocation();
+                    GraphLocation end = query1Path.getStartLocation();
+                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                        g_memory->distanceSearchOrientations.push_back("2-> 1->");
+                }
 
-            //Fourth orientation to check: <-1 2->
-            if (ui->orientation4CheckBox->isChecked())
-            {
-                GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
-                GraphLocation end = query2Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("<-1 2->");
+                //Third orientation to check: 1-> <-2
+                if (ui->orientation3CheckBox->isChecked())
+                {
+                    GraphLocation start = query1Path.getEndLocation();
+                    GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
+                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                        g_memory->distanceSearchOrientations.push_back("1-> <-2");
+                }
+
+                //Fourth orientation to check: <-1 2->
+                if (ui->orientation4CheckBox->isChecked())
+                {
+                    GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
+                    GraphLocation end = query2Path.getStartLocation();
+                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                        g_memory->distanceSearchOrientations.push_back("<-1 2->");
+                }
             }
         }
     }
@@ -296,4 +307,38 @@ void DistanceDialog::saveSettings()
     g_settings->distancePathSearchDepth = ui->maxNodesSpinBox->value() - 1;
     g_settings->minDistancePathLength = ui->minPathDistanceSpinBox->value();
     g_settings->maxDistancePathLength = ui->maxPathDistanceSpinBox->value();
+}
+
+
+void DistanceDialog::setInfoTexts()
+{
+    ui->queriesInfoText->setInfoText("Select two different BLAST queries here for which to find "
+                                     "the distance between. Only queries that have at least one "
+                                     "graph path may be used.<br><br>"
+                                     "If a query has more than one graph path, then you can use "
+                                     "all of the paths in the search or you can select only one.");
+
+    ui->maxNodesInfoText->setInfoText("This is the maximum number of nodes that can be in a path "
+                                      "between the two queries.<br><br>"
+                                      "Larger values can allow the search to find more complex "
+                                      "paths in the graph but at a performance cost.");
+
+    ui->minPathDistanceInfoText->setInfoText("Paths shorter than this length (measured in base "
+                                             "pairs) will not be included in the search results.");
+
+    ui->maxPathDistanceInfoText->setInfoText("Paths longer than this length (measured in base "
+                                             "pairs) will not be included in the search results.");
+
+    ui->orientationsInfoText->setInfoText("Each possible query orientation can be included or "
+                                          "excluded from the search using these tick boxes:"
+                                          "<ul>"
+                                          "<li>1-&#62; 2-&#62; The two queries are on the same strand "
+                                          "of DNA, with query 1 occurring upstream of query 2.</li>"
+                                          "<li>2-&#62; 1-&#62; The two queries are on the same strand "
+                                          "of DNA, with query 1 occurring downstream of query 2.</li>"
+                                          "<li>1-&#62; &#60;-2 The two queries are on different strands "
+                                          "of DNA, with their 3' ends closer than their 5' ends.</li>"
+                                          "<li>&#60;-1 2-&#62; The two queries are on different strands "
+                                          "of DNA, with their 5' ends closer than their 3' ends.</li>"
+                                          "</ul>");
 }
