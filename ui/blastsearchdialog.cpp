@@ -781,6 +781,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 
 void BlastSearchDialog::setInfoTexts()
 {
+    QString settingsDialogTitle = "settings";
+#ifdef Q_OS_MAC
+    settingsDialogTitle = "preferences";
+#endif
+
     ui->buildBlastDatabaseInfoText->setInfoText("This step runs makeblastdb on the contig sequences, "
                                                 "preparing them for a BLAST search.<br><br>"
                                                 "The database files generated are temporary and will "
@@ -820,9 +825,9 @@ void BlastSearchDialog::setInfoTexts()
                                                "Percent found: This is the total fraction of the query captured by all of "
                                                "the BLAST hits. However, the hits may not be proximal to each other. For "
                                                "example, if the first half a query was found in one part of the graph and "
-                                               "the second half in a different part, this value would still be 100&.<br><br>"
+                                               "the second half in a different part, this value would be 100%.<br><br>"
                                                "Nodes/paths: These are the possible paths through the graph which "
-                                               "represent the entire query, as defined by the 'BLAST query paths' settings. "
+                                               "represent the entire query, as defined by the 'BLAST query paths' " + settingsDialogTitle + ". "
                                                "If a query is contained within a single node, the path will just be one "
                                                "node name. If the query spans multiple nodes, the path will be a comma-"
                                                "delimited list. If there are multiple paths, they are separated with "

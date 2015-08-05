@@ -30,6 +30,14 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
     setInfoTexts();
 
+    //On a PC and Linux, this window is called 'Settings', but on the Mac it is
+    //called 'Preferences'.
+    QString windowTitle = "Settings";
+#ifdef Q_OS_MAC
+    windowTitle = "Preferences";
+#endif
+    setWindowTitle(windowTitle);
+
     ui->edgeColourButton->m_name = "Edge colour";
     ui->outlineColourButton->m_name = "Outline colour";
     ui->selectionColourButton->m_name = "Selection colour";
@@ -219,8 +227,8 @@ void SettingsDialog::setInfoTexts()
                                                  "for the 'Auto' option. Switch to 'Manual' if you want to specify this setting "
                                                  "yourself.");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
-                                                "positioning the graph components.<br><br>Low settings are faster and "
-                                                "recommended for big assembly graphs. Higher settings may result in smoother, "
+                                                "positioning the graph components.<br><br>Low values are faster and "
+                                                "recommended for big assembly graphs. Higher values may result in smoother, "
                                                 "more pleasing layouts.");
     ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's read depth.");
     ui->readDepthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");

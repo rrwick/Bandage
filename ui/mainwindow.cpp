@@ -1503,9 +1503,11 @@ void MainWindow::blastQueryChanged()
 void MainWindow::setInfoTexts()
 {
     QString control = "Ctrl";
+    QString settingsDialogTitle = "settings";
 #ifdef Q_OS_MAC
     QString command(QChar(0x2318));
     control = command;
+    settingsDialogTitle = "preferences";
 #endif
 
     ui->graphInformationInfoText->setInfoText("Node codes, edge count and total length are calculated using single "
@@ -1560,7 +1562,7 @@ void MainWindow::setInfoTexts()
                                         "will be drawn in a separate colour.</li>"
                                         "<li>'Colour by read depth': Node colours will be defined by their "
                                         "read depth. The details of this relationship are configurable in "
-                                        "Bandage settings.</li>"
+                                        "Bandage " + settingsDialogTitle + ".</li>"
                                         "<li>'BLAST hits (rainbow)': Nodes will be drawn in a light grey colour "
                                         "and BLAST hits for the currently selected query will be drawn using a "
                                         "rainbow. Red indicates the start of the query sequence and violet "
@@ -1575,8 +1577,8 @@ void MainWindow::setInfoTexts()
                                         "<li>'Custom colours': Nodes will be coloured using colours of your "
                                         "choice. Select one or more nodes and then click the 'Set colour' button "
                                         "to define their colour.</li></ul>"
-                                        "See the 'Colours' section of the Bandage settings to control various "
-                                        "colouring options.");
+                                        "See the 'Colours' section of the Bandage " + settingsDialogTitle + " "
+                                        "to control various colouring options.");
     ui->contiguityInfoText->setInfoText("Select one or more nodes and then click this button. Bandage will "
                                         "then colour which other nodes in the graph are likely to be contiguous "
                                         "with your selected node(s).");
@@ -1588,11 +1590,11 @@ void MainWindow::setInfoTexts()
                                         "When 'BLAST hits' labels are shown, they are displayed over any "
                                         "BLAST hits present in the node.");
     ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels. The "
-                                      "colour of the font is configurable in Bandage's settings.<br><br>"
+                                      "colour of the font is configurable in Bandage's " + settingsDialogTitle + ".<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
                                       "This can help to make text more readable, but will obscure more of the "
                                       "underlying graph. The thickness of the text outline is configurable in "
-                                      "Bandage's settings.");
+                                      "Bandage's " + settingsDialogTitle + ".");
     ui->blastSearchInfoText->setInfoText("Click this button to open a dialog where a BLAST search for one "
                                          "or more queries can be carried out on the graph's nodes.<br><br>"
                                          "After a BLAST search is complete, it will be possible to use the "
