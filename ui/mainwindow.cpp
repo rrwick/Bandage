@@ -166,6 +166,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(ui->actionDistance_between_queries, SIGNAL(triggered(bool)), this, SLOT(openDistanceDialog()));
+    connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
     QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -1298,20 +1299,11 @@ void MainWindow::openSettingsDialog()
 
         settingsDialog.setSettingsFromWidgets();
 
-        //If the contig width was changed, reset the width on each GraphicsItemNode.
-        if (settingsBefore.averageNodeWidth != g_settings->averageNodeWidth ||
-                settingsBefore.readDepthEffectOnWidth != g_settings->readDepthEffectOnWidth ||
+        //If the settings affecting node width was changed, reset the width on
+        //each GraphicsItemNode.
+        if (settingsBefore.readDepthEffectOnWidth != g_settings->readDepthEffectOnWidth ||
                 settingsBefore.readDepthPower != g_settings->readDepthPower)
-        {
-            QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-            while (i.hasNext())
-            {
-                i.next();
-                GraphicsItemNode * graphicsItemNode = i.value()->m_graphicsItemNode;
-                if (graphicsItemNode != 0)
-                    graphicsItemNode->setWidth();
-            }
-        }
+            g_assemblyGraph->recalculateAllNodeWidths();
 
         //If any of the colours changed, reset the node colours now.
         if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
@@ -1550,6 +1542,9 @@ void MainWindow::setInfoTexts()
                                   "can also be changed by:<ul>"
                                   "<li>Holding the " + control + " key and using the mouse wheel over the graph.</li>"
                                   "<li>Clicking on the graph display and then using the '+' and '-' keys.</li></ul>");
+    ui->nodeWidthInfoText->setInfoText("This is the average width for each node. The exact width for each node is "
+                                       "also influenced by the node's read depth. The effect of read depth on width "
+                                       "can be adjusted in Bandage " + settingsDialogTitle + ".");
     ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
                                         "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
                                         "selected, new random colours will be chosen. Negative nodes (visible "
@@ -1888,6 +1883,8 @@ void MainWindow::setWidgetsFromSettings()
     ui->singleNodesRadioButton->setChecked(!g_settings->doubleMode);
     ui->doubleNodesRadioButton->setChecked(g_settings->doubleMode);
 
+    ui->nodeWidthSpinBox->setValue(g_settings->averageNodeWidth);
+
     ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
     ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
     ui->nodeReadDepthCheckBox->setChecked(g_settings->displayNodeReadDepth);
@@ -2009,4 +2006,12 @@ void MainWindow::setSelectedEdgesWidgetsVisibility(bool visible)
         ui->selectedEdgesSpacer->changeSize(20, 60);
     else
         ui->selectedEdgesSpacer->changeSize(20, 0);
+}
+
+
+void MainWindow::nodeWidthChanged()
+{
+    g_settings->averageNodeWidth = ui->nodeWidthSpinBox->value();
+    g_assemblyGraph->recalculateAllNodeWidths();
+    g_graphicsView->viewport()->update();
 }

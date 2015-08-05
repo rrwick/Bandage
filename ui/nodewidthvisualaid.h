@@ -32,7 +32,6 @@ public:
 
     double m_readDepthPower;
     double m_readDepthEffectOnWidth;
-    double m_averageNodeWidth;
 
 protected:
     void paintEvent(QPaintEvent *);

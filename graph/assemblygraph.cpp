@@ -1491,3 +1491,16 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
     }
 }
 
+
+
+void AssemblyGraph::recalculateAllNodeWidths()
+{
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        GraphicsItemNode * graphicsItemNode = i.value()->m_graphicsItemNode;
+        if (graphicsItemNode != 0)
+            graphicsItemNode->setWidth();
+    }
+}

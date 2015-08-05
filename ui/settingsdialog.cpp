@@ -60,7 +60,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
     connect(ui->readDepthPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->readDepthEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
-    connect(ui->averageNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->randomColourPositiveOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
     connect(ui->randomColourNegativeOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
     connect(ui->randomColourPositiveSaturationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
@@ -132,7 +131,6 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     }
 
     intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
-    doubleFunctionPointer(&settings->averageNodeWidth, ui->averageNodeWidthSpinBox, false);
     doubleFunctionPointer(&settings->readDepthEffectOnWidth, ui->readDepthEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->readDepthPower, ui->readDepthPowerSpinBox, false);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
@@ -230,7 +228,6 @@ void SettingsDialog::setInfoTexts()
                                                 "positioning the graph components.<br><br>Low values are faster and "
                                                 "recommended for big assembly graphs. Higher values may result in smoother, "
                                                 "more pleasing layouts.");
-    ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's read depth.");
     ui->readDepthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
     ui->readDepthEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's read depth affects its width.<br><br>"
                                                    "If set to 0%, all nodes will have the same width (equal to the average "
@@ -385,7 +382,6 @@ void SettingsDialog::basePairsPerSegmentManualChanged()
 
 void SettingsDialog::updateNodeWidthVisualAid()
 {
-    ui->nodeWidthVisualAid->m_averageNodeWidth = ui->averageNodeWidthSpinBox->value();
     ui->nodeWidthVisualAid->m_readDepthEffectOnWidth = ui->readDepthEffectOnWidthSpinBox->value() / 100.0;
     ui->nodeWidthVisualAid->m_readDepthPower = ui->readDepthPowerSpinBox->value();
 
