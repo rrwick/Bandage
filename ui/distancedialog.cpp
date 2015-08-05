@@ -157,12 +157,19 @@ void DistanceDialog::findPaths()
     g_memory->distancePathSearchQuery1Path = ui->query1PathComboBox->currentText();
     g_memory->distancePathSearchQuery2Path = ui->query2PathComboBox->currentText();
 
+    //If the current index of the path combo box is 0, that means either there is
+    //only one path and it is selected or there are multiple paths and "all" is
+    //selected.  In either case, we can use all paths.
     QList<Path> query1Paths;
     if (ui->query1PathComboBox->currentIndex() == 0)
         query1Paths = query1->getPaths();
+
+    //If the current index is not 0, then there are multiple paths and one path
+    //in particular is selected.
     else
         query1Paths.push_back(query1->getPaths()[ui->query1PathComboBox->currentIndex() - 1]);
 
+    //Repeat for query 2.
     QList<Path> query2Paths;
     if (ui->query2PathComboBox->currentIndex() == 0)
         query2Paths = query2->getPaths();
@@ -228,7 +235,7 @@ void DistanceDialog::fillPathComboBox(BlastQuery * query, QComboBox * comboBox)
     {
         comboBoxItems.push_back("all");
         for (int i = 0; i < paths.size(); ++i)
-            comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
+            comboBoxItems.push_back(paths[i].getString(true));
     }
 
     comboBox->addItems(comboBoxItems);
