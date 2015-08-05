@@ -169,67 +169,20 @@ void DistanceDialog::findPaths()
     else
         query2Paths.push_back(query2->getPaths()[ui->query2PathComboBox->currentIndex() - 1]);
 
-    g_memory->distanceSearchOrientations.clear();
-    g_memory->distanceSearchDistances.clear();
-    g_memory->distanceSearchPaths.clear();
-
     //Run the path search.  This is in a separate code block so the progress
     //dialog is destroyed when the search is finished.
     {
-        //Display a progress dialog.
         MyProgressDialog progress(this, "Finding paths between queries...", false);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
-        for (int i = 0; i < query1Paths.size(); ++i)
-        {
-            Path query1Path = query1Paths[i];
-
-            for (int j = 0; j < query2Paths.size(); ++j)
-            {
-                Path query2Path = query2Paths[j];
-
-                //First orientation to check: 1-> 2->
-                if (ui->orientation1CheckBox->isChecked())
-                {
-                    GraphLocation start = query1Path.getEndLocation();
-                    GraphLocation end = query2Path.getStartLocation();
-                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                        g_memory->distanceSearchOrientations.push_back("1-> 2->");
-                }
-
-                //Second orientation to check: 2-> 1->
-                if (ui->orientation2CheckBox->isChecked())
-                {
-                    GraphLocation start = query2Path.getEndLocation();
-                    GraphLocation end = query1Path.getStartLocation();
-                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                        g_memory->distanceSearchOrientations.push_back("2-> 1->");
-                }
-
-                //Third orientation to check: 1-> <-2
-                if (ui->orientation3CheckBox->isChecked())
-                {
-                    GraphLocation start = query1Path.getEndLocation();
-                    GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
-                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                        g_memory->distanceSearchOrientations.push_back("1-> <-2");
-                }
-
-                //Fourth orientation to check: <-1 2->
-                if (ui->orientation4CheckBox->isChecked())
-                {
-                    GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
-                    GraphLocation end = query2Path.getStartLocation();
-                    g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                    while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                        g_memory->distanceSearchOrientations.push_back("<-1 2->");
-                }
-            }
-        }
+        g_assemblyGraph->conductDistanceSearch(query1Paths, query2Paths,
+                                               ui->orientation1CheckBox->isChecked(),
+                                               ui->orientation2CheckBox->isChecked(),
+                                               ui->orientation3CheckBox->isChecked(),
+                                               ui->orientation4CheckBox->isChecked(),
+                                               pathSearchDepth, minDistance,
+                                               maxDistance);
     }
 
     int pathCount = g_memory->distanceSearchPaths.size();

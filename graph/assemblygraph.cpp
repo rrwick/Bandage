@@ -1504,3 +1504,69 @@ void AssemblyGraph::recalculateAllNodeWidths()
             graphicsItemNode->setWidth();
     }
 }
+
+
+
+//This function carries out a distance search between two queries.  It stores
+//the results in the g_memory object.
+void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
+                                          QList<Path> query2Paths,
+                                          bool orientation1, bool orientation2,
+                                          bool orientation3, bool orientation4,
+                                          int pathSearchDepth,
+                                          int minDistance, int maxDistance)
+{
+    g_memory->distanceSearchDistances.clear();
+    g_memory->distanceSearchPaths.clear();
+    g_memory->distanceSearchOrientations.clear();
+
+    for (int i = 0; i < query1Paths.size(); ++i)
+    {
+        Path query1Path = query1Paths[i];
+
+        for (int j = 0; j < query2Paths.size(); ++j)
+        {
+            Path query2Path = query2Paths[j];
+
+            //First orientation to check: 1-> 2->
+            if (orientation1)
+            {
+                GraphLocation start = query1Path.getEndLocation();
+                GraphLocation end = query2Path.getStartLocation();
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("1-> 2->");
+            }
+
+            //Second orientation to check: 2-> 1->
+            if (orientation2)
+            {
+                GraphLocation start = query2Path.getEndLocation();
+                GraphLocation end = query1Path.getStartLocation();
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("2-> 1->");
+            }
+
+            //Third orientation to check: 1-> <-2
+            if (orientation3)
+            {
+                GraphLocation start = query1Path.getEndLocation();
+                GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("1-> <-2");
+            }
+
+            //Fourth orientation to check: <-1 2->
+            if (orientation4)
+            {
+                GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
+                GraphLocation end = query2Path.getStartLocation();
+                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
+                    g_memory->distanceSearchOrientations.push_back("<-1 2->");
+            }
+        }
+    }
+}

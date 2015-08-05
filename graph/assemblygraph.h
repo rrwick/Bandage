@@ -73,6 +73,11 @@ public:
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     void recalculateAllNodeWidths();
+    void conductDistanceSearch(QList<Path> query1Paths, QList<Path> query2Paths,
+                               bool orientation1, bool orientation2,
+                               bool orientation3, bool orientation4,
+                               int pathSearchDepth, int minDistance,
+                               int maxDistance);
 
     GraphFileType getGraphFileTypeFromFile(QString fullFileName);
     bool checkFileIsLastGraph(QString fullFileName);
@@ -82,20 +87,28 @@ public:
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
 
     bool loadGraphFromFile(QString filename);
-    void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes, int nodeDistance);
+    void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes,
+                                         int nodeDistance);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
-    std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,
-                                                 QString nodesList, QString blastQueryName);
+    std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle,
+                                                 QString * errorMessage,
+                                                 bool doubleMode,
+                                                 QString nodesList,
+                                                 QString blastQueryName);
     bool checkIfStringHasNodes(QString nodesString);
-    QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph, bool exact);
-    std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
+    QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph,
+                                              bool exact);
+    std::vector<DeBruijnNode *> getNodesFromString(QString nodeNamesString,
+                                                   bool exactMatch,
+                                                   std::vector<QString> * nodesNotInGraph = 0);
     void layoutGraph();
 
     void setAllEdgesExactOverlap(int overlap);
     void autoDetermineAllEdgesExactOverlap();
 
-    static void readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences);
+    static void readFastaFile(QString filename, std::vector<QString> * names,
+                              std::vector<QString> * sequences);
 
 
 private:
