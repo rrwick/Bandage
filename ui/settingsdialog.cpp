@@ -232,8 +232,6 @@ void SettingsDialog::setInfoTexts()
     ui->readDepthEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's read depth affects its width.<br><br>"
                                                    "If set to 0%, all nodes will have the same width (equal to the average "
                                                    "node width).");
-    ui->nodeWidthPlotInfoText->setInfoText("This is a plot of the function that will be used to set node widths.<br><br>"
-                                           "The centre point on the plot is the average read depth and average node width.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.<br><br>"
                                               "Drawing outlines can result in slow performance, so set this to zero "
