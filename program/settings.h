@@ -42,8 +42,8 @@ public:
     int graphLayoutQuality;
 
     double averageNodeWidth;
-    double coverageEffectOnWidth;
-    double coveragePower;
+    double readDepthEffectOnWidth;
+    double readDepthPower;
 
     double edgeWidth;
     double outlineThickness;
@@ -69,7 +69,7 @@ public:
     bool displayNodeCustomLabels;
     bool displayNodeNames;
     bool displayNodeLengths;
-    bool displayNodeCoverages;
+    bool displayNodeReadDepth;
     bool displayBlastHits;
     QFont labelFont;
     bool textOutline;
@@ -105,11 +105,11 @@ public:
 
     QColor noBlastHitsColour;
 
-    bool autoCoverageValue;
-    double lowCoverageValue;
-    QColor lowCoverageColour;
-    double highCoverageValue;
-    QColor highCoverageColour;
+    bool autoReadDepthValue;
+    double lowReadDepthValue;
+    QColor lowReadDepthColour;
+    double highReadDepthValue;
+    QColor highReadDepthColour;
 
     QColor pathHighlightShadingColour;
     QColor pathHighlightOutlineColour;

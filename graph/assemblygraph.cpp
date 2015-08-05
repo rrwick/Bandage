@@ -209,10 +209,10 @@ void AssemblyGraph::resetEdges()
 }
 
 
-double AssemblyGraph::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
+double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
 {
     int nodeCount = 0;
-    long double coverageSum = 0.0;
+    long double readDepthSum = 0.0;
     long long totalLength = 0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -226,30 +226,30 @@ double AssemblyGraph::getMeanDeBruijnGraphCoverage(bool drawnNodesOnly)
 
         ++nodeCount;
         totalLength += node->getLength();
-        coverageSum += node->getLength() * node->m_coverage;
+        readDepthSum += node->getLength() * node->m_readDepth;
 
     }
 
     if (totalLength == 0)
         return 0.0;
     else
-        return coverageSum / totalLength;
+        return readDepthSum / totalLength;
 }
 
-double AssemblyGraph::getMaxDeBruijnGraphCoverageOfDrawnNodes()
+double AssemblyGraph::getMaxDeBruijnGraphReadDepthOfDrawnNodes()
 {
-    double maxCoverage = 1.0;
+    double maxReadDepth = 1.0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
 
-        if (i.value()->m_graphicsItemNode != 0 && i.value()->m_coverage > maxCoverage)
-            maxCoverage = i.value()->m_coverage;
+        if (i.value()->m_graphicsItemNode != 0 && i.value()->m_readDepth > maxReadDepth)
+            maxReadDepth = i.value()->m_readDepth;
     }
 
-    return maxCoverage;
+    return maxReadDepth;
 }
 
 
@@ -292,7 +292,7 @@ void AssemblyGraph::determineGraphInfo()
     m_longestContig = 0;
     int nodeCount = 0;
     long long totalLength = 0;
-    std::vector<double> nodeCoverages;
+    std::vector<double> nodeReadDepths;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -312,7 +312,7 @@ void AssemblyGraph::determineGraphInfo()
             ++nodeCount;
         }
 
-        nodeCoverages.push_back(i.value()->m_coverage);
+        nodeReadDepths.push_back(i.value()->m_readDepth);
     }
 
     //Count up the edges.  Edges that are their own pairs will
@@ -329,17 +329,17 @@ void AssemblyGraph::determineGraphInfo()
     m_nodeCount = nodeCount;
     m_edgeCount = edgeCount;
     m_totalLength = totalLength;
-    m_meanCoverage = getMeanDeBruijnGraphCoverage();
+    m_meanReadDepth = getMeanDeBruijnGraphReadDepth();
 
-    std::sort(nodeCoverages.begin(), nodeCoverages.end());
+    std::sort(nodeReadDepths.begin(), nodeReadDepths.end());
 
-    double firstQuartileIndex = nodeCoverages.size() / 4.0;
-    double medianIndex = nodeCoverages.size() / 2.0;
-    double thirdQuartileIndex = nodeCoverages.size() * 3.0 / 4.0;
+    double firstQuartileIndex = nodeReadDepths.size() / 4.0;
+    double medianIndex = nodeReadDepths.size() / 2.0;
+    double thirdQuartileIndex = nodeReadDepths.size() * 3.0 / 4.0;
 
-    m_firstQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, firstQuartileIndex);
-    m_medianCoverage = getValueUsingFractionalIndex(&nodeCoverages, medianIndex);
-    m_thirdQuartileCoverage = getValueUsingFractionalIndex(&nodeCoverages, thirdQuartileIndex);
+    m_firstQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, firstQuartileIndex);
+    m_medianReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, medianIndex);
+    m_thirdQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, thirdQuartileIndex);
 
     //Set the auto base pairs per segment
     int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
@@ -374,10 +374,10 @@ void AssemblyGraph::clearGraphInfo()
     m_shortestContig = 0;
     m_longestContig = 0;
 
-    m_meanCoverage = 0.0;
-    m_firstQuartileCoverage = 0.0;
-    m_medianCoverage = 0.0;
-    m_thirdQuartileCoverage = 0.0;
+    m_meanReadDepth = 0.0;
+    m_firstQuartileReadDepth = 0.0;
+    m_medianReadDepth = 0.0;
+    m_thirdQuartileReadDepth = 0.0;
 }
 
 
@@ -420,17 +420,17 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
                 int nodeLength = nodeDetails.at(2).toInt();
 
-                double nodeCoverage;
+                double nodeReadDepth;
                 if (nodeLength > 0)
-                    nodeCoverage = double(nodeDetails.at(3).toInt()) / nodeLength; //IS THIS COLUMN ($COV_SHORT1) THE BEST ONE TO USE?
+                    nodeReadDepth = double(nodeDetails.at(3).toInt()) / nodeLength; //IS THIS COLUMN ($COV_SHORT1) THE BEST ONE TO USE?
                 else
-                    nodeCoverage = double(nodeDetails.at(3).toInt());
+                    nodeReadDepth = double(nodeDetails.at(3).toInt());
 
                 QByteArray sequence = in.readLine().toLocal8Bit();
                 QByteArray revCompSequence = in.readLine().toLocal8Bit();
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeCoverage, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeCoverage, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
                 m_deBruijnGraphNodes.insert(posNodeName, node);
@@ -508,9 +508,9 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
                 QByteArray revCompSequence = getReverseComplement(sequence);
 
-                //If there is an attribute holding the coverage, we'll use that.
+                //If there is an attribute holding the read depth, we'll use that.
                 //If there isn't, then we'll use zero.
-                double nodeCoverage = 0.0;
+                double nodeReadDepth = 0.0;
 
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
@@ -518,11 +518,11 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                     if (part.size() < 6)
                         continue;
                     else if (part.left(5) == "KC:f:")
-                        nodeCoverage = part.right(part.length() - 5).toDouble();
+                        nodeReadDepth = part.right(part.length() - 5).toDouble();
                 }
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeCoverage, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeCoverage, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
                 node->m_reverseComplement = reverseComplementNode;
                 reverseComplementNode->m_reverseComplement = node;
                 m_deBruijnGraphNodes.insert(posNodeName, node);
@@ -618,7 +618,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
             QApplication::processEvents();
 
             QString nodeName;
-            double nodeCoverage;
+            double nodeReadDepth;
 
             QString line = in.readLine();
 
@@ -645,17 +645,17 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                 else
                     nodeName += "+";
 
-                QString nodeCoverageString = thisNodeDetails.at(5);
+                QString nodeReadDepthString = thisNodeDetails.at(5);
                 if (negativeNode)
                 {
-                    //It may be necessary to remove a single quote from the end of the coverage
-                    if (nodeCoverageString.at(nodeCoverageString.size() - 1) == '\'')
-                        nodeCoverageString.chop(1);
+                    //It may be necessary to remove a single quote from the end of the read depth
+                    if (nodeReadDepthString.at(nodeReadDepthString.size() - 1) == '\'')
+                        nodeReadDepthString.chop(1);
                 }
-                nodeCoverage = nodeCoverageString.toDouble();
+                nodeReadDepth = nodeReadDepthString.toDouble();
 
                 //Make the node
-                node = new DeBruijnNode(nodeName, nodeCoverage, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
+                node = new DeBruijnNode(nodeName, nodeReadDepth, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
                 m_deBruijnGraphNodes.insert(nodeName, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
@@ -741,7 +741,7 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
-        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_coverage,
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_readDepth,
                                                   getReverseComplement(node->m_sequence));
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
@@ -899,11 +899,11 @@ GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
 {
     if (checkFileIsLastGraph(fullFileName))
         return LAST_GRAPH;
-    if (g_assemblyGraph->checkFileIsFastG(fullFileName))
+    if (checkFileIsFastG(fullFileName))
         return FASTG;
-    if (g_assemblyGraph->checkFileIsGfa(fullFileName))
+    if (checkFileIsGfa(fullFileName))
         return GFA;
-    if (g_assemblyGraph->checkFileIsTrinityFasta(fullFileName))
+    if (checkFileIsTrinityFasta(fullFileName))
         return TRINITY;
     return UNKNOWN_FILE_TYPE;
 }
@@ -989,7 +989,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
 {
     if (g_settings->graphScope == WHOLE_GRAPH)
     {
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
         while (i.hasNext())
         {
             i.next();
@@ -1017,21 +1017,21 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
     }
 
     //First loop through each node, adding it to OGDF if it is drawn.
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
         if (i.value()->m_drawn)
-            i.value()->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
+            i.value()->addToOgdfGraph(m_ogdfGraph);
     }
 
     //Then loop through each determining its drawn status and adding it
     //to OGDF if it is drawn.
-    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
-        g_assemblyGraph->m_deBruijnGraphEdges[i]->determineIfDrawn();
-        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
-            g_assemblyGraph->m_deBruijnGraphEdges[i]->addToOgdfGraph(g_assemblyGraph->m_ogdfGraph);
+        m_deBruijnGraphEdges[i]->determineIfDrawn();
+        if (m_deBruijnGraphEdges[i]->m_drawn)
+            m_deBruijnGraphEdges[i]->addToOgdfGraph(m_ogdfGraph);
     }
 }
 
@@ -1041,10 +1041,10 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 {
     scene->clear();
 
-    double meanDrawnCoverage = g_assemblyGraph->getMeanDeBruijnGraphCoverage(true);
+    double meanDrawnReadDepth = getMeanDeBruijnGraphReadDepth(true);
 
     //First make the GraphicsItemNode objects
-    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
@@ -1052,27 +1052,27 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
         if (node->m_drawn)
         {
-            if (meanDrawnCoverage == 0)
-                node->m_coverageRelativeToMeanDrawnCoverage = 1.0;
+            if (meanDrawnReadDepth == 0)
+                node->m_readDepthRelativeToMeanDrawnReadDepth = 1.0;
             else
-                node->m_coverageRelativeToMeanDrawnCoverage = node->m_coverage / meanDrawnCoverage;
-            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, g_assemblyGraph->m_graphAttributes);
+                node->m_readDepthRelativeToMeanDrawnReadDepth = node->m_readDepth / meanDrawnReadDepth;
+            GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, m_graphAttributes);
             node->m_graphicsItemNode = graphicsItemNode;
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
         }
     }
 
-    g_assemblyGraph->resetAllNodeColours();
+    resetAllNodeColours();
 
     //Then make the GraphicsItemEdge objects and add them to the scene first
     //so they are drawn underneath
-    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+    for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
-        if (g_assemblyGraph->m_deBruijnGraphEdges[i]->m_drawn)
+        if (m_deBruijnGraphEdges[i]->m_drawn)
         {
-            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(g_assemblyGraph->m_deBruijnGraphEdges[i]);
-            g_assemblyGraph->m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
+            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(m_deBruijnGraphEdges[i]);
+            m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
             graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
             scene->addItem(graphicsItemEdge);
         }
@@ -1080,7 +1080,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
     //Now add the GraphicsItemNode objects to the scene so they are drawn
     //on top
-    QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+    QMapIterator<QString, DeBruijnNode*> j(m_deBruijnGraphNodes);
     while (j.hasNext())
     {
         j.next();
@@ -1124,7 +1124,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
 
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
     {
-        std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getNodesFromBlastHits(blastQueryName);
+        std::vector<DeBruijnNode *> startingNodes = getNodesFromBlastHits(blastQueryName);
 
         if (startingNodes.size() == 0)
         {
@@ -1135,12 +1135,12 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
     }
 
     g_settings->doubleMode = doubleMode;
-    g_assemblyGraph->clearOgdfGraphAndResetNodes();
+    clearOgdfGraphAndResetNodes();
 
     if (g_settings->graphScope == AROUND_NODE)
         startingNodes = getNodesFromString(nodesList, g_settings->startingNodesExactMatch);
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
-        startingNodes = g_assemblyGraph->getNodesFromBlastHits(blastQueryName);
+        startingNodes = getNodesFromBlastHits(blastQueryName);
 
     return startingNodes;
 }
@@ -1207,8 +1207,8 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nod
         QChar lastChar = nodeName.at(nodeName.length() - 1);
         if (lastChar == '+' || lastChar == '-')
         {
-            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
-                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[nodeName]);
+            if (m_deBruijnGraphNodes.contains(nodeName))
+                returnVector.push_back(m_deBruijnGraphNodes[nodeName]);
             else if (nodesNotInGraph != 0)
                 nodesNotInGraph->push_back(nodesList.at(i).trimmed());
         }
@@ -1218,16 +1218,16 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nod
             QString negNodeName = nodeName + "-";
 
             bool posNodeFound = false;
-            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(posNodeName))
+            if (m_deBruijnGraphNodes.contains(posNodeName))
             {
-                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[posNodeName]);
+                returnVector.push_back(m_deBruijnGraphNodes[posNodeName]);
                 posNodeFound = true;
             }
 
             bool negNodeFound = false;
-            if (g_assemblyGraph->m_deBruijnGraphNodes.contains(negNodeName))
+            if (m_deBruijnGraphNodes.contains(negNodeName))
             {
-                returnVector.push_back(g_assemblyGraph->m_deBruijnGraphNodes[negNodeName]);
+                returnVector.push_back(m_deBruijnGraphNodes[negNodeName]);
                 negNodeFound = true;
             }
 
@@ -1251,7 +1251,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList n
             continue;
 
         bool found = false;
-        QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+        QMapIterator<QString, DeBruijnNode*> j(m_deBruijnGraphNodes);
         while (j.hasNext())
         {
             j.next();
@@ -1326,7 +1326,7 @@ QStringList AssemblyGraph::removeNullStringsFromList(QStringList in)
 void AssemblyGraph::layoutGraph()
 {
     ogdf::FMMMLayout fmmm;
-    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, g_assemblyGraph->m_graphAttributes,
+    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes,
                                                                   g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->layoutGraph();
 }

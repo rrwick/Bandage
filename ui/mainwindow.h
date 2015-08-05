@@ -71,7 +71,6 @@ private:
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node);
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText);
     QString getSelectedEdgeListText();
-    double getGraphicsItemNodeWidth(double coverageRelativeToMean);
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
     void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);

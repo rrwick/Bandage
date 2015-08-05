@@ -34,12 +34,12 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
-    DeBruijnNode(QString name, double coverage, QByteArray sequence);
+    DeBruijnNode(QString name, double readDepth, QByteArray sequence);
     ~DeBruijnNode();
 
     QString m_name;
-    double m_coverage;
-    double m_coverageRelativeToMeanDrawnCoverage;
+    double m_readDepth;
+    double m_readDepthRelativeToMeanDrawnReadDepth;
     QByteArray m_sequence;
     ContiguityStatus m_contiguityStatus;
     DeBruijnNode * m_reverseComplement;

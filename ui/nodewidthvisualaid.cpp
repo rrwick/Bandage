@@ -66,13 +66,13 @@ void NodeWidthVisualAid::paintEvent(QPaintEvent * /*event*/)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     QPainterPath graphLine;
-    graphLine.moveTo(0.0, height() - GraphicsItemNode::getNodeWidth(0.0, m_coveragePower, m_coverageEffectOnWidth, width() / 2.0));
+    graphLine.moveTo(0.0, height() - GraphicsItemNode::getNodeWidth(0.0, m_readDepthPower, m_readDepthEffectOnWidth, width() / 2.0));
 
     for (int i = 0; i < width(); ++i)
     {
         double x = double(i);
-        double coverageRelativeToMeanDrawnCoverage = 2.0 * x / width();
-        double y = height() -GraphicsItemNode::getNodeWidth(coverageRelativeToMeanDrawnCoverage, m_coveragePower, m_coverageEffectOnWidth, width() / 2.0);
+        double readDepthRelativeToMeanDrawnReadDepth = 2.0 * x / width();
+        double y = height() -GraphicsItemNode::getNodeWidth(readDepthRelativeToMeanDrawnReadDepth, m_readDepthPower, m_readDepthEffectOnWidth, width() / 2.0);
         graphLine.lineTo(x, y);
     }
 

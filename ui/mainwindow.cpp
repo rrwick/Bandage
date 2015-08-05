@@ -136,7 +136,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
-    connect(ui->nodeCoveragesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->nodeReadDepthCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
@@ -928,7 +928,7 @@ void MainWindow::switchColourScheme()
         ui->contiguityInfoText->setVisible(false);
         break;
     case 2:
-        g_settings->nodeColourScheme = COVERAGE_COLOUR;
+        g_settings->nodeColourScheme = READ_DEPTH_COLOUR;
         ui->contiguityButton->setVisible(false);
         ui->contiguityInfoText->setVisible(false);
         break;
@@ -1174,7 +1174,7 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeCustomLabels = ui->nodeCustomLabelsCheckBox->isChecked();
     g_settings->displayNodeNames = ui->nodeNamesCheckBox->isChecked();
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
-    g_settings->displayNodeCoverages = ui->nodeCoveragesCheckBox->isChecked();
+    g_settings->displayNodeReadDepth = ui->nodeReadDepthCheckBox->isChecked();
     g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
@@ -1300,8 +1300,8 @@ void MainWindow::openSettingsDialog()
 
         //If the contig width was changed, reset the width on each GraphicsItemNode.
         if (settingsBefore.averageNodeWidth != g_settings->averageNodeWidth ||
-                settingsBefore.coverageEffectOnWidth != g_settings->coverageEffectOnWidth ||
-                settingsBefore.coveragePower != g_settings->coveragePower)
+                settingsBefore.readDepthEffectOnWidth != g_settings->readDepthEffectOnWidth ||
+                settingsBefore.readDepthPower != g_settings->readDepthPower)
         {
             QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
             while (i.hasNext())
@@ -1317,11 +1317,11 @@ void MainWindow::openSettingsDialog()
         if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
                 settingsBefore.uniformNegativeNodeColour != g_settings->uniformNegativeNodeColour ||
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
-                settingsBefore.autoCoverageValue != g_settings->autoCoverageValue ||
-                settingsBefore.lowCoverageColour != g_settings->lowCoverageColour ||
-                settingsBefore.highCoverageColour != g_settings->highCoverageColour ||
-                settingsBefore.lowCoverageValue != g_settings->lowCoverageValue ||
-                settingsBefore.highCoverageValue != g_settings->highCoverageValue ||
+                settingsBefore.autoReadDepthValue != g_settings->autoReadDepthValue ||
+                settingsBefore.lowReadDepthColour != g_settings->lowReadDepthColour ||
+                settingsBefore.highReadDepthColour != g_settings->highReadDepthColour ||
+                settingsBefore.lowReadDepthValue != g_settings->lowReadDepthValue ||
+                settingsBefore.highReadDepthValue != g_settings->highReadDepthValue ||
                 settingsBefore.noBlastHitsColour != g_settings->noBlastHitsColour ||
                 settingsBefore.contiguousStrandSpecificColour != g_settings->contiguousStrandSpecificColour ||
                 settingsBefore.contiguousEitherStrandColour != g_settings->contiguousEitherStrandColour ||
@@ -1558,8 +1558,9 @@ void MainWindow::setInfoTexts()
                                         "scope, your specified nodes will be drawn in a separate colour. For "
                                         "graphs drawn with the 'Around BLAST hits' scope, nodes with BLAST hits "
                                         "will be drawn in a separate colour.</li>"
-                                        "<li>'Colour by coverage': Node colours will be defined by their "
-                                        "coverage.</li>"
+                                        "<li>'Colour by read depth': Node colours will be defined by their "
+                                        "read depth. The details of this relationship are configurable in "
+                                        "Bandage settings.</li>"
                                         "<li>'BLAST hits (rainbow)': Nodes will be drawn in a light grey colour "
                                         "and BLAST hits for the currently selected query will be drawn using a "
                                         "rainbow. Red indicates the start of the query sequence and violet "
@@ -1581,7 +1582,7 @@ void MainWindow::setInfoTexts()
                                         "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
                                         "nodes in the graph.<br><br>"
-                                        "'Name', 'Length' and 'Coverage' labels are created automatically. "
+                                        "'Name', 'Length' and 'Read depth' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.<br><br>"
                                         "When 'BLAST hits' labels are shown, they are displayed over any "
@@ -1887,7 +1888,7 @@ void MainWindow::setWidgetsFromSettings()
 
     ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
     ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
-    ui->nodeCoveragesCheckBox->setChecked(g_settings->displayNodeCoverages);
+    ui->nodeReadDepthCheckBox->setChecked(g_settings->displayNodeReadDepth);
     ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
 
@@ -1909,7 +1910,7 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     {
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
     case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
-    case COVERAGE_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
+    case READ_DEPTH_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
     case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
     case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
     case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;

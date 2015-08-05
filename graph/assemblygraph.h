@@ -49,10 +49,10 @@ public:
     long long m_totalLength;
     long long m_shortestContig;
     long long m_longestContig;
-    double m_meanCoverage;
-    double m_firstQuartileCoverage;
-    double m_medianCoverage;
-    double m_thirdQuartileCoverage;
+    double m_meanReadDepth;
+    double m_firstQuartileReadDepth;
+    double m_medianReadDepth;
+    double m_thirdQuartileReadDepth;
     GraphFileType m_graphFileType;
     bool m_contiguitySearchDone;
 
@@ -61,8 +61,8 @@ public:
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
-    double getMeanDeBruijnGraphCoverage(bool drawnNodesOnly = false);
-    double getMaxDeBruijnGraphCoverageOfDrawnNodes();
+    double getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly = false);
+    double getMaxDeBruijnGraphReadDepthOfDrawnNodes();
     void resetNodeContiguityStatus();
     void resetAllNodeColours();
     void clearAllBlastHitPointers();

@@ -30,8 +30,8 @@ public:
 
     int heightForWidth(int w ) const {return w;}
 
-    double m_coveragePower;
-    double m_coverageEffectOnWidth;
+    double m_readDepthPower;
+    double m_readDepthEffectOnWidth;
     double m_averageNodeWidth;
 
 protected:

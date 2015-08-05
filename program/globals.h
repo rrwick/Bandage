@@ -30,7 +30,7 @@ class MyGraphicsView;
 class BlastSearch;
 class AssemblyGraph;
 
-enum NodeColourScheme {ONE_COLOUR, RANDOM_COLOURS, COVERAGE_COLOUR,
+enum NodeColourScheme {ONE_COLOUR, RANDOM_COLOURS, READ_DEPTH_COLOUR,
                        BLAST_HITS_RAINBOW_COLOUR, BLAST_HITS_SOLID_COLOUR,
                        CONTIGUITY_COLOUR, CUSTOM_COLOURS};
 enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS};

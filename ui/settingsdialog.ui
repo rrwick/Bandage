@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-2063</y>
+        <y>-1449</y>
         <width>431</width>
         <height>2724</height>
        </rect>
@@ -313,7 +313,7 @@
         </widget>
        </item>
        <item row="72" column="3">
-        <widget class="QWidget" name="widget_4" native="true">
+        <widget class="QWidget" name="readDepthAutoManualWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -334,7 +334,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QRadioButton" name="coverageValueAutoRadioButton">
+           <widget class="QRadioButton" name="readDepthValueAutoRadioButton">
             <property name="text">
              <string>Auto</string>
             </property>
@@ -344,7 +344,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="coverageValueManualRadioButton">
+           <widget class="QRadioButton" name="readDepthValueManualRadioButton">
             <property name="text">
              <string>Manual</string>
             </property>
@@ -370,7 +370,7 @@
         </widget>
        </item>
        <item row="70" column="1">
-        <widget class="InfoTextWidget" name="lowCoverageColourInfoText" native="true">
+        <widget class="InfoTextWidget" name="lowReadDepthColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -512,7 +512,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="lowCoverageValueLabel">
+           <widget class="QLabel" name="lowReadDepthValueLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -525,7 +525,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="lowCoverageValueSpinBox">
+           <widget class="QDoubleSpinBox" name="lowReadDepthValueSpinBox">
             <property name="maximum">
              <double>1000000.000000000000000</double>
             </property>
@@ -694,7 +694,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Low coverage:</string>
+          <string>Low read depth:</string>
          </property>
         </widget>
        </item>
@@ -720,7 +720,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Coverage effect on width:</string>
+          <string>Read depth effect on width:</string>
          </property>
         </widget>
        </item>
@@ -753,7 +753,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Coverage power:</string>
+          <string>Read depth effect power:</string>
          </property>
         </widget>
        </item>
@@ -879,7 +879,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>High coverage:</string>
+          <string>High read depth:</string>
          </property>
         </widget>
        </item>
@@ -941,12 +941,12 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Coverage values:</string>
+          <string>Read depth values:</string>
          </property>
         </widget>
        </item>
        <item row="14" column="3">
-        <widget class="QDoubleSpinBox" name="coveragePowerSpinBox">
+        <widget class="QDoubleSpinBox" name="readDepthPowerSpinBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1099,9 +1099,9 @@
         </widget>
        </item>
        <item row="69" column="0" colspan="5">
-        <widget class="QLabel" name="coverageColourSchemeDescriptionLabel">
+        <widget class="QLabel" name="readDepthColourSchemeDescriptionLabel">
          <property name="text">
-          <string>These settings control the node colours when the 'Colour by coverage' colour scheme is used.</string>
+          <string>These settings control the node colours when the 'Colour by read depth' colour scheme is used.</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -1193,7 +1193,7 @@
         </widget>
        </item>
        <item row="70" column="3">
-        <widget class="ColourButton" name="lowCoverageColourButton">
+        <widget class="ColourButton" name="lowReadDepthColourButton">
          <property name="text">
           <string/>
          </property>
@@ -1233,7 +1233,7 @@
         </widget>
        </item>
        <item row="13" column="1">
-        <widget class="InfoTextWidget" name="coverageEffectOnWidthInfoText" native="true">
+        <widget class="InfoTextWidget" name="readDepthEffectOnWidthInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1427,7 +1427,7 @@
         </widget>
        </item>
        <item row="14" column="1">
-        <widget class="InfoTextWidget" name="coveragePowerInfoText" native="true">
+        <widget class="InfoTextWidget" name="readDepthPowerInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1663,7 +1663,7 @@
                 <string notr="true">background-color: rgb(255, 255, 255)</string>
                </property>
                <property name="text">
-                <string>Coverage</string>
+                <string>Read depth</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -1693,7 +1693,7 @@
         </widget>
        </item>
        <item row="71" column="1">
-        <widget class="InfoTextWidget" name="highCoverageColourInfoText" native="true">
+        <widget class="InfoTextWidget" name="highReadDepthColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1792,7 +1792,7 @@
         </widget>
        </item>
        <item row="72" column="1">
-        <widget class="InfoTextWidget" name="coverageValuesInfoText" native="true">
+        <widget class="InfoTextWidget" name="readDepthValuesInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1845,7 +1845,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="highCoverageValueLabel">
+           <widget class="QLabel" name="highReadDepthValueLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1858,7 +1858,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="highCoverageValueSpinBox">
+           <widget class="QDoubleSpinBox" name="highReadDepthValueSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2055,7 +2055,7 @@
        <item row="10" column="0" colspan="5">
         <widget class="QLabel" name="nodeWidthDescriptionLabel">
          <property name="text">
-          <string>These settings control how wide nodes are drawn and how the coverage (read depth) of the node affects its width.</string>
+          <string>These settings control how wide nodes are drawn and how the read depth of the node affects its width.</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -2275,7 +2275,7 @@
         </widget>
        </item>
        <item row="71" column="3">
-        <widget class="ColourButton" name="highCoverageColourButton">
+        <widget class="ColourButton" name="highReadDepthColourButton">
          <property name="text">
           <string/>
          </property>
@@ -2383,7 +2383,7 @@
         </widget>
        </item>
        <item row="13" column="3">
-        <widget class="QDoubleSpinBox" name="coverageEffectOnWidthSpinBox">
+        <widget class="QDoubleSpinBox" name="readDepthEffectOnWidthSpinBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -2594,7 +2594,7 @@
         </widget>
        </item>
        <item row="67" column="0" colspan="5">
-        <widget class="QLabel" name="coverageColourSchemeHeadingLabel">
+        <widget class="QLabel" name="readDepthColourSchemeHeadingLabel">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -2602,7 +2602,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Coverage colour scheme</string>
+          <string>Read depth colour scheme</string>
          </property>
         </widget>
        </item>
@@ -2793,8 +2793,8 @@
   <tabstop>basePairsPerSegmentSpinBox</tabstop>
   <tabstop>graphLayoutQualitySlider</tabstop>
   <tabstop>averageNodeWidthSpinBox</tabstop>
-  <tabstop>coverageEffectOnWidthSpinBox</tabstop>
-  <tabstop>coveragePowerSpinBox</tabstop>
+  <tabstop>readDepthEffectOnWidthSpinBox</tabstop>
+  <tabstop>readDepthPowerSpinBox</tabstop>
   <tabstop>edgeColourButton</tabstop>
   <tabstop>edgeWidthSpinBox</tabstop>
   <tabstop>outlineColourButton</tabstop>
@@ -2822,12 +2822,12 @@
   <tabstop>uniformPositiveNodeColourButton</tabstop>
   <tabstop>uniformNegativeNodeColourButton</tabstop>
   <tabstop>uniformNodeSpecialColourButton</tabstop>
-  <tabstop>lowCoverageColourButton</tabstop>
-  <tabstop>highCoverageColourButton</tabstop>
-  <tabstop>coverageValueAutoRadioButton</tabstop>
-  <tabstop>coverageValueManualRadioButton</tabstop>
-  <tabstop>lowCoverageValueSpinBox</tabstop>
-  <tabstop>highCoverageValueSpinBox</tabstop>
+  <tabstop>lowReadDepthColourButton</tabstop>
+  <tabstop>highReadDepthColourButton</tabstop>
+  <tabstop>readDepthValueAutoRadioButton</tabstop>
+  <tabstop>readDepthValueManualRadioButton</tabstop>
+  <tabstop>lowReadDepthValueSpinBox</tabstop>
+  <tabstop>highReadDepthValueSpinBox</tabstop>
   <tabstop>noBlastHitsColourButton</tabstop>
   <tabstop>contiguitySearchDepthSpinBox</tabstop>
   <tabstop>contiguousStrandSpecificColourButton</tabstop>

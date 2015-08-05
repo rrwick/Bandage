@@ -774,7 +774,7 @@ double Path::getMeanReadDepth() const
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         DeBruijnNode * node = m_nodes[i];
-        depthTimesLengthSum += node->m_coverage * node->getLength();
+        depthTimesLengthSum += node->m_readDepth * node->getLength();
         nodeLengthTotal += node->getLength();
     }
 

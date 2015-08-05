@@ -38,8 +38,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->uniformPositiveNodeColourButton->m_name = "Uniform positive node colour";
     ui->uniformNegativeNodeColourButton->m_name = "Uniform negative node colour";
     ui->uniformNodeSpecialColourButton->m_name = "Uniform special node colour";
-    ui->lowCoverageColourButton->m_name = "Low coverage colour";
-    ui->highCoverageColourButton->m_name = "High coverage colour";
+    ui->lowReadDepthColourButton->m_name = "Low read depth colour";
+    ui->highReadDepthColourButton->m_name = "High read depth colour";
     ui->noBlastHitsColourButton->m_name = "No BLAST hits colour";
     ui->contiguousStrandSpecificColourButton->m_name = "Contiguous (strand-specific) colour";
     ui->contiguousEitherStrandColourButton->m_name = "Contiguous (either strand) colour";
@@ -48,10 +48,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->contiguityStartingColourButton->m_name = "Contiguity starting colour";
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
-    connect(ui->coverageValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableCoverageValueSpinBoxes()));
+    connect(ui->readDepthValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableReadDepthValueSpinBoxes()));
     connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
-    connect(ui->coveragePowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
-    connect(ui->coverageEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
+    connect(ui->readDepthPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
+    connect(ui->readDepthEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->averageNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->randomColourPositiveOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
     connect(ui->randomColourNegativeOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
@@ -89,7 +89,7 @@ void SettingsDialog::setWidgetsFromSettings()
 {
     loadOrSaveSettingsToOrFromWidgets(true, g_settings.data());
 
-    enableDisableCoverageValueSpinBoxes();
+    enableDisableReadDepthValueSpinBoxes();
 }
 
 
@@ -125,8 +125,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
 
     intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
     doubleFunctionPointer(&settings->averageNodeWidth, ui->averageNodeWidthSpinBox, false);
-    doubleFunctionPointer(&settings->coverageEffectOnWidth, ui->coverageEffectOnWidthSpinBox, true);
-    doubleFunctionPointer(&settings->coveragePower, ui->coveragePowerSpinBox, false);
+    doubleFunctionPointer(&settings->readDepthEffectOnWidth, ui->readDepthEffectOnWidthSpinBox, true);
+    doubleFunctionPointer(&settings->readDepthPower, ui->readDepthPowerSpinBox, false);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
     doubleFunctionPointer(&settings->outlineThickness, ui->outlineThicknessSpinBox, false);
     doubleFunctionPointer(&settings->textOutlineThickness, ui->textOutlineThicknessSpinBox, false);
@@ -144,10 +144,10 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->uniformPositiveNodeColour, ui->uniformPositiveNodeColourButton);
     colourFunctionPointer(&settings->uniformNegativeNodeColour, ui->uniformNegativeNodeColourButton);
     colourFunctionPointer(&settings->uniformNodeSpecialColour, ui->uniformNodeSpecialColourButton);
-    colourFunctionPointer(&settings->lowCoverageColour, ui->lowCoverageColourButton);
-    colourFunctionPointer(&settings->highCoverageColour, ui->highCoverageColourButton);
-    doubleFunctionPointer(&settings->lowCoverageValue, ui->lowCoverageValueSpinBox, false);
-    doubleFunctionPointer(&settings->highCoverageValue, ui->highCoverageValueSpinBox, false);
+    colourFunctionPointer(&settings->lowReadDepthColour, ui->lowReadDepthColourButton);
+    colourFunctionPointer(&settings->highReadDepthColour, ui->highReadDepthColourButton);
+    doubleFunctionPointer(&settings->lowReadDepthValue, ui->lowReadDepthValueSpinBox, false);
+    doubleFunctionPointer(&settings->highReadDepthValue, ui->highReadDepthValueSpinBox, false);
     colourFunctionPointer(&settings->noBlastHitsColour, ui->noBlastHitsColourButton);
     intFunctionPointer(&settings->contiguitySearchSteps, ui->contiguitySearchDepthSpinBox);
     colourFunctionPointer(&settings->contiguousStrandSpecificColour, ui->contiguousStrandSpecificColourButton);
@@ -167,8 +167,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
-        ui->coverageValueAutoRadioButton->setChecked(settings->autoCoverageValue);
-        ui->coverageValueManualRadioButton->setChecked(!settings->autoCoverageValue);
+        ui->readDepthValueAutoRadioButton->setChecked(settings->autoReadDepthValue);
+        ui->readDepthValueManualRadioButton->setChecked(!settings->autoReadDepthValue);
         basePairsPerSegmentManualChanged();
         ui->basePairsPerSegmentAutoLabel->setText(QString::number(settings->autoBasePairsPerSegment));
         ui->basePairsPerSegmentAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
@@ -180,7 +180,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     {
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
-        settings->autoCoverageValue = ui->coverageValueAutoRadioButton->isChecked();
+        settings->autoReadDepthValue = ui->readDepthValueAutoRadioButton->isChecked();
         if (ui->basePairsPerSegmentAutoRadioButton->isChecked())
             settings->nodeLengthMode = AUTO_NODE_LENGTH;
         else
@@ -222,13 +222,13 @@ void SettingsDialog::setInfoTexts()
                                                 "positioning the graph components.<br><br>Low settings are faster and "
                                                 "recommended for big assembly graphs. Higher settings may result in smoother, "
                                                 "more pleasing layouts.");
-    ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's coverage.");
-    ui->coveragePowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
-    ui->coverageEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's coverage affects its width.<br><br>"
+    ui->averageNodeWidthInfoText->setInfoText("This is the minimum width for each node, regardless of the node's read depth.");
+    ui->readDepthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
+    ui->readDepthEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's read depth affects its width.<br><br>"
                                                    "If set to 0%, all nodes will have the same width (equal to the average "
                                                    "node width).");
     ui->nodeWidthPlotInfoText->setInfoText("This is a plot of the function that will be used to set node widths.<br><br>"
-                                           "The centre point on the plot is the average coverage and average node width.");
+                                           "The centre point on the plot is the average read depth and average node width.");
     ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.<br><br>"
                                               "Drawing outlines can result in slow performance, so set this to zero "
@@ -294,17 +294,17 @@ void SettingsDialog::setInfoTexts()
                                                          "Note that negative nodes are only visible when the graph is drawn "
                                                          "in double mode.");
 
-    ui->lowCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
-                                               "nodes with coverage at or below the low coverage value.<br><br>"
-                                               "Nodes with coverage between the low and high coverage values will get an "
+    ui->lowReadDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by read depth' option, this colour is used for "
+                                               "nodes with read depth at or below the low read depth value.<br><br>"
+                                               "Nodes with read depth between the low and high read depth values will get an "
                                                "intermediate colour.");
-    ui->highCoverageColourInfoText->setInfoText("When Bandage is set to the 'Colour by coverage' option, this colour is used for "
-                                                "nodes with coverage above the high coverage value.<br><br>"
-                                                "Nodes with coverage between the low and high coverage values will get an "
+    ui->highReadDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by read depth' option, this colour is used for "
+                                                "nodes with read depth above the high read depth value.<br><br>"
+                                                "Nodes with read depth between the low and high read depth values will get an "
                                                 "intermediate colour.");
-    ui->coverageValuesInfoText->setInfoText("When set to 'Auto', the low coverage value is set to the first quartile and the high "
-                                            "coverage value is set to the third quartile.<br><br>"
-                                            "When set to 'Manual', you can specify the values used for coverage colouring.");
+    ui->readDepthValuesInfoText->setInfoText("When set to 'Auto', the low read depth value is set to the first quartile and the high "
+                                            "read depth value is set to the third quartile.<br><br>"
+                                            "When set to 'Manual', you can specify the values used for read depth colouring.");
     ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is "
                                                "used for nodes that do not have any BLAST hits. It is also used for any region "
                                                "of a node without BLAST hits, even if there are BLAST hits in other regions of "
@@ -347,21 +347,21 @@ void SettingsDialog::setInfoTexts()
 }
 
 
-void SettingsDialog::enableDisableCoverageValueSpinBoxes()
+void SettingsDialog::enableDisableReadDepthValueSpinBoxes()
 {
-    bool enable = ui->coverageValueManualRadioButton->isChecked();
+    bool enable = ui->readDepthValueManualRadioButton->isChecked();
 
-    ui->lowCoverageValueLabel->setEnabled(enable);
-    ui->highCoverageValueLabel->setEnabled(enable);
-    ui->lowCoverageValueSpinBox->setEnabled(enable);
-    ui->highCoverageValueSpinBox->setEnabled(enable);
+    ui->lowReadDepthValueLabel->setEnabled(enable);
+    ui->highReadDepthValueLabel->setEnabled(enable);
+    ui->lowReadDepthValueSpinBox->setEnabled(enable);
+    ui->highReadDepthValueSpinBox->setEnabled(enable);
 }
 
 
 void SettingsDialog::accept()
 {
-    if (ui->lowCoverageValueSpinBox->value() > ui->highCoverageValueSpinBox->value())
-        QMessageBox::warning(this, "Coverage value error", "The low coverage value cannot be greater than the high coverage value.");
+    if (ui->lowReadDepthValueSpinBox->value() > ui->highReadDepthValueSpinBox->value())
+        QMessageBox::warning(this, "Read depth value error", "The low read depth value cannot be greater than the high read depth value.");
     else
         QDialog::accept();
 }
@@ -378,8 +378,8 @@ void SettingsDialog::basePairsPerSegmentManualChanged()
 void SettingsDialog::updateNodeWidthVisualAid()
 {
     ui->nodeWidthVisualAid->m_averageNodeWidth = ui->averageNodeWidthSpinBox->value();
-    ui->nodeWidthVisualAid->m_coverageEffectOnWidth = ui->coverageEffectOnWidthSpinBox->value() / 100.0;
-    ui->nodeWidthVisualAid->m_coveragePower = ui->coveragePowerSpinBox->value();
+    ui->nodeWidthVisualAid->m_readDepthEffectOnWidth = ui->readDepthEffectOnWidthSpinBox->value() / 100.0;
+    ui->nodeWidthVisualAid->m_readDepthPower = ui->readDepthPowerSpinBox->value();
 
     ui->nodeWidthVisualAid->update();
 }

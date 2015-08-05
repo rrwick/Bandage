@@ -64,15 +64,18 @@ public:
     void setNodeColour();
     QStringList getNodeText();
     QSize getNodeTextSize(QString text);
-    QColor getCoverageColour();
+    QColor getReadDepthColour();
     void setWidth();
     QPainterPath makePartialPath(double startFraction, double endFraction);
     double getNodePathLength();
     QPointF findLocationOnPath(double fraction);
-    QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value, double p2Value, double targetValue);
+    QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value,
+                                  double p2Value, double targetValue);
     QRectF boundingRect() const;
-    static double getNodeWidth(double coverageRelativeToMeanDrawnCoverage, double coveragePower,
-                               double coverageEffectOnWidth, double averageNodeWidth);
+    static double getNodeWidth(double readDepthRelativeToMeanDrawnReadDepth,
+                               double readDepthPower,
+                               double readDepthEffectOnWidth,
+                               double averageNodeWidth);
     void shiftPointsLeft();
     void getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
                                              std::vector<QPointF> * blastHitLocation);

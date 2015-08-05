@@ -31,8 +31,8 @@ Settings::Settings()
     graphLayoutQuality = 2;
 
     averageNodeWidth = 5.0;
-    coverageEffectOnWidth = 0.5;
-    coveragePower = 0.5;
+    readDepthEffectOnWidth = 0.5;
+    readDepthPower = 0.5;
 
     edgeWidth = 2.0;
     outlineThickness = 0.0;
@@ -58,7 +58,7 @@ Settings::Settings()
     displayNodeCustomLabels = false;
     displayNodeNames = false;
     displayNodeLengths = false;
-    displayNodeCoverages = false;
+    displayNodeReadDepth = false;
     displayBlastHits = false;
     labelFont = QFont();
     textOutline = true;
@@ -94,11 +94,11 @@ Settings::Settings()
 
     noBlastHitsColour = QColor(220, 220, 220);
 
-    autoCoverageValue = true;
-    lowCoverageValue = 5.0;
-    lowCoverageColour = QColor(0, 0, 0);
-    highCoverageValue = 50.0;
-    highCoverageColour = QColor(255, 0, 0);
+    autoReadDepthValue = true;
+    lowReadDepthValue = 5.0;
+    lowReadDepthColour = QColor(0, 0, 0);
+    highReadDepthValue = 50.0;
+    highReadDepthColour = QColor(255, 0, 0);
 
     pathHighlightShadingColour = QColor(0, 0, 0, 60);
     pathHighlightOutlineColour = QColor(0, 0, 0);

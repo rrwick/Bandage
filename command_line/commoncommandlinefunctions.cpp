@@ -64,19 +64,19 @@ void printSettingsUsage(QTextStream * out)
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          Node widths are determined using the following formula:" << endl;
     *out << "          a*b*((c/d)^e-1)+1" << endl;
-    *out << "            a = average node width, b = coverage effect on width" << endl;
-    *out << "            c = node coverage, d = mean coverage" << endl;
-    *out << "            e = power of coverage effect on width" << endl;
+    *out << "            a = average node width, b = read depth effect on width" << endl;
+    *out << "            c = node read depth, d = mean read depth" << endl;
+    *out << "            e = power of read depth effect on width" << endl;
     *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
-    *out << "          --covwidth <float>  Coverage effect on width (0 to 1, default: " + QString::number(g_settings->coverageEffectOnWidth) + ")" << endl;
-    *out << "          --covpower <float>  Power of coverage effect on width (0.1 to 1," << endl;
-    *out << "                              default: " + QString::number(g_settings->coveragePower) + ")" << endl;
+    *out << "          --depwidth <float>  Read depth effect on width (0 to 1, default: " + QString::number(g_settings->readDepthEffectOnWidth) + ")" << endl;
+    *out << "          --deppower <float>  Power of read depth effect on width (0.1 to 1," << endl;
+    *out << "                              default: " + QString::number(g_settings->readDepthPower) + ")" << endl;
     *out << endl;
     *out << "          Node labels" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --names             Label nodes with name (default: off)" << endl;
     *out << "          --lengths           Label nodes with length (default: off)" << endl;
-    *out << "          --coverages         Label nodes with coverage (default: off)" << endl;
+    *out << "          --readdepth         Label nodes with read depth (default: off)" << endl;
     *out << "          --blasthits         Label BLAST hits (default: off)" << endl;
     *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
     *out << endl;
@@ -102,7 +102,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "          Node colours" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
-    *out << "                              options: random, uniform, coverage, blastsolid," << endl;
+    *out << "                              options: random, uniform, readdepth, blastsolid," << endl;
     *out << "                              blastrainbow (default: random if --query option" << endl;
     *out << "                              not used, blastsolid if --query option used)" << endl;
     *out << endl;
@@ -123,15 +123,15 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --unicolneg <col>   Negative node colour (default: " + getColourName(g_settings->uniformNegativeNodeColour.name()) + ")" << endl;
     *out << "          --unicolspe <col>   Special node colour (default: " + getColourName(g_settings->uniformNodeSpecialColour.name()) + ")" << endl;
     *out << endl;
-    *out << "          Coverage colour scheme" << endl;
+    *out << "          Read depth colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the coverage colour scheme is used." << endl;
-    *out << "          --covcollow <col>   Colour for nodes with coverage below the low" << endl;
-    *out << "                              coverage value (default: " + getColourName(g_settings->lowCoverageColour.name()) + ")" << endl;
-    *out << "          --covcolhi <col>    Colour for nodes with coverage above the high" << endl;
-    *out << "                              coverage value (default: " + getColourName(g_settings->highCoverageColour.name()) + ")" << endl;
-    *out << "          --covvallow <float> Low coverage value (default: auto)" << endl;
-    *out << "          --covvalhi <float>  High coverage value (default: auto)" << endl;
+    *out << "          These settings only apply when the read depth colour scheme is used." << endl;
+    *out << "          --depcollow <col>   Colour for nodes with read depth below the low" << endl;
+    *out << "                              read depth value (default: " + getColourName(g_settings->lowReadDepthColour.name()) + ")" << endl;
+    *out << "          --depcolhi <col>    Colour for nodes with read depth above the high" << endl;
+    *out << "                              read depth value (default: " + getColourName(g_settings->highReadDepthColour.name()) + ")" << endl;
+    *out << "          --depvallow <float> Low read depth value (default: auto)" << endl;
+    *out << "          --depvalhi <float>  High read depth value (default: auto)" << endl;
     *out << endl;
     *out << "          BLAST search" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -198,9 +198,9 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--covwidth", arguments, 0.0, 1.0);
+    error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--covpower", arguments, 0.1, 1.0);
+    error = checkOptionForFloat("--depwidth", arguments, 0.1, 1.0);
     if (error.length() > 0) return error;
 
     error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
@@ -210,7 +210,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     checkOptionWithoutValue("--names", arguments);
     checkOptionWithoutValue("--lengths", arguments);
-    checkOptionWithoutValue("--coverages", arguments);
+    checkOptionWithoutValue("--readdepth", arguments);
     checkOptionWithoutValue("--blasthits", arguments);
     error = checkOptionForInt("--fontsize", arguments, 1, 100);
     if (error.length() > 0) return error;
@@ -231,7 +231,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--noaa", arguments);
 
     QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "coverage" << "blastsolid" << "blastrainbow";
+    validColourOptions << "random" << "uniform" << "readdepth" << "blastsolid" << "blastrainbow";
     error = checkOptionForString("--colour", arguments, validColourOptions);
     if (error.length() > 0) return error;
 
@@ -255,12 +255,12 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForColour("--unicolspe", arguments);
     if (error.length() > 0) return error;
 
-    error = checkOptionForColour("--covcollow", arguments);
+    error = checkOptionForColour("--depcollow", arguments);
     if (error.length() > 0) return error;
-    error = checkOptionForColour("--covcolhi", arguments);
+    error = checkOptionForColour("--depcolhi", arguments);
     if (error.length() > 0) return error;
 
-    error = checkTwoOptionsForFloats("--covvallow", "--covvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
+    error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
     if (error.length() > 0) return error;
 
     error = checkOptionForFloat("--reqcov", arguments, 0.5, 1.0);
@@ -324,10 +324,10 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--nodewidth", &arguments))
         g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
-    if (isOptionPresent("--covwidth", &arguments))
-        g_settings->coverageEffectOnWidth = getFloatOption("--covwidth", &arguments);
-    if (isOptionPresent("--covpower", &arguments))
-        g_settings->coveragePower = getFloatOption("--covpower", &arguments);
+    if (isOptionPresent("--depwidth", &arguments))
+        g_settings->readDepthEffectOnWidth = getFloatOption("--depwidth", &arguments);
+    if (isOptionPresent("--depwidth", &arguments))
+        g_settings->readDepthPower = getFloatOption("--depwidth", &arguments);
 
     if (isOptionPresent("--edgewidth", &arguments))
         g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
@@ -349,7 +349,7 @@ void parseSettings(QStringList arguments)
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
     g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
-    g_settings->displayNodeCoverages = isOptionPresent("--coverages", &arguments);
+    g_settings->displayNodeReadDepth = isOptionPresent("--readdepth", &arguments);
     g_settings->displayBlastHits = isOptionPresent("--blasthits", &arguments);
 
     if (isOptionPresent("--fontsize", &arguments))
@@ -399,19 +399,19 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--unicolspe", &arguments))
         g_settings->uniformNodeSpecialColour = getColourOption("--unicolspe", &arguments);
 
-    if (isOptionPresent("--covcollow", &arguments))
-        g_settings->lowCoverageColour = getColourOption("--covcollow", &arguments);
-    if (isOptionPresent("--covcolhi", &arguments))
-        g_settings->highCoverageColour = getColourOption("--covcolhi", &arguments);
-    if (isOptionPresent("--covvallow", &arguments))
+    if (isOptionPresent("--depcollow", &arguments))
+        g_settings->lowReadDepthColour = getColourOption("--depcollow", &arguments);
+    if (isOptionPresent("--depcolhi", &arguments))
+        g_settings->highReadDepthColour = getColourOption("--depcolhi", &arguments);
+    if (isOptionPresent("--depvallow", &arguments))
     {
-        g_settings->lowCoverageValue = getFloatOption("--covvallow", &arguments);
-        g_settings->autoCoverageValue = false;
+        g_settings->lowReadDepthValue = getFloatOption("--depvallow", &arguments);
+        g_settings->autoReadDepthValue = false;
     }
-    if (isOptionPresent("--covvalhi", &arguments))
+    if (isOptionPresent("--depvalhi", &arguments))
     {
-        g_settings->highCoverageValue = getFloatOption("--covvalhi", &arguments);
-        g_settings->autoCoverageValue = false;
+        g_settings->highReadDepthValue = getFloatOption("--depvalhi", &arguments);
+        g_settings->autoReadDepthValue = false;
     }
 
     if (isOptionPresent("--reqcov", &arguments))
@@ -750,8 +750,8 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
         return RANDOM_COLOURS;
     else if (colourString == "uniform")
         return ONE_COLOUR;
-    else if (colourString == "coverage")
-        return COVERAGE_COLOUR;
+    else if (colourString == "readdepth")
+        return READ_DEPTH_COLOUR;
     else if (colourString == "blastsolid")
         return BLAST_HITS_SOLID_COLOUR;
     else if (colourString == "blastrainbow")

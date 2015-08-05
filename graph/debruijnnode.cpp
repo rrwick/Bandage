@@ -28,10 +28,10 @@
 #include <set>
 #include <QApplication>
 
-DeBruijnNode::DeBruijnNode(QString name, double coverage, QByteArray sequence) :
+DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence) :
     m_name(name),
-    m_coverage(coverage),
-    m_coverageRelativeToMeanDrawnCoverage(1.0),
+    m_readDepth(readDepth),
+    m_readDepthRelativeToMeanDrawnReadDepth(1.0),
     m_sequence(sequence),
     m_contiguityStatus(NOT_CONTIGUOUS),
     m_reverseComplement(0),
@@ -301,7 +301,7 @@ QByteArray DeBruijnNode::getFasta()
     fasta += "_length_";
     fasta += QString::number(getLength());
     fasta += "_cov_";
-    fasta += QString::number(m_coverage);
+    fasta += QString::number(m_readDepth);
     fasta += "\n";
 
     int charactersOnLine = 0;
