@@ -2,6 +2,9 @@
 #define DISTANCEDIALOG_H
 
 #include <QDialog>
+#include <QComboBox>
+
+class BlastQuery;
 
 namespace Ui {
 class DistanceDialog;
@@ -20,6 +23,7 @@ private:
 
     void loadSettings();
     void fillResultsTable();
+    void fillPathComboBox(BlastQuery * query, QComboBox * comboBox);
 
 private slots:
     void findPaths();

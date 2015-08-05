@@ -214,39 +214,42 @@ void DistanceDialog::findPaths()
 }
 
 
-//These function populate the path combo boxes for each query.
+//These functions populate the path combo boxes for each query.
 void DistanceDialog::query1Changed()
 {
-    ui->query1PathComboBox->clear();
-
     BlastQuery * query1 = g_blastSearch->m_blastQueries.getQueryFromName(ui->query1ComboBox->currentText());
     if (query1 == 0)
         return;
 
-    QStringList comboBoxItems;
-    comboBoxItems.push_back("all");
-    QList<Path> paths = query1->getPaths();
-    for (int i = 0; i < paths.size(); ++i)
-        comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
-
-    ui->query1PathComboBox->addItems(comboBoxItems);
+    fillPathComboBox(query1, ui->query1PathComboBox);
 }
-
 void DistanceDialog::query2Changed()
 {
-    ui->query2PathComboBox->clear();
-
     BlastQuery * query2 = g_blastSearch->m_blastQueries.getQueryFromName(ui->query2ComboBox->currentText());
     if (query2 == 0)
         return;
 
-    QStringList comboBoxItems;
-    comboBoxItems.push_back("all");
-    QList<Path> paths = query2->getPaths();
-    for (int i = 0; i < paths.size(); ++i)
-        comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
+    fillPathComboBox(query2, ui->query2PathComboBox);
+}
+void DistanceDialog::fillPathComboBox(BlastQuery * query, QComboBox * comboBox)
+{
+    comboBox->clear();
 
-    ui->query2PathComboBox->addItems(comboBoxItems);
+    QStringList comboBoxItems;
+    QList<Path> paths = query->getPaths();
+
+    if (paths.size() == 0)
+        return;
+    else if (paths.size() == 1)
+        comboBoxItems.push_back(paths[0].getString(true));
+    else
+    {
+        comboBoxItems.push_back("all");
+        for (int i = 0; i < paths.size(); ++i)
+            comboBoxItems.push_back(QString::number(i+1) + ": "+ paths[i].getString(true));
+    }
+
+    comboBox->addItems(comboBoxItems);
 }
 
 
