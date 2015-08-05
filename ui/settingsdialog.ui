@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>363</width>
+    <width>427</width>
     <height>693</height>
    </rect>
   </property>
@@ -37,13 +37,26 @@
      <widget class="QWidget" name="scrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>-50</x>
-        <y>-462</y>
-        <width>452</width>
-        <height>2674</height>
+        <x>0</x>
+        <y>-630</y>
+        <width>431</width>
+        <height>2757</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="67" column="2">
+        <widget class="QLabel" name="label_13">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Positive nodes:</string>
+         </property>
+        </widget>
+       </item>
        <item row="31" column="0" colspan="5">
         <widget class="QLabel" name="nodeWidthDescriptionLabel">
          <property name="text">
@@ -96,6 +109,22 @@
          </property>
         </widget>
        </item>
+       <item row="36" column="2">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="33" column="3">
         <widget class="QDoubleSpinBox" name="readDepthEffectOnWidthSpinBox">
          <property name="sizePolicy">
@@ -121,7 +150,7 @@
          </property>
         </widget>
        </item>
-       <item row="60" column="3">
+       <item row="62" column="3">
         <widget class="QWidget" name="widget_14" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_11">
           <property name="leftMargin">
@@ -156,23 +185,7 @@
          </layout>
         </widget>
        </item>
-       <item row="44" column="1">
-        <widget class="InfoTextWidget" name="textOutlineColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="56" column="1">
+       <item row="58" column="1">
         <widget class="InfoTextWidget" name="randomColourNegativeSaturationInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -188,7 +201,7 @@
          </property>
         </widget>
        </item>
-       <item row="59" column="3">
+       <item row="61" column="3">
         <widget class="QWidget" name="widget_9" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <property name="leftMargin">
@@ -223,7 +236,7 @@
          </layout>
         </widget>
        </item>
-       <item row="98" column="1">
+       <item row="100" column="1">
         <widget class="InfoTextWidget" name="maybeContiguousColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -239,7 +252,7 @@
          </property>
         </widget>
        </item>
-       <item row="96" column="1">
+       <item row="98" column="1">
         <widget class="InfoTextWidget" name="contiguousStrandSpecificColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -271,7 +284,7 @@
          </property>
         </widget>
        </item>
-       <item row="105" column="1">
+       <item row="107" column="1">
         <widget class="InfoTextWidget" name="requiredCoverageInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -287,7 +300,7 @@
          </property>
         </widget>
        </item>
-       <item row="58" column="1">
+       <item row="60" column="1">
         <widget class="InfoTextWidget" name="randomColourNegativeLightnessInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -303,7 +316,7 @@
          </property>
         </widget>
        </item>
-       <item row="57" column="1">
+       <item row="59" column="1">
         <widget class="InfoTextWidget" name="randomColourPositiveLightnessInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -319,7 +332,7 @@
          </property>
         </widget>
        </item>
-       <item row="57" column="3">
+       <item row="59" column="3">
         <widget class="QWidget" name="widget_12" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <property name="leftMargin">
@@ -354,7 +367,7 @@
          </layout>
         </widget>
        </item>
-       <item row="58" column="3">
+       <item row="60" column="3">
         <widget class="QWidget" name="widget_13" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_10">
           <property name="leftMargin">
@@ -389,7 +402,7 @@
          </layout>
         </widget>
        </item>
-       <item row="78" column="3">
+       <item row="80" column="3">
         <widget class="QWidget" name="readDepthAutoManualWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -446,7 +459,7 @@
          </layout>
         </widget>
        </item>
-       <item row="76" column="1">
+       <item row="78" column="1">
         <widget class="InfoTextWidget" name="lowReadDepthColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -478,7 +491,7 @@
          </property>
         </widget>
        </item>
-       <item row="100" column="1">
+       <item row="102" column="1">
         <widget class="InfoTextWidget" name="contiguityStartingColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -551,7 +564,7 @@
          </layout>
         </widget>
        </item>
-       <item row="99" column="1">
+       <item row="101" column="1">
         <widget class="InfoTextWidget" name="notContiguousColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -567,7 +580,7 @@
          </property>
         </widget>
        </item>
-       <item row="79" column="3">
+       <item row="81" column="3">
         <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -614,7 +627,7 @@
          </layout>
         </widget>
        </item>
-       <item row="94" column="1">
+       <item row="96" column="1">
         <widget class="InfoTextWidget" name="contiguitySearchDepthInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -630,7 +643,7 @@
          </property>
         </widget>
        </item>
-       <item row="55" column="1">
+       <item row="57" column="1">
         <widget class="InfoTextWidget" name="randomColourPositiveSaturationInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -706,7 +719,7 @@
          </layout>
         </widget>
        </item>
-       <item row="67" column="1">
+       <item row="69" column="1">
         <widget class="InfoTextWidget" name="uniformNodeSpecialColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -722,7 +735,7 @@
          </property>
         </widget>
        </item>
-       <item row="46" column="1">
+       <item row="48" column="1">
         <widget class="InfoTextWidget" name="positionTextInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -738,11 +751,11 @@
          </property>
         </widget>
        </item>
-       <item row="46" column="3">
+       <item row="48" column="3">
         <widget class="QWidget" name="widget_15" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <property name="spacing">
-           <number>0</number>
+           <number>-1</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -778,22 +791,6 @@
        </item>
        <item row="22" column="1">
         <widget class="InfoTextWidget" name="edgeColourInfoText" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="65" column="1">
-        <widget class="InfoTextWidget" name="uniformPositiveNodeColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -856,7 +853,7 @@
          </property>
         </widget>
        </item>
-       <item row="45" column="1">
+       <item row="46" column="1">
         <widget class="InfoTextWidget" name="textOutlineThicknessInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -872,7 +869,7 @@
          </property>
         </widget>
        </item>
-       <item row="55" column="3">
+       <item row="57" column="3">
         <widget class="QWidget" name="widget_10" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <property name="leftMargin">
@@ -907,7 +904,7 @@
          </layout>
         </widget>
        </item>
-       <item row="66" column="1">
+       <item row="68" column="1">
         <widget class="InfoTextWidget" name="uniformNegativeNodeColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -923,7 +920,7 @@
          </property>
         </widget>
        </item>
-       <item row="77" column="1">
+       <item row="79" column="1">
         <widget class="InfoTextWidget" name="highReadDepthColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -939,7 +936,7 @@
          </property>
         </widget>
        </item>
-       <item row="56" column="3">
+       <item row="58" column="3">
         <widget class="QWidget" name="widget_11" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <property name="leftMargin">
@@ -974,7 +971,7 @@
          </layout>
         </widget>
        </item>
-       <item row="60" column="1">
+       <item row="62" column="1">
         <widget class="InfoTextWidget" name="randomColourNegativeOpacityInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -990,7 +987,7 @@
          </property>
         </widget>
        </item>
-       <item row="87" column="1">
+       <item row="89" column="1">
         <widget class="InfoTextWidget" name="noBlastHitsColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1006,7 +1003,7 @@
          </property>
         </widget>
        </item>
-       <item row="78" column="1">
+       <item row="80" column="1">
         <widget class="InfoTextWidget" name="readDepthValuesInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1022,7 +1019,7 @@
          </property>
         </widget>
        </item>
-       <item row="97" column="1">
+       <item row="99" column="1">
         <widget class="InfoTextWidget" name="contiguousEitherStrandColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1038,7 +1035,7 @@
          </property>
         </widget>
        </item>
-       <item row="82" column="3">
+       <item row="84" column="3">
         <widget class="QWidget" name="widget_5" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1206,7 +1203,7 @@
          </layout>
         </widget>
        </item>
-       <item row="59" column="1">
+       <item row="61" column="1">
         <widget class="InfoTextWidget" name="randomColourPositiveOpacityInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1222,7 +1219,7 @@
          </property>
         </widget>
        </item>
-       <item row="107" column="1">
+       <item row="109" column="1">
         <widget class="InfoTextWidget" name="maxPathNodesInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1238,7 +1235,7 @@
          </property>
         </widget>
        </item>
-       <item row="106" column="1">
+       <item row="108" column="1">
         <widget class="InfoTextWidget" name="allowedLengthDiscrepancyInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1254,8 +1251,24 @@
          </property>
         </widget>
        </item>
-       <item row="108" column="1">
+       <item row="110" column="1">
         <widget class="InfoTextWidget" name="maxPathsInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="67" column="1">
+        <widget class="InfoTextWidget" name="uniformPositiveNodeColourInfoText" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -1293,20 +1306,7 @@
          </property>
         </widget>
        </item>
-       <item row="44" column="3">
-        <widget class="ColourButton" name="textOutlineColourButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="77" column="3">
+       <item row="79" column="3">
         <widget class="ColourButton" name="highReadDepthColourButton">
          <property name="text">
           <string/>
@@ -1339,17 +1339,10 @@
          </property>
         </widget>
        </item>
-       <item row="103" column="0" colspan="5">
+       <item row="105" column="0" colspan="5">
         <widget class="Line" name="line_11">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="65" column="3">
-        <widget class="ColourButton" name="uniformPositiveNodeColourButton">
-         <property name="text">
-          <string/>
          </property>
         </widget>
        </item>
@@ -1372,7 +1365,7 @@
          </property>
         </widget>
        </item>
-       <item row="97" column="2">
+       <item row="99" column="2">
         <widget class="QLabel" name="label_29">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1392,27 +1385,14 @@
          </property>
         </widget>
        </item>
-       <item row="92" column="0" colspan="5">
+       <item row="94" column="0" colspan="5">
         <widget class="Line" name="line_9">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="44" column="2">
-        <widget class="QLabel" name="label_47">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Text outline colour:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="66" column="2">
+       <item row="68" column="2">
         <widget class="QLabel" name="label_17">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1425,7 +1405,7 @@
          </property>
         </widget>
        </item>
-       <item row="52" column="0" colspan="5">
+       <item row="54" column="0" colspan="5">
         <widget class="QLabel" name="randomColourSchemeHeadingLabel">
          <property name="font">
           <font>
@@ -1438,7 +1418,7 @@
          </property>
         </widget>
        </item>
-       <item row="99" column="3">
+       <item row="101" column="3">
         <widget class="ColourButton" name="notContiguousColourButton">
          <property name="text">
           <string/>
@@ -1458,7 +1438,7 @@
          </property>
         </widget>
        </item>
-       <item row="101" column="2">
+       <item row="103" column="2">
         <spacer name="verticalSpacer_11">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1487,7 +1467,7 @@
          </property>
         </widget>
        </item>
-       <item row="60" column="2">
+       <item row="62" column="2">
         <widget class="QLabel" name="label_46">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1500,7 +1480,7 @@
          </property>
         </widget>
        </item>
-       <item row="64" column="0" colspan="5">
+       <item row="66" column="0" colspan="5">
         <widget class="QLabel" name="uniformColourSchemeDescriptionLabel">
          <property name="text">
           <string>These settings control the node colours when the 'Uniform colours' colour scheme is used.</string>
@@ -1513,7 +1493,7 @@
          </property>
         </widget>
        </item>
-       <item row="58" column="2">
+       <item row="60" column="2">
         <widget class="QLabel" name="label_45">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1526,14 +1506,14 @@
          </property>
         </widget>
        </item>
-       <item row="87" column="3">
+       <item row="89" column="3">
         <widget class="ColourButton" name="noBlastHitsColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="51" column="2">
+       <item row="53" column="2">
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1549,7 +1529,7 @@
          </property>
         </spacer>
        </item>
-       <item row="46" column="2">
+       <item row="48" column="2">
         <widget class="QLabel" name="label_48">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1562,14 +1542,14 @@
          </property>
         </widget>
        </item>
-       <item row="98" column="3">
+       <item row="100" column="3">
         <widget class="ColourButton" name="maybeContiguousColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="67" column="2">
+       <item row="69" column="2">
         <widget class="QLabel" name="label_14">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1582,7 +1562,7 @@
          </property>
         </widget>
        </item>
-       <item row="98" column="2">
+       <item row="100" column="2">
         <widget class="QLabel" name="label_19">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1595,7 +1575,7 @@
          </property>
         </widget>
        </item>
-       <item row="105" column="3">
+       <item row="107" column="3">
         <widget class="QDoubleSpinBox" name="requiredCoverageSpinBox">
          <property name="suffix">
           <string>%</string>
@@ -1621,7 +1601,7 @@
          </property>
         </widget>
        </item>
-       <item row="88" column="2">
+       <item row="90" column="2">
         <spacer name="verticalSpacer_7">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1637,7 +1617,7 @@
          </property>
         </spacer>
        </item>
-       <item row="86" column="0" colspan="5">
+       <item row="88" column="0" colspan="5">
         <widget class="QLabel" name="blastColourSchemeDescriptionLabel">
          <property name="text">
           <string>These settings control the node colours when either of the 'BLAST hits' colour schemes are used.</string>
@@ -1650,7 +1630,7 @@
          </property>
         </widget>
        </item>
-       <item row="96" column="2">
+       <item row="98" column="2">
         <widget class="QLabel" name="label_22">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1663,7 +1643,7 @@
          </property>
         </widget>
        </item>
-       <item row="61" column="2">
+       <item row="63" column="2">
         <spacer name="verticalSpacer_8">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1692,7 +1672,7 @@
          </property>
         </widget>
        </item>
-       <item row="78" column="2">
+       <item row="80" column="2">
         <widget class="QLabel" name="label_41">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -1718,14 +1698,14 @@
          </property>
         </widget>
        </item>
-       <item row="100" column="3">
+       <item row="102" column="3">
         <widget class="ColourButton" name="contiguityStartingColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="53" column="0" colspan="5">
+       <item row="55" column="0" colspan="5">
         <widget class="Line" name="line_6">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -1747,6 +1727,19 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="0" column="2">
            <widget class="InfoTextWidget" name="nodeWidthPlotInfoText" native="true">
             <property name="sizePolicy">
@@ -1762,38 +1755,6 @@
              </size>
             </property>
            </widget>
-          </item>
-          <item row="0" column="1">
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>85</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="7">
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>85</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item row="0" column="5">
            <widget class="QFrame" name="frame">
@@ -1844,10 +1805,16 @@
              <item row="0" column="2">
               <widget class="NodeWidthVisualAid" name="nodeWidthVisualAid" native="true">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>80</width>
+                 <height>80</height>
+                </size>
                </property>
               </widget>
              </item>
@@ -1895,6 +1862,19 @@
              </item>
             </layout>
            </widget>
+          </item>
+          <item row="0" column="6">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -1970,7 +1950,7 @@
          </property>
         </widget>
        </item>
-       <item row="94" column="3">
+       <item row="96" column="3">
         <widget class="QSpinBox" name="contiguitySearchDepthSpinBox">
          <property name="minimum">
           <number>1</number>
@@ -1980,7 +1960,7 @@
          </property>
         </widget>
        </item>
-       <item row="73" column="0" colspan="5">
+       <item row="75" column="0" colspan="5">
         <widget class="QLabel" name="readDepthColourSchemeHeadingLabel">
          <property name="font">
           <font>
@@ -2006,7 +1986,7 @@
          </property>
         </widget>
        </item>
-       <item row="107" column="3">
+       <item row="109" column="3">
         <widget class="QSpinBox" name="maxPathNodesSpinBox">
          <property name="minimum">
           <number>1</number>
@@ -2016,7 +1996,7 @@
          </property>
         </widget>
        </item>
-       <item row="56" column="2">
+       <item row="58" column="2">
         <widget class="QLabel" name="label_43">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2051,7 +2031,7 @@
          </property>
         </widget>
        </item>
-       <item row="62" column="0" colspan="5">
+       <item row="64" column="0" colspan="5">
         <widget class="QLabel" name="uniformColourSchemeHeadingLabel">
          <property name="font">
           <font>
@@ -2064,7 +2044,7 @@
          </property>
         </widget>
        </item>
-       <item row="97" column="3">
+       <item row="99" column="3">
         <widget class="ColourButton" name="contiguousEitherStrandColourButton">
          <property name="text">
           <string/>
@@ -2084,14 +2064,14 @@
          </property>
         </widget>
        </item>
-       <item row="74" column="0" colspan="5">
+       <item row="76" column="0" colspan="5">
         <widget class="Line" name="line_8">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="94" column="2">
+       <item row="96" column="2">
         <widget class="QLabel" name="label_30">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2146,7 +2126,7 @@
          </property>
         </spacer>
        </item>
-       <item row="104" column="0" colspan="5">
+       <item row="106" column="0" colspan="5">
         <widget class="QLabel" name="blastQueryPathsDescriptionLabel">
          <property name="text">
           <string>These settings control how Bandage searches for query paths after conducting a BLAST search. It is necessary to rerun a BLAST search to see the effect of changing these settings.</string>
@@ -2159,7 +2139,7 @@
          </property>
         </widget>
        </item>
-       <item row="89" column="0" colspan="5">
+       <item row="91" column="0" colspan="5">
         <widget class="QLabel" name="contiguityColourSchemeHeadingLabel">
          <property name="font">
           <font>
@@ -2172,7 +2152,7 @@
          </property>
         </widget>
        </item>
-       <item row="59" column="2">
+       <item row="61" column="2">
         <widget class="QLabel" name="label_34">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2185,7 +2165,7 @@
          </property>
         </widget>
        </item>
-       <item row="54" column="0" colspan="5">
+       <item row="56" column="0" colspan="5">
         <widget class="QLabel" name="randomColourSchemeDescriptionLabel">
          <property name="text">
           <string>These settings control the properties of the node colours when the 'Random colours' colour scheme is used.</string>
@@ -2198,7 +2178,7 @@
          </property>
         </widget>
        </item>
-       <item row="77" column="2">
+       <item row="79" column="2">
         <widget class="QLabel" name="label_16">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2211,14 +2191,14 @@
          </property>
         </widget>
        </item>
-       <item row="66" column="3">
+       <item row="68" column="3">
         <widget class="ColourButton" name="uniformNegativeNodeColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="93" column="0" colspan="5">
+       <item row="95" column="0" colspan="5">
         <widget class="QLabel" name="contiguityColourSchemeDescriptionLabel">
          <property name="text">
           <string>These settings control the node colours when the 'Colour by contiguity' colour scheme is used.</string>
@@ -2264,7 +2244,7 @@
          </property>
         </widget>
        </item>
-       <item row="76" column="2">
+       <item row="78" column="2">
         <widget class="QLabel" name="label_15">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2277,7 +2257,7 @@
          </property>
         </widget>
        </item>
-       <item row="84" column="0" colspan="5">
+       <item row="86" column="0" colspan="5">
         <widget class="QLabel" name="blastColourSchemeHeadingLabel">
          <property name="font">
           <font>
@@ -2290,7 +2270,7 @@
          </property>
         </widget>
        </item>
-       <item row="107" column="2">
+       <item row="109" column="2">
         <widget class="QLabel" name="label_35">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2316,7 +2296,7 @@
          </property>
         </widget>
        </item>
-       <item row="45" column="2">
+       <item row="46" column="2">
         <widget class="QLabel" name="label_7">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2329,14 +2309,14 @@
          </property>
         </widget>
        </item>
-       <item row="63" column="0" colspan="5">
+       <item row="65" column="0" colspan="5">
         <widget class="Line" name="line_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="106" column="3">
+       <item row="108" column="3">
         <widget class="QDoubleSpinBox" name="allowedLengthDiscrepancySpinBox">
          <property name="suffix">
           <string>%</string>
@@ -2349,7 +2329,7 @@
          </property>
         </widget>
        </item>
-       <item row="105" column="2">
+       <item row="107" column="2">
         <widget class="QLabel" name="label_31">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2362,7 +2342,7 @@
          </property>
         </widget>
        </item>
-       <item row="57" column="2">
+       <item row="59" column="2">
         <widget class="QLabel" name="label_44">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2375,7 +2355,7 @@
          </property>
         </widget>
        </item>
-       <item row="45" column="3">
+       <item row="46" column="3">
         <widget class="QDoubleSpinBox" name="textOutlineThicknessSpinBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2391,7 +2371,7 @@
          </property>
         </widget>
        </item>
-       <item row="100" column="2">
+       <item row="102" column="2">
         <widget class="QLabel" name="label_20">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2404,7 +2384,7 @@
          </property>
         </widget>
        </item>
-       <item row="75" column="0" colspan="5">
+       <item row="77" column="0" colspan="5">
         <widget class="QLabel" name="readDepthColourSchemeDescriptionLabel">
          <property name="text">
           <string>These settings control the node colours when the 'Colour by read depth' colour scheme is used.</string>
@@ -2417,14 +2397,14 @@
          </property>
         </widget>
        </item>
-       <item row="67" column="3">
+       <item row="69" column="3">
         <widget class="ColourButton" name="uniformNodeSpecialColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="87" column="2">
+       <item row="89" column="2">
         <widget class="QLabel" name="label_32">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2437,7 +2417,7 @@
          </property>
         </widget>
        </item>
-       <item row="108" column="3">
+       <item row="110" column="3">
         <widget class="QSpinBox" name="maxPathsSpinBox">
          <property name="minimum">
           <number>1</number>
@@ -2447,14 +2427,14 @@
          </property>
         </widget>
        </item>
-       <item row="76" column="3">
+       <item row="78" column="3">
         <widget class="ColourButton" name="lowReadDepthColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="55" column="2">
+       <item row="57" column="2">
         <widget class="QLabel" name="label_42">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2467,7 +2447,7 @@
          </property>
         </widget>
        </item>
-       <item row="83" column="2">
+       <item row="85" column="2">
         <spacer name="verticalSpacer_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -2483,7 +2463,7 @@
          </property>
         </spacer>
        </item>
-       <item row="99" column="2">
+       <item row="101" column="2">
         <widget class="QLabel" name="label_21">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2509,7 +2489,7 @@
          </property>
         </widget>
        </item>
-       <item row="106" column="2">
+       <item row="108" column="2">
         <widget class="QLabel" name="label_33">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2522,7 +2502,7 @@
          </property>
         </widget>
        </item>
-       <item row="102" column="0" colspan="5">
+       <item row="104" column="0" colspan="5">
         <widget class="QLabel" name="blastQueryPathsHeadingLabel">
          <property name="font">
           <font>
@@ -2535,27 +2515,14 @@
          </property>
         </widget>
        </item>
-       <item row="96" column="3">
+       <item row="98" column="3">
         <widget class="ColourButton" name="contiguousStrandSpecificColourButton">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="65" column="2">
-        <widget class="QLabel" name="label_13">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Positive nodes:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="109" column="2">
+       <item row="111" column="2">
         <spacer name="verticalSpacer_12">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -2571,7 +2538,7 @@
          </property>
         </spacer>
        </item>
-       <item row="72" column="2">
+       <item row="74" column="2">
         <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -2587,7 +2554,7 @@
          </property>
         </spacer>
        </item>
-       <item row="108" column="2">
+       <item row="110" column="2">
         <widget class="QLabel" name="label_49">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -2626,7 +2593,7 @@
          </property>
         </widget>
        </item>
-       <item row="85" column="0" colspan="5">
+       <item row="87" column="0" colspan="5">
         <widget class="Line" name="line_10">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -2646,6 +2613,13 @@
          </property>
         </widget>
        </item>
+       <item row="67" column="3">
+        <widget class="ColourButton" name="uniformPositiveNodeColourButton">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="34" column="2">
         <widget class="QLabel" name="label_36">
          <property name="sizePolicy">
@@ -2659,21 +2633,47 @@
          </property>
         </widget>
        </item>
-       <item row="36" column="2">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="47" column="2">
+        <widget class="QLabel" name="label_47">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
+         <property name="text">
+          <string>Text outline colour:</string>
          </property>
-         <property name="sizeHint" stdset="0">
+        </widget>
+       </item>
+       <item row="47" column="1">
+        <widget class="InfoTextWidget" name="textOutlineColourInfoText" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
           <size>
-           <width>20</width>
-           <height>30</height>
+           <width>16</width>
+           <height>16</height>
           </size>
          </property>
-        </spacer>
+        </widget>
+       </item>
+       <item row="47" column="3">
+        <widget class="ColourButton" name="textOutlineColourButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -2755,7 +2755,6 @@
   <tabstop>antialiasingOnRadioButton</tabstop>
   <tabstop>antialiasingOffRadioButton</tabstop>
   <tabstop>textColourButton</tabstop>
-  <tabstop>textOutlineColourButton</tabstop>
   <tabstop>textOutlineThicknessSpinBox</tabstop>
   <tabstop>positionVisibleRadioButton</tabstop>
   <tabstop>positionCentreRadioButton</tabstop>
@@ -2771,7 +2770,6 @@
   <tabstop>randomColourPositiveOpacitySpinBox</tabstop>
   <tabstop>randomColourNegativeOpacitySlider</tabstop>
   <tabstop>randomColourNegativeOpacitySpinBox</tabstop>
-  <tabstop>uniformPositiveNodeColourButton</tabstop>
   <tabstop>uniformNegativeNodeColourButton</tabstop>
   <tabstop>uniformNodeSpecialColourButton</tabstop>
   <tabstop>lowReadDepthColourButton</tabstop>
