@@ -94,13 +94,6 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->zoomSpinBox->setMinimum(g_settings->minZoom * 100.0);
     ui->zoomSpinBox->setMaximum(g_settings->maxZoom * 100.0);
 
-    //Fix the width of the objects in the selection panel so it doesn't
-    //change size.
-    int fixedRightPanelWidth = ui->selectedNodesWidget->sizeHint().width();
-    ui->selectedNodesWidget->setFixedWidth(fixedRightPanelWidth);
-    ui->selectionSearchWidget->setFixedWidth(fixedRightPanelWidth);
-    ui->selectedEdgesWidget->setFixedWidth(fixedRightPanelWidth);
-
     //The normal height of the QPlainTextEdit objects is a bit much,
     //so fix them at a smaller height.
     ui->selectedNodesTextEdit->setFixedHeight(ui->selectedNodesTextEdit->sizeHint().height() / 2.5);
@@ -116,7 +109,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     setInfoTexts();
 
-    selectionChanged(); //Nothing is selected yet, so this will hide the appropriate labels.
+    //Nothing is selected yet, so this will hide the appropriate labels.
+    selectionChanged();
 
     //The user may have specified settings on the command line, so it is now
     //necessary to update the UI to match these settings.
@@ -367,12 +361,12 @@ void MainWindow::selectionChanged()
     if (selectedNodes.size() == 0)
     {
         ui->selectedNodesTextEdit->setPlainText("");
-        ui->selectedNodesWidget->setVisible(false);
+        setSelectedNodesWidgetsVisibility(false);
     }
 
     else //One or more nodes selected
     {
-        ui->selectedNodesWidget->setVisible(true);
+        setSelectedNodesWidgetsVisibility(true);
 
         int selectedNodeCount;
         QString selectedNodeCountText;
@@ -385,13 +379,13 @@ void MainWindow::selectionChanged()
         {
             ui->selectedNodesTitleLabel->setText("Selected node");
             ui->removeNodeButton->setText("Remove node");
-            ui->selectedContigLengthLabel->setText("Length: " + selectedNodeLengthText);
+            ui->selectedNodesLengthLabel->setText("Length: " + selectedNodeLengthText);
         }
         else
         {
             ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
             ui->removeNodeButton->setText("Remove nodes");
-            ui->selectedContigLengthLabel->setText("Total length: " + selectedNodeLengthText);
+            ui->selectedNodesLengthLabel->setText("Total length: " + selectedNodeLengthText);
         }
 
         ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);
@@ -401,12 +395,12 @@ void MainWindow::selectionChanged()
     if (selectedEdges.size() == 0)
     {
         ui->selectedEdgesTextEdit->setPlainText("");
-        ui->selectedEdgesWidget->setVisible(false);
+        setSelectedEdgesWidgetsVisibility(false);
     }
 
     else //One or more edges selected
     {
-        ui->selectedEdgesWidget->setVisible(true);
+        setSelectedEdgesWidgetsVisibility(true);
         if (selectedEdges.size() == 1)
             ui->selectedEdgesTitleLabel->setText("Selected edge");
         else
@@ -1635,7 +1629,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
-        ui->selectionSearchWidget->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1643,7 +1636,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
-        ui->selectionSearchWidget->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1651,7 +1643,6 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(true);
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
-        ui->selectionSearchWidget->setEnabled(true);
         break;
     }
 }
@@ -1986,4 +1977,33 @@ QString MainWindow::convertGraphFileTypeToString(GraphFileType graphFileType)
     case UNKNOWN_FILE_TYPE: graphFileTypeString = "unknown"; break;
     }
     return graphFileTypeString;
+}
+
+
+void MainWindow::setSelectedNodesWidgetsVisibility(bool visible)
+{
+    ui->selectedNodesTitleLabel->setVisible(visible);
+    ui->selectedNodesLine1->setVisible(visible);
+    ui->selectedNodesLine2->setVisible(visible);
+    ui->selectedNodesTextEdit->setVisible(visible);
+    ui->selectedNodesModificationWidget->setVisible(visible);
+    ui->selectedNodesLengthLabel->setVisible(visible);
+
+    if (visible)
+        ui->selectedNodesSpacer->changeSize(20, 60);
+    else
+        ui->selectedNodesSpacer->changeSize(20, 0);
+
+}
+
+void MainWindow::setSelectedEdgesWidgetsVisibility(bool visible)
+{
+    ui->selectedEdgesTitleLabel->setVisible(visible);
+    ui->selectedEdgesTextEdit->setVisible(visible);
+    ui->selectedEdgesLine->setVisible(visible);
+
+    if (visible)
+        ui->selectedEdgesSpacer->changeSize(20, 60);
+    else
+        ui->selectedEdgesSpacer->changeSize(20, 0);
 }

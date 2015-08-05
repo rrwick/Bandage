@@ -85,6 +85,8 @@ private:
     void setupBlastQueryComboBox();
     bool checkForImageSave();
     QString convertGraphFileTypeToString(GraphFileType graphFileType);
+    void setSelectedNodesWidgetsVisibility(bool visible);
+    void setSelectedEdgesWidgetsVisibility(bool visible);
 
 private slots:
     void loadGraph(QString fullFileName = "");
