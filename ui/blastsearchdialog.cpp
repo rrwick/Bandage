@@ -315,7 +315,7 @@ void BlastSearchDialog::buildBlastDatabase(bool separateThread)
 
     QApplication::processEvents();
 
-    MyProgressDialog * progress = new MyProgressDialog(this, "Building BLAST database...", true, "Cancel build", "Cancelling build...",
+    MyProgressDialog * progress = new MyProgressDialog(this, "Building BLAST database...", separateThread, "Cancel build", "Cancelling build...",
                                                        "Clicking this button will stop the BLAST database from being "
                                                        "built.");
     progress->setWindowModality(Qt::WindowModal);
@@ -494,7 +494,7 @@ void BlastSearchDialog::runBlastSearches(bool separateThread)
 
     clearBlastHits();
 
-    MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", true, "Cancel search", "Cancelling search...",
+    MyProgressDialog * progress = new MyProgressDialog(this, "Running BLAST search...", separateThread, "Cancel search", "Cancelling search...",
                                                        "Clicking this button will stop the BLAST search.");
     progress->setWindowModality(Qt::WindowModal);
     progress->show();

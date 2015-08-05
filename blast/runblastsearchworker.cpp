@@ -52,7 +52,7 @@ void RunBlastSearchWorker::runBlastSearch()
 
     if (g_blastSearch->m_cancelRunBlastSearch)
     {
-        m_error = "Search cancelled.";
+        m_error = "BLAST search cancelled.";
         emit finishedSearch(m_error);
         return;
     }
@@ -87,7 +87,7 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
     {
         if (g_blastSearch->m_cancelRunBlastSearch)
         {
-            m_error = "Search cancelled.";
+            m_error = "BLAST search cancelled.";
             emit finishedSearch(m_error);
         }
         else
