@@ -37,10 +37,10 @@
      <widget class="QWidget" name="scrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>431</width>
-        <height>2690</height>
+        <x>-50</x>
+        <y>-462</y>
+        <width>452</width>
+        <height>2674</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -1773,7 +1773,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>60</width>
+              <width>85</width>
               <height>20</height>
              </size>
             </property>
@@ -1789,7 +1789,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>60</width>
+              <width>85</width>
               <height>20</height>
              </size>
             </property>
