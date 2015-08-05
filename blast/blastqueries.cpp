@@ -100,7 +100,6 @@ void BlastQueries::clearAllQueries()
         delete m_queries[i];
     m_queries.clear();
     deleteTempFiles();
-    g_memory->clearDistancePathSearchMemory();
 }
 
 void BlastQueries::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
@@ -112,7 +111,6 @@ void BlastQueries::clearSomeQueries(std::vector<BlastQuery *> queriesToRemove)
     }
 
     updateTempFiles();
-    g_memory->clearDistancePathSearchMemory();
 }
 
 void BlastQueries::deleteTempFiles()

@@ -61,7 +61,6 @@ void RunBlastSearchWorker::runBlastSearch()
     g_blastSearch->buildHitsFromBlastOutput();
     g_blastSearch->findQueryPaths();
     g_blastSearch->m_blastQueries.searchOccurred();
-    g_memory->clearDistancePathSearchMemory();
     m_error = "";
     emit finishedSearch(m_error);
 }

@@ -30,24 +30,69 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
     ui->query1ComboBox->addItems(comboBoxItems);
     ui->query2ComboBox->addItems(comboBoxItems);
 
-    //Load the previously used combobox choices.
-    if (ui->query1ComboBox->count() > g_memory->distancePathSearchQuery1)
-        ui->query1ComboBox->setCurrentIndex(g_memory->distancePathSearchQuery1);
-    if (ui->query2ComboBox->count() > g_memory->distancePathSearchQuery2)
-        ui->query2ComboBox->setCurrentIndex(g_memory->distancePathSearchQuery2);
+    //Load the previously used query choices.
+    bool rememberedQueriesLoaded = false;
+    int indexOfQuery1 = comboBoxItems.indexOf(g_memory->distancePathSearchQuery1);
+    int indexOfQuery2 = comboBoxItems.indexOf(g_memory->distancePathSearchQuery2);
+    if (indexOfQuery1 != -1 && indexOfQuery2 != -1)
+    {
+        ui->query1ComboBox->setCurrentIndex(indexOfQuery1);
+        ui->query2ComboBox->setCurrentIndex(indexOfQuery2);
+        rememberedQueriesLoaded = true;
+    }
 
+    //If no queries were successfully loaded, then we try to set the first query
+    //to index 0 and the second to index 1, if possible.
+    else
+    {
+        if (ui->query1ComboBox->count() > 0)
+            ui->query1ComboBox->setCurrentIndex(0);
+        if (ui->query2ComboBox->count() > 1)
+            ui->query2ComboBox->setCurrentIndex(1);
+    }
     query1Changed();
     query2Changed();
 
-    if (!g_memory->distanceSearchPaths.empty())
+    //If remembered queries were loaded, then load the previously used path
+    //choices.
+    bool rememberedPathsLoaded = false;
+    if (rememberedQueriesLoaded)
+    {
+        QStringList query1Paths;
+        for (int i = 0; i < ui->query1PathComboBox->count(); ++i)
+            query1Paths.push_back(ui->query1PathComboBox->itemText(i));
+        int indexOfQuery1Path = query1Paths.indexOf(g_memory->distancePathSearchQuery1Path);
+        QStringList query2Paths;
+        for (int i = 0; i < ui->query2PathComboBox->count(); ++i)
+            query2Paths.push_back(ui->query2PathComboBox->itemText(i));
+        int indexOfQuery2Path = query2Paths.indexOf(g_memory->distancePathSearchQuery2Path);
+        if (indexOfQuery1Path != -1 && indexOfQuery2Path != -1)
+        {
+            ui->query1PathComboBox->setCurrentIndex(indexOfQuery1Path);
+            ui->query2PathComboBox->setCurrentIndex(indexOfQuery2Path);
+            rememberedPathsLoaded = true;
+        }
+    }
+
+    //If the previously used queries and paths were successfully loaded and
+    //there are results, display them now.  If not, clear any results that might
+    //exist.
+    if (rememberedQueriesLoaded && rememberedPathsLoaded &&
+            !g_memory->distanceSearchPaths.empty())
         fillResultsTable();
+    else
+    {
+        g_memory->distanceSearchOrientations.clear();
+        g_memory->distanceSearchDistances.clear();
+        g_memory->distanceSearchPaths.clear();
+    }
 
     connect(ui->findPathsButton, SIGNAL(clicked(bool)), this, SLOT(findPaths()));
     connect(ui->query1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(query1Changed()));
     connect(ui->query2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(query2Changed()));
-    connect(ui->maxNodesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
-    connect(ui->maxPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
-    connect(ui->minPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(settingsChanged()));
+    connect(ui->maxNodesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
+    connect(ui->maxPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
+    connect(ui->minPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
 }
 
 DistanceDialog::~DistanceDialog()
@@ -85,6 +130,12 @@ void DistanceDialog::findPaths()
         QMessageBox::information(this, "Min greater than max", "The minimum path distance must be less than or equal to the maximum path distance.");
         return;
     }
+
+    //Remember which queries and paths were used for this search.
+    g_memory->distancePathSearchQuery1 = ui->query1ComboBox->currentText();
+    g_memory->distancePathSearchQuery2 = ui->query2ComboBox->currentText();
+    g_memory->distancePathSearchQuery1Path = ui->query1PathComboBox->currentText();
+    g_memory->distancePathSearchQuery2Path = ui->query2PathComboBox->currentText();
 
     QList<Path> query1Paths;
     if (ui->query1PathComboBox->currentIndex() == 0)

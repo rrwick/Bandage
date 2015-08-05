@@ -73,8 +73,6 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     }
 
     //Prepare the query and hits tables
-    ui->blastHitsTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    ui->blastQueriesTableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     ui->blastHitsTableWidget->setHorizontalHeaderLabels(QStringList() << "" << "Query\nname" << "Node\nname" <<
                                                         "Percent\nidentity" << "Alignment\nlength" << "Mis-\nmatches" <<
                                                         "Gap\nopens" << "Query\nstart" << "Query\nend" << "Node\nstart" <<

@@ -30,6 +30,7 @@ MyTableWidget::MyTableWidget(QWidget * parent) :
 {
     verticalHeader ()->hide();
     horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 }
 
 

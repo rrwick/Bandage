@@ -113,7 +113,7 @@ Settings::Settings()
 
     blastSearchParameters = "";
 
-    distancePathSearchDepth = 10;
+    distancePathSearchDepth = 9;
     minDistancePathLength = 0;
     maxDistancePathLength = 1000000000;
 }

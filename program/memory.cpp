@@ -15,8 +15,10 @@ Memory::Memory()
     userSpecifiedPathString = "";
     userSpecifiedPathCircular = false;
 
-    distancePathSearchQuery1 = 0;
-    distancePathSearchQuery2 = 1;
+    distancePathSearchQuery1 = "";
+    distancePathSearchQuery2 = "";
+    distancePathSearchQuery1Path = "";
+    distancePathSearchQuery2Path = "";
 }
 
 
@@ -29,20 +31,13 @@ void Memory::clearGraphSpecificMemory()
     userSpecifiedPathString = "";
     userSpecifiedPathCircular = false;
 
-    clearDistancePathSearchMemory();
-}
-
-
-
-//This function clears all memory related to a distance path search.  It should
-//be called whenever anything changes that would affect what the user would see
-//in the distance search dialog.
-void Memory::clearDistancePathSearchMemory()
-{
     distanceSearchOrientations.clear();
     distanceSearchDistances.clear();
     distanceSearchPaths.clear();
 
-    distancePathSearchQuery1 = 0;
-    distancePathSearchQuery2 = 1;
+    distancePathSearchQuery1 = "";
+    distancePathSearchQuery2 = "";
+    distancePathSearchQuery1Path = "";
+    distancePathSearchQuery2Path = "";
 }
+

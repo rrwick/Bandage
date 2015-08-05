@@ -11,7 +11,6 @@ class Memory
 public:
     Memory();
     void clearGraphSpecificMemory();
-    void clearDistancePathSearchMemory();
 
     QString rememberedPath;
 
@@ -31,9 +30,11 @@ public:
     QList<int> distanceSearchDistances;
     QList<Path> distanceSearchPaths;
 
-    //These store the indices of the distance path search queries.
-    int distancePathSearchQuery1;
-    int distancePathSearchQuery2;
+    //These store the last used distance path search queries/paths.
+    QString distancePathSearchQuery1;
+    QString distancePathSearchQuery2;
+    QString distancePathSearchQuery1Path;
+    QString distancePathSearchQuery2Path;
 
 
 
