@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
+    <width>374</width>
     <height>693</height>
    </rect>
   </property>
@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-2060</y>
+        <y>-2063</y>
         <width>431</width>
         <height>2724</height>
        </rect>
@@ -2786,6 +2786,61 @@
    <header>colourbutton.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>basePairsPerSegmentAutoRadioButton</tabstop>
+  <tabstop>basePairsPerSegmentManualRadioButton</tabstop>
+  <tabstop>basePairsPerSegmentSpinBox</tabstop>
+  <tabstop>graphLayoutQualitySlider</tabstop>
+  <tabstop>averageNodeWidthSpinBox</tabstop>
+  <tabstop>coverageEffectOnWidthSpinBox</tabstop>
+  <tabstop>coveragePowerSpinBox</tabstop>
+  <tabstop>edgeColourButton</tabstop>
+  <tabstop>edgeWidthSpinBox</tabstop>
+  <tabstop>outlineColourButton</tabstop>
+  <tabstop>outlineThicknessSpinBox</tabstop>
+  <tabstop>selectionColourButton</tabstop>
+  <tabstop>antialiasingOnRadioButton</tabstop>
+  <tabstop>antialiasingOffRadioButton</tabstop>
+  <tabstop>textColourButton</tabstop>
+  <tabstop>textOutlineColourButton</tabstop>
+  <tabstop>textOutlineThicknessSpinBox</tabstop>
+  <tabstop>positionVisibleRadioButton</tabstop>
+  <tabstop>positionCentreRadioButton</tabstop>
+  <tabstop>randomColourPositiveSaturationSlider</tabstop>
+  <tabstop>randomColourPositiveSaturationSpinBox</tabstop>
+  <tabstop>randomColourNegativeSaturationSlider</tabstop>
+  <tabstop>randomColourNegativeSaturationSpinBox</tabstop>
+  <tabstop>randomColourPositiveLightnessSlider</tabstop>
+  <tabstop>randomColourPositiveLightnessSpinBox</tabstop>
+  <tabstop>randomColourNegativeLightnessSlider</tabstop>
+  <tabstop>randomColourNegativeLightnessSpinBox</tabstop>
+  <tabstop>randomColourPositiveOpacitySlider</tabstop>
+  <tabstop>randomColourPositiveOpacitySpinBox</tabstop>
+  <tabstop>randomColourNegativeOpacitySlider</tabstop>
+  <tabstop>randomColourNegativeOpacitySpinBox</tabstop>
+  <tabstop>uniformPositiveNodeColourButton</tabstop>
+  <tabstop>uniformNegativeNodeColourButton</tabstop>
+  <tabstop>uniformNodeSpecialColourButton</tabstop>
+  <tabstop>lowCoverageColourButton</tabstop>
+  <tabstop>highCoverageColourButton</tabstop>
+  <tabstop>coverageValueAutoRadioButton</tabstop>
+  <tabstop>coverageValueManualRadioButton</tabstop>
+  <tabstop>lowCoverageValueSpinBox</tabstop>
+  <tabstop>highCoverageValueSpinBox</tabstop>
+  <tabstop>noBlastHitsColourButton</tabstop>
+  <tabstop>contiguitySearchDepthSpinBox</tabstop>
+  <tabstop>contiguousStrandSpecificColourButton</tabstop>
+  <tabstop>contiguousEitherStrandColourButton</tabstop>
+  <tabstop>maybeContiguousColourButton</tabstop>
+  <tabstop>notContiguousColourButton</tabstop>
+  <tabstop>contiguityStartingColourButton</tabstop>
+  <tabstop>requiredCoverageSpinBox</tabstop>
+  <tabstop>allowedLengthDiscrepancySpinBox</tabstop>
+  <tabstop>maxPathNodesSpinBox</tabstop>
+  <tabstop>maxPathsSpinBox</tabstop>
+  <tabstop>restoreDefaultsButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

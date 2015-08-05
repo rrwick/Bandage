@@ -663,17 +663,28 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>MyTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>mytablewidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>InfoTextWidget</class>
    <extends>QWidget</extends>
    <header>infotextwidget.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>MyTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>mytablewidget.h</header>
-  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>buildBlastDatabaseButton</tabstop>
+  <tabstop>loadQueriesFromFastaButton</tabstop>
+  <tabstop>enterQueryManuallyButton</tabstop>
+  <tabstop>clearSelectedQueriesButton</tabstop>
+  <tabstop>clearAllQueriesButton</tabstop>
+  <tabstop>blastQueriesTableWidget</tabstop>
+  <tabstop>parametersLineEdit</tabstop>
+  <tabstop>runBlastSearchButton</tabstop>
+  <tabstop>blastHitsTableWidget</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -683,8 +694,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>535</x>
+     <y>748</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -699,8 +710,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>603</x>
+     <y>748</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

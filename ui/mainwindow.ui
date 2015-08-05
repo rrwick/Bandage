@@ -1993,10 +1993,35 @@
  <tabstops>
   <tabstop>controlsScrollArea</tabstop>
   <tabstop>graphScopeComboBox</tabstop>
+  <tabstop>startingNodesLineEdit</tabstop>
+  <tabstop>startingNodesExactMatchRadioButton</tabstop>
+  <tabstop>startingNodesPartialMatchRadioButton</tabstop>
+  <tabstop>nodeDistanceSpinBox</tabstop>
+  <tabstop>singleNodesRadioButton</tabstop>
+  <tabstop>doubleNodesRadioButton</tabstop>
+  <tabstop>drawGraphButton</tabstop>
+  <tabstop>zoomSpinBox</tabstop>
+  <tabstop>coloursComboBox</tabstop>
+  <tabstop>contiguityButton</tabstop>
+  <tabstop>nodeCustomLabelsCheckBox</tabstop>
+  <tabstop>nodeNamesCheckBox</tabstop>
+  <tabstop>nodeLengthsCheckBox</tabstop>
+  <tabstop>nodeCoveragesCheckBox</tabstop>
+  <tabstop>blastHitsCheckBox</tabstop>
+  <tabstop>fontButton</tabstop>
+  <tabstop>textOutlineCheckBox</tabstop>
+  <tabstop>blastSearchButton</tabstop>
+  <tabstop>blastQueryComboBox</tabstop>
   <tabstop>selectionScrollArea</tabstop>
   <tabstop>selectionSearchNodesLineEdit</tabstop>
+  <tabstop>selectionSearchNodesExactMatchRadioButton</tabstop>
+  <tabstop>selectionSearchNodesPartialMatchRadioButton</tabstop>
+  <tabstop>selectNodesButton</tabstop>
+  <tabstop>selectedNodesTextEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
   <tabstop>setNodeCustomLabelButton</tabstop>
+  <tabstop>removeNodeButton</tabstop>
+  <tabstop>selectedEdgesTextEdit</tabstop>
  </tabstops>
  <resources>
   <include location="../images/images.qrc"/>
