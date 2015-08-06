@@ -1627,6 +1627,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
+        ui->selectionScrollAreaWidgetContents->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1634,6 +1635,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(false);
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
+        ui->selectionScrollAreaWidgetContents->setEnabled(false);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1641,6 +1643,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->graphDisplayWidget->setEnabled(true);
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
+        ui->selectionScrollAreaWidgetContents->setEnabled(true);
         break;
     }
 }
