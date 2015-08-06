@@ -92,14 +92,19 @@ QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool 
         }
         else
         {
-            m_error = "There was a problem running the BLAST search.";
+            m_error = "There was a problem running the BLAST search";
+            QString stdErr = g_blastSearch->m_blast->readAllStandardError();
+            if (stdErr.length() > 0)
+                m_error += ":\n\n" + stdErr;
+            else
+                m_error += ".";
             emit finishedSearch(m_error);
         }
         *success = false;
         return "";
     }
 
-    QString blastOutput = g_blastSearch->m_blast->readAll();
+    QString blastOutput = g_blastSearch->m_blast->readAllStandardOutput();
     g_blastSearch->m_blast->deleteLater();
     g_blastSearch->m_blast = 0;
 

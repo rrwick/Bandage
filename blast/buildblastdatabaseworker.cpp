@@ -65,7 +65,14 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     bool finished = g_blastSearch->m_makeblastdb->waitForFinished(-1);
 
     if (g_blastSearch->m_makeblastdb->exitCode() != 0 || !finished)
-        m_error = "There was a problem building the BLAST database.";
+    {
+        m_error = "There was a problem building the BLAST database";
+        QString stdErr = g_blastSearch->m_makeblastdb->readAllStandardError();
+        if (stdErr.length() > 0)
+            m_error += ":\n\n" + stdErr;
+        else
+            m_error += ".";
+    }
     else if (g_blastSearch->m_cancelBuildBlastDatabase)
         m_error = "Build cancelled.";
     else
