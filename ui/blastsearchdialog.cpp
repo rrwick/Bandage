@@ -45,6 +45,7 @@
 #include <QSet>
 #include "tablewidgetitemint.h"
 #include "tablewidgetitemdouble.h"
+#include "tablewidgetitemshown.h"
 #include <QCheckBox>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
@@ -225,8 +226,6 @@ void BlastSearchDialog::makeQueryRow(int row)
     connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
     connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
 
-    QTableWidgetItem * show = new QTableWidgetItem();
-    show->setFlags(Qt::ItemIsEnabled);
     QWidget * showCheckBoxWidget = new QWidget;
     QCheckBox * showCheckBox = new QCheckBox();
     QHBoxLayout * layout = new QHBoxLayout(showCheckBoxWidget);
@@ -234,9 +233,12 @@ void BlastSearchDialog::makeQueryRow(int row)
     layout->setAlignment(Qt::AlignCenter);
     layout->setContentsMargins(0, 0, 0, 0);
     showCheckBoxWidget->setLayout(layout);
-    showCheckBox->setChecked(query->isShown());
+    bool queryShown = query->isShown();
+    showCheckBox->setChecked(queryShown);
+    QTableWidgetItem * show = new TableWidgetItemShown(queryShown);
+    show->setFlags(Qt::ItemIsEnabled);
     connect(showCheckBox, SIGNAL(toggled(bool)), query, SLOT(setShown(bool)));
-    connect(showCheckBox, SIGNAL(toggled(bool)), this, SLOT(fillHitsTable()));
+    connect(showCheckBox, SIGNAL(toggled(bool)), this, SLOT(queryShownChanged()));
 
     ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
     ui->blastQueriesTableWidget->setCellWidget(row, 1, showCheckBoxWidget);
@@ -862,3 +864,28 @@ void BlastSearchDialog::setInfoTexts()
 }
 
 
+
+//This function is called whenever a user changed the 'Show' tick box for a
+//query.  It first updates the 'shown' status of the TableWidgetItem so the
+//table can be sorted by that column.  It then refills the hits table, so any
+//hits which are hidden are disabled.
+void BlastSearchDialog::queryShownChanged()
+{
+    for (int i = 0; i < ui->blastQueriesTableWidget->rowCount(); ++i)
+    {
+        QString queryName = ui->blastQueriesTableWidget->item(i, 2)->text();
+        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
+        if (query == 0)
+            continue;
+        
+        QTableWidgetItem * item = ui->blastQueriesTableWidget->item(i, 1);
+        TableWidgetItemShown * shownItem = dynamic_cast<TableWidgetItemShown *>(item);
+
+        if (shownItem == 0)
+            continue;
+
+        shownItem->m_shown = query->isShown();
+    }
+
+    fillHitsTable();
+}

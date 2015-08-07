@@ -70,6 +70,7 @@ SOURCES += \
     graph/graphlocation.cpp \
     ui/tablewidgetitemint.cpp \
     ui/tablewidgetitemdouble.cpp \
+    ui/tablewidgetitemshown.cpp \
     program/memory.cpp
 
 HEADERS  += \
@@ -114,6 +115,7 @@ HEADERS  += \
     graph/graphlocation.h \
     ui/tablewidgetitemint.h \
     ui/tablewidgetitemdouble.h \
+    ui/tablewidgetitemshown.h \
     program/memory.h
 
 FORMS    += \

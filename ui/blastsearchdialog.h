@@ -76,6 +76,7 @@ private slots:
     void runBlastSearchCancelled();
     void queryCellChanged(int row, int column);
     void queryTableSelectionChanged();
+    void queryShownChanged();
 };
 
 #endif // BLASTSEARCHDIALOG_H
