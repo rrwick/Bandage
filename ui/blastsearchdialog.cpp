@@ -256,52 +256,49 @@ void BlastSearchDialog::fillHitsTable()
     ui->blastHitsTableWidget->clearContents();
     ui->blastHitsTableWidget->setSortingEnabled(false);
 
-    //Filter out any BLAST hits for which the query has been hidden by the user.
-    QList<BlastHit *> shownHits;
-    for (int i = 0; i < g_blastSearch->m_allHits.size(); ++i)
-    {
-        BlastHit * hit = g_blastSearch->m_allHits[i].data();
-        if (hit->m_query->isShown())
-            shownHits.push_back(hit);
-    }
-
-    int hitCount = shownHits.size();
+    int hitCount = g_blastSearch->m_allHits.size();
     ui->blastHitsTableWidget->setRowCount(hitCount);
+
     if (hitCount == 0)
         return;
 
     for (int i = 0; i < hitCount; ++i)
     {
-        BlastHit * hit = shownHits[i];
+        BlastHit * hit = g_blastSearch->m_allHits[i].data();
         BlastQuery * hitQuery = hit->m_query;
 
+        //Hits for hidden queries will be not enabled.
+        Qt::ItemFlag enabled = Qt::NoItemFlags;
+        if (hitQuery->isShown())
+            enabled = Qt::ItemIsEnabled;
+
         QTableWidgetItem * queryColour = new QTableWidgetItem(hitQuery->getColour().name());
-        queryColour->setFlags(Qt::ItemIsEnabled);
+        queryColour->setFlags(enabled);
         queryColour->setBackground(hitQuery->getColour());
         QTableWidgetItem * queryName = new QTableWidgetItem(hitQuery->getName());
-        queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        queryName->setFlags(enabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
-        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        nodeName->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * percentIdentity = new TableWidgetItemDouble(QString::number(hit->m_percentIdentity) + "%");
-        percentIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        percentIdentity->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * alignmentLength = new TableWidgetItemInt(formatIntForDisplay(hit->m_alignmentLength));
-        alignmentLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        alignmentLength->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * numberMismatches = new TableWidgetItemInt(formatIntForDisplay(hit->m_numberMismatches));
-        numberMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        numberMismatches->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * numberGapOpens = new TableWidgetItemInt(formatIntForDisplay(hit->m_numberGapOpens));
-        numberGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        numberGapOpens->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * queryStart = new TableWidgetItemInt(formatIntForDisplay(hit->m_queryStart));
-        queryStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        queryStart->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * queryEnd = new TableWidgetItemInt(formatIntForDisplay(hit->m_queryEnd));
-        queryEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        queryEnd->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * nodeStart = new TableWidgetItemInt(formatIntForDisplay(hit->m_nodeStart));
-        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        nodeStart->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * nodeEnd = new TableWidgetItemInt(formatIntForDisplay(hit->m_nodeEnd));
-        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        nodeEnd->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * eValue = new TableWidgetItemDouble(QString::number(hit->m_eValue));
-        eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        eValue->setFlags(enabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * bitScore = new TableWidgetItemDouble(QString::number(hit->m_bitScore));
-        bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        bitScore->setFlags(enabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
         ui->blastHitsTableWidget->setItem(i, 1, queryName);
