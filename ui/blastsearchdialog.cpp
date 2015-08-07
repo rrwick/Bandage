@@ -590,19 +590,22 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
         QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
         BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-        QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
+        if (newName != query->getName())
+        {
+            QString uniqueName = g_blastSearch->m_blastQueries.renameQuery(query, newName);
 
-        //It's possible that the user gave the query a non-unique name, in which
-        //case we now have to adjust it.
-        if (uniqueName != newName)
-            ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
+            //It's possible that the user gave the query a non-unique name, in which
+            //case we now have to adjust it.
+            if (uniqueName != newName)
+                ui->blastQueriesTableWidget->item(row, column)->setText(uniqueName);
 
-        //Resize the query table columns, as the name new might take up more or less space.
-        ui->blastQueriesTableWidget->resizeColumns();
+            //Resize the query table columns, as the name new might take up more or less space.
+            ui->blastQueriesTableWidget->resizeColumns();
 
-        //Rebuild the hits table, if necessary, to show the new name.
-        if (query->hasHits())
-            fillHitsTable();
+            //Rebuild the hits table, if necessary, to show the new name.
+            if (query->hasHits())
+                fillHitsTable();
+        }
     }
 
     //If anything else was changed, we want to change it back to what it was.
@@ -866,11 +869,16 @@ void BlastSearchDialog::setInfoTexts()
 
 
 //This function is called whenever a user changed the 'Show' tick box for a
-//query.  It first updates the 'shown' status of the TableWidgetItem so the
-//table can be sorted by that column.  It then refills the hits table, so any
-//hits which are hidden are disabled.
+//query.  It does three things:
+// 1) Updates the 'shown' status of the TableWidgetItem so the table can be
+//    sorted by that column.
+// 2) Enables/disables the QTableWidgetItems in the row to match the query's
+//    'shown' status.
+// 3) Refills the hits table, so any hits which are hidden are disabled.
 void BlastSearchDialog::queryShownChanged()
 {
+    ui->blastQueriesTableWidget->blockSignals(true);
+
     for (int i = 0; i < ui->blastQueriesTableWidget->rowCount(); ++i)
     {
         QString queryName = ui->blastQueriesTableWidget->item(i, 2)->text();
@@ -883,9 +891,20 @@ void BlastSearchDialog::queryShownChanged()
 
         if (shownItem == 0)
             continue;
-
         shownItem->m_shown = query->isShown();
+
+        //Hidden queries will be disabled.
+        Qt::ItemFlag enabled = Qt::NoItemFlags;
+        if (query->isShown())
+            enabled = Qt::ItemIsEnabled;
+        ui->blastQueriesTableWidget->item(i, 2)->setFlags(enabled | Qt::ItemIsSelectable | Qt::ItemIsEditable); //name
+        ui->blastQueriesTableWidget->item(i, 3)->setFlags(enabled | Qt::ItemIsSelectable); //type
+        ui->blastQueriesTableWidget->item(i, 4)->setFlags(enabled | Qt::ItemIsSelectable); //length
+        ui->blastQueriesTableWidget->item(i, 5)->setFlags(enabled | Qt::ItemIsSelectable); //hits
+        ui->blastQueriesTableWidget->item(i, 6)->setFlags(enabled | Qt::ItemIsSelectable); //percent
+        ui->blastQueriesTableWidget->item(i, 7)->setFlags(enabled | Qt::ItemIsSelectable | Qt::ItemIsEditable); //paths
     }
 
     fillHitsTable();
+    ui->blastQueriesTableWidget->blockSignals(false);
 }
