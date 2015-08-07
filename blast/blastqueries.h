@@ -49,6 +49,7 @@ public:
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void searchOccurred();
     void clearSearchResults();
+    int getQueryCount();
     int getQueryCount(SequenceType sequenceType);
     bool isQueryPresent(BlastQuery * query);
     void findQueryPaths();

@@ -608,6 +608,8 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
             //Rebuild the hits table, if necessary, to show the new name.
             if (query->hasHits())
                 fillHitsTable();
+
+            emit blastChanged();
         }
     }
 

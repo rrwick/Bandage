@@ -1446,7 +1446,21 @@ void MainWindow::openBlastSearchDialog()
 //BlastSearchDialog that should be reflected here in MainWindow.
 void MainWindow::blastChanged()
 {
-    BlastQuery * queryBefore = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
+    QString blastQueryText = ui->blastQueryComboBox->currentText();
+    BlastQuery * queryBefore = g_blastSearch->m_blastQueries.getQueryFromName(blastQueryText);
+
+    //If we didn't find a currently selected query but it isn't "none" or "all",
+    //then maybe the user changed the name of the currently selected query, and
+    //that's why we didn't find it.  In that case, try to find it using the
+    //index.
+    if (queryBefore == 0 && blastQueryText != "none" && blastQueryText != "all")
+    {
+        int blastQueryIndex = ui->blastQueryComboBox->currentIndex();
+        if (ui->blastQueryComboBox->count() > 1)
+            --blastQueryIndex;
+        if (blastQueryIndex < g_blastSearch->m_blastQueries.getQueryCount())
+            queryBefore = g_blastSearch->m_blastQueries.m_queries[blastQueryIndex];
+    }
 
     //Rebuild the query combo box, in case the user changed the queries or
     //their names.
@@ -1462,12 +1476,19 @@ void MainWindow::blastChanged()
             ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
     }
 
-    if (ui->blastQueryComboBox->count() > 0)
+    if (g_blastSearch->m_blastQueries.getQueryCount() > 0)
     {
         //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
         if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
                 g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
-            setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
+        {
+            //If there is only one query, use BLAST rainbow.  Otherwise, use
+            //BLAST solid.
+            if (g_blastSearch->m_blastQueries.getQueryCount() == 1)
+                setNodeColourSchemeComboBox(BLAST_HITS_RAINBOW_COLOUR);
+            else
+                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
+        }
     }
 
     g_blastSearch->blastQueryChanged(ui->blastQueryComboBox->currentText());

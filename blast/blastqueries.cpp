@@ -163,6 +163,12 @@ void BlastQueries::clearSearchResults()
         m_queries[i]->clearSearchResults();
 }
 
+
+int BlastQueries::getQueryCount()
+{
+    return m_queries.size();
+}
+
 int BlastQueries::getQueryCount(SequenceType sequenceType)
 {
     int count = 0;
