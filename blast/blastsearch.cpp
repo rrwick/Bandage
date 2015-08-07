@@ -289,17 +289,30 @@ void BlastSearch::blastQueryChanged(QString queryName)
 
     //If only one query is selected, then just display that one.
     else
-        queries.push_back(g_blastSearch->m_blastQueries.getQueryFromName(queryName));
+    {
+        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
+        if (query != 0)
+            queries.push_back(query);
+    }
+
+    //We now filter out any queries that have been hidden by the user.
+    std::vector<BlastQuery *> shownQueries;
+    for (size_t i = 0; i < queries.size(); ++i)
+    {
+        BlastQuery * query = queries[i];
+        if (query->isShown())
+            shownQueries.push_back(query);
+    }
 
     //Add the blast hit pointers to nodes that have a hit for
     //the selected target(s).
-    for (size_t i = 0; i < queries.size(); ++i)
+    for (size_t i = 0; i < shownQueries.size(); ++i)
     {
-        BlastQuery * currentQuery = queries[i];
+        BlastQuery * query = shownQueries[i];
         for (int j = 0; j < g_blastSearch->m_allHits.size(); ++j)
         {
             BlastHit * hit = g_blastSearch->m_allHits[j].data();
-            if (hit->m_query == currentQuery)
+            if (hit->m_query == query)
                 hit->m_node->m_blastHits.push_back(hit);
         }
     }

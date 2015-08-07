@@ -52,6 +52,7 @@ public:
     double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
     QString getPathsString(int max) const;
     bool isShown() const {return m_shown;}
+    bool isHidden() const {return !m_shown;}
 
     //MODIFIERS
     void setName(QString newName) {m_name = newName;}

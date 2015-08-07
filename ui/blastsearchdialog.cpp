@@ -236,7 +236,7 @@ void BlastSearchDialog::makeQueryRow(int row)
     showCheckBoxWidget->setLayout(layout);
     showCheckBox->setChecked(query->isShown());
     connect(showCheckBox, SIGNAL(toggled(bool)), query, SLOT(setShown(bool)));
-    connect(colourButton, SIGNAL(toggled(bool)), this, SLOT(fillHitsTable()));
+    connect(showCheckBox, SIGNAL(toggled(bool)), this, SLOT(fillHitsTable()));
 
     ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
     ui->blastQueriesTableWidget->setCellWidget(row, 1, showCheckBoxWidget);
@@ -256,20 +256,29 @@ void BlastSearchDialog::fillHitsTable()
     ui->blastHitsTableWidget->clearContents();
     ui->blastHitsTableWidget->setSortingEnabled(false);
 
-    int hitCount = g_blastSearch->m_allHits.size();
-    ui->blastHitsTableWidget->setRowCount(hitCount);
+    //Filter out any BLAST hits for which the query has been hidden by the user.
+    QList<BlastHit *> shownHits;
+    for (int i = 0; i < g_blastSearch->m_allHits.size(); ++i)
+    {
+        BlastHit * hit = g_blastSearch->m_allHits[i].data();
+        if (hit->m_query->isShown())
+            shownHits.push_back(hit);
+    }
 
+    int hitCount = shownHits.size();
+    ui->blastHitsTableWidget->setRowCount(hitCount);
     if (hitCount == 0)
         return;
 
     for (int i = 0; i < hitCount; ++i)
     {
-        BlastHit * hit = g_blastSearch->m_allHits[i].data();
+        BlastHit * hit = shownHits[i];
+        BlastQuery * hitQuery = hit->m_query;
 
-        QTableWidgetItem * queryColour = new QTableWidgetItem(hit->m_query->getColour().name());
+        QTableWidgetItem * queryColour = new QTableWidgetItem(hitQuery->getColour().name());
         queryColour->setFlags(Qt::ItemIsEnabled);
-        queryColour->setBackground(hit->m_query->getColour());
-        QTableWidgetItem * queryName = new QTableWidgetItem(hit->m_query->getName());
+        queryColour->setBackground(hitQuery->getColour());
+        QTableWidgetItem * queryName = new QTableWidgetItem(hitQuery->getName());
         queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
         nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
