@@ -51,7 +51,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     connect(ui->circularPathCheckBox, SIGNAL(toggled(bool)), g_graphicsView->viewport(), SLOT(update()));
     connect(ui->copyButton, SIGNAL(clicked(bool)), this, SLOT(copyPathToClipboard()));
     connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(savePathToFile()));
-    connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
+    connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()));
 }
 
 PathSpecifyDialog::~PathSpecifyDialog()
