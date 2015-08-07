@@ -26,9 +26,9 @@
 #include <QClipboard>
 
 MyTableWidget::MyTableWidget(QWidget * parent) :
-    QTableWidget(parent), m_smallFirstColumn(false)
+    QTableWidget(parent), m_smallFirstColumn(false), m_smallSecondColumn(false)
 {
-    verticalHeader ()->hide();
+    verticalHeader()->hide();
     horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 }
@@ -65,7 +65,13 @@ void MyTableWidget::resizeColumns()
     //(except for the first) to take up the whole width, keeping their relative size.
 
     int newTotalColumnWidth = minColumnWidth;
-    for (int i = 1; i < columnCount() - 1; ++i)
+    int startingColumn = 0;
+    if (m_smallFirstColumn)
+        startingColumn = 1;
+    if (m_smallSecondColumn)
+        startingColumn = 2;
+
+    for (int i = startingColumn; i < columnCount() - 1; ++i)
     {
         int oldColumnWidth = columnWidths[i];
         double fraction = double(oldColumnWidth) / oldTotalColumnWidth;

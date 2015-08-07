@@ -51,6 +51,7 @@ public:
     QString getTypeString() const;
     double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
     QString getPathsString(int max) const;
+    bool isShown() const {return m_shown;}
 
     //MODIFIERS
     void setName(QString newName) {m_name = newName;}
@@ -61,6 +62,7 @@ public:
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
+    void setShown(bool newShown) {m_shown = newShown;}
 
 private:
     QString m_name;
@@ -70,6 +72,7 @@ private:
     QColor m_colour;
     SequenceType m_sequenceType;
     QList<Path> m_paths;
+    bool m_shown;
 
     void autoSetSequenceType();
     bool positionInAnyHit(int position) const;

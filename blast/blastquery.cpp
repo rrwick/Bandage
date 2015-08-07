@@ -22,7 +22,7 @@
 #include "../graph/debruijnnode.h"
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
-    m_name(name), m_sequence(sequence), m_searchedFor(false)
+    m_name(name), m_sequence(sequence), m_searchedFor(false), m_shown(true)
 {
     autoSetSequenceType();
 }

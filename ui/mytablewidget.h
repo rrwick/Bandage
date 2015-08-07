@@ -30,6 +30,7 @@ public:
 
     void resizeColumns();
     bool m_smallFirstColumn;
+    bool m_smallSecondColumn;
 
 protected:
     void showEvent(QShowEvent * event);

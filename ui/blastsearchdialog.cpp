@@ -45,6 +45,7 @@
 #include <QSet>
 #include "tablewidgetitemint.h"
 #include "tablewidgetitemdouble.h"
+#include <QCheckBox>
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
@@ -56,6 +57,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     ui->setupUi(this);
     ui->blastHitsTableWidget->m_smallFirstColumn = true;
     ui->blastQueriesTableWidget->m_smallFirstColumn = true;
+    ui->blastQueriesTableWidget->m_smallSecondColumn = true;
 
     //Load any previous parameters the user might have entered when previously using this dialog.
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
@@ -223,14 +225,29 @@ void BlastSearchDialog::makeQueryRow(int row)
     connect(colourButton, SIGNAL(colourChosen(QColor)), query, SLOT(setColour(QColor)));
     connect(colourButton, SIGNAL(colourChosen(QColor)), this, SLOT(fillHitsTable()));
 
+    QTableWidgetItem * show = new QTableWidgetItem();
+    show->setFlags(Qt::ItemIsEnabled);
+    QWidget * showCheckBoxWidget = new QWidget;
+    QCheckBox * showCheckBox = new QCheckBox();
+    QHBoxLayout * layout = new QHBoxLayout(showCheckBoxWidget);
+    layout->addWidget(showCheckBox);
+    layout->setAlignment(Qt::AlignCenter);
+    layout->setContentsMargins(0, 0, 0, 0);
+    showCheckBoxWidget->setLayout(layout);
+    showCheckBox->setChecked(query->isShown());
+    connect(showCheckBox, SIGNAL(toggled(bool)), query, SLOT(setShown(bool)));
+    connect(colourButton, SIGNAL(toggled(bool)), this, SLOT(fillHitsTable()));
+
     ui->blastQueriesTableWidget->setCellWidget(row, 0, colourButton);
+    ui->blastQueriesTableWidget->setCellWidget(row, 1, showCheckBoxWidget);
     ui->blastQueriesTableWidget->setItem(row, 0, colour);
-    ui->blastQueriesTableWidget->setItem(row, 1, name);
-    ui->blastQueriesTableWidget->setItem(row, 2, type);
-    ui->blastQueriesTableWidget->setItem(row, 3, length);
-    ui->blastQueriesTableWidget->setItem(row, 4, hits);
-    ui->blastQueriesTableWidget->setItem(row, 5, percent);
-    ui->blastQueriesTableWidget->setItem(row, 6, paths);
+    ui->blastQueriesTableWidget->setItem(row, 1, show);
+    ui->blastQueriesTableWidget->setItem(row, 2, name);
+    ui->blastQueriesTableWidget->setItem(row, 3, type);
+    ui->blastQueriesTableWidget->setItem(row, 4, length);
+    ui->blastQueriesTableWidget->setItem(row, 5, hits);
+    ui->blastQueriesTableWidget->setItem(row, 6, percent);
+    ui->blastQueriesTableWidget->setItem(row, 7, paths);
 }
 
 
@@ -560,7 +577,7 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     ui->blastQueriesTableWidget->blockSignals(true);
 
     //If a query name was changed, then we actually adjust that query name.
-    if (column == 1)
+    if (column == 2)
     {
         QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
         BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
@@ -812,6 +829,10 @@ void BlastSearchDialog::setInfoTexts()
                                                "Colour: Each query is automatically assigned a colour which is used for the "
                                                "'Blast hits (solid)' graph colour scheme. This colour can be changed by "
                                                "clicking in the table cell.<br><br>"
+                                               "Show: if this box is ticked, the query's hits will be visible in the table "
+                                               "below and it will be able to be viewed on the graph. If this box is not "
+                                               "ticked, the query's hits will be hidden in the table below and the query "
+                                               "will be hidden on the graph.<br><br>"
                                                "Query name: If a query is loaded from a FASTA file, its name is the sequence "
                                                "ID (the text between the '>' and the first space in the description line). "
                                                "Query names are editable by double clicking in their table cell.<br><br>"

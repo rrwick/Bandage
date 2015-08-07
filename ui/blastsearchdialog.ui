@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1068</width>
+    <width>1275</width>
     <height>753</height>
    </rect>
   </property>
@@ -629,6 +629,11 @@
      </column>
      <column>
       <property name="text">
+       <string>Show</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Query name</string>
       </property>
      </column>
@@ -663,15 +668,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>mytablewidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>InfoTextWidget</class>
    <extends>QWidget</extends>
    <header>infotextwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MyTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>mytablewidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
