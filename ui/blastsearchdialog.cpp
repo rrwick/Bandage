@@ -50,13 +50,13 @@
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
-    m_blastSearchConducted(false),
-    m_queryBeforeBlastDialog(0),
     ui(new Ui::BlastSearchDialog),
     m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"), m_tblastnCommand("tblastn")
 
 {
     ui->setupUi(this);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
     ui->blastHitsTableWidget->m_smallFirstColumn = true;
     ui->blastQueriesTableWidget->m_smallFirstColumn = true;
     ui->blastQueriesTableWidget->m_smallSecondColumn = true;
@@ -457,6 +457,7 @@ void BlastSearchDialog::clearAllQueries()
 
     clearBlastHits();
     setUiStep(BLAST_DB_BUILT_BUT_NO_QUERIES);
+    emit blastChanged();
 }
 
 
@@ -492,6 +493,7 @@ void BlastSearchDialog::clearSelectedQueries()
     fillQueriesTable();
     if (g_blastSearch->m_allHits.size() > 0)
         fillHitsTable();
+    emit blastChanged();
 }
 
 void BlastSearchDialog::runBlastSearchesInThread()
@@ -561,11 +563,12 @@ void BlastSearchDialog::runBlastSearchFinished(QString error)
     }
     else
     {
-        m_blastSearchConducted = true;
         fillTablesAfterBlastSearch();
         g_settings->blastSearchParameters = ui->parametersLineEdit->text().simplified();
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
+
+    emit blastChanged();
 }
 
 
@@ -934,4 +937,5 @@ void BlastSearchDialog::queryShownChanged()
     }
 
     ui->blastQueriesTableWidget->blockSignals(false);
+    emit blastChanged();
 }

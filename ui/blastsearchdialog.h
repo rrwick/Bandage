@@ -40,13 +40,6 @@ public:
     explicit BlastSearchDialog(QWidget *parent = 0, QString autoQuery = "");
     ~BlastSearchDialog();
 
-    bool m_blastSearchConducted;
-
-    //This stores the BLAST query selected by the user when the BLAST search
-    //dialog is opened/shown.  It is remembered so the same query can be
-    //selected (if possible) when the dialog is closed/hidden.
-    BlastQuery * m_queryBeforeBlastDialog;
-
 private:
     Ui::BlastSearchDialog *ui;
     QMap<long long, DeBruijnNode*> * m_deBruijnGraphNodes;
@@ -83,6 +76,9 @@ private slots:
     void queryCellChanged(int row, int column);
     void queryTableSelectionChanged();
     void queryShownChanged();
+
+signals:
+    void blastChanged();
 };
 
 #endif // BLASTSEARCHDIALOG_H

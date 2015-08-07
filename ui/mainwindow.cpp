@@ -1435,18 +1435,19 @@ void MainWindow::openBlastSearchDialog()
     if (m_blastSearchDialog == 0)
     {
         m_blastSearchDialog = new BlastSearchDialog(this);
-        m_blastSearchDialog->setModal(true);
-        connect(m_blastSearchDialog, SIGNAL(rejected()), this, SLOT(blastSearchDialogClosed()));
+        connect(m_blastSearchDialog, SIGNAL(blastChanged()), this, SLOT(blastChanged()));
     }
-
-    m_blastSearchDialog->m_blastSearchConducted = false;
-    m_blastSearchDialog->m_queryBeforeBlastDialog = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
 
     m_blastSearchDialog->show();
 }
 
-void MainWindow::blastSearchDialogClosed()
+
+//This function is called whenever the user does something in the
+//BlastSearchDialog that should be reflected here in MainWindow.
+void MainWindow::blastChanged()
 {
+    BlastQuery * queryBefore = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
+
     //Rebuild the query combo box, in case the user changed the queries or
     //their names.
     setupBlastQueryComboBox();
@@ -1454,26 +1455,22 @@ void MainWindow::blastSearchDialogClosed()
     //Look to see if the query selected before is still present.  If so,
     //set the combo box to have that query selected.  If not (or if no
     //query was previously selected), leave the combo box a index 0.
-    if (m_blastSearchDialog->m_queryBeforeBlastDialog != 0 &&
-            g_blastSearch->m_blastQueries.isQueryPresent(m_blastSearchDialog->m_queryBeforeBlastDialog))
+    if (queryBefore != 0 && g_blastSearch->m_blastQueries.isQueryPresent(queryBefore))
     {
-        int indexOfQuery = ui->blastQueryComboBox->findText(m_blastSearchDialog->m_queryBeforeBlastDialog->getName());
+        int indexOfQuery = ui->blastQueryComboBox->findText(queryBefore->getName());
         if (indexOfQuery != -1)
             ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
     }
-    m_blastSearchDialog->m_queryBeforeBlastDialog = 0;
 
-    if (m_blastSearchDialog->m_blastSearchConducted)
+    if (ui->blastQueryComboBox->count() > 0)
     {
-        if (ui->blastQueryComboBox->count() > 0)
-        {
-            //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
-            if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
-                    g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
-                setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
-        }
+        //If the colouring scheme is not currently BLAST hits, change it to BLAST hits now
+        if (g_settings->nodeColourScheme != BLAST_HITS_RAINBOW_COLOUR &&
+                g_settings->nodeColourScheme != BLAST_HITS_SOLID_COLOUR)
+            setNodeColourSchemeComboBox(BLAST_HITS_SOLID_COLOUR);
     }
 
+    g_blastSearch->blastQueryChanged(ui->blastQueryComboBox->currentText());
     g_graphicsView->viewport()->update();
 }
 
