@@ -113,6 +113,10 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
         setUiStep(BLAST_SEARCH_COMPLETE);
     }
 
+    //Call this function to disable rows in either table that are for queries
+    //the user has hidden.
+    queryShownChanged();
+
     setInfoTexts();
 
     connect(ui->buildBlastDatabaseButton, SIGNAL(clicked()), this, SLOT(buildBlastDatabaseInThread()));
@@ -840,10 +844,9 @@ void BlastSearchDialog::setInfoTexts()
                                                "Colour: Each query is automatically assigned a colour which is used for the "
                                                "'Blast hits (solid)' graph colour scheme. This colour can be changed by "
                                                "clicking in the table cell.<br><br>"
-                                               "Show: if this box is ticked, the query's hits will be visible in the table "
-                                               "below and it will be able to be viewed on the graph. If this box is not "
-                                               "ticked, the query's hits will be hidden in the table below and the query "
-                                               "will be hidden on the graph.<br><br>"
+                                               "Show: if this box is ticked, the query's hits will be able to be viewed "
+                                               "on the graph. If this box is not ticked, the query's hits will be hidden "
+                                               "on the graph.<br><br>"
                                                "Query name: If a query is loaded from a FASTA file, its name is the sequence "
                                                "ID (the text between the '>' and the first space in the description line). "
                                                "Query names are editable by double clicking in their table cell.<br><br>"
@@ -872,9 +875,10 @@ void BlastSearchDialog::setInfoTexts()
 //query.  It does three things:
 // 1) Updates the 'shown' status of the TableWidgetItem so the table can be
 //    sorted by that column.
-// 2) Enables/disables the QTableWidgetItems in the row to match the query's
-//    'shown' status.
-// 3) Refills the hits table, so any hits which are hidden are disabled.
+// 2) Enables/disables the QTableWidgetItems in the query table to match the
+//    query's 'shown' status.
+// 3) Enables/disables the QTableWidgetItems in the hits table to match the
+//    hit's query's 'shown' status.
 void BlastSearchDialog::queryShownChanged()
 {
     ui->blastQueriesTableWidget->blockSignals(true);
@@ -905,6 +909,31 @@ void BlastSearchDialog::queryShownChanged()
         ui->blastQueriesTableWidget->item(i, 7)->setFlags(enabled | Qt::ItemIsSelectable | Qt::ItemIsEditable); //paths
     }
 
-    fillHitsTable();
+    for (int i = 0; i < ui->blastHitsTableWidget->rowCount(); ++i)
+    {
+        QString queryName = ui->blastHitsTableWidget->item(i, 1)->text();
+        BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
+        if (query == 0)
+            continue;
+
+        //Hits for hidden queries will be disabled.
+        Qt::ItemFlag enabled = Qt::NoItemFlags;
+        if (query->isShown())
+            enabled = Qt::ItemIsEnabled;
+
+        ui->blastHitsTableWidget->item(i, 1)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 2)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 3)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 4)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 5)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 6)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 7)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 8)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 9)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 10)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 11)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 12)->setFlags(enabled | Qt::ItemIsSelectable);
+    }
+
     ui->blastQueriesTableWidget->blockSignals(false);
 }
