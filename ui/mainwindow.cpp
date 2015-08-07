@@ -1431,8 +1431,6 @@ void MainWindow::openAboutDialog()
 
 void MainWindow::openBlastSearchDialog()
 {
-    g_memory->queryBeforeBlastDialog = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
-
     //If a BLAST search dialog does not current exist, make it.
     if (m_blastSearchDialog == 0)
     {
@@ -1440,7 +1438,10 @@ void MainWindow::openBlastSearchDialog()
         m_blastSearchDialog->setModal(true);
         connect(m_blastSearchDialog, SIGNAL(rejected()), this, SLOT(blastSearchDialogClosed()));
     }
+
     m_blastSearchDialog->m_blastSearchConducted = false;
+    m_blastSearchDialog->m_queryBeforeBlastDialog = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
+
     m_blastSearchDialog->show();
 }
 
@@ -1453,14 +1454,14 @@ void MainWindow::blastSearchDialogClosed()
     //Look to see if the query selected before is still present.  If so,
     //set the combo box to have that query selected.  If not (or if no
     //query was previously selected), leave the combo box a index 0.
-    if (g_memory->queryBeforeBlastDialog != 0 &&
-            g_blastSearch->m_blastQueries.isQueryPresent(g_memory->queryBeforeBlastDialog))
+    if (m_blastSearchDialog->m_queryBeforeBlastDialog != 0 &&
+            g_blastSearch->m_blastQueries.isQueryPresent(m_blastSearchDialog->m_queryBeforeBlastDialog))
     {
-        int indexOfQuery = ui->blastQueryComboBox->findText(g_memory->queryBeforeBlastDialog->getName());
+        int indexOfQuery = ui->blastQueryComboBox->findText(m_blastSearchDialog->m_queryBeforeBlastDialog->getName());
         if (indexOfQuery != -1)
             ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
     }
-    g_memory->queryBeforeBlastDialog = 0;
+    m_blastSearchDialog->m_queryBeforeBlastDialog = 0;
 
     if (m_blastSearchDialog->m_blastSearchConducted)
     {

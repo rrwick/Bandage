@@ -19,8 +19,6 @@ Memory::Memory()
     distancePathSearchQuery2 = "";
     distancePathSearchQuery1Path = "";
     distancePathSearchQuery2Path = "";
-
-    queryBeforeBlastDialog = 0;
 }
 
 

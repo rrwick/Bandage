@@ -26,6 +26,7 @@
 #include "../program/globals.h"
 
 class DeBruijnNode;
+class BlastQuery;
 
 namespace Ui {
 class BlastSearchDialog;
@@ -40,6 +41,11 @@ public:
     ~BlastSearchDialog();
 
     bool m_blastSearchConducted;
+
+    //This stores the BLAST query selected by the user when the BLAST search
+    //dialog is opened/shown.  It is remembered so the same query can be
+    //selected (if possible) when the dialog is closed/hidden.
+    BlastQuery * m_queryBeforeBlastDialog;
 
 private:
     Ui::BlastSearchDialog *ui;

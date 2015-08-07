@@ -51,6 +51,7 @@
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
     m_blastSearchConducted(false),
+    m_queryBeforeBlastDialog(0),
     ui(new Ui::BlastSearchDialog),
     m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"), m_tblastnCommand("tblastn")
 
