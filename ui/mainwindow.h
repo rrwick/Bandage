@@ -33,6 +33,7 @@
 class GraphicsViewZoom;
 class MyGraphicsScene;
 class DeBruijnNode;
+class BlastSearchDialog;
 
 namespace Ui {
 class MainWindow;
@@ -58,6 +59,7 @@ private:
     QString m_fileToLoadOnStartup;
     bool m_drawGraphAfterLoad;
     UiState m_uiState;
+    BlastSearchDialog * m_blastSearchDialog;
 
     void cleanUp();
     void displayGraphDetails();
@@ -112,6 +114,7 @@ private slots:
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
     void openBlastSearchDialog();
+    void blastSearchDialogClosed();
     void blastQueryChanged();
     void showHidePanels();
     void graphLayoutCancelled();

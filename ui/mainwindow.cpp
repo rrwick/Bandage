@@ -69,7 +69,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)"),
     m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad),
-    m_uiState(NO_GRAPH_LOADED)
+    m_uiState(NO_GRAPH_LOADED), m_blastSearchDialog(0)
 {
     ui->setupUi(this);
 
@@ -236,6 +236,12 @@ void MainWindow::cleanUp()
     g_memory->userSpecifiedPath = Path();
     g_memory->userSpecifiedPathString = "";
     g_memory->userSpecifiedPathCircular = false;
+
+    if (m_blastSearchDialog != 0)
+    {
+        delete m_blastSearchDialog;
+        m_blastSearchDialog = 0;
+    }
 }
 
 
@@ -1425,11 +1431,21 @@ void MainWindow::openAboutDialog()
 
 void MainWindow::openBlastSearchDialog()
 {
-    BlastQuery * beforeQuery = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
+    g_memory->queryBeforeBlastDialog = g_blastSearch->m_blastQueries.getQueryFromName(ui->blastQueryComboBox->currentText());
 
-    BlastSearchDialog blastSearchDialog(this);
-    blastSearchDialog.exec();
+    //If a BLAST search dialog does not current exist, make it.
+    if (m_blastSearchDialog == 0)
+    {
+        m_blastSearchDialog = new BlastSearchDialog(this);
+        m_blastSearchDialog->setModal(true);
+        connect(m_blastSearchDialog, SIGNAL(rejected()), this, SLOT(blastSearchDialogClosed()));
+    }
+    m_blastSearchDialog->m_blastSearchConducted = false;
+    m_blastSearchDialog->show();
+}
 
+void MainWindow::blastSearchDialogClosed()
+{
     //Rebuild the query combo box, in case the user changed the queries or
     //their names.
     setupBlastQueryComboBox();
@@ -1437,14 +1453,16 @@ void MainWindow::openBlastSearchDialog()
     //Look to see if the query selected before is still present.  If so,
     //set the combo box to have that query selected.  If not (or if no
     //query was previously selected), leave the combo box a index 0.
-    if (beforeQuery != 0 && g_blastSearch->m_blastQueries.isQueryPresent(beforeQuery))
+    if (g_memory->queryBeforeBlastDialog != 0 &&
+            g_blastSearch->m_blastQueries.isQueryPresent(g_memory->queryBeforeBlastDialog))
     {
-        int indexOfQuery = ui->blastQueryComboBox->findText(beforeQuery->getName());
+        int indexOfQuery = ui->blastQueryComboBox->findText(g_memory->queryBeforeBlastDialog->getName());
         if (indexOfQuery != -1)
             ui->blastQueryComboBox->setCurrentIndex(indexOfQuery);
     }
+    g_memory->queryBeforeBlastDialog = 0;
 
-    if (blastSearchDialog.m_blastSearchConducted)
+    if (m_blastSearchDialog->m_blastSearchConducted)
     {
         if (ui->blastQueryComboBox->count() > 0)
         {

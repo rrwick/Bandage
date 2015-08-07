@@ -6,6 +6,8 @@
 #include <QList>
 #include <QStringList>
 
+class BlastQuery;
+
 class Memory
 {
 public:
@@ -36,7 +38,10 @@ public:
     QString distancePathSearchQuery1Path;
     QString distancePathSearchQuery2Path;
 
-
+    //This stores the BLAST query selected by the user when the BLAST search
+    //dialog is opened/shown.  It is remembered so the same query can be
+    //selected (if possible) when the dialog is closed/hidden.
+    BlastQuery * queryBeforeBlastDialog;
 
 };
 
