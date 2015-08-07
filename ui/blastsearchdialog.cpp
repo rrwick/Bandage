@@ -273,38 +273,33 @@ void BlastSearchDialog::fillHitsTable()
         BlastHit * hit = g_blastSearch->m_allHits[i].data();
         BlastQuery * hitQuery = hit->m_query;
 
-        //Hits for hidden queries will be not enabled.
-        Qt::ItemFlag enabled = Qt::NoItemFlags;
-        if (hitQuery->isShown())
-            enabled = Qt::ItemIsEnabled;
-
         QTableWidgetItem * queryColour = new QTableWidgetItem(hitQuery->getColour().name());
-        queryColour->setFlags(enabled);
+        queryColour->setFlags(Qt::ItemIsEnabled);
         queryColour->setBackground(hitQuery->getColour());
         QTableWidgetItem * queryName = new QTableWidgetItem(hitQuery->getName());
-        queryName->setFlags(enabled | Qt::ItemIsSelectable);
+        queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
-        nodeName->setFlags(enabled | Qt::ItemIsSelectable);
+        nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * percentIdentity = new TableWidgetItemDouble(QString::number(hit->m_percentIdentity) + "%");
-        percentIdentity->setFlags(enabled | Qt::ItemIsSelectable);
+        percentIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * alignmentLength = new TableWidgetItemInt(formatIntForDisplay(hit->m_alignmentLength));
-        alignmentLength->setFlags(enabled | Qt::ItemIsSelectable);
+        alignmentLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * numberMismatches = new TableWidgetItemInt(formatIntForDisplay(hit->m_numberMismatches));
-        numberMismatches->setFlags(enabled | Qt::ItemIsSelectable);
+        numberMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * numberGapOpens = new TableWidgetItemInt(formatIntForDisplay(hit->m_numberGapOpens));
-        numberGapOpens->setFlags(enabled | Qt::ItemIsSelectable);
+        numberGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * queryStart = new TableWidgetItemInt(formatIntForDisplay(hit->m_queryStart));
-        queryStart->setFlags(enabled | Qt::ItemIsSelectable);
+        queryStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * queryEnd = new TableWidgetItemInt(formatIntForDisplay(hit->m_queryEnd));
-        queryEnd->setFlags(enabled | Qt::ItemIsSelectable);
+        queryEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * nodeStart = new TableWidgetItemInt(formatIntForDisplay(hit->m_nodeStart));
-        nodeStart->setFlags(enabled | Qt::ItemIsSelectable);
+        nodeStart->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemInt * nodeEnd = new TableWidgetItemInt(formatIntForDisplay(hit->m_nodeEnd));
-        nodeEnd->setFlags(enabled | Qt::ItemIsSelectable);
+        nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * eValue = new TableWidgetItemDouble(QString::number(hit->m_eValue));
-        eValue->setFlags(enabled | Qt::ItemIsSelectable);
+        eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         TableWidgetItemDouble * bitScore = new TableWidgetItemDouble(QString::number(hit->m_bitScore));
-        bitScore->setFlags(enabled | Qt::ItemIsSelectable);
+        bitScore->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->blastHitsTableWidget->setItem(i, 0, queryColour);
         ui->blastHitsTableWidget->setItem(i, 1, queryName);
@@ -875,13 +870,17 @@ void BlastSearchDialog::setInfoTexts()
 //query.  It does three things:
 // 1) Updates the 'shown' status of the TableWidgetItem so the table can be
 //    sorted by that column.
-// 2) Enables/disables the QTableWidgetItems in the query table to match the
-//    query's 'shown' status.
-// 3) Enables/disables the QTableWidgetItems in the hits table to match the
-//    hit's query's 'shown' status.
+// 2) Colours the QTableWidgetItems in the query table to match the query's
+//    'shown' status.
+// 3) Colours the QTableWidgetItems in the hits table to match the hit's query's
+//    'shown' status.
 void BlastSearchDialog::queryShownChanged()
 {
     ui->blastQueriesTableWidget->blockSignals(true);
+
+    QTableWidgetItem tempItem;
+    QColor shownColour = tempItem.foreground().color();
+    QColor hiddenColour = QColor(150, 150, 150);
 
     for (int i = 0; i < ui->blastQueriesTableWidget->rowCount(); ++i)
     {
@@ -897,16 +896,15 @@ void BlastSearchDialog::queryShownChanged()
             continue;
         shownItem->m_shown = query->isShown();
 
-        //Hidden queries will be disabled.
-        Qt::ItemFlag enabled = Qt::NoItemFlags;
-        if (query->isShown())
-            enabled = Qt::ItemIsEnabled;
-        ui->blastQueriesTableWidget->item(i, 2)->setFlags(enabled | Qt::ItemIsSelectable | Qt::ItemIsEditable); //name
-        ui->blastQueriesTableWidget->item(i, 3)->setFlags(enabled | Qt::ItemIsSelectable); //type
-        ui->blastQueriesTableWidget->item(i, 4)->setFlags(enabled | Qt::ItemIsSelectable); //length
-        ui->blastQueriesTableWidget->item(i, 5)->setFlags(enabled | Qt::ItemIsSelectable); //hits
-        ui->blastQueriesTableWidget->item(i, 6)->setFlags(enabled | Qt::ItemIsSelectable); //percent
-        ui->blastQueriesTableWidget->item(i, 7)->setFlags(enabled | Qt::ItemIsSelectable | Qt::ItemIsEditable); //paths
+        QColor colour = shownColour;
+        if (query->isHidden())
+            colour = hiddenColour;
+        ui->blastQueriesTableWidget->item(i, 2)->setForeground(colour);
+        ui->blastQueriesTableWidget->item(i, 3)->setForeground(colour);
+        ui->blastQueriesTableWidget->item(i, 4)->setForeground(colour);
+        ui->blastQueriesTableWidget->item(i, 5)->setForeground(colour);
+        ui->blastQueriesTableWidget->item(i, 6)->setForeground(colour);
+        ui->blastQueriesTableWidget->item(i, 7)->setForeground(colour);
     }
 
     for (int i = 0; i < ui->blastHitsTableWidget->rowCount(); ++i)
@@ -916,23 +914,22 @@ void BlastSearchDialog::queryShownChanged()
         if (query == 0)
             continue;
 
-        //Hits for hidden queries will be disabled.
-        Qt::ItemFlag enabled = Qt::NoItemFlags;
-        if (query->isShown())
-            enabled = Qt::ItemIsEnabled;
+        QColor colour = shownColour;
+        if (query->isHidden())
+            colour = hiddenColour;
 
-        ui->blastHitsTableWidget->item(i, 1)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 2)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 3)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 4)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 5)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 6)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 7)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 8)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 9)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 10)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 11)->setFlags(enabled | Qt::ItemIsSelectable);
-        ui->blastHitsTableWidget->item(i, 12)->setFlags(enabled | Qt::ItemIsSelectable);
+        ui->blastHitsTableWidget->item(i, 1)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 2)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 3)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 4)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 5)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 6)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 7)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 8)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 9)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 10)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 11)->setForeground(colour);
+        ui->blastHitsTableWidget->item(i, 12)->setForeground(colour);
     }
 
     ui->blastQueriesTableWidget->blockSignals(false);
