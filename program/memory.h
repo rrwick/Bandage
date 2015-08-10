@@ -2,9 +2,9 @@
 #define MEMORY_H
 
 #include "../program/globals.h"
-#include "../graph/path.h"
 #include <QList>
 #include <QStringList>
+#include "../graph/querydistance.h"
 
 class Memory
 {
@@ -26,9 +26,7 @@ public:
     bool userSpecifiedPathCircular;
 
     //These store the results of a distance search between two queries.
-    QStringList distanceSearchOrientations;
-    QList<int> distanceSearchDistances;
-    QList<Path> distanceSearchPaths;
+    QList<QueryDistance> distanceSearchResults;
 
     //These store the last used distance path search queries/paths.
     QString distancePathSearchQuery1;

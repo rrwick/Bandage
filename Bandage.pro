@@ -72,7 +72,8 @@ SOURCES += \
     ui/tablewidgetitemdouble.cpp \
     ui/tablewidgetitemshown.cpp \
     program/memory.cpp \
-    command_line/distance.cpp
+    command_line/distance.cpp \
+    graph/querydistance.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -118,7 +119,8 @@ HEADERS  += \
     ui/tablewidgetitemdouble.h \
     ui/tablewidgetitemshown.h \
     program/memory.h \
-    command_line/distance.h
+    command_line/distance.h \
+    graph/querydistance.h
 
 FORMS    += \
     ui/mainwindow.ui \

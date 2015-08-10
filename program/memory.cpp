@@ -31,10 +31,7 @@ void Memory::clearGraphSpecificMemory()
     userSpecifiedPathString = "";
     userSpecifiedPathCircular = false;
 
-    distanceSearchOrientations.clear();
-    distanceSearchDistances.clear();
-    distanceSearchPaths.clear();
-
+    distanceSearchResults.clear();
     distancePathSearchQuery1 = "";
     distancePathSearchQuery2 = "";
     distancePathSearchQuery1Path = "";

@@ -1516,9 +1516,10 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
                                           int pathSearchDepth,
                                           int minDistance, int maxDistance)
 {
-    g_memory->distanceSearchDistances.clear();
-    g_memory->distanceSearchPaths.clear();
-    g_memory->distanceSearchOrientations.clear();
+    g_memory->distanceSearchResults.clear();
+
+    QList<Path> paths;
+    QStringList orientations;
 
     for (int i = 0; i < query1Paths.size(); ++i)
     {
@@ -1533,9 +1534,9 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
             {
                 GraphLocation start = query1Path.getEndLocation();
                 GraphLocation end = query2Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("1-> 2->");
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("1-> 2->");
             }
 
             //Second orientation to check: 2-> 1->
@@ -1543,9 +1544,9 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
             {
                 GraphLocation start = query2Path.getEndLocation();
                 GraphLocation end = query1Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("2-> 1->");
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("2-> 1->");
             }
 
             //Third orientation to check: 1-> <-2
@@ -1553,9 +1554,9 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
             {
                 GraphLocation start = query1Path.getEndLocation();
                 GraphLocation end = query2Path.getEndLocation().reverseComplementLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("1-> <-2");
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("1-> <-2");
             }
 
             //Fourth orientation to check: <-1 2->
@@ -1563,35 +1564,29 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
             {
                 GraphLocation start = query1Path.getStartLocation().reverseComplementLocation();
                 GraphLocation end = query2Path.getStartLocation();
-                g_memory->distanceSearchPaths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
-                while (g_memory->distanceSearchOrientations.size() < g_memory->distanceSearchPaths.size())
-                    g_memory->distanceSearchOrientations.push_back("<-1 2->");
+                paths.append(Path::getAllPossiblePaths(start, end, pathSearchDepth, minDistance, maxDistance));
+                while (orientations.size() < paths.size())
+                    orientations.push_back("<-1 2->");
             }
         }
     }
 
-    //Save the distances for each path.
-    for (int i = 0; i < g_memory->distanceSearchPaths.size(); ++i)
-        g_memory->distanceSearchDistances.push_back(g_memory->distanceSearchPaths[i].getLength());
+    //Save the results in the Memory object.
+    for (int i = 0; i < paths.size(); ++i)
+        g_memory->distanceSearchResults.push_back(QueryDistance(paths[i], orientations[i]));
 
     //Duplicate paths are possible, because a query can have multiple paths
     //that start and/or end at the same point.  So we now look for and remove
     //duplicates.
-    QStringList uniqueDistanceSearchOrientations;
-    QList<int> uniqueDistanceSearchDistances;
-    QList<Path> uniqueDistanceSearchPaths;
-    int pathCount = g_memory->distanceSearchPaths.size();
-    for (int i = 0; i < pathCount; ++i)
+    QList<QueryDistance> uniqueDistanceSearchResults;
+    int distanceCount = g_memory->distanceSearchResults.size();
+    for (int i = 0; i < distanceCount; ++i)
     {
-        QString orientation = g_memory->distanceSearchOrientations[i];
-        int distance = g_memory->distanceSearchDistances[i];
-        Path path = g_memory->distanceSearchPaths[i];
+        QueryDistance distance = g_memory->distanceSearchResults[i];
         bool match = false;
-        for (int j = i + 1; j < pathCount; ++j)
+        for (int j = i + 1; j < distanceCount; ++j)
         {
-            if (distance == g_memory->distanceSearchDistances[j] &&
-                    orientation == g_memory->distanceSearchOrientations[j] &&
-                    path.areIdentical(g_memory->distanceSearchPaths[j]))
+            if (distance == g_memory->distanceSearchResults[j])
             {
                 match = true;
                 break;
@@ -1600,12 +1595,10 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
 
         if (!match)
         {
-            uniqueDistanceSearchOrientations.push_back(orientation);
-            uniqueDistanceSearchDistances.push_back(distance);
-            uniqueDistanceSearchPaths.push_back(path);
+            uniqueDistanceSearchResults.push_back(distance);
         }
     }
-    g_memory->distanceSearchOrientations = uniqueDistanceSearchOrientations;
-    g_memory->distanceSearchDistances = uniqueDistanceSearchDistances;
-    g_memory->distanceSearchPaths = uniqueDistanceSearchPaths;
+
+    std::sort(uniqueDistanceSearchResults.begin(), uniqueDistanceSearchResults.end());
+    g_memory->distanceSearchResults = uniqueDistanceSearchResults;
 }

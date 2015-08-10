@@ -98,14 +98,10 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
     //there are results, display them now.  If not, clear any results that might
     //exist.
     if (rememberedQueriesLoaded && rememberedPathsLoaded &&
-            !g_memory->distanceSearchPaths.empty())
+            !g_memory->distanceSearchResults.empty())
         fillResultsTable();
     else
-    {
-        g_memory->distanceSearchOrientations.clear();
-        g_memory->distanceSearchDistances.clear();
-        g_memory->distanceSearchPaths.clear();
-    }
+        g_memory->distanceSearchResults.clear();
 
     connect(ui->findPathsButton, SIGNAL(clicked(bool)), this, SLOT(findPaths()));
     connect(ui->query1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(query1Changed()));
@@ -198,7 +194,7 @@ void DistanceDialog::findPaths()
 
     fillResultsTable();
 
-    if (g_memory->distanceSearchPaths.size() == 0)
+    if (g_memory->distanceSearchResults.size() == 0)
         QMessageBox::information(this, "No paths", "No paths were found between the two given queries.");
 }
 
@@ -245,7 +241,7 @@ void DistanceDialog::fillPathComboBox(BlastQuery * query, QComboBox * comboBox)
 
 void DistanceDialog::fillResultsTable()
 {
-    int pathCount = g_memory->distanceSearchPaths.size();
+    int pathCount = g_memory->distanceSearchResults.size();
 
     ui->resultsTableWidget->clearContents();
     ui->resultsTableWidget->setSortingEnabled(false);
@@ -253,13 +249,13 @@ void DistanceDialog::fillResultsTable()
 
     for (int i = 0; i < pathCount; ++i)
     {
-        QTableWidgetItem * orientation = new QTableWidgetItem(g_memory->distanceSearchOrientations[i]);
+        QTableWidgetItem * orientation = new QTableWidgetItem(g_memory->distanceSearchResults[i].m_orientation);
         orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        TableWidgetItemInt * distance = new TableWidgetItemInt(formatIntForDisplay(g_memory->distanceSearchDistances[i]));
+        TableWidgetItemInt * distance = new TableWidgetItemInt(formatIntForDisplay(g_memory->distanceSearchResults[i].m_distance));
         distance->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        QTableWidgetItem * path = new QTableWidgetItem(g_memory->distanceSearchPaths[i].getString(true));
+        QTableWidgetItem * path = new QTableWidgetItem(g_memory->distanceSearchResults[i].m_path.getString(true));
         orientation->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->resultsTableWidget->setItem(i, 0, orientation);
