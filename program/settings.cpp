@@ -106,10 +106,10 @@ Settings::Settings()
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
-    queryRequiredCoverage = 0.95;
+    queryRequiredCoverage = 0.90;
     queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
-    maxQueryPaths = 10;
+    maxQueryPaths = 100;
 
     blastSearchParameters = "";
 
