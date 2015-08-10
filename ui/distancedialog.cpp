@@ -113,6 +113,10 @@ DistanceDialog::DistanceDialog(QWidget *parent) :
     connect(ui->maxNodesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
     connect(ui->maxPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
     connect(ui->minPathDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(saveSettings()));
+    connect(ui->orientation1CheckBox, SIGNAL(toggled(bool)), this, SLOT(saveSettings()));
+    connect(ui->orientation2CheckBox, SIGNAL(toggled(bool)), this, SLOT(saveSettings()));
+    connect(ui->orientation3CheckBox, SIGNAL(toggled(bool)), this, SLOT(saveSettings()));
+    connect(ui->orientation4CheckBox, SIGNAL(toggled(bool)), this, SLOT(saveSettings()));
 }
 
 DistanceDialog::~DistanceDialog()
@@ -141,7 +145,6 @@ void DistanceDialog::findPaths()
         return;
     }
 
-    int pathSearchDepth = g_settings->distancePathSearchDepth;
     int minDistance = g_settings->minDistancePathLength;
     int maxDistance = g_settings->maxDistancePathLength;
 
@@ -184,11 +187,12 @@ void DistanceDialog::findPaths()
         progress.show();
 
         g_assemblyGraph->conductDistanceSearch(query1Paths, query2Paths,
-                                               ui->orientation1CheckBox->isChecked(),
-                                               ui->orientation2CheckBox->isChecked(),
-                                               ui->orientation3CheckBox->isChecked(),
-                                               ui->orientation4CheckBox->isChecked(),
-                                               pathSearchDepth, minDistance,
+                                               g_settings->distanceOrientation1,
+                                               g_settings->distanceOrientation2,
+                                               g_settings->distanceOrientation3,
+                                               g_settings->distanceOrientation4,
+                                               g_settings->distancePathSearchDepth,
+                                               minDistance,
                                                maxDistance);
     }
 
@@ -278,6 +282,10 @@ void DistanceDialog::loadSettings()
     ui->maxNodesSpinBox->setValue(g_settings->distancePathSearchDepth + 1);
     ui->minPathDistanceSpinBox->setValue(g_settings->minDistancePathLength);
     ui->maxPathDistanceSpinBox->setValue(g_settings->maxDistancePathLength);
+    ui->orientation1CheckBox->setChecked(g_settings->distanceOrientation1);
+    ui->orientation2CheckBox->setChecked(g_settings->distanceOrientation2);
+    ui->orientation3CheckBox->setChecked(g_settings->distanceOrientation3);
+    ui->orientation4CheckBox->setChecked(g_settings->distanceOrientation4);
 }
 
 void DistanceDialog::saveSettings()
@@ -285,6 +293,10 @@ void DistanceDialog::saveSettings()
     g_settings->distancePathSearchDepth = ui->maxNodesSpinBox->value() - 1;
     g_settings->minDistancePathLength = ui->minPathDistanceSpinBox->value();
     g_settings->maxDistancePathLength = ui->maxPathDistanceSpinBox->value();
+    g_settings->distanceOrientation1 = ui->orientation1CheckBox->isChecked();
+    g_settings->distanceOrientation2 = ui->orientation2CheckBox->isChecked();
+    g_settings->distanceOrientation3 = ui->orientation3CheckBox->isChecked();
+    g_settings->distanceOrientation4 = ui->orientation4CheckBox->isChecked();
 }
 
 

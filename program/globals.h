@@ -48,7 +48,8 @@ enum BlastUiState {BLAST_DB_NOT_YET_BUILT, BLAST_DB_BUILD_IN_PROGRESS,
                    BLAST_DB_BUILT_BUT_NO_QUERIES,
                    READY_FOR_BLAST_SEARCH, BLAST_SEARCH_IN_PROGRESS,
                    BLAST_SEARCH_COMPLETE};
-enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE};
+enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE,
+                         BANDAGE_DISTANCE};
 enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
                       AUTO_DETERMINED_EXACT_OVERLAP};
 

@@ -71,7 +71,8 @@ SOURCES += \
     ui/tablewidgetitemint.cpp \
     ui/tablewidgetitemdouble.cpp \
     ui/tablewidgetitemshown.cpp \
-    program/memory.cpp
+    program/memory.cpp \
+    command_line/distance.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -116,7 +117,8 @@ HEADERS  += \
     ui/tablewidgetitemint.h \
     ui/tablewidgetitemdouble.h \
     ui/tablewidgetitemshown.h \
-    program/memory.h
+    program/memory.h \
+    command_line/distance.h
 
 FORMS    += \
     ui/mainwindow.ui \
