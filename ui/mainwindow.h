@@ -96,7 +96,9 @@ private slots:
     void drawGraph();
     void zoomSpinBoxChanged();
     void zoomedWithMouseWheel();
+    void copySelectedSequencesToClipboardActionTriggered();
     void copySelectedSequencesToClipboard();
+    void saveSelectedSequencesToFileActionTriggered();
     void saveSelectedSequencesToFile();
     void copySelectedPathToClipboard();
     void saveSelectedPathToFile();

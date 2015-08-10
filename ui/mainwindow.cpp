@@ -126,8 +126,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
     connect(m_graphicsViewZoom, SIGNAL(zoomed()), this, SLOT(zoomedWithMouseWheel()));
-    connect(ui->actionCopy_selected_node_sequences_to_clipboard, SIGNAL(triggered()), this, SLOT(copySelectedSequencesToClipboard()));
-    connect(ui->actionSave_selected_node_sequences_to_FASTA, SIGNAL(triggered()), this, SLOT(saveSelectedSequencesToFile()));
+    connect(ui->actionCopy_selected_node_sequences_to_clipboard, SIGNAL(triggered()), this, SLOT(copySelectedSequencesToClipboardActionTriggered()));
+    connect(ui->actionSave_selected_node_sequences_to_FASTA, SIGNAL(triggered()), this, SLOT(saveSelectedSequencesToFileActionTriggered()));
     connect(ui->actionCopy_selected_node_path_to_clipboard, SIGNAL(triggered(bool)), this, SLOT(copySelectedPathToClipboard()));
     connect(ui->actionSave_selected_node_path_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveSelectedPathToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
@@ -805,15 +805,27 @@ void MainWindow::zoomToFitRect(QRectF rect)
 }
 
 
+
+//This function copies selected sequences to clipboard, if any sequences are
+//selected.  If there aren't, then it will prompt the user.
+void MainWindow::copySelectedSequencesToClipboardActionTriggered()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+        QMessageBox::information(this, "Copy sequences to clipboard", "No nodes are selected.\n\n"
+                                                                      "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
+    else
+        copySelectedSequencesToClipboard();
+}
+
+
+//This function copies selected sequences to clipboard, if any sequences are
+//selected.
 void MainWindow::copySelectedSequencesToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
-    {
-        QMessageBox::information(this, "Copy sequences to clipboard", "No nodes are selected.\n\n"
-                                                                      "You must first select nodes in the graph before you can copy their sequences to the clipboard.");
         return;
-    }
 
     QClipboard * clipboard = QApplication::clipboard();
     QString clipboardText;
@@ -829,16 +841,26 @@ void MainWindow::copySelectedSequencesToClipboard()
 }
 
 
+//This function saves selected sequences to file, with a save file prompt, if
+//any sequences are selected.  If there aren't, then it will prompt the user.
+void MainWindow::saveSelectedSequencesToFileActionTriggered()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+        QMessageBox::information(this, "Save sequences to FASTA", "No nodes are selected.\n\n"
+                                                                  "You must first select nodes in the graph before you can save their sequences to a FASTA file.");
+    else
+        saveSelectedSequencesToFile();
+}
 
+
+//This function saves selected sequences to file, with a save file prompt, if
+//any sequences are selected.
 void MainWindow::saveSelectedSequencesToFile()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
-    {
-        QMessageBox::information(this, "Save sequences to FASTA", "No nodes are selected.\n\n"
-                                                                  "You must first select nodes in the graph before you can save their sequences to a FASTA file.");
         return;
-    }
 
     QString defaultFileNameAndPath = g_memory->rememberedPath + "/selected_sequences.fasta";
 
