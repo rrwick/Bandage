@@ -120,7 +120,17 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
 
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
 
-    if (event->matches(QKeySequence::ZoomIn) ||
+    //Ctrl+C (Command+C on Mac) copies the selected sequences to the clipboard.
+    if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
+        emit copySelectedSequencesToClipboard();
+
+    //Ctrl+S (Command+S on Mac) saves the selected sequences to a FASTA file.
+    else if (event->key() == Qt::Key_S && (event->modifiers() & Qt::ControlModifier))
+        emit saveSelectedSequencesToFile();
+
+    //Ctrl+plus (Command+plus on Mac) zooms the view in.  If shift is pressed
+    //as well, then it rotates clockwise.
+    else if (event->matches(QKeySequence::ZoomIn) ||
             event->key() == Qt::Key_Equal ||
             event->key() == Qt::Key_Plus)
     {
@@ -132,6 +142,9 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
         else
             angle = 120;
     }
+
+    //Ctrl+minus (Command+mins on Mac) zooms the view out.  If shift is pressed
+    //as well, then it rotates anticlockwise.
     else if (event->matches(QKeySequence::ZoomOut) ||
              event->key() == Qt::Key_Minus ||
              event->key() == Qt::Key_Underscore)
@@ -145,12 +158,15 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
             angle = -120;
     }
 
+    //Actually change the zoom now, if appropriate.
     if (angle != 0)
     {
         double factor = qPow(m_zoom->_zoom_factor_base, angle);
         m_zoom->gentle_zoom(factor, KEYBOARD);
     }
 
+    //The event press event handling of QGraphicsView will take care of using
+    //the arrow keys to adjust scroll bars.
     QGraphicsView::keyPressEvent(event);
 }
 

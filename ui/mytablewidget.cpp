@@ -95,8 +95,7 @@ void MyTableWidget::showEvent(QShowEvent * event)
 //http://stackoverflow.com/questions/3135737/copying-part-of-qtableview
 void MyTableWidget::keyPressEvent(QKeyEvent* event)
 {
-    // If Ctrl-C typed
-    // Or use event->matches(QKeySequence::Copy)
+    //If Ctrl-C typed (Command-C on Mac)
     if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
     {
         QModelIndexList cells = selectedIndexes();

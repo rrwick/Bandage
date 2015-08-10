@@ -55,6 +55,8 @@ private:
 
 signals:
     void doubleClickedNode(DeBruijnNode * node);
+    void copySelectedSequencesToClipboard();
+    void saveSelectedSequencesToFile();
 };
 
 #endif // MYGRAPHICSVIEW_H

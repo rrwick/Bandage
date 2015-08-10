@@ -1854,9 +1854,6 @@
    <property name="toolTip">
     <string>Copy node sequences to clipboard</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
-   </property>
   </action>
   <action name="actionSave_selected_node_sequences_to_FASTA">
    <property name="icon">
@@ -1868,9 +1865,6 @@
    </property>
    <property name="toolTip">
     <string>Save node sequences to FASTA</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionSelect_none">
