@@ -1569,4 +1569,43 @@ void AssemblyGraph::conductDistanceSearch(QList<Path> query1Paths,
             }
         }
     }
+
+    //Save the distances for each path.
+    for (int i = 0; i < g_memory->distanceSearchPaths.size(); ++i)
+        g_memory->distanceSearchDistances.push_back(g_memory->distanceSearchPaths[i].getLength());
+
+//    //Duplicate paths are possible, because a query can have multiple paths
+//    //that start and/or end at the same point.  So we now look for and remove
+//    //duplicates.
+//    QStringList uniqueDistanceSearchOrientations;
+//    QList<int> uniqueDistanceSearchDistances;
+//    QList<Path> uniqueDistanceSearchPaths;
+//    int pathCount = g_memory->distanceSearchPaths.size();
+//    for (int i = 0; i < pathCount; ++i)
+//    {
+//        QString orientation = g_memory->distanceSearchOrientations[i];
+//        int distance = g_memory->distanceSearchDistances[i];
+//        Path path = g_memory->distanceSearchPaths[i];
+//        bool match = false;
+//        for (int j = i + 1; j < pathCount; ++j)
+//        {
+//            if (distance == g_memory->distanceSearchDistances[j] &&
+//                    orientation == g_memory->distanceSearchOrientations[j] &&
+//                    path.areIdentical(g_memory->distanceSearchPaths[j]))
+//            {
+//                match = true;
+//                break;
+//            }
+//        }
+
+//        if (!match)
+//        {
+//            uniqueDistanceSearchOrientations.push_back(orientation);
+//            uniqueDistanceSearchDistances.push_back(distance);
+//            uniqueDistanceSearchPaths.push_back(path);
+//        }
+//    }
+//    g_memory->distanceSearchOrientations = uniqueDistanceSearchOrientations;
+//    g_memory->distanceSearchDistances = uniqueDistanceSearchDistances;
+//    g_memory->distanceSearchPaths = uniqueDistanceSearchPaths;
 }

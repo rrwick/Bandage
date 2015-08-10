@@ -109,11 +109,11 @@ Settings::Settings()
     queryRequiredCoverage = 0.95;
     queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
-    maxQueryPaths = 4;
+    maxQueryPaths = 10;
 
     blastSearchParameters = "";
 
-    distancePathSearchDepth = 9;
+    distancePathSearchDepth = 14;
     minDistancePathLength = 0;
     maxDistancePathLength = 1000000000;
     distanceOrientation1 = true;

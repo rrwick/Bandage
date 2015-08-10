@@ -28,7 +28,8 @@
 int bandageDistance(QStringList arguments);
 void printDistanceUsage(QTextStream * out);
 QString checkForInvalidDistanceOptions(QStringList arguments);
-void parseDistanceOptions(QStringList arguments);
+void parseDistanceOptions(QStringList arguments, bool * allQueryPaths,
+                          bool * onlyShortest, bool * showPaths);
 
 
 #endif // DISTANCE_H

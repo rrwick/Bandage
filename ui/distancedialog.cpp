@@ -196,13 +196,9 @@ void DistanceDialog::findPaths()
                                                maxDistance);
     }
 
-    int pathCount = g_memory->distanceSearchPaths.size();
-    for (int i = 0; i < pathCount; ++i)
-        g_memory->distanceSearchDistances.push_back(g_memory->distanceSearchPaths[i].getLength());
-
     fillResultsTable();
 
-    if (pathCount == 0)
+    if (g_memory->distanceSearchPaths.size() == 0)
         QMessageBox::information(this, "No paths", "No paths were found between the two given queries.");
 }
 

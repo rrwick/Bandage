@@ -20,6 +20,7 @@
 #include "commoncommandlinefunctions.h"
 #include "../program/settings.h"
 #include "../graph/assemblygraph.h"
+#include "../blast/blastsearch.h"
 
 int bandageDistance(QStringList arguments)
 {
@@ -38,11 +39,30 @@ int bandageDistance(QStringList arguments)
         return 1;
     }
 
-    QString graphFile = arguments.at(0);
+    QString graphFilename = arguments.at(0);
     arguments.pop_front();
+    if (!checkIfFileExists(graphFilename))
+    {
+        err << "Bandage error: " << graphFilename << " does not exist." << endl;
+        return 1;
+    }
 
-    QString targetFile = arguments.at(0);
+    QString queriesFilename = arguments.at(0);
     arguments.pop_front();
+    if (!checkIfFileExists(queriesFilename))
+    {
+        err << "Bandage error: " << queriesFilename << " does not exist." << endl;
+        return 1;
+    }
+    g_settings->blastQueryFilename = queriesFilename;
+
+    //Ensure that the --query option isn't used, as that would overwrite the
+    //queries file that is a positional argument.
+    if (isOptionPresent("--query", &arguments))
+    {
+        err << "Bandage error: the --query option cannot be used with Bandage distance." << endl;
+        return 1;
+    }
 
     QString error = checkForInvalidDistanceOptions(arguments);
     if (error.length() > 0)
@@ -52,12 +72,34 @@ int bandageDistance(QStringList arguments)
         return 1;
     }
 
-    parseDistanceOptions(arguments);
+    bool allQueryPaths = false;
+    bool onlyShortest = false;
+    bool showPaths = false;
+    parseDistanceOptions(arguments, &allQueryPaths, &onlyShortest, &showPaths);
 
-    bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFile);
+    bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
         return 1;
 
+    if (!createBlastTempDirectory())
+    {
+        err << "Error creating temporary directory for BLAST files" << endl;
+        return 1;
+    }
+
+    QString blastError = g_blastSearch->doAutoBlastSearch();
+    if (blastError != "")
+    {
+        err << blastError << endl;
+        return 1;
+    }
+
+
+
+
+
+
+    deleteBlastTempDirectory();
     return 0;
 }
 
@@ -69,7 +111,12 @@ void printDistanceUsage(QTextStream * out)
     *out << "Bandage distance takes two queries as input and will output (to stdout) the" << endl;
     *out << "possible orientations and distances between them in the graph." << endl;
     *out << endl;
-    *out << "Usage:    Bandage distance <graph> <query1> <query2> [options]" << endl;
+    *out << "Usage:    Bandage distance <graphfile> <queriesfile> [options]" << endl;
+    *out << endl;
+    *out << "          The <queriesfile> file must be a FASTA file with at least two" << endl;
+    *out << "          sequences. The first sequence in the file will be the first query" << endl;
+    *out << "          in the distance search and the second sequence will be the second" << endl;
+    *out << "          query. Any additional sequences in the file will be ignored." << endl;
     *out << endl;
     *out << "Options:  --allquerypaths     Use all possible query paths in the graph for the" << endl;
     *out << "                              distance search. If this option is not used," << endl;
@@ -114,15 +161,23 @@ void printDistanceUsage(QTextStream * out)
 
 QString checkForInvalidDistanceOptions(QStringList arguments)
 {
+    checkOptionWithoutValue("--allquerypaths", &arguments);
+    checkOptionWithoutValue("--onlyshortest", &arguments);
+    checkOptionWithoutValue("--showpaths", &arguments);
+
     return checkForExcessArguments(arguments);
 }
 
 
 
-void parseDistanceOptions(QStringList /*arguments*/)
+void parseDistanceOptions(QStringList arguments, bool * allQueryPaths,
+                          bool * onlyShortest, bool * showPaths)
 {
+    *allQueryPaths = isOptionPresent("--allquerypaths", &arguments);
+    *onlyShortest = isOptionPresent("--onlyshortest", &arguments);
+    *showPaths = isOptionPresent("--showpaths", &arguments);
 
-
+    parseSettings(arguments);
 }
 
 
