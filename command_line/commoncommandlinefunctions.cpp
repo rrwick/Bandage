@@ -172,12 +172,12 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              between queries' search (default: " + QString::number(g_settings->maxDistancePathLength) + ")" << endl;
     *out << endl;
     *out << "          If none of the following four flags are used, all four orientations" << endl;
-    *out << "          will be allowed in a 'distance between queries' search. If any of the" << endl;
-    *out << "          flags are used, only the specified orientations will be allowed." << endl;
-    *out << "          --distor1           Allow 1-> 2-> query orientations" << endl;
-    *out << "          --distor2           Allow 2-> 1-> query orientations" << endl;
-    *out << "          --distor3           Allow 1-> <-2 query orientations" << endl;
-    *out << "          --distor4           Allow <-1 2-> query orientations" << endl;
+    *out << "          are allowed in a 'distance between queries' search. If any of the" << endl;
+    *out << "          flags are used, only the specified orientations are allowed." << endl;
+    *out << "          --distor1           Allow 1-> 2-> query orientation" << endl;
+    *out << "          --distor2           Allow 2-> 1-> query orientation" << endl;
+    *out << "          --distor3           Allow 1-> <-2 query orientation" << endl;
+    *out << "          --distor4           Allow <-1 2-> query orientation" << endl;
     *out << endl;
 }
 

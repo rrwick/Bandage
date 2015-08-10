@@ -66,11 +66,26 @@ int bandageDistance(QStringList arguments)
 void printDistanceUsage(QTextStream * out)
 {
     *out << endl;
-    *out << "Usage:    Bandage distance <graph> <query1> <query2> [options]" << endl << endl;
-    *out << "Options:  BLAST query paths" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings control how Bandage searches for query paths after" << endl;
-    *out << "          conducting a BLAST search." << endl;
+    *out << "Bandage distance takes two queries as input and will output (to stdout) the" << endl;
+    *out << "possible orientations and distances between them in the graph." << endl;
+    *out << endl;
+    *out << "Usage:    Bandage distance <graph> <query1> <query2> [options]" << endl;
+    *out << endl;
+    *out << "Options:  --allquerypaths     Use all possible query paths in the graph for the" << endl;
+    *out << "                              distance search. If this option is not used," << endl;
+    *out << "                              Bandage will use only the single best path for" << endl;
+    *out << "                              each query." << endl;
+    *out << "          --onlyshortest      Only output the shortest path in the graph as a" << endl;
+    *out << "                              single number (default: output all paths, sorted" << endl;
+    *out << "                              from shortest to longest, in CSV format)" << endl;
+    *out << "          --showpaths         Include graph paths in the CSV output (not" << endl;
+    *out << "                              compatible with --onlyshortest option, default:" << endl;
+    *out << "                              no paths in output)" << endl;
+    *out << endl;
+    *out << "          The following options are available in the full set set of Bandage" << endl;
+    *out << "          command line options (viewable via --helpall) but are particularly" << endl;
+    *out << "          relevant for a 'distance between queries' search." << endl;
+    *out << endl;
     *out << "          --reqcov <float>    Required fraction of a BLAST query which must be" << endl;
     *out << "                              covered by a graph path (0.5 to 1.0, default:" << endl;
     *out << "                              " + QString::number(g_settings->queryRequiredCoverage) + ")" << endl;
@@ -81,6 +96,18 @@ void printDistanceUsage(QTextStream * out)
     *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
     *out << "          --maxpaths <int>    The number of BLAST query paths displayed to the" << endl;
     *out << "                              user (1 to 100, default: " << QString::number(g_settings->maxQueryPaths) + ")" << endl;
+    *out << "          --distnodes <int>   Maximum number of nodes allowed in a 'distance" << endl;
+    *out << "                              between queries' search (default: " + QString::number(g_settings->distancePathSearchDepth + 1) + ")" << endl;
+    *out << "          --distmin <int>     Minimum path distance allowed in a 'distance" << endl;
+    *out << "                              between queries' search (default: " + QString::number(g_settings->minDistancePathLength) + ")" << endl;
+    *out << "          --distmax <int>     Maximum path distance allowed in a 'distance" << endl;
+    *out << "                              between queries' search (default: " + QString::number(g_settings->maxDistancePathLength) + ")" << endl;
+    *out << "          --distor1           Allow 1-> 2-> query orientation" << endl;
+    *out << "          --distor2           Allow 2-> 1-> query orientation" << endl;
+    *out << "          --distor3           Allow 1-> <-2 query orientation" << endl;
+    *out << "          --distor4           Allow <-1 2-> query orientation" << endl;
+    *out << "                              (default: if none of the above four options are" << endl;
+    *out << "                              used, then all four orientations are allowed)" << endl;
 }
 
 
