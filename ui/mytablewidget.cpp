@@ -64,12 +64,18 @@ void MyTableWidget::resizeColumns()
     //If the code got here, then there is width to spare in the table.  Resize each column
     //(except for the first) to take up the whole width, keeping their relative size.
 
-    int newTotalColumnWidth = minColumnWidth;
+    int newTotalColumnWidth = 0.0;
     int startingColumn = 0;
     if (m_smallFirstColumn)
+    {
         startingColumn = 1;
+        newTotalColumnWidth += horizontalHeader()->sectionSize(0);
+    }
     if (m_smallSecondColumn)
+    {
         startingColumn = 2;
+        newTotalColumnWidth += horizontalHeader()->sectionSize(1);
+    }
 
     for (int i = startingColumn; i < columnCount() - 1; ++i)
     {
