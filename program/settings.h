@@ -124,7 +124,6 @@ public:
     double queryRequiredCoverage;
     double queryAllowedLengthDiscrepancy;
     int maxQueryPathNodes;
-    int maxQueryPaths;
 
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.

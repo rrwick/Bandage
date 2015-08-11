@@ -164,7 +164,6 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->queryRequiredCoverage, ui->requiredCoverageSpinBox, true);
     doubleFunctionPointer(&settings->queryAllowedLengthDiscrepancy, ui->allowedLengthDiscrepancySpinBox, true);
     intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
-    intFunctionPointer(&settings->maxQueryPaths, ui->maxPathsSpinBox);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.

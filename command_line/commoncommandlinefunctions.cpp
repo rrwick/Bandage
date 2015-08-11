@@ -157,8 +157,6 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->queryAllowedLengthDiscrepancy) + ")" << endl;
     *out << "          --pathnodes <int>   The number of allowed nodes in a BLAST query path" << endl;
     *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
-    *out << "          --maxpaths <int>    The number of BLAST query paths displayed to the" << endl;
-    *out << "                              user (1 to 100, default: " << QString::number(g_settings->maxQueryPaths) + ")" << endl;
     *out << endl;
 }
 
@@ -268,8 +266,6 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForFloat("--lendis", arguments, 0.0, 1.0);
     if (error.length() > 0) return error;
     error = checkOptionForInt("--pathnodes", arguments, 1, 50);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--maxpaths", arguments, 1, 100);
     if (error.length() > 0) return error;
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
@@ -420,8 +416,6 @@ void parseSettings(QStringList arguments)
         g_settings->queryAllowedLengthDiscrepancy = getFloatOption("--lendis", &arguments);
     if (isOptionPresent("--pathnodes", &arguments))
         g_settings->maxQueryPathNodes = getIntOption("--pathnodes", &arguments);
-    if (isOptionPresent("--maxpaths", &arguments))
-        g_settings->maxQueryPaths = getIntOption("--maxpaths", &arguments);
 }
 
 

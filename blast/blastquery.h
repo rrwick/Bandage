@@ -50,7 +50,7 @@ public:
     int getPathCount() const {return m_paths.size();}
     QString getTypeString() const;
     double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
-    QString getPathsString(int max) const;
+    QString getPathsString() const;
     bool isShown() const {return m_shown;}
     bool isHidden() const {return !m_shown;}
 

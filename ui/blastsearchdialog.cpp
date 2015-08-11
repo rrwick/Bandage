@@ -212,7 +212,7 @@ void BlastSearchDialog::makeQueryRow(int row)
     {
         hits = new TableWidgetItemInt(formatIntForDisplay(query->hitCount()));
         percent = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%");
-        paths = new QTableWidgetItem(query->getPathsString(g_settings->maxQueryPaths));
+        paths = new QTableWidgetItem(query->getPathsString());
     }
     else
     {

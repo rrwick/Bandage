@@ -109,7 +109,6 @@ Settings::Settings()
     queryRequiredCoverage = 0.90;
     queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
-    maxQueryPaths = 100;
 
     blastSearchParameters = "";
 }

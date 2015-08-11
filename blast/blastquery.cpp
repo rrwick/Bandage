@@ -310,14 +310,14 @@ bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck
 
 
 //This function returns the paths in string form, if any exist.
-QString BlastQuery::getPathsString(int max) const
+QString BlastQuery::getPathsString() const
 {
     if (m_paths.empty())
         return "-";
 
     QString pathsString;
 
-    int count = std::min(m_paths.size(), max);
+    int count = m_paths.size();
     for (int i = 0; i < count; ++i)
     {
         pathsString += m_paths[i].getString(true);
