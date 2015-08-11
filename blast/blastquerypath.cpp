@@ -166,18 +166,40 @@ int BlastQueryPath::getTotalHitGapOpens() const
     return total;
 }
 
+
+//This function is used for sorting the paths for a query from best to worst.
+//it uses < to mean 'better than'.
 bool BlastQueryPath::operator<(BlastQueryPath const &other) const
 {
+    //First we compare using the E-value product.  This seems to value stronger
+    //hits as well as paths with fewer, longer hits.
     long double aEValueProduct = getEvalueProduct();
     long double bEValueProduct = other.getEvalueProduct();
-
     if (aEValueProduct != bEValueProduct)
         return aEValueProduct < bEValueProduct;
 
-    //If the code got here, then the two paths have the same evalue product,
-    //probably because they contain the same hits.  In this case, we use their
-    //length discrepency.
+    //If the code got here, then the two paths have the same e-value product,
+    //possibly because they contain the same hits, or possibly because they both
+    //contain hits so strong as to have an e-value of zero.
 
-    return getRelativeLengthDiscrepancy() < other.getRelativeLengthDiscrepancy();
+    //Now we compare using mean percent identity.
+    double aMeanPercIdentity = getMeanHitPercIdentity();
+    double bMeanPercIdentity = other.getMeanHitPercIdentity();
+    if (aMeanPercIdentity != bMeanPercIdentity)
+        return aMeanPercIdentity > bMeanPercIdentity;
+
+    //Now we use length discrepancy.
+    double aLengthDiscrepancy = getRelativeLengthDiscrepancy();
+    double bLengthDiscrepancy = other.getRelativeLengthDiscrepancy();
+    if (aLengthDiscrepancy != bLengthDiscrepancy)
+        return aLengthDiscrepancy < bLengthDiscrepancy;
+
+    //Now we use fraction of query covered by hits.
+    double aHitsQueryCoverage = getHitsQueryCoverage();
+    double bHitsQueryCoverage = other.getHitsQueryCoverage();
+    if (aHitsQueryCoverage != bHitsQueryCoverage)
+        return aHitsQueryCoverage > bHitsQueryCoverage;
+
+    return false;
 }
 
