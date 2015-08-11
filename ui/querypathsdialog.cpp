@@ -16,6 +16,15 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
                                                "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
                                                "Total\nhit gap\nopens" << "Length\ndiscre-\npancy" << "E-value\nproduct");
 
+    QString queryDescription = "Query name: " + query->getName();
+    queryDescription += "      type: " + query->getTypeString();
+    queryDescription += "      length: " + formatIntForDisplay(query->getLength());
+    if (query->getSequenceType() == PROTEIN)
+        queryDescription += " (" + formatIntForDisplay(3 * query->getLength()) + " bp)";
+    else
+        queryDescription += " bp";
+    ui->queryLabel->setText(queryDescription);
+
     ui->tableWidget->clearContents();
     ui->tableWidget->setSortingEnabled(false);
 
