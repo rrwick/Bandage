@@ -160,25 +160,6 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --maxpaths <int>    The number of BLAST query paths displayed to the" << endl;
     *out << "                              user (1 to 100, default: " << QString::number(g_settings->maxQueryPaths) + ")" << endl;
     *out << endl;
-    *out << "          Distance between nodes" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings control how Bandage searches for query paths after" << endl;
-    *out << "          conducting a BLAST search." << endl;
-    *out << "          --distnodes <int>   Maximum number of nodes allowed in a 'distance" << endl;
-    *out << "                              between queries' search (default: " + QString::number(g_settings->distancePathSearchDepth + 1) + ")" << endl;
-    *out << "          --distmin <int>     Minimum path distance allowed in a 'distance" << endl;
-    *out << "                              between queries' search (default: " + QString::number(g_settings->minDistancePathLength) + ")" << endl;
-    *out << "          --distmax <int>     Maximum path distance allowed in a 'distance" << endl;
-    *out << "                              between queries' search (default: " + QString::number(g_settings->maxDistancePathLength) + ")" << endl;
-    *out << endl;
-    *out << "          If none of the following four flags are used, all four orientations" << endl;
-    *out << "          are allowed in a 'distance between queries' search. If any of the" << endl;
-    *out << "          flags are used, only the specified orientations are allowed." << endl;
-    *out << "          --distor1           Allow 1-> 2-> query orientation" << endl;
-    *out << "          --distor2           Allow 2-> 1-> query orientation" << endl;
-    *out << "          --distor3           Allow 1-> <-2 query orientation" << endl;
-    *out << "          --distor4           Allow <-1 2-> query orientation" << endl;
-    *out << endl;
 }
 
 
@@ -290,17 +271,6 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForInt("--maxpaths", arguments, 1, 100);
     if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--distnodes", arguments, 1, 100);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--distmin", arguments, 1, 1000000000);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--distmax", arguments, 1, 1000000000);
-    if (error.length() > 0) return error;
-    checkOptionWithoutValue("--distor1", arguments);
-    checkOptionWithoutValue("--distor2", arguments);
-    checkOptionWithoutValue("--distor3", arguments);
-    checkOptionWithoutValue("--distor4", arguments);
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
     bool queryFile = isOptionPresent("--query", &argumentsCopy);
@@ -452,31 +422,6 @@ void parseSettings(QStringList arguments)
         g_settings->maxQueryPathNodes = getIntOption("--pathnodes", &arguments);
     if (isOptionPresent("--maxpaths", &arguments))
         g_settings->maxQueryPaths = getIntOption("--maxpaths", &arguments);
-
-    if (isOptionPresent("--distnodes", &arguments))
-        g_settings->distancePathSearchDepth = getIntOption("--distnodes", &arguments) - 1;
-    if (isOptionPresent("--distmin", &arguments))
-        g_settings->minDistancePathLength = getIntOption("--distmin", &arguments);
-    if (isOptionPresent("--distmax", &arguments))
-        g_settings->maxDistancePathLength = getIntOption("--distmax", &arguments);
-
-    if (!isOptionPresent("--distor1", &arguments) &&
-            !isOptionPresent("--distor2", &arguments) &&
-            !isOptionPresent("--distor3", &arguments) &&
-            !isOptionPresent("--distor4", &arguments))
-    {
-        g_settings->distanceOrientation1 = true;
-        g_settings->distanceOrientation2 = true;
-        g_settings->distanceOrientation3 = true;
-        g_settings->distanceOrientation4 = true;
-    }
-    else
-    {
-        g_settings->distanceOrientation1 = isOptionPresent("--distor1", &arguments);
-        g_settings->distanceOrientation2 = isOptionPresent("--distor2", &arguments);
-        g_settings->distanceOrientation3 = isOptionPresent("--distor3", &arguments);
-        g_settings->distanceOrientation4 = isOptionPresent("--distor4", &arguments);
-    }
 }
 
 

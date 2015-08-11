@@ -112,12 +112,4 @@ Settings::Settings()
     maxQueryPaths = 100;
 
     blastSearchParameters = "";
-
-    distancePathSearchDepth = 14;
-    minDistancePathLength = 0;
-    maxDistancePathLength = 1000000000;
-    distanceOrientation1 = true;
-    distanceOrientation2 = true;
-    distanceOrientation3 = true;
-    distanceOrientation4 = true;
 }

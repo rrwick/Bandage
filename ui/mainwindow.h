@@ -134,7 +134,6 @@ private slots:
     void afterMainWindowShow();
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();
-    void openDistanceDialog();
     void nodeWidthChanged();
 
 protected:

@@ -129,15 +129,6 @@ public:
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.
     QString blastSearchParameters;
-
-    //These are the settings for the 'Distance between queries' dialog.
-    int distancePathSearchDepth;
-    int minDistancePathLength;
-    int maxDistancePathLength;
-    bool distanceOrientation1;
-    bool distanceOrientation2;
-    bool distanceOrientation3;
-    bool distanceOrientation4;
 };
 
 #endif // SETTINGS_H

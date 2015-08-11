@@ -1658,7 +1658,6 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSettings"/>
-    <addaction name="actionDistance_between_queries"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -1946,11 +1945,6 @@
    </property>
    <property name="text">
     <string>Specify exact path for copy/save</string>
-   </property>
-  </action>
-  <action name="actionDistance_between_queries">
-   <property name="text">
-    <string>Distance between queries</string>
    </property>
   </action>
  </widget>

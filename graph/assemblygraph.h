@@ -73,11 +73,6 @@ public:
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     void recalculateAllNodeWidths();
-    void conductDistanceSearch(QList<Path> query1Paths, QList<Path> query2Paths,
-                               bool orientation1, bool orientation2,
-                               bool orientation3, bool orientation4,
-                               int pathSearchDepth, int minDistance,
-                               int maxDistance);
 
     GraphFileType getGraphFileTypeFromFile(QString fullFileName);
     bool checkFileIsLastGraph(QString fullFileName);

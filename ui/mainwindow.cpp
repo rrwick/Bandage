@@ -62,7 +62,6 @@
 #include <QSvgGenerator>
 #include "../graph/path.h"
 #include "pathspecifydialog.h"
-#include "distancedialog.h"
 #include "../program/memory.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
@@ -165,7 +164,6 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
-    connect(ui->actionDistance_between_queries, SIGNAL(triggered(bool)), this, SLOT(openDistanceDialog()));
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
     connect(g_graphicsView, SIGNAL(copySelectedSequencesToClipboard()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
@@ -2019,13 +2017,6 @@ void MainWindow::openPathSpecifyDialog()
     PathSpecifyDialog * pathSpecifyDialog = new PathSpecifyDialog(this);
     connect(g_graphicsView, SIGNAL(doubleClickedNode(DeBruijnNode*)), pathSpecifyDialog, SLOT(addNodeName(DeBruijnNode*)));
     pathSpecifyDialog->show();
-}
-
-
-void MainWindow::openDistanceDialog()
-{
-    DistanceDialog distanceDialog(this);
-    distanceDialog.exec();
 }
 
 
