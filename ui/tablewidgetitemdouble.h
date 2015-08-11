@@ -24,7 +24,7 @@
 class TableWidgetItemDouble : public QTableWidgetItem
 {
 public:
-    TableWidgetItemDouble(QString text);
+    TableWidgetItemDouble(QString text, double value);
 
     double m_double;
 

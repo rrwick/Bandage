@@ -18,11 +18,9 @@
 
 #include "tablewidgetitemint.h"
 
-TableWidgetItemInt::TableWidgetItemInt(QString text) :
-    QTableWidgetItem(text)
+TableWidgetItemInt::TableWidgetItemInt(QString text, int value) :
+    QTableWidgetItem(text), m_int(value)
 {
-    QString withoutCommas = text.replace(',', "");
-    m_int = withoutCommas.toInt();
 }
 
 

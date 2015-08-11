@@ -70,7 +70,9 @@ SOURCES += \
     ui/tablewidgetitemint.cpp \
     ui/tablewidgetitemdouble.cpp \
     ui/tablewidgetitemshown.cpp \
-    program/memory.cpp
+    program/memory.cpp \
+    ui/querypathspushbutton.cpp \
+    ui/querypathsdialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -115,7 +117,9 @@ HEADERS  += \
     ui/tablewidgetitemdouble.h \
     ui/tablewidgetitemshown.h \
     program/memory.h \
-    graph/querydistance.h
+    graph/querydistance.h \
+    ui/querypathspushbutton.h \
+    ui/querypathsdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -124,7 +128,8 @@ FORMS    += \
     ui/enteroneblastquerydialog.ui \
     ui/blastsearchdialog.ui \
     ui/myprogressdialog.ui \
-    ui/pathspecifydialog.ui
+    ui/pathspecifydialog.ui \
+    ui/querypathsdialog.ui
 
 
 # These includes are configured assuming that the OGDF

@@ -76,6 +76,7 @@ private slots:
     void queryCellChanged(int row, int column);
     void queryTableSelectionChanged();
     void queryShownChanged();
+    void showPathsDialog(BlastQuery * query);
 
 signals:
     void blastChanged();

@@ -18,12 +18,9 @@
 
 #include "tablewidgetitemdouble.h"
 
-TableWidgetItemDouble::TableWidgetItemDouble(QString text) :
-    QTableWidgetItem(text)
+TableWidgetItemDouble::TableWidgetItemDouble(QString text, double value) :
+    QTableWidgetItem(text), m_double(value)
 {
-    QString withoutCommas = text.replace(',', "");
-    QString withoutPercent = withoutCommas.replace('%', "");
-    m_double = withoutPercent.toDouble();
 }
 
 
