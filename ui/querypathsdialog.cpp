@@ -2,7 +2,7 @@
 #include "ui_querypathsdialog.h"
 
 #include "../blast/blastquery.h"
-#include "../graph/path.h"
+#include "../blast/blastquerypath.h"
 #include "tablewidgetitemint.h"
 #include "tablewidgetitemdouble.h"
 
@@ -21,28 +21,26 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
     if (pathCount == 0)
         return;
 
-    QList<Path> paths = query->getPaths();
+    QList<BlastQueryPath> paths = query->getPaths();
 
     for (int i = 0; i < pathCount; ++i)
     {
-        Path * path = &paths[i];
+        BlastQueryPath * queryPath = &paths[i];
 
-        QTableWidgetItem * pathString = new QTableWidgetItem(path->getString(true));
+        QTableWidgetItem * pathString = new QTableWidgetItem(queryPath->getPath().getString(true));
         pathString->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        int length = path->getLength();
+        int length = queryPath->getPath().getLength();
         TableWidgetItemInt * pathLength = new TableWidgetItemInt(formatIntForDisplay(length), length);
         pathLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        double evalueProduct = 0.0; //TEMP
+        double evalueProduct = queryPath->getEvalueProduct();
         TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(QString::number(evalueProduct), evalueProduct);
         pathEvalueProduct->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        double percIdentity = 10.0; //TEMP
+        double percIdentity = queryPath->getPercIdentity();
         TableWidgetItemDouble * pathPercIdentity = new TableWidgetItemDouble(QString::number(percIdentity), percIdentity);
         pathPercIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-
 
         ui->tableWidget->setItem(i, 0, pathString);
         ui->tableWidget->setItem(i, 1, pathLength);

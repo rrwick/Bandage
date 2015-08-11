@@ -717,55 +717,6 @@ QList<Path> Path::extendPathInAllPossibleWays() const
 }
 
 
-//This function follows a path, returning the BLAST hits it finds for the given
-//query.  It requires that the hits occur in order, i.e. that each hit in the
-//path begins later in the query than the previous hit.
-QList<BlastHit *> Path::getBlastHitsForQuery(BlastQuery * query) const
-{
-    QList<BlastHit *> returnList;
-
-    BlastHit * previousHit = 0;
-    for (int i = 0; i < m_nodes.size(); ++i)
-    {
-        DeBruijnNode * node = m_nodes[i];
-
-        QList<BlastHit *> hitsThisNode;
-        QList< QSharedPointer<BlastHit> > queryHits = query->getHits();
-        for (int j = 0; j < queryHits.size(); ++j)
-        {
-            BlastHit * hit = queryHits[j].data();
-            if (hit->m_node->m_name == node->m_name)
-                hitsThisNode.push_back(hit);
-        }
-
-        std::sort(hitsThisNode.begin(), hitsThisNode.end(),
-                  BlastHit::compareTwoBlastHitPointers);
-
-        for (int j = 0; j < hitsThisNode.size(); ++j)
-        {
-            BlastHit * hit = hitsThisNode[j];
-
-            //First check to make sure the hits are within the path.  This means
-            //if we are in the first or last nodes of the path, we need to make
-            //sure that our hit is contained within the start/end positions.
-            if ( (i != 0 || hit->m_nodeStart >= m_startLocation.getPosition()) &&
-                    (i != m_nodes.size()-1 || hit->m_nodeEnd <= m_endLocation.getPosition()))
-            {
-                //Now make sure that the hit follows the previous hit in the
-                //query.
-                if (previousHit == 0 ||
-                        hit->m_queryStart > previousHit->m_queryStart)
-                {
-                    returnList.push_back(hit);
-                    previousHit = hit;
-                }
-            }
-        }
-    }
-
-    return returnList;
-}
-
 
 double Path::getMeanReadDepth() const
 {

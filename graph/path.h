@@ -48,6 +48,8 @@ public:
                                QString * pathStringFailure);
 
     //ACCESSORS
+    QList<DeBruijnNode *> getNodes() const {return m_nodes;}
+    QList<DeBruijnEdge *> getEdges() const {return m_edges;}
     bool isEmpty() const {return m_nodes.empty();}
     bool isCircular() const;
     bool areIdentical(Path other) const;
@@ -60,7 +62,6 @@ public:
     QList<Path> extendPathInAllPossibleWays() const;
     bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const;
     bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const;
-    QList<BlastHit *> getBlastHitsForQuery(BlastQuery * query) const;
     double getMeanReadDepth() const;
     bool containsNode(DeBruijnNode * node) const;
     bool containsEntireNode(DeBruijnNode * node) const;

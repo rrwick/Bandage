@@ -150,20 +150,27 @@ void BlastQuery::findQueryPaths()
         }
     }
 
+
+    //Now we use the Path objects to make BlastQueryPath objects.  These contain
+    //BLAST-specific information that the Path class doesn't.
+    QList<BlastQueryPath> blastQueryPaths;
+    for (int i = 0; i < possiblePaths.size(); ++i)
+        blastQueryPaths.push_back(BlastQueryPath(possiblePaths[i], this));
+
     //We now want to throw out any paths for which the hits do not cover a
     //sufficient amount of the query.
-    QList<Path> sufficientCoveragePaths;
-    for (int i = 0; i < possiblePaths.size(); ++i)
+    QList<BlastQueryPath> sufficientCoveragePaths;
+    for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
-        QList<BlastHit *> pathHits = possiblePaths[i].getBlastHitsForQuery(this);
+        QList<BlastHit *> pathHits = blastQueryPaths[i].getHits();
         double fractionCovered = fractionCoveredByHits(&pathHits);
         if (fractionCovered >= g_settings->queryRequiredCoverage)
-            sufficientCoveragePaths.push_back(possiblePaths[i]);
+            sufficientCoveragePaths.push_back(blastQueryPaths[i]);
     }
 
     //We now want to throw out any paths which are sub-paths of other, larger
     //paths.
-    m_paths = QList<Path>();
+    m_paths = QList<BlastQueryPath>();
     for (int i = 0; i < sufficientCoveragePaths.size(); ++i)
     {
         bool throwOut = false;
@@ -173,7 +180,7 @@ void BlastQuery::findQueryPaths()
             if (i == j)
                 continue;
 
-            if (sufficientCoveragePaths[i].hasNodeSubset(sufficientCoveragePaths[j]))
+            if (sufficientCoveragePaths[i].getPath().hasNodeSubset(sufficientCoveragePaths[j].getPath()))
             {
                 throwOut = true;
                 break;
@@ -183,74 +190,8 @@ void BlastQuery::findQueryPaths()
             m_paths.push_back(sufficientCoveragePaths[i]);
     }
 
-    //Now we sort the paths from best to worst.  Since I can't normally use a
-    //member function in std::sort, I just do a simple bubble sort here.
-    bool swapped = true;
-    int j = 0;
-    while (swapped)
-    {
-        swapped = false;
-        j++;
-        for (int i = 0; i < m_paths.size() - j; i++)
-        {
-            if (comparePaths(m_paths[i+1], m_paths[i]))
-            {
-                m_paths.swap(i, i+1);
-                swapped = true;
-            }
-        }
-    }
-}
-
-
-//This function compares two paths using their hits for this query.  It is used
-//for sorting the query's paths.  It compares first using the e-value product
-//of all the hits, and if they are the same, it uses the length discrepancy.
-bool BlastQuery::comparePaths(Path a, Path b)
-{
-    long double aEValueProduct = getPathEValueProduct(a);
-    long double bEValueProduct = getPathEValueProduct(b);
-
-    if (aEValueProduct != bEValueProduct)
-        return aEValueProduct < bEValueProduct;
-
-    //If the code got here, then the two paths have the same evalue product,
-    //probably because they contain the same hits.  In this case, we use their
-    //length discrepency.
-
-    return getRelativeLengthDiscrepancy(a) < getRelativeLengthDiscrepancy(b);
-}
-
-//This function looks at all of the hits in the path for this query and
-//multiplies the evalues together.
-long double BlastQuery::getPathEValueProduct(Path path)
-{
-    long double eValueProduct = 1.0;
-    QList<BlastHit *> pathHits = path.getBlastHitsForQuery(this);
-    for (int j = 0; j < pathHits.size(); ++j)
-        eValueProduct *= pathHits[j]->m_eValue;
-
-    return eValueProduct;
-}
-
-
-//This function looks at the length of the given path and compares it to how
-//long the path should be for the hits it contains (i.e. if the path perfectly
-//matched up the query).
-double BlastQuery::getRelativeLengthDiscrepancy(Path path)
-{
-    QList<BlastHit *> pathHits = path.getBlastHitsForQuery(this);
-    if (pathHits.empty())
-        return std::numeric_limits<double>::max();
-
-    int queryStart = pathHits.front()->m_queryStart;
-    int queryEnd = pathHits.back()->m_queryEnd;
-    int hitQueryLength = queryEnd - queryStart;
-    if (m_sequenceType == PROTEIN)
-        hitQueryLength *= 3;
-
-    int discrepancy = abs(path.getLength() - hitQueryLength);
-    return double(discrepancy) / hitQueryLength;
+    //Now we sort the paths from best to worst.
+    std::sort(m_paths.begin(), m_paths.end());
 }
 
 
@@ -306,24 +247,4 @@ bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck
             return true;
     }
     return false;
-}
-
-
-//This function returns the paths in string form, if any exist.
-QString BlastQuery::getPathsString() const
-{
-    if (m_paths.empty())
-        return "-";
-
-    QString pathsString;
-
-    int count = m_paths.size();
-    for (int i = 0; i < count; ++i)
-    {
-        pathsString += m_paths[i].getString(true);
-        if (i < count - 1)
-            pathsString += "; ";
-    }
-
-    return pathsString;
 }

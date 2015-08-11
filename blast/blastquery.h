@@ -26,6 +26,7 @@
 #include "blasthit.h"
 #include <QList>
 #include <QSharedPointer>
+#include "blastquerypath.h"
 
 class BlastQuery : public QObject
 {
@@ -46,11 +47,10 @@ public:
     bool wasSearchedFor() const {return m_searchedFor;}
     QColor getColour() const {return m_colour;}
     SequenceType getSequenceType() const {return m_sequenceType;}
-    QList<Path> getPaths() const {return m_paths;}
+    QList<BlastQueryPath> getPaths() const {return m_paths;}
     int getPathCount() const {return m_paths.size();}
     QString getTypeString() const;
     double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
-    QString getPathsString() const;
     bool isShown() const {return m_shown;}
     bool isHidden() const {return !m_shown;}
 
@@ -72,7 +72,7 @@ private:
     bool m_searchedFor;
     QColor m_colour;
     SequenceType m_sequenceType;
-    QList<Path> m_paths;
+    QList<BlastQueryPath> m_paths;
     bool m_shown;
 
     void autoSetSequenceType();
