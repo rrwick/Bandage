@@ -72,7 +72,8 @@ SOURCES += \
     ui/tablewidgetitemshown.cpp \
     program/memory.cpp \
     ui/querypathspushbutton.cpp \
-    ui/querypathsdialog.cpp
+    ui/querypathsdialog.cpp \
+    blast/blastquerypath.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -119,7 +120,8 @@ HEADERS  += \
     program/memory.h \
     graph/querydistance.h \
     ui/querypathspushbutton.h \
-    ui/querypathsdialog.h
+    ui/querypathsdialog.h \
+    blast/blastquerypath.h
 
 FORMS    += \
     ui/mainwindow.ui \

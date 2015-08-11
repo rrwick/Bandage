@@ -12,9 +12,6 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 {
     ui->setupUi(this);
 
-
-
-
     ui->tableWidget->clearContents();
     ui->tableWidget->setSortingEnabled(false);
 
@@ -41,11 +38,16 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(QString::number(evalueProduct), evalueProduct);
         pathEvalueProduct->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
+        double percIdentity = 10.0; //TEMP
+        TableWidgetItemDouble * pathPercIdentity = new TableWidgetItemDouble(QString::number(percIdentity), percIdentity);
+        pathPercIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
 
 
         ui->tableWidget->setItem(i, 0, pathString);
         ui->tableWidget->setItem(i, 1, pathLength);
         ui->tableWidget->setItem(i, 2, pathEvalueProduct);
+        ui->tableWidget->setItem(i, 3, pathPercIdentity);
     }
 
     ui->tableWidget->resizeColumns();
