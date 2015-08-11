@@ -218,13 +218,12 @@ void BlastSearchDialog::makeQueryRow(int row)
         hits = new TableWidgetItemInt(formatIntForDisplay(hitCount), hitCount);
         percent = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * query->fractionCoveredByHits(), 2) + "%", query->fractionCoveredByHits());
 
-        int pathCount = query->getPathCount();
-        QString pathCountText = formatIntForDisplay(pathCount);
-
         //The path count isn't displayed in the TableWidgetItem because it will
         //be shown in a button which will bring up a separate dialog showing a
         //table of the paths.
+        int pathCount = query->getPathCount();
         paths = new TableWidgetItemInt("", pathCount);
+        paths->setFlags(Qt::ItemIsEnabled);
         pathsButton = new QueryPathsPushButton(pathCount, query);
         connect(pathsButton, SIGNAL(showPathsDialog(BlastQuery*)), this, SLOT(showPathsDialog(BlastQuery*)));
     }
