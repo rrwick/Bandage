@@ -56,9 +56,24 @@ BlastQueryPath::BlastQueryPath(Path path, BlastQuery * query) :
 
 
 
-double BlastQueryPath::getPercIdentity() const
+double BlastQueryPath::getMeanHitPercIdentity() const
 {
-    return 4.321; //TEMP
+    int totalHitLength = 0;
+    double sum = 0.0;
+
+    for (int i = 0; i < m_hits.size(); ++i)
+    {
+        int hitLength = m_hits[i]->m_alignmentLength;
+        totalHitLength += hitLength;
+
+        double hitIdentity = m_hits[i]->m_percentIdentity;
+        sum += hitIdentity * hitLength;
+    }
+
+    if (totalHitLength == 0)
+        return 0.0;
+    else
+        return sum / totalHitLength;
 }
 
 
@@ -84,11 +99,7 @@ double BlastQueryPath::getRelativeLengthDiscrepancy() const
     if (m_hits.empty())
         return std::numeric_limits<double>::max();
 
-    int queryStart = m_hits.front()->m_queryStart;
-    int queryEnd = m_hits.back()->m_queryEnd;
-    int hitQueryLength = queryEnd - queryStart;
-    if (m_query->getSequenceType() == PROTEIN)
-        hitQueryLength *= 3;
+    int hitQueryLength = getHitQueryLength();
 
     int discrepancy = abs(m_path.getLength() - hitQueryLength);
     return double(discrepancy) / hitQueryLength;
@@ -96,6 +107,64 @@ double BlastQueryPath::getRelativeLengthDiscrepancy() const
 
 
 
+//This function returns the fraction of the query that is covered by the entire
+//path.
+double BlastQueryPath::getPathQueryCoverage() const
+{
+    if (m_hits.empty())
+        return 0.0;
+
+    int queryStart = m_hits.front()->m_queryStart;
+    int queryEnd = m_hits.back()->m_queryEnd;
+    int queryLength = m_query->getLength();
+
+    int notIncluded = queryStart - 1;
+    notIncluded += queryLength - queryEnd;
+
+    return 1.0 - notIncluded / double(queryLength);
+}
+
+
+//This function returns the fraction of the query that is covered by hits in the
+//path.
+double BlastQueryPath::getHitsQueryCoverage() const
+{
+    return m_query->fractionCoveredByHits(&m_hits);
+}
+
+
+//This function returns the length of the query which is covered by the path.
+//It is returned in bp, whether or not the query is a protein or nucleotide
+//sequence.
+int BlastQueryPath::getHitQueryLength() const
+{
+    int queryStart = m_hits.front()->m_queryStart;
+    int queryEnd = m_hits.back()->m_queryEnd;
+    int hitQueryLength = queryEnd - queryStart + 1;
+
+    if (m_query->getSequenceType() == PROTEIN)
+        hitQueryLength *= 3;
+
+    return hitQueryLength;
+}
+
+
+
+int BlastQueryPath::getTotalHitMismatches() const
+{
+    int total = 0;
+    for (int i = 0; i < m_hits.size(); ++i)
+        total += m_hits[i]->m_numberMismatches;
+    return total;
+}
+
+int BlastQueryPath::getTotalHitGapOpens() const
+{
+    int total = 0;
+    for (int i = 0; i < m_hits.size(); ++i)
+        total += m_hits[i]->m_numberGapOpens;
+    return total;
+}
 
 bool BlastQueryPath::operator<(BlastQueryPath const &other) const
 {
@@ -111,3 +180,4 @@ bool BlastQueryPath::operator<(BlastQueryPath const &other) const
 
     return getRelativeLengthDiscrepancy() < other.getRelativeLengthDiscrepancy();
 }
+

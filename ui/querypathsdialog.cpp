@@ -12,6 +12,10 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 {
     ui->setupUi(this);
 
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Path" << "Length\n(bp)" << "Query\ncovered\nby path" <<
+                                               "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
+                                               "Total\nhit gap\nopens" << "Length\ndiscre-\npancy" << "E-value\nproduct");
+
     ui->tableWidget->clearContents();
     ui->tableWidget->setSortingEnabled(false);
 
@@ -34,18 +38,44 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         TableWidgetItemInt * pathLength = new TableWidgetItemInt(formatIntForDisplay(length), length);
         pathLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
+        double queryCoveragePath = queryPath->getPathQueryCoverage();
+        TableWidgetItemDouble * pathQueryCoveragePath = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * queryCoveragePath, 2) + "%", queryCoveragePath);
+        pathQueryCoveragePath->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        pathLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        double queryCoverageHits = queryPath->getHitsQueryCoverage();
+        TableWidgetItemDouble * pathQueryCoverageHits = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * queryCoverageHits, 2) + "%", queryCoverageHits);
+        pathQueryCoverageHits->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        double percIdentity = queryPath->getMeanHitPercIdentity();
+        TableWidgetItemDouble * pathPercIdentity = new TableWidgetItemDouble(formatDoubleForDisplay(percIdentity, 2) + "%", percIdentity);
+        pathPercIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        int mismatches = queryPath->getTotalHitMismatches();
+        TableWidgetItemInt * pathMismatches = new TableWidgetItemInt(formatIntForDisplay(mismatches), mismatches);
+        pathMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        int gapOpens = queryPath->getTotalHitGapOpens();
+        TableWidgetItemInt * pathGapOpens = new TableWidgetItemInt(formatIntForDisplay(gapOpens), gapOpens);
+        pathGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        double lengthDisc = queryPath->getRelativeLengthDiscrepancy();
+        TableWidgetItemDouble * pathLengthDisc = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * lengthDisc, 2) + "%", lengthDisc);
+        pathLengthDisc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
         double evalueProduct = queryPath->getEvalueProduct();
         TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(QString::number(evalueProduct), evalueProduct);
         pathEvalueProduct->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        double percIdentity = queryPath->getPercIdentity();
-        TableWidgetItemDouble * pathPercIdentity = new TableWidgetItemDouble(QString::number(percIdentity), percIdentity);
-        pathPercIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
         ui->tableWidget->setItem(i, 0, pathString);
         ui->tableWidget->setItem(i, 1, pathLength);
-        ui->tableWidget->setItem(i, 2, pathEvalueProduct);
-        ui->tableWidget->setItem(i, 3, pathPercIdentity);
+        ui->tableWidget->setItem(i, 2, pathQueryCoveragePath);
+        ui->tableWidget->setItem(i, 3, pathQueryCoverageHits);
+        ui->tableWidget->setItem(i, 4, pathPercIdentity);
+        ui->tableWidget->setItem(i, 5, pathMismatches);
+        ui->tableWidget->setItem(i, 6, pathGapOpens);
+        ui->tableWidget->setItem(i, 7, pathLengthDisc);
+        ui->tableWidget->setItem(i, 8, pathEvalueProduct);
     }
 
     ui->tableWidget->resizeColumns();

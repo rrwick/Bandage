@@ -615,7 +615,7 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
     //the cell value again if the new name isn't unique.
     ui->blastQueriesTableWidget->blockSignals(true);
 
-    //If a query name was changed, then we actually adjust that query name.
+    //If a query name was changed, then we adjust that query name elsewhere.
     if (column == 2)
     {
         QString newName = ui->blastQueriesTableWidget->item(row, column)->text();
@@ -640,10 +640,6 @@ void BlastSearchDialog::queryCellChanged(int row, int column)
             emit blastChanged();
         }
     }
-
-    //If anything else was changed, we want to change it back to what it was.
-    else
-        makeQueryRow(row);
 
     ui->blastQueriesTableWidget->blockSignals(false);
 }

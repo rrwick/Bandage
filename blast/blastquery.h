@@ -50,7 +50,7 @@ public:
     QList<BlastQueryPath> getPaths() const {return m_paths;}
     int getPathCount() const {return m_paths.size();}
     QString getTypeString() const;
-    double fractionCoveredByHits(QList<BlastHit *> * hitsToCheck = 0) const;
+    double fractionCoveredByHits(const QList<BlastHit *> * hitsToCheck = 0) const;
     bool isShown() const {return m_shown;}
     bool isHidden() const {return !m_shown;}
 
@@ -77,10 +77,7 @@ private:
 
     void autoSetSequenceType();
     bool positionInAnyHit(int position) const;
-    bool positionInHitList(int position, QList<BlastHit *> * hitsToCheck) const;
-    bool comparePaths(Path a, Path b);
-    long double getPathEValueProduct(Path path);
-    double getRelativeLengthDiscrepancy(Path path);
+    bool positionInHitList(int position, const QList<BlastHit *> * hitsToCheck) const;
 };
 
 #endif // BLASTQUERY_H

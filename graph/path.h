@@ -30,9 +30,6 @@
 class DeBruijnNode;
 class DeBruijnEdge;
 
-class BlastHit;
-class BlastQuery;
-
 class Path
 {
 public:

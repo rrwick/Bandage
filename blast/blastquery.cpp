@@ -162,9 +162,7 @@ void BlastQuery::findQueryPaths()
     QList<BlastQueryPath> sufficientCoveragePaths;
     for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
-        QList<BlastHit *> pathHits = blastQueryPaths[i].getHits();
-        double fractionCovered = fractionCoveredByHits(&pathHits);
-        if (fractionCovered >= g_settings->queryRequiredCoverage)
+        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->queryRequiredCoverage)
             sufficientCoveragePaths.push_back(blastQueryPaths[i]);
     }
 
@@ -199,7 +197,7 @@ void BlastQuery::findQueryPaths()
 //This function returns the fraction of the query that is covered by BLAST hits.
 //If a list of BLAST hits is passed to the function, it only looks in those
 //hits.  If no such list is passed, it looks in all hits for this query.
-double BlastQuery::fractionCoveredByHits(QList<BlastHit *> * hitsToCheck) const
+double BlastQuery::fractionCoveredByHits(const QList<BlastHit *> * hitsToCheck) const
 {
     int hitBases = 0;
     int queryLength = getLength();
@@ -238,7 +236,7 @@ bool BlastQuery::positionInAnyHit(int position) const
     return false;
 }
 
-bool BlastQuery::positionInHitList(int position, QList<BlastHit *> * hitsToCheck) const
+bool BlastQuery::positionInHitList(int position, const QList<BlastHit *> * hitsToCheck) const
 {
     for (int i = 0; i < hitsToCheck->size(); ++i)
     {

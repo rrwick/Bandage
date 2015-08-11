@@ -23,17 +23,42 @@
      </column>
      <column>
       <property name="text">
-       <string>Length</string>
+       <string>Length (bp)</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query covered by path</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Query covered by hits</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Identity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Mismatches</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Gap opens</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Length discrepancy</string>
       </property>
      </column>
      <column>
       <property name="text">
        <string>E-value product</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Percent-identity</string>
       </property>
      </column>
     </widget>
