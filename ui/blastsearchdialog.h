@@ -80,9 +80,11 @@ private slots:
     void queryTableSelectionChanged();
     void queryShownChanged();
     void showPathsDialog(BlastQuery * query);
+    void queryPathSelectionChangedSlot();
 
 signals:
     void blastChanged();
+    void queryPathSelectionChanged();
 };
 
 #endif // BLASTSEARCHDIALOG_H

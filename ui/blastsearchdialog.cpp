@@ -971,6 +971,9 @@ void BlastSearchDialog::showPathsDialog(BlastQuery * query)
     deleteQueryPathsDialog();
 
     m_queryPathsDialog = new QueryPathsDialog(this, query);
+
+    connect(m_queryPathsDialog, SIGNAL(selectionChanged()), this, SLOT(queryPathSelectionChangedSlot()));
+
     m_queryPathsDialog->show();
 }
 
@@ -979,4 +982,9 @@ void BlastSearchDialog::deleteQueryPathsDialog()
     if (m_queryPathsDialog != 0)
         delete m_queryPathsDialog;
     m_queryPathsDialog = 0;
+}
+
+void BlastSearchDialog::queryPathSelectionChangedSlot()
+{
+    emit queryPathSelectionChanged();
 }

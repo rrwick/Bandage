@@ -31,6 +31,7 @@
 #include <QStringList>
 
 class DeBruijnNode;
+class Path;
 
 class GraphicsItemNode : public QGraphicsItem
 {
@@ -84,8 +85,9 @@ public:
     void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
 
 private:
-    void pathHighlightNode1(QPainter * painter);
-    void pathHighlightNode2(QPainter * painter, DeBruijnNode * node, bool reverse);
+    void exactPathHighlightNode(QPainter * painter);
+    void queryPathHighlightNode(QPainter * painter);
+    void pathHighlightNode2(QPainter * painter, DeBruijnNode * node, bool reverse, Path * path);
     void pathHighlightNode3(QPainter * painter, QPainterPath highlightPath);
     QPainterPath buildPartialHighlightPath(double startFraction, double endFraction, bool reverse);
     bool anyNodeDisplayText();

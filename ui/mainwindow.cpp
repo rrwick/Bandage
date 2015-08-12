@@ -1459,6 +1459,7 @@ void MainWindow::openBlastSearchDialog()
     {
         m_blastSearchDialog = new BlastSearchDialog(this);
         connect(m_blastSearchDialog, SIGNAL(blastChanged()), this, SLOT(blastChanged()));
+        connect(m_blastSearchDialog, SIGNAL(queryPathSelectionChanged()), g_graphicsView->viewport(), SLOT(update()));
     }
 
     m_blastSearchDialog->show();

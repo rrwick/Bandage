@@ -28,7 +28,7 @@ Memory::Memory()
     commandLineCommand = NO_COMMAND;
 
     pathDialogIsVisible = false;
-
+    queryPathDialogIsVisible = false;
 
     userSpecifiedPath = Path();
     userSpecifiedPathString = "";

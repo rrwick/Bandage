@@ -34,8 +34,8 @@ public:
 
     CommandLineCommand commandLineCommand;
 
-    //This flag is true when the 'Specify exact path...' dialog is visible.
     bool pathDialogIsVisible;
+    bool queryPathDialogIsVisible;
 
     //These store the user input in the 'Specify exact path...' dialog so it is
     //retained between uses.
@@ -51,6 +51,9 @@ public:
     QString distancePathSearchQuery2;
     QString distancePathSearchQuery1Path;
     QString distancePathSearchQuery2Path;
+
+    //This stores the currently selected query path in a query path dialog.
+    Path queryPath;
 };
 
 #endif // MEMORY_H

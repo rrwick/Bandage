@@ -5,6 +5,8 @@
 #include "../blast/blastquerypath.h"
 #include "tablewidgetitemint.h"
 #include "tablewidgetitemdouble.h"
+#include "../program/globals.h"
+#include "../program/memory.h"
 
 QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
     QDialog(parent),
@@ -12,6 +14,12 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
+    connect(this, SIGNAL(rejected()), this, SLOT(hidden()));
+    connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(tableSelectionChanged()));
+
+    g_memory->queryPathDialogIsVisible = true;
+    g_memory->queryPath = Path();
 
     ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Path" << "Length\n(bp)" << "Query\ncovered\nby path" <<
                                                "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
@@ -138,4 +146,35 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 QueryPathsDialog::~QueryPathsDialog()
 {
     delete ui;
+    g_memory->queryPathDialogIsVisible = false;
+}
+
+
+void QueryPathsDialog::hidden()
+{
+    g_memory->queryPathDialogIsVisible = false;
+    emit selectionChanged();
+}
+
+
+void QueryPathsDialog::tableSelectionChanged()
+{
+    QList<QTableWidgetSelectionRange> selection = ui->tableWidget->selectedRanges();
+    int totalSelectedRows = 0;
+    for (int i = 0; i < selection.size(); ++i)
+        totalSelectedRows += selection[i].rowCount();
+
+    //If zero or more than ones are selected, clear the query path in memory.
+    if (totalSelectedRows != 1)
+        g_memory->queryPath = Path();
+
+    //If just one is selected, then set that as the query path in memory.
+    else
+    {
+        int selectedRow = selection[0].topRow();
+        QString pathString = ui->tableWidget->item(selectedRow, 0)->text();
+        QString pathStringFailure;
+        g_memory->queryPath = Path::makeFromString(pathString, false, &pathStringFailure);
+    }
+    emit selectionChanged();
 }

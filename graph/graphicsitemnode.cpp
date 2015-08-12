@@ -170,7 +170,12 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
     //Draw the path highlighting outline, if appropriate
     if (g_memory->pathDialogIsVisible)
-        pathHighlightNode1(painter);
+        exactPathHighlightNode(painter);
+
+
+    //Draw the query path, if appropriate
+    if (g_memory->queryPathDialogIsVisible)
+        queryPathHighlightNode(painter);
 
 
     //Draw node labels if there are any to display.
@@ -928,41 +933,56 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(st
 
 //This function outlines and shades the appropriate part of a node if it is
 //in the user-specified path.
-void GraphicsItemNode::pathHighlightNode1(QPainter * painter)
+void GraphicsItemNode::exactPathHighlightNode(QPainter * painter)
 {
     if (g_memory->userSpecifiedPath.containsNode(m_deBruijnNode))
-        pathHighlightNode2(painter, m_deBruijnNode, false);
+        pathHighlightNode2(painter, m_deBruijnNode, false, &g_memory->userSpecifiedPath);
 
     if (!g_settings->doubleMode &&
             g_memory->userSpecifiedPath.containsNode(m_deBruijnNode->m_reverseComplement))
-        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true);
+        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, &g_memory->userSpecifiedPath);
+}
+
+
+
+//This function outlines and shades the appropriate part of a node if it is
+//in the user-specified path.
+void GraphicsItemNode::queryPathHighlightNode(QPainter * painter)
+{
+    if (g_memory->queryPath.containsNode(m_deBruijnNode))
+        pathHighlightNode2(painter, m_deBruijnNode, false, &g_memory->queryPath);
+
+    if (!g_settings->doubleMode &&
+            g_memory->queryPath.containsNode(m_deBruijnNode->m_reverseComplement))
+        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, &g_memory->queryPath);
 }
 
 
 
 void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
                                           DeBruijnNode * node,
-                                          bool reverse)
+                                          bool reverse,
+                                          Path * path)
 {
-    int numberOfTimesInMiddle = g_memory->userSpecifiedPath.numberOfOccurrencesInMiddleOfPath(node);
+    int numberOfTimesInMiddle = path->numberOfOccurrencesInMiddleOfPath(node);
     for (int i = 0; i < numberOfTimesInMiddle; ++i)
         pathHighlightNode3(painter, shape());
 
-    bool isStartingNode = g_memory->userSpecifiedPath.isStartingNode(node);
-    bool isEndingNode = g_memory->userSpecifiedPath.isEndingNode(node);
+    bool isStartingNode = path->isStartingNode(node);
+    bool isEndingNode = path->isEndingNode(node);
 
     //If this is the only node in the path, then we limit the highlighting to the appropriate region.
-    if (isStartingNode && isEndingNode && g_memory->userSpecifiedPath.getNodeCount() == 1)
+    if (isStartingNode && isEndingNode && path->getNodeCount() == 1)
     {
-        pathHighlightNode3(painter, buildPartialHighlightPath(g_memory->userSpecifiedPath.getStartFraction(), g_memory->userSpecifiedPath.getEndFraction(), reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(path->getStartFraction(), path->getEndFraction(), reverse));
         return;
     }
 
     if (isStartingNode)
-        pathHighlightNode3(painter, buildPartialHighlightPath(g_memory->userSpecifiedPath.getStartFraction(), 1.0, reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(path->getStartFraction(), 1.0, reverse));
 
     if (isEndingNode)
-        pathHighlightNode3(painter, buildPartialHighlightPath(0.0, g_memory->userSpecifiedPath.getEndFraction(), reverse));
+        pathHighlightNode3(painter, buildPartialHighlightPath(0.0, path->getEndFraction(), reverse));
 }
 
 

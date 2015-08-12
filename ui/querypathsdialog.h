@@ -19,6 +19,13 @@ public:
 
 private:
     Ui::QueryPathsDialog *ui;
+
+private slots:
+    void hidden();
+    void tableSelectionChanged();
+
+signals:
+    void selectionChanged();
 };
 
 #endif // QUERYPATHSDIALOG_H
