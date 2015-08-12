@@ -101,7 +101,7 @@ double BlastQueryPath::getRelativeLengthDiscrepancy() const
 
     int hitQueryLength = getHitQueryLength();
 
-    int discrepancy = abs(m_path.getLength() - hitQueryLength);
+    int discrepancy = m_path.getLength() - hitQueryLength;
     return double(discrepancy) / hitQueryLength;
 }
 
@@ -188,9 +188,9 @@ bool BlastQueryPath::operator<(BlastQueryPath const &other) const
     if (aMeanPercIdentity != bMeanPercIdentity)
         return aMeanPercIdentity > bMeanPercIdentity;
 
-    //Now we use length discrepancy.
-    double aLengthDiscrepancy = getRelativeLengthDiscrepancy();
-    double bLengthDiscrepancy = other.getRelativeLengthDiscrepancy();
+    //Now we use the absolute value of the length discrepancy.
+    double aLengthDiscrepancy = fabs(getRelativeLengthDiscrepancy());
+    double bLengthDiscrepancy = fabs(other.getRelativeLengthDiscrepancy());
     if (aLengthDiscrepancy != bLengthDiscrepancy)
         return aLengthDiscrepancy < bLengthDiscrepancy;
 

@@ -69,7 +69,10 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         pathGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         double lengthDisc = queryPath->getRelativeLengthDiscrepancy();
-        TableWidgetItemDouble * pathLengthDisc = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * lengthDisc, 2) + "%", lengthDisc);
+        QString lengthDiscSign = "";
+        if (lengthDisc > 0.0)
+            lengthDiscSign = "+";
+        TableWidgetItemDouble * pathLengthDisc = new TableWidgetItemDouble(lengthDiscSign + formatDoubleForDisplay(100.0 * lengthDisc, 2) + "%", lengthDisc);
         pathLengthDisc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         double evalueProduct = queryPath->getEvalueProduct();
