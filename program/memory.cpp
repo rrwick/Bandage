@@ -29,6 +29,7 @@ Memory::Memory()
 
     pathDialogIsVisible = false;
 
+
     userSpecifiedPath = Path();
     userSpecifiedPathString = "";
     userSpecifiedPathCircular = false;

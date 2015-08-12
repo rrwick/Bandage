@@ -951,7 +951,7 @@ void GraphicsItemNode::pathHighlightNode2(QPainter * painter,
     bool isStartingNode = g_memory->userSpecifiedPath.isStartingNode(node);
     bool isEndingNode = g_memory->userSpecifiedPath.isEndingNode(node);
 
-    //If this is the onely node in the path, then we limit the highlighting to the appropriate region.
+    //If this is the only node in the path, then we limit the highlighting to the appropriate region.
     if (isStartingNode && isEndingNode && g_memory->userSpecifiedPath.getNodeCount() == 1)
     {
         pathHighlightNode3(painter, buildPartialHighlightPath(g_memory->userSpecifiedPath.getStartFraction(), g_memory->userSpecifiedPath.getEndFraction(), reverse));

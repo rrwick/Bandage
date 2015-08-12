@@ -53,8 +53,8 @@
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
     ui(new Ui::BlastSearchDialog),
-    m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"), m_tblastnCommand("tblastn")
-
+    m_makeblastdbCommand("makeblastdb"), m_blastnCommand("blastn"),
+    m_tblastnCommand("tblastn"), m_queryPathsDialog(0)
 {
     ui->setupUi(this);
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
@@ -135,6 +135,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
 BlastSearchDialog::~BlastSearchDialog()
 {
     delete ui;
+    deleteQueryPathsDialog();
 }
 
 
@@ -148,6 +149,7 @@ void BlastSearchDialog::afterWindowShow()
 void BlastSearchDialog::clearBlastHits()
 {
     g_blastSearch->clearBlastHits();
+    deleteQueryPathsDialog();
     ui->blastHitsTableWidget->clearContents();
     while (ui->blastHitsTableWidget->rowCount() > 0)
         ui->blastHitsTableWidget->removeRow(0);
@@ -440,8 +442,8 @@ void BlastSearchDialog::loadBlastQueriesFromFastaFile(QString fullFileName)
     int queriesLoaded = g_blastSearch->loadBlastQueriesFromFastaFile(fullFileName);
     if (queriesLoaded > 0)
     {
-        fillQueriesTable();
         clearBlastHits();
+        fillQueriesTable();
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
         setUiStep(READY_FOR_BLAST_SEARCH);
     }
@@ -966,6 +968,15 @@ void BlastSearchDialog::queryShownChanged()
 
 void BlastSearchDialog::showPathsDialog(BlastQuery * query)
 {
-    QueryPathsDialog queryPathsDialog(this, query);
-    queryPathsDialog.exec();
+    deleteQueryPathsDialog();
+
+    m_queryPathsDialog = new QueryPathsDialog(this, query);
+    m_queryPathsDialog->show();
+}
+
+void BlastSearchDialog::deleteQueryPathsDialog()
+{
+    if (m_queryPathsDialog != 0)
+        delete m_queryPathsDialog;
+    m_queryPathsDialog = 0;
 }

@@ -27,6 +27,7 @@
 
 class DeBruijnNode;
 class BlastQuery;
+class QueryPathsDialog;
 
 namespace Ui {
 class BlastSearchDialog;
@@ -48,6 +49,7 @@ private:
     QString m_tblastnCommand;
     QThread * m_buildBlastDatabaseThread;
     QThread * m_blastSearchThread;
+    QueryPathsDialog * m_queryPathsDialog;
 
     void setUiStep(BlastUiState blastUiState);
     void clearBlastHits();
@@ -57,6 +59,7 @@ private:
     void buildBlastDatabase(bool separateThread);
     void runBlastSearches(bool separateThread);
     void makeQueryRow(int row);
+    void deleteQueryPathsDialog();
 
 private slots:
     void afterWindowShow();
