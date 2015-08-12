@@ -155,11 +155,10 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              covered by a query path (0.3 to 1.0, default:" << endl;
     *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
-    *out << "                              covered by BLAST hits in a query path (0.3 to 1.0, default:" << endl;
-    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
-    *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query path" << endl;
-    *out << "                              (0.0 to 1.0, default:" << endl;
-    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "                              covered by BLAST hits in a query path (0.3 to 1.0," << endl;
+    *out << "                              default:" + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
+    *out << "                              path (0.0 to 1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
     *out << "                              between a BLAST query and its path in the graph" << endl;
     *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->maxLengthDiscrepancy) + ")" << endl;
