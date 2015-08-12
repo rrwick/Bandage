@@ -53,7 +53,7 @@ public:
     QString distancePathSearchQuery2Path;
 
     //This stores the currently selected query path in a query path dialog.
-    Path queryPath;
+    QList<Path> queryPaths;
 };
 
 #endif // MEMORY_H

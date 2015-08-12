@@ -949,12 +949,19 @@ void GraphicsItemNode::exactPathHighlightNode(QPainter * painter)
 //in the user-specified path.
 void GraphicsItemNode::queryPathHighlightNode(QPainter * painter)
 {
-    if (g_memory->queryPath.containsNode(m_deBruijnNode))
-        pathHighlightNode2(painter, m_deBruijnNode, false, &g_memory->queryPath);
+    if (g_memory->queryPaths.size() == 0)
+        return;
 
-    if (!g_settings->doubleMode &&
-            g_memory->queryPath.containsNode(m_deBruijnNode->m_reverseComplement))
-        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, &g_memory->queryPath);
+    for (int i = 0; i < g_memory->queryPaths.size(); ++i)
+    {
+        Path * path = &(g_memory->queryPaths[i]);
+        if (path->containsNode(m_deBruijnNode))
+            pathHighlightNode2(painter, m_deBruijnNode, false, path);
+
+        if (!g_settings->doubleMode &&
+                path->containsNode(m_deBruijnNode->m_reverseComplement))
+            pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, path);
+    }
 }
 
 

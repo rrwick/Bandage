@@ -19,7 +19,7 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
     connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(tableSelectionChanged()));
 
     g_memory->queryPathDialogIsVisible = true;
-    g_memory->queryPath = Path();
+    g_memory->queryPaths.clear();
 
     ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Path" << "Length\n(bp)" << "Query\ncovered\nby path" <<
                                                "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
@@ -164,17 +164,29 @@ void QueryPathsDialog::tableSelectionChanged()
     for (int i = 0; i < selection.size(); ++i)
         totalSelectedRows += selection[i].rowCount();
 
-    //If zero or more than ones are selected, clear the query path in memory.
-    if (totalSelectedRows != 1)
-        g_memory->queryPath = Path();
+    g_memory->queryPaths.clear();
 
-    //If just one is selected, then set that as the query path in memory.
-    else
+    QList<int> selectedRows;
+    for (int i = 0; i < selection.size(); ++i)
     {
-        int selectedRow = selection[0].topRow();
-        QString pathString = ui->tableWidget->item(selectedRow, 0)->text();
-        QString pathStringFailure;
-        g_memory->queryPath = Path::makeFromString(pathString, false, &pathStringFailure);
+        QTableWidgetSelectionRange * selectionRange = &(selection[i]);
+        int top = selectionRange->topRow();
+        int bottom = selectionRange->bottomRow();
+
+        for (int row = top; row <= bottom; ++row)
+        {
+            if (!selectedRows.contains(row))
+                selectedRows.push_back(row);
+        }
     }
+
+    for (int i = 0; i < selectedRows.size(); ++i)
+    {
+        int row = selectedRows[i];
+        QString pathString = ui->tableWidget->item(row, 0)->text();
+        QString pathStringFailure;
+        g_memory->queryPaths.push_back(Path::makeFromString(pathString, false, &pathStringFailure));
+    }
+
     emit selectionChanged();
 }
