@@ -424,7 +424,7 @@ QByteArray Path::getPathSequence() const
         return "";
 
     QByteArray sequence;
-    QByteArray firstNodeSequence = m_nodes[0]->m_sequence;
+    QByteArray firstNodeSequence = m_nodes[0]->getSequence();
 
     //If the path is circular, we trim the overlap from the first node so it is
     //flush with the end.  If the path is linear, we include the whole first
@@ -450,14 +450,14 @@ QByteArray Path::getPathSequence() const
     for (int i = 1; i < m_nodes.size(); ++i)
     {
         int overlap = m_edges[i-1]->m_overlap;
-        QByteArray nodeSequence = m_nodes[i]->m_sequence;
+        QByteArray nodeSequence = m_nodes[i]->getSequence();
         int rightChars = nodeSequence.length() - overlap;
         if (rightChars > 0)
             sequence += nodeSequence.right(rightChars);
     }
 
     DeBruijnNode * lastNode = m_nodes.back();
-    int amountToTrim = lastNode->m_sequence.length() - m_endLocation.getPosition();
+    int amountToTrim = lastNode->getLength() - m_endLocation.getPosition();
     sequence.chop(amountToTrim);
 
     return sequence;
@@ -476,7 +476,7 @@ int Path::getLength() const
     length -= m_startLocation.getPosition() - 1;
 
     DeBruijnNode * lastNode = m_nodes.back();
-    length -= lastNode->m_sequence.length() - m_endLocation.getPosition();
+    length -= lastNode->getLength() - m_endLocation.getPosition();
 
     return length;
 }
@@ -522,7 +522,7 @@ QString Path::getString(bool spaces) const
                 output += " ";
         }
 
-        output += m_nodes[i]->m_name;
+        output += m_nodes[i]->getName();
         if (i < m_nodes.size() - 1)
         {
             output += ",";
@@ -725,7 +725,7 @@ double Path::getMeanReadDepth() const
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         DeBruijnNode * node = m_nodes[i];
-        depthTimesLengthSum += node->m_readDepth * node->getLength();
+        depthTimesLengthSum += node->getReadDepth() * node->getLength();
         nodeLengthTotal += node->getLength();
     }
 

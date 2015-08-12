@@ -301,7 +301,7 @@ QByteArray DeBruijnNode::getFasta()
     fasta += "_length_";
     fasta += QString::number(getLength());
     fasta += "_cov_";
-    fasta += QString::number(m_readDepth);
+    fasta += QString::number(getReadDepth());
     fasta += "\n";
 
     int charactersOnLine = 0;
@@ -511,7 +511,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes()
 
 
 
-int DeBruijnNode::getBasePairsPerSegment()
+int DeBruijnNode::getBasePairsPerSegment() const
 {
     if (g_settings->nodeLengthMode == AUTO_NODE_LENGTH)
         return g_settings->autoBasePairsPerSegment;

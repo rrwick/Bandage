@@ -73,7 +73,7 @@ bool DeBruijnEdge::edgeIsVisible()
         //negative.  In this case, just choose the one with the first name
         //alphabetically - an arbitrary choice, but at least it is
         //consistent.
-        return (m_startingNode->m_name > m_reverseComplement->m_startingNode->m_name);
+        return (m_startingNode->getName() > m_reverseComplement->m_startingNode->getName());
     }
 }
 
@@ -305,7 +305,7 @@ void DeBruijnEdge::autoDetermineExactOverlap()
     m_overlapType = AUTO_DETERMINED_EXACT_OVERLAP;
 
     //Find an appropriate search range
-    int minPossibleOverlap = std::min(m_startingNode->m_sequence.length(), m_endingNode->m_sequence.length());
+    int minPossibleOverlap = std::min(m_startingNode->getLength(), m_endingNode->getLength());
     if (minPossibleOverlap < g_settings->minAutoFindEdgeOverlap)
         return;
     int min = std::min(minPossibleOverlap, g_settings->minAutoFindEdgeOverlap);
@@ -338,13 +338,13 @@ bool DeBruijnEdge::testExactOverlap(int overlap)
 {
     bool mismatchFound = false;
 
-    int seq1Offset = m_startingNode->m_sequence.length() - overlap;
+    int seq1Offset = m_startingNode->getLength() - overlap;
 
     //Look at each position in the overlap
     for (int j = 0; j < overlap && !mismatchFound; ++j)
     {
-        char a = m_startingNode->m_sequence.at(seq1Offset + j);
-        char b = m_endingNode->m_sequence.at(j);
+        char a = m_startingNode->getBaseAt(seq1Offset + j);
+        char b = m_endingNode->getBaseAt(j);
         if (a != b)
             mismatchFound = true;
     }

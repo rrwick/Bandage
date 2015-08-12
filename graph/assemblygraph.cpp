@@ -226,7 +226,7 @@ double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
 
         ++nodeCount;
         totalLength += node->getLength();
-        readDepthSum += node->getLength() * node->m_readDepth;
+        readDepthSum += node->getLength() * node->getReadDepth();
 
     }
 
@@ -245,8 +245,8 @@ double AssemblyGraph::getMaxDeBruijnGraphReadDepthOfDrawnNodes()
     {
         i.next();
 
-        if (i.value()->m_graphicsItemNode != 0 && i.value()->m_readDepth > maxReadDepth)
-            maxReadDepth = i.value()->m_readDepth;
+        if (i.value()->m_graphicsItemNode != 0 && i.value()->getReadDepth() > maxReadDepth)
+            maxReadDepth = i.value()->getReadDepth();
     }
 
     return maxReadDepth;
@@ -312,7 +312,7 @@ void AssemblyGraph::determineGraphInfo()
             ++nodeCount;
         }
 
-        nodeReadDepths.push_back(i.value()->m_readDepth);
+        nodeReadDepths.push_back(i.value()->getReadDepth());
     }
 
     //Count up the edges.  Edges that are their own pairs will
@@ -697,7 +697,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
             {
                 QByteArray sequenceLine = line.simplified().toLocal8Bit();
                 if (node != 0)
-                    node->m_sequence.append(sequenceLine);
+                    node->appendToSequence(sequenceLine);
             }
         }
 
@@ -736,13 +736,13 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
 
 void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
 {
-    QString reverseComplementName = getOppositeNodeName(node->m_name);
+    QString reverseComplementName = getOppositeNodeName(node->getName());
 
     DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
-        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->m_readDepth,
-                                                  getReverseComplement(node->m_sequence));
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->getReadDepth(),
+                                                  getReverseComplement(node->getSequence()));
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
 }
@@ -758,7 +758,7 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
 
         if (positiveNode->isPositiveNode())
         {
-            DeBruijnNode * negativeNode = m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->m_name)];
+            DeBruijnNode * negativeNode = m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->getName())];
             if (negativeNode != 0)
             {
                 positiveNode->m_reverseComplement = negativeNode;
@@ -1053,9 +1053,9 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
         if (node->m_drawn)
         {
             if (meanDrawnReadDepth == 0)
-                node->m_readDepthRelativeToMeanDrawnReadDepth = 1.0;
+                node->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
             else
-                node->m_readDepthRelativeToMeanDrawnReadDepth = node->m_readDepth / meanDrawnReadDepth;
+                node->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
             GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, m_graphAttributes);
             node->m_graphicsItemNode = graphicsItemNode;
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
@@ -1255,7 +1255,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList n
         while (j.hasNext())
         {
             j.next();
-            QString nodeName = j.value()->m_name;
+            QString nodeName = j.value()->getName();
 
             if (nodeName.contains(queryName))
             {

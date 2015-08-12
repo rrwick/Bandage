@@ -166,7 +166,7 @@ char GraphLocation::getBase() const
     if (!isValid())
         return '\0';
     else
-        return m_node->m_sequence.at(m_position - 1);
+        return m_node->getBaseAt(m_position - 1);
 }
 
 

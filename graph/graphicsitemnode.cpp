@@ -755,7 +755,7 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << m_deBruijnNode->m_customLabel;
     if (g_settings->displayNodeNames)
     {
-        QString nodeName = m_deBruijnNode->m_name;
+        QString nodeName = m_deBruijnNode->getName();
         if (!g_settings->doubleMode)
             nodeName.chop(1);
         nodeText << nodeName;
@@ -763,7 +763,7 @@ QStringList GraphicsItemNode::getNodeText()
     if (g_settings->displayNodeLengths)
         nodeText << formatIntForDisplay(m_deBruijnNode->getLength()) + " bp";
     if (g_settings->displayNodeReadDepth)
-        nodeText << formatDoubleForDisplay(m_deBruijnNode->m_readDepth, 1) + "x";
+        nodeText << formatDoubleForDisplay(m_deBruijnNode->getReadDepth(), 1) + "x";
 
     return nodeText;
 }
@@ -779,7 +779,7 @@ QSize GraphicsItemNode::getNodeTextSize(QString text)
 
 QColor GraphicsItemNode::getReadDepthColour()
 {
-    double readDepth = m_deBruijnNode->m_readDepth;
+    double readDepth = m_deBruijnNode->getReadDepth();
     double lowValue;
     double highValue;
     if (g_settings->autoReadDepthValue)
@@ -817,7 +817,7 @@ QColor GraphicsItemNode::getReadDepthColour()
 
 void GraphicsItemNode::setWidth()
 {
-    m_width = getNodeWidth(m_deBruijnNode->m_readDepthRelativeToMeanDrawnReadDepth, g_settings->readDepthPower,
+    m_width = getNodeWidth(m_deBruijnNode->getReadDepthRelativeToMeanDrawnReadDepth(), g_settings->readDepthPower,
                            g_settings->readDepthEffectOnWidth, g_settings->averageNodeWidth);
 }
 

@@ -298,7 +298,7 @@ void BlastSearchDialog::fillHitsTable()
         QTableWidgetItem * queryName = new QTableWidgetItem(hitQuery->getName());
         queryName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->m_name);
+        QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->getName());
         nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         TableWidgetItemDouble * percentIdentity = new TableWidgetItemDouble(QString::number(hit->m_percentIdentity) + "%", hit->m_percentIdentity);

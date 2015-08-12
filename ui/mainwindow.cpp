@@ -431,7 +431,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
     for (int i = 0; i < selectedNodeCount; ++i)
     {
-        QString nodeName = selectedNodes[i]->m_name;
+        QString nodeName = selectedNodes[i]->getName();
 
         //If we are in single mode, don't include +/i in the node name
         if (!g_settings->doubleMode)
@@ -451,8 +451,8 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
 bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
 {
-    QString aStart = a->m_startingNode->m_name;
-    QString bStart = b->m_startingNode->m_name;
+    QString aStart = a->m_startingNode->getName();
+    QString bStart = b->m_startingNode->getName();
     QString aStartNoSign = aStart;
     aStartNoSign.chop(1);
     QString bStartNoSign = bStart;
@@ -462,8 +462,8 @@ bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
     bool ok2;
     long long bStartNumber = bStartNoSign.toLongLong(&ok2);
 
-    QString aEnd = a->m_endingNode->m_name;
-    QString bEnd = b->m_endingNode->m_name;
+    QString aEnd = a->m_endingNode->getName();
+    QString bEnd = b->m_endingNode->getName();
     QString aEndNoSign = aEnd;
     aEndNoSign.chop(1);
     QString bEndNoSign = bEnd;
@@ -497,9 +497,9 @@ QString MainWindow::getSelectedEdgeListText()
     QString edgeText;
     for (size_t i = 0; i < selectedEdges.size(); ++i)
     {
-        edgeText += selectedEdges[i]->m_startingNode->m_name;
+        edgeText += selectedEdges[i]->m_startingNode->getName();
         edgeText += " to ";
-        edgeText += selectedEdges[i]->m_endingNode->m_name;
+        edgeText += selectedEdges[i]->m_endingNode->getName();
         if (i != selectedEdges.size() - 1)
             edgeText += ", ";
     }
@@ -830,7 +830,7 @@ void MainWindow::copySelectedSequencesToClipboard()
 
     for (size_t i = 0; i < selectedNodes.size(); ++i)
     {
-        clipboardText += selectedNodes[i]->m_sequence;
+        clipboardText += selectedNodes[i]->getSequence();
         if (i != selectedNodes.size() - 1)
             clipboardText += "\n";
     }
@@ -1409,7 +1409,7 @@ void MainWindow::selectUserSpecifiedNodes()
             ++foundNodes;
         }
         else
-            nodesNotFound.push_back(nodesToSelect[i]->m_name);
+            nodesNotFound.push_back(nodesToSelect[i]->getName());
     }
 
     if (foundNodes > 0)

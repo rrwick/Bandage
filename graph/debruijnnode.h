@@ -34,13 +34,27 @@ class BlastHit;
 class DeBruijnNode
 {
 public:
+    //CREATORS
     DeBruijnNode(QString name, double readDepth, QByteArray sequence);
     ~DeBruijnNode();
 
-    QString m_name;
-    double m_readDepth;
-    double m_readDepthRelativeToMeanDrawnReadDepth;
-    QByteArray m_sequence;
+    //ACCESSORS
+    QString getName() const {return m_name;}
+    double getReadDepth() const {return m_readDepth;}
+    double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
+    QByteArray getSequence() const {return m_sequence;}
+    char getBaseAt(int i) const {if (i >= 0 && i < m_sequence.length()) return m_sequence.at(i); else return '\0';}
+
+    //MODIFERS
+    void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}
+    void appendToSequence(QByteArray additionalSeq) {m_sequence.append(additionalSeq);}
+
+
+
+
+
+
+
     ContiguityStatus m_contiguityStatus;
     DeBruijnNode * m_reverseComplement;
     OgdfNode * m_ogdfNode;
@@ -95,7 +109,12 @@ public:
     std::vector<DeBruijnNode *> getUpstreamNodes();
 
 private:
-    int getBasePairsPerSegment();
+    QString m_name;
+    double m_readDepth;
+    double m_readDepthRelativeToMeanDrawnReadDepth;
+    QByteArray m_sequence;
+
+    int getBasePairsPerSegment() const;
 };
 
 #endif // DEBRUIJNNODE_H

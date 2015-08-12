@@ -22,7 +22,7 @@ BlastQueryPath::BlastQueryPath(Path path, BlastQuery * query) :
         for (int j = 0; j < queryHits.size(); ++j)
         {
             BlastHit * hit = queryHits[j].data();
-            if (hit->m_node->m_name == node->m_name)
+            if (hit->m_node->getName() == node->getName())
                 hitsThisNode.push_back(hit);
         }
 

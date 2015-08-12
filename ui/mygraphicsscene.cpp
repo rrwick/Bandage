@@ -30,8 +30,8 @@ MyGraphicsScene::MyGraphicsScene(QObject *parent) :
 
 bool compareNodePointers(DeBruijnNode * a, DeBruijnNode * b)
 {
-    QString aName = a->m_name;
-    QString bName = b->m_name;
+    QString aName = a->getName();
+    QString bName = b->getName();
 
     QString aName2 = aName;
     aName2.chop(1);
