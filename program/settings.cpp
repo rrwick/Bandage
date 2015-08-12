@@ -106,9 +106,12 @@ Settings::Settings()
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
-    queryRequiredCoverage = 0.90;
-    queryAllowedLengthDiscrepancy = 0.05;
     maxQueryPathNodes = 6;
+    minQueryCoveredByPath = 0.9;
+    minQueryCoveredByHits = 0.9;
+    minMeanHitIdentity = 0.5;
+    maxLengthDiscrepancy = 0.05;
+    maxEValueProductPower = -10;
 
     blastSearchParameters = "";
 }

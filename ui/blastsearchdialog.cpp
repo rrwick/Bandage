@@ -466,8 +466,8 @@ void BlastSearchDialog::enterQueryManually()
         QString queryName = g_blastSearch->cleanQueryName(enterOneBlastQueryDialog.getName());
         g_blastSearch->m_blastQueries.addQuery(new BlastQuery(queryName,
                                                               enterOneBlastQueryDialog.getSequence()));
-        fillQueriesTable();
         clearBlastHits();
+        fillQueriesTable();
 
         setUiStep(READY_FOR_BLAST_SEARCH);
     }

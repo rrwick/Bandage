@@ -149,14 +149,23 @@ void printSettingsUsage(QTextStream * out)
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          These settings control how Bandage searches for query paths after" << endl;
     *out << "          conducting a BLAST search." << endl;
-    *out << "          --reqcov <float>    Required fraction of a BLAST query which must be" << endl;
-    *out << "                              covered by a graph path (0.5 to 1.0, default:" << endl;
-    *out << "                              " + QString::number(g_settings->queryRequiredCoverage) + ")" << endl;
-    *out << "          --lendis <float>    Maximum allowed relative length discrepancy" << endl;
-    *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->queryAllowedLengthDiscrepancy) + ")" << endl;
     *out << "          --pathnodes <int>   The number of allowed nodes in a BLAST query path" << endl;
     *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
+    *out << "          --minpatcov <float> Minimum fraction of a BLAST query which must be" << endl;
+    *out << "                              covered by a query path (0.3 to 1.0, default:" << endl;
+    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
+    *out << "                              covered by BLAST hits in a query path (0.3 to 1.0, default:" << endl;
+    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query path" << endl;
+    *out << "                              (0.0 to 1.0, default:" << endl;
+    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
+    *out << "                              between a BLAST query and its path in the graph" << endl;
+    *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->maxLengthDiscrepancy) + ")" << endl;
+    *out << "          --maxevprod <int>   Maximum e-value product for all BLAST hits in a" << endl;
+    *out << "                              query path, given as a power of ten" << endl;
+    *out << "                              (-1000 to 1, default: " << QString::number(g_settings->maxEValueProductPower) + ")" << endl;
     *out << endl;
 }
 
@@ -261,11 +270,17 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
     if (error.length() > 0) return error;
 
-    error = checkOptionForFloat("--reqcov", arguments, 0.5, 1.0);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--lendis", arguments, 0.0, 1.0);
-    if (error.length() > 0) return error;
     error = checkOptionForInt("--pathnodes", arguments, 1, 50);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minpatcov", arguments, 0.3, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minhitcov", arguments, 0.3, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minmeanid", arguments, 0.0, 1.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxlendis", arguments, 0.0, 0.5);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--maxevprod", arguments, -1000, 1);
     if (error.length() > 0) return error;
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
@@ -410,12 +425,18 @@ void parseSettings(QStringList arguments)
         g_settings->autoReadDepthValue = false;
     }
 
-    if (isOptionPresent("--reqcov", &arguments))
-        g_settings->queryRequiredCoverage = getFloatOption("--reqcov", &arguments);
-    if (isOptionPresent("--lendis", &arguments))
-        g_settings->queryAllowedLengthDiscrepancy = getFloatOption("--lendis", &arguments);
     if (isOptionPresent("--pathnodes", &arguments))
         g_settings->maxQueryPathNodes = getIntOption("--pathnodes", &arguments);
+    if (isOptionPresent("--minpatcov", &arguments))
+        g_settings->minQueryCoveredByPath = getFloatOption("--minpatcov", &arguments);
+    if (isOptionPresent("--minhitcov", &arguments))
+        g_settings->minQueryCoveredByHits = getFloatOption("--minhitcov", &arguments);
+    if (isOptionPresent("--minmeanid", &arguments))
+        g_settings->minMeanHitIdentity = getFloatOption("--minmeanid", &arguments);
+    if (isOptionPresent("--maxlendis", &arguments))
+        g_settings->maxLengthDiscrepancy = getFloatOption("--maxlendis", &arguments);
+    if (isOptionPresent("--maxevprod", &arguments))
+        g_settings->maxEValueProductPower = getIntOption("--maxevprod", &arguments);
 }
 
 

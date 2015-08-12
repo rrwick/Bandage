@@ -121,9 +121,12 @@ public:
 
     //These control how Bandage finds the best path in the graph to represent
     //each BLAST query.
-    double queryRequiredCoverage;
-    double queryAllowedLengthDiscrepancy;
     int maxQueryPathNodes;
+    double minQueryCoveredByPath;
+    double minQueryCoveredByHits;
+    double minMeanHitIdentity;
+    double maxLengthDiscrepancy;
+    int maxEValueProductPower;
 
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.

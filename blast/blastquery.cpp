@@ -95,7 +95,7 @@ void BlastQuery::findQueryPaths()
     //Find all possible path starts within an acceptable distance from the query
     //start.
     QList<BlastHit *> possibleStarts;
-    double acceptableStartFraction = 1.0 - g_settings->queryRequiredCoverage;
+    double acceptableStartFraction = 1.0 - g_settings->minQueryCoveredByPath;
     for (int i = 0; i < m_hits.size(); ++i)
     {
         BlastHit * hit = m_hits[i].data();
@@ -105,7 +105,7 @@ void BlastQuery::findQueryPaths()
 
     //Find all possible path ends.
     QList<BlastHit *> possibleEnds;
-    double acceptableEndFraction = g_settings->queryRequiredCoverage;
+    double acceptableEndFraction = g_settings->minQueryCoveredByPath;
     for (int i = 0; i < m_hits.size(); ++i)
     {
         BlastHit * hit = m_hits[i].data();
@@ -139,8 +139,10 @@ void BlastQuery::findQueryPaths()
             partialQueryLength -= pathStart;
             partialQueryLength -= queryLength - pathEnd;
 
-            int minLength = int(partialQueryLength * (1.0 - g_settings->queryAllowedLengthDiscrepancy) + 0.5);
-            int maxLength = int(partialQueryLength * (1.0 + g_settings->queryAllowedLengthDiscrepancy) + 0.5);
+            int allowedDiscrepancy = int(partialQueryLength * g_settings->maxLengthDiscrepancy) + 1;
+
+            int minLength = partialQueryLength - allowedDiscrepancy;
+            int maxLength = partialQueryLength + allowedDiscrepancy;
 
             possiblePaths.append(Path::getAllPossiblePaths(startLocation,
                                                            endLocation,
@@ -157,12 +159,17 @@ void BlastQuery::findQueryPaths()
     for (int i = 0; i < possiblePaths.size(); ++i)
         blastQueryPaths.push_back(BlastQueryPath(possiblePaths[i], this));
 
-    //We now want to throw out any paths for which the hits do not cover a
-    //sufficient amount of the query.
+    //We now want to throw out any paths for which the hits fail to meet the
+    //thresholds in settings.
     QList<BlastQueryPath> sufficientCoveragePaths;
+    long double maxEValueProduct = pow(10.0l, (long double)g_settings->maxEValueProductPower);
     for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
-        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->queryRequiredCoverage)
+        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->minQueryCoveredByHits &&
+                blastQueryPaths[i].getPathQueryCoverage() >= g_settings->minQueryCoveredByPath &&
+                blastQueryPaths[i].getEvalueProduct() <= maxEValueProduct &&
+                blastQueryPaths[i].getMeanHitPercIdentity() >= 100.0 * g_settings->minMeanHitIdentity &&
+                fabs(blastQueryPaths[i].getRelativeLengthDiscrepancy()) <= g_settings->maxLengthDiscrepancy)
             sufficientCoveragePaths.push_back(blastQueryPaths[i]);
     }
 

@@ -161,9 +161,12 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->maybeContiguousColour, ui->maybeContiguousColourButton);
     colourFunctionPointer(&settings->notContiguousColour, ui->notContiguousColourButton);
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
-    doubleFunctionPointer(&settings->queryRequiredCoverage, ui->requiredCoverageSpinBox, true);
-    doubleFunctionPointer(&settings->queryAllowedLengthDiscrepancy, ui->allowedLengthDiscrepancySpinBox, true);
     intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
+    doubleFunctionPointer(&settings->minQueryCoveredByPath, ui->minQueryCoveredByPathSpinBox, true);
+    doubleFunctionPointer(&settings->minQueryCoveredByHits, ui->minQueryCoveredByHitsSpinBox, true);
+    doubleFunctionPointer(&settings->minMeanHitIdentity, ui->minMeanHitIdentitySpinBox, true);
+    doubleFunctionPointer(&settings->maxLengthDiscrepancy, ui->maxLengthDiscrepancySpinBox, true);
+    intFunctionPointer(&settings->maxEValueProductPower, ui->maxEvalueProductSpinBox);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.
@@ -334,18 +337,34 @@ void SettingsDialog::setInfoTexts()
     ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the "
                                                       "starting node(s).");
 
-    ui->requiredCoverageInfoText->setInfoText("This is the fraction of a BLAST query which must be present in a graph path.<br><br>"
-                                              "Set to a higher value to make BLAST query paths more stringent.");
-    ui->allowedLengthDiscrepancyInfoText->setInfoText("This is the allowed difference in length between a BLAST query and "
-                                                      "its path in the graph.<br><br>"
-                                                      "Set to a lower value to make BLAST query paths more stringent.");
     ui->maxPathNodesInfoText->setInfoText("This controls the maximum number of nodes in BLAST query paths.<br><br>"
                                           "A higher value will allow for paths containing more nodes, at a performance "
                                           "cost.");
-    ui->maxPathsInfoText->setInfoText("This sets the maximum number of paths that will be displayed for any given "
-                                      "BLAST query.<br><br>"
-                                      "For example, if set to 1, then only the top BLAST path will be shown for "
-                                      "each query.");
+    ui->minQueryCoveredByPathInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which "
+                                                   "is covered by a BLAST query path. Paths that cover less of the "
+                                                   "query than this setting will not be included in the query's "
+                                                   "paths.<br><br>"
+                                                   "Set to a higher value to make BLAST query paths more stringent.");
+    ui->minQueryCoveredByHitsInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which "
+                                                   "is covered by the hits in a BLAST query path. Paths with hits that "
+                                                   "cover less of the query than this setting will not be included in "
+                                                   "the query's paths.<br><br>"
+                                                   "Set to a higher value to make BLAST query paths more stringent.");
+    ui->minMeanHitIdentityInfoText->setInfoText("This is a minimum value for the mean of the percent identity for the "
+                                                "hits in a BLAST query path, weighted by the hits' lengths. Paths with "
+                                                "a mean hit percent identity less than this setting will not be included "
+                                                "in the query's paths.<br><br>"
+                                                "Set to a higher value to make BLAST query paths more stringent.");
+    ui->maxLengthDiscrepancyInfoText->setInfoText("This is a maximum value for the length discrepancy between a BLAST "
+                                                  "query and its path in the graph. Paths with a length discrepancy "
+                                                  "greater than this setting will not be included in the query's "
+                                                  "paths.<br><br>"
+                                                  "Set to a lower value to make BLAST query paths more stringent.");
+    ui->maxEvalueProductInfoText->setInfoText("This is a maximum value for the product of the e-values of all the "
+                                              "hits in a BLAST query path. Paths with an e-value product greater "
+                                              "than this setting will not be included in the query's paths.<br><br>"
+                                              "Set to a lower value to make BLAST query paths more stringent.");
+
 }
 
 
