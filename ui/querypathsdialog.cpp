@@ -90,7 +90,45 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
     ui->tableWidget->resizeColumns();
     ui->tableWidget->setSortingEnabled(true);
 
-
+    ui->queryPathsInfoText->setInfoText("This table shows information about the possible paths through the graph which "
+                                        "represent the query. These paths can be either simple (residing within a single "
+                                        "node) or complex (spanning multiple nodes). The columns in the table are as "
+                                        "follows:"
+                                        "<br><br>"
+                                        "<b>Path</b>: This is the query path through the graph, as written in Bandage's "
+                                        "path notation. The nodes in the path are separated by commas. The start position "
+                                        "in the first node is shown in parentheses at the beginning of the path. The end "
+                                        "position in the last node is shown in parentheses at the end of the path."
+                                        "<br><br>"
+                                        "<b>Length</b>: This is the path length. It is shown in base pairs, whether the "
+                                        "query is a nucleotide query or a protein query."
+                                        "<br><br>"
+                                        "<b>Query covered by path</b>: This is the fraction of the query which is covered "
+                                        "by the path. It is calculated by taking 100% and subtracting the fraction of the "
+                                        "query which is not captured by the start and the fraction of the query which is "
+                                        "not captured by the end."
+                                        "<br><br>"
+                                        "<b>Query covered by hits</b>: This is the fraction of the query which is covered "
+                                        "by the BLAST hits in this path. Since a path may contain nodes or parts of nodes which "
+                                        "are not covered by BLAST hits, this value will be less than or equal to the 'Query "
+                                        "covered by path' value."
+                                        "<br><br>"
+                                        "<b>Mean hit identity</b>: This is the mean of the percent identity for the BLAST "
+                                        "hits in this path, weighted by the hits' lengths."
+                                        "<br><br>"
+                                        "<b>Total hit mismatches</b>: This is the sum of the mismatches for the BLAST hits "
+                                        "in this path."
+                                        "<br><br>"
+                                        "<b>Total hit gap opens</b>: This is the sum of the gap opens for the BLAST hits "
+                                        "in this path."
+                                        "<br><br>"
+                                        "<b>Length discrepancy</b>: This is the percent difference in the path length and "
+                                        "the appropriate length for the relecant fraction of the query. A positive value "
+                                        "indicates that the path is too long; a negative value indicates that the path is "
+                                        "too short."
+                                        "<br><br>"
+                                        "<b>E-value product</b>: This is the product of the e-values for the BLAST hits "
+                                        "in this path.");
 }
 
 QueryPathsDialog::~QueryPathsDialog()
