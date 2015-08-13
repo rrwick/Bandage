@@ -59,17 +59,7 @@ public:
     void determineIfDrawn() {m_drawn = edgeIsVisible();}
     void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
     void autoDetermineExactOverlap();
-
-
-
-
-
-
-
-
     void addToOgdfGraph(ogdf::Graph * ogdfGraph) const;
-
-
 
 private:
     DeBruijnNode * m_startingNode;
@@ -84,7 +74,6 @@ private:
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path) const;
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
                                                     bool forward) const;
-
 };
 
 #endif // DEBRUIJNEDGE_H
