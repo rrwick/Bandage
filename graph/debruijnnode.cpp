@@ -37,7 +37,7 @@ DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence) 
     m_reverseComplement(0),
     m_ogdfNode(0),
     m_graphicsItemNode(0),
-    m_startingNode(false),
+    m_specialNode(false),
     m_drawn(false),
     m_highestDistanceInNeighbourSearch(0),
     m_customColour(QColor(190, 190, 190))
@@ -70,9 +70,9 @@ void DeBruijnNode::resetNode()
         delete m_ogdfNode;
     m_ogdfNode = 0;
     m_graphicsItemNode = 0;
-    m_contiguityStatus = NOT_CONTIGUOUS;
-    m_startingNode = false;
-    m_drawn = false;
+    resetContiguityStatus();
+    setAsNotDrawn();
+    setAsNotSpecial();
     m_highestDistanceInNeighbourSearch = 0;
 }
 
@@ -121,7 +121,7 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph)
 //  leads to this node?  If so, then they are CONTIGUOUS.
 void DeBruijnNode::determineContiguity()
 {
-    setContiguityStatus(STARTING);
+    upgradeContiguityStatus(STARTING);
 
     //A set is used to store all nodes found in the paths, as the nodes
     //that show up as MAYBE_CONTIGUOUS will have their paths checked
@@ -147,7 +147,7 @@ void DeBruijnNode::determineContiguity()
             for (size_t k = 0; k < allPaths[j].size(); ++k)
             {
                 DeBruijnNode * node = allPaths[j][k];
-                node->setContiguityStatus(MAYBE_CONTIGUOUS);
+                node->upgradeContiguityStatus(MAYBE_CONTIGUOUS);
                 allCheckedNodes.insert(node);
             }
         }
@@ -155,7 +155,7 @@ void DeBruijnNode::determineContiguity()
         //Set all common nodes as CONTIGUOUS_STRAND_SPECIFIC
         std::vector<DeBruijnNode *> commonNodesStrandSpecific = getNodesCommonToAllPaths(&allPaths, false);
         for (size_t j = 0; j < commonNodesStrandSpecific.size(); ++j)
-            (commonNodesStrandSpecific[j])->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
+            (commonNodesStrandSpecific[j])->upgradeContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
 
         //Set all common nodes (when including reverse complement nodes)
         //as CONTIGUOUS_EITHER_STRAND
@@ -163,8 +163,8 @@ void DeBruijnNode::determineContiguity()
         for (size_t j = 0; j < commonNodesEitherStrand.size(); ++j)
         {
             DeBruijnNode * node = commonNodesEitherStrand[j];
-            node->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
-            node->m_reverseComplement->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->upgradeContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->getReverseComplement()->upgradeContiguityStatus(CONTIGUOUS_EITHER_STRAND);
         }
     }
 
@@ -174,21 +174,22 @@ void DeBruijnNode::determineContiguity()
     {
         QApplication::processEvents();
         DeBruijnNode * node = *i;
+        ContiguityStatus status = node->getContiguityStatus();
 
         //First check without reverse complement target for
         //strand-specific contiguity.
-        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC &&
+        if (status != CONTIGUOUS_STRAND_SPECIFIC &&
                 node->doesPathLeadOnlyToNode(this, false))
-            node->setContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
+            node->upgradeContiguityStatus(CONTIGUOUS_STRAND_SPECIFIC);
 
         //Now check including the reverse complement target for
         //either strand contiguity.
-        if (node->m_contiguityStatus != CONTIGUOUS_STRAND_SPECIFIC &&
-                node->m_contiguityStatus != CONTIGUOUS_EITHER_STRAND &&
+        if (status != CONTIGUOUS_STRAND_SPECIFIC &&
+                status != CONTIGUOUS_EITHER_STRAND &&
                 node->doesPathLeadOnlyToNode(this, true))
         {
-            node->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
-            node->m_reverseComplement->setContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->upgradeContiguityStatus(CONTIGUOUS_EITHER_STRAND);
+            node->getReverseComplement()->upgradeContiguityStatus(CONTIGUOUS_EITHER_STRAND);
         }
     }
 }
@@ -197,7 +198,7 @@ void DeBruijnNode::determineContiguity()
 //This function differs from the above by including all reverse complement
 //nodes in the path search.
 std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< std::vector <DeBruijnNode *> > * paths,
-                                                                   bool includeReverseComplements)
+                                                                   bool includeReverseComplements) const
 {
     std::vector<DeBruijnNode *> commonNodes;
 
@@ -226,7 +227,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getNodesCommonToAllPaths(std::vector< 
             {
                 DeBruijnNode * node = (*path)[j];
                 pathWithReverseComplements.push_back(node);
-                pathWithReverseComplements.push_back(node->m_reverseComplement);
+                pathWithReverseComplements.push_back(node->getReverseComplement());
             }
             path = &pathWithReverseComplements;
         }
@@ -267,7 +268,7 @@ bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeRever
 
 
 //This function only upgrades a node's status, never downgrades.
-void DeBruijnNode::setContiguityStatus(ContiguityStatus newStatus)
+void DeBruijnNode::upgradeContiguityStatus(ContiguityStatus newStatus)
 {
     if (newStatus < m_contiguityStatus)
         m_contiguityStatus = newStatus;
@@ -280,7 +281,7 @@ void DeBruijnNode::setContiguityStatus(ContiguityStatus newStatus)
 //this function returns true.
 bool DeBruijnNode::isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
                                             std::vector<DeBruijnNode *> * incomingNodes,
-                                            std::vector<DeBruijnNode *> * outgoingNodes)
+                                            std::vector<DeBruijnNode *> * outgoingNodes) const
 {
     std::vector<DeBruijnNode *> * container;
     if (std::find(incomingNodes->begin(), incomingNodes->end(), connectedNode) != incomingNodes->end())
@@ -290,9 +291,15 @@ bool DeBruijnNode::isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 
     return (container->size() == 1 && (*container)[0] == connectedNode);
 }
+bool DeBruijnNode::isNotOnlyPathInItsDirection(DeBruijnNode * connectedNode,
+                                 std::vector<DeBruijnNode *> * incomingNodes,
+                                 std::vector<DeBruijnNode *> * outgoingNodes) const
+{
+    return !isOnlyPathInItsDirection(connectedNode, incomingNodes, outgoingNodes);
+}
 
 
-QByteArray DeBruijnNode::getFasta()
+QByteArray DeBruijnNode::getFasta() const
 {
     QByteArray fasta = ">";
 
@@ -348,24 +355,15 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
             if (otherNode->isPositiveNode())
                 otherNode->m_drawn = true;
             else
-                otherNode->m_reverseComplement->m_drawn = true;
+                otherNode->getReverseComplement()->m_drawn = true;
         }
         otherNode->labelNeighbouringNodesAsDrawn(nodeDistance-1, this);
     }
 }
 
 
-bool DeBruijnNode::thisNodeHasBlastHits()
-{
-    return m_blastHits.size() > 0;
-}
 
-bool DeBruijnNode::thisNodeOrReverseComplementHasBlastHits()
-{
-    return m_blastHits.size() > 0 || m_reverseComplement->m_blastHits.size() > 0;
-}
-
-std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode(double scaledNodeLength)
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode(double scaledNodeLength) const
 {
     std::vector<BlastHitPart> returnVector;
 
@@ -378,10 +376,10 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode(double scale
     return returnVector;
 }
 
-std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength)
+std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength) const
 {
-    DeBruijnNode * positiveNode = this;
-    DeBruijnNode * negativeNode = m_reverseComplement;
+    const DeBruijnNode * positiveNode = this;
+    const DeBruijnNode * negativeNode = getReverseComplement();
     if (isNegativeNode())
         std::swap(positiveNode, negativeNode);
 
@@ -405,13 +403,13 @@ std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNodeOrReverseComp
 
 
 
-bool DeBruijnNode::isPositiveNode()
+bool DeBruijnNode::isPositiveNode() const
 {
     QChar lastChar = m_name.at(m_name.length() - 1);
     return lastChar == '+';
 }
 
-bool DeBruijnNode::isNegativeNode()
+bool DeBruijnNode::isNegativeNode() const
 {
     QChar lastChar = m_name.at(m_name.length() - 1);
     return lastChar == '-';
@@ -422,7 +420,7 @@ bool DeBruijnNode::isNegativeNode()
 //This function checks to see if the passed node leads into
 //this node.  If so, it returns the connecting edge.  If not,
 //it returns a null pointer.
-DeBruijnEdge * DeBruijnNode::doesNodeLeadIn(DeBruijnNode * node)
+DeBruijnEdge * DeBruijnNode::doesNodeLeadIn(DeBruijnNode * node) const
 {
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
@@ -436,7 +434,7 @@ DeBruijnEdge * DeBruijnNode::doesNodeLeadIn(DeBruijnNode * node)
 //This function checks to see if the passed node leads away from
 //this node.  If so, it returns the connecting edge.  If not,
 //it returns a null pointer.
-DeBruijnEdge * DeBruijnNode::doesNodeLeadAway(DeBruijnNode * node)
+DeBruijnEdge * DeBruijnNode::doesNodeLeadAway(DeBruijnNode * node) const
 {
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
@@ -448,7 +446,7 @@ DeBruijnEdge * DeBruijnNode::doesNodeLeadAway(DeBruijnNode * node)
 }
 
 
-bool DeBruijnNode::isNodeConnected(DeBruijnNode * node)
+bool DeBruijnNode::isNodeConnected(DeBruijnNode * node) const
 {
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
@@ -461,7 +459,7 @@ bool DeBruijnNode::isNodeConnected(DeBruijnNode * node)
 
 
 
-std::vector<DeBruijnEdge *> DeBruijnNode::getEnteringEdges()
+std::vector<DeBruijnEdge *> DeBruijnNode::getEnteringEdges() const
 {
     std::vector<DeBruijnEdge *> returnVector;
     for (size_t i = 0; i < m_edges.size(); ++i)
@@ -472,7 +470,7 @@ std::vector<DeBruijnEdge *> DeBruijnNode::getEnteringEdges()
     }
     return returnVector;
 }
-std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges()
+std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges() const
 {
     std::vector<DeBruijnEdge *> returnVector;
     for (size_t i = 0; i < m_edges.size(); ++i)
@@ -486,7 +484,7 @@ std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges()
 
 
 
-std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes()
+std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes() const
 {
     std::vector<DeBruijnEdge *> leavingEdges = getLeavingEdges();
 
@@ -498,7 +496,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes()
 }
 
 
-std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes()
+std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes() const
 {
     std::vector<DeBruijnEdge *> enteringEdges = getEnteringEdges();
 

@@ -47,14 +47,14 @@ bool DeBruijnEdge::edgeIsVisible()
     //If the program is in double mode, then draw any edge where both of its
     //nodes are drawn.
     if (g_settings->doubleMode)
-        return m_startingNode->m_drawn && m_endingNode->m_drawn;
+        return m_startingNode->isDrawn() && m_endingNode->isDrawn();
 
     //If the program is in single mode, then draw any edge where both of its
     //nodes or their reverse complements are drawn.
     else
     {
-        bool drawEdge = (m_startingNode->m_drawn || m_startingNode->m_reverseComplement->m_drawn)
-                && (m_endingNode->m_drawn || m_endingNode->m_reverseComplement->m_drawn);
+        bool drawEdge = (m_startingNode->isDrawn() || m_startingNode->getReverseComplement()->isDrawn())
+                && (m_endingNode->isDrawn() || m_endingNode->getReverseComplement()->isDrawn());
         if (!drawEdge)
             return false;
 
@@ -84,16 +84,16 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph)
     ogdf::node secondEdgeOgdfNode;
 
     if (m_startingNode->inOgdf())
-        firstEdgeOgdfNode = m_startingNode->m_ogdfNode->getLast();
-    else if (m_startingNode->m_reverseComplement->inOgdf())
-        firstEdgeOgdfNode = m_startingNode->m_reverseComplement->m_ogdfNode->getFirst();
+        firstEdgeOgdfNode = m_startingNode->getOgdfNode()->getLast();
+    else if (m_startingNode->getReverseComplement()->inOgdf())
+        firstEdgeOgdfNode = m_startingNode->getReverseComplement()->getOgdfNode()->getFirst();
     else
         return; //Ending node or its reverse complement isn't in OGDF
 
     if (m_endingNode->inOgdf())
-        secondEdgeOgdfNode = m_endingNode->m_ogdfNode->getFirst();
-    else if (m_endingNode->m_reverseComplement->inOgdf())
-        secondEdgeOgdfNode = m_endingNode->m_reverseComplement->m_ogdfNode->getLast();
+        secondEdgeOgdfNode = m_endingNode->getOgdfNode()->getFirst();
+    else if (m_endingNode->getReverseComplement()->inOgdf())
+        secondEdgeOgdfNode = m_endingNode->getReverseComplement()->getOgdfNode()->getLast();
     else
         return; //Ending node or its reverse complement isn't in OGDF
 
@@ -229,7 +229,7 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
 
     //If we are including reverse complements and the next node is
     //the reverse complement of the target, the search succeeded!
-    if (includeReverseComplement && nextNode->m_reverseComplement == target)
+    if (includeReverseComplement && nextNode->getReverseComplement() == target)
         return true;
 
     //If there are no steps left, then the search failed.
@@ -280,9 +280,10 @@ std::vector<DeBruijnEdge *> DeBruijnEdge::findNextEdgesInPath(DeBruijnNode * nex
                                                               bool forward)
 {
     std::vector<DeBruijnEdge *> nextEdges;
-    for (size_t i = 0; i < nextNode->m_edges.size(); ++i)
+    const std::vector<DeBruijnEdge *> * nextNodeEdges = nextNode->getEdgesPointer();
+    for (size_t i = 0; i < nextNodeEdges->size(); ++i)
     {
-        DeBruijnEdge * edge = nextNode->m_edges[i];
+        DeBruijnEdge * edge = (*nextNodeEdges)[i];
 
         //If forward, we're looking for edges that lead away from
         //nextNode.  If backward, we're looking for edges that lead

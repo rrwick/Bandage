@@ -93,9 +93,9 @@ void GraphicsItemEdge::calculateAndSetPath()
     DeBruijnNode * startingNode = m_deBruijnEdge->m_startingNode;
     if (startingNode == m_deBruijnEdge->m_endingNode)
     {
-        GraphicsItemNode * graphicsItemNode = startingNode->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = startingNode->getGraphicsItemNode();
         if (graphicsItemNode == 0)
-            graphicsItemNode = startingNode->m_reverseComplement->m_graphicsItemNode;
+            graphicsItemNode = startingNode->getReverseComplement()->getGraphicsItemNode();
         if (graphicsItemNode != 0 && graphicsItemNode->m_linePoints.size() == 2)
         {
             makeSpecialPathConnectingNodeToSelf();
@@ -118,24 +118,24 @@ void GraphicsItemEdge::setControlPointLocations()
 
     if (startingNode->hasGraphicsItem())
     {
-        m_startingLocation = startingNode->m_graphicsItemNode->getLast();
-        m_beforeStartingLocation = startingNode->m_graphicsItemNode->getSecondLast();
+        m_startingLocation = startingNode->getGraphicsItemNode()->getLast();
+        m_beforeStartingLocation = startingNode->getGraphicsItemNode()->getSecondLast();
     }
-    else if (startingNode->m_reverseComplement->hasGraphicsItem())
+    else if (startingNode->getReverseComplement()->hasGraphicsItem())
     {
-        m_startingLocation = startingNode->m_reverseComplement->m_graphicsItemNode->getFirst();
-        m_beforeStartingLocation = startingNode->m_reverseComplement->m_graphicsItemNode->getSecond();
+        m_startingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getFirst();
+        m_beforeStartingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getSecond();
     }
 
     if (endingNode->hasGraphicsItem())
     {
-        m_endingLocation = endingNode->m_graphicsItemNode->getFirst();
-        m_afterEndingLocation = endingNode->m_graphicsItemNode->getSecond();
+        m_endingLocation = endingNode->getGraphicsItemNode()->getFirst();
+        m_afterEndingLocation = endingNode->getGraphicsItemNode()->getSecond();
     }
-    else if (endingNode->m_reverseComplement->hasGraphicsItem())
+    else if (endingNode->getReverseComplement()->hasGraphicsItem())
     {
-        m_endingLocation = endingNode->m_reverseComplement->m_graphicsItemNode->getLast();
-        m_afterEndingLocation = endingNode->m_reverseComplement->m_graphicsItemNode->getSecondLast();
+        m_endingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getLast();
+        m_afterEndingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getSecondLast();
     }
 }
 

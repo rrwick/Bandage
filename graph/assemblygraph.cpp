@@ -94,10 +94,11 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int
     DeBruijnNode * negNode2 = m_deBruijnGraphNodes[node2Opposite];
 
     //Quit if the edge already exists
-    for (size_t i = 0; i < node1->m_edges.size(); ++i)
+    const std::vector<DeBruijnEdge *> * edges = node1->getEdgesPointer();
+    for (size_t i = 0; i < edges->size(); ++i)
     {
-        if (node1->m_edges[i]->m_startingNode == node1 &&
-                node1->m_edges[i]->m_endingNode == node2)
+        if ((*edges)[i]->m_startingNode == node1 &&
+                (*edges)[i]->m_endingNode == node2)
             return;
     }
 
@@ -221,7 +222,7 @@ double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
         i.next();
         DeBruijnNode * node = i.value();
 
-        if (drawnNodesOnly && !node->m_drawn)
+        if (drawnNodesOnly && node->isNotDrawn())
             continue;
 
         ++nodeCount;
@@ -245,7 +246,7 @@ double AssemblyGraph::getMaxDeBruijnGraphReadDepthOfDrawnNodes()
     {
         i.next();
 
-        if (i.value()->m_graphicsItemNode != 0 && i.value()->getReadDepth() > maxReadDepth)
+        if (i.value()->getGraphicsItemNode() != 0 && i.value()->getReadDepth() > maxReadDepth)
             maxReadDepth = i.value()->getReadDepth();
     }
 
@@ -259,7 +260,7 @@ void AssemblyGraph::resetNodeContiguityStatus()
     while (i.hasNext())
     {
         i.next();
-        i.value()->m_contiguityStatus = NOT_CONTIGUOUS;
+        i.value()->resetContiguityStatus();
     }
     m_contiguitySearchDone = false;
 }
@@ -270,8 +271,8 @@ void AssemblyGraph::resetAllNodeColours()
     while (i.hasNext())
     {
         i.next();
-        if (i.value()->m_graphicsItemNode != 0)
-            i.value()->m_graphicsItemNode->setNodeColour();
+        if (i.value()->getGraphicsItemNode() != 0)
+            i.value()->getGraphicsItemNode()->setNodeColour();
     }
 }
 
@@ -281,8 +282,7 @@ void AssemblyGraph::clearAllBlastHitPointers()
     while (i.hasNext())
     {
         i.next();
-        DeBruijnNode * node = i.value();
-        node->m_blastHits.clear();
+        i.value()->clearBlastHits();
     }
 }
 
@@ -431,8 +431,8 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
                 DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
                 DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
-                node->m_reverseComplement = reverseComplementNode;
-                reverseComplementNode->m_reverseComplement = node;
+                node->setReverseComplement(reverseComplementNode);
+                reverseComplementNode->setReverseComplement(node);
                 m_deBruijnGraphNodes.insert(posNodeName, node);
                 m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
@@ -523,8 +523,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
                 DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
                 DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
-                node->m_reverseComplement = reverseComplementNode;
-                reverseComplementNode->m_reverseComplement = node;
+                node->setReverseComplement(reverseComplementNode);
+                reverseComplementNode->setReverseComplement(node);
                 m_deBruijnGraphNodes.insert(posNodeName, node);
                 m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
@@ -761,8 +761,8 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
             DeBruijnNode * negativeNode = m_deBruijnGraphNodes[getOppositeNodeName(positiveNode->getName())];
             if (negativeNode != 0)
             {
-                positiveNode->m_reverseComplement = negativeNode;
-                negativeNode->m_reverseComplement = positiveNode;
+                positiveNode->setReverseComplement(negativeNode);
+                negativeNode->setReverseComplement(positiveNode);
             }
         }
     }
@@ -997,7 +997,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
             //If double mode is off, only positive nodes are drawn.  If it's
             //on, all nodes are drawn.
             if (i.value()->isPositiveNode() || g_settings->doubleMode)
-                i.value()->m_drawn = true;
+                i.value()->setAsDrawn();
         }
     }
     else //The scope is either around specified nodes or around nodes with BLAST hits
@@ -1008,10 +1008,10 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
 
             //If we are in single mode, make sure that each node is positive.
             if (!g_settings->doubleMode && node->isNegativeNode())
-                node = node->m_reverseComplement;
+                node = node->getReverseComplement();
 
-            node->m_drawn = true;
-            node->m_startingNode = true;
+            node->setAsDrawn();
+            node->setAsSpecial();
             node->labelNeighbouringNodesAsDrawn(nodeDistance, 0);
         }
     }
@@ -1021,7 +1021,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
     while (i.hasNext())
     {
         i.next();
-        if (i.value()->m_drawn)
+        if (i.value()->isDrawn())
             i.value()->addToOgdfGraph(m_ogdfGraph);
     }
 
@@ -1050,14 +1050,14 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
         i.next();
         DeBruijnNode * node = i.value();
 
-        if (node->m_drawn)
+        if (node->isDrawn())
         {
             if (meanDrawnReadDepth == 0)
                 node->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
             else
                 node->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
             GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, m_graphAttributes);
-            node->m_graphicsItemNode = graphicsItemNode;
+            node->setGraphicsItemNode(graphicsItemNode);
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
         }
@@ -1086,7 +1086,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
         j.next();
         DeBruijnNode * node = j.value();
         if (node->hasGraphicsItem())
-            scene->addItem(node->m_graphicsItemNode);
+            scene->addItem(node->getGraphicsItemNode());
     }
 }
 
@@ -1499,7 +1499,7 @@ void AssemblyGraph::recalculateAllNodeWidths()
     while (i.hasNext())
     {
         i.next();
-        GraphicsItemNode * graphicsItemNode = i.value()->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = i.value()->getGraphicsItemNode();
         if (graphicsItemNode != 0)
             graphicsItemNode->setWidth();
     }

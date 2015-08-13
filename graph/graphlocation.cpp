@@ -66,7 +66,7 @@ bool GraphLocation::isNull() const
 GraphLocation GraphLocation::reverseComplementLocation() const
 {
     int newPos = m_node->getLength() - m_position + 1;
-    GraphLocation newLocation(m_node->m_reverseComplement, newPos);
+    GraphLocation newLocation(m_node->getReverseComplement(), newPos);
 
     //For Velvet graphs, the reverse complement location is shifted by the k-mer
     //size and may not even be on the same node!

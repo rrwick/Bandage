@@ -161,10 +161,10 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     //at the end and then at the front.
     //But only do this if we are in single mode.
     else if (!g_settings->doubleMode &&
-             g_memory->userSpecifiedPath.canNodeFitOnEnd(node->m_reverseComplement, &extendedPath))
+             g_memory->userSpecifiedPath.canNodeFitOnEnd(node->getReverseComplement(), &extendedPath))
         pathText = extendedPath.getString(true);
     else if (!g_settings->doubleMode &&
-             g_memory->userSpecifiedPath.canNodeFitAtStart(node->m_reverseComplement, &extendedPath))
+             g_memory->userSpecifiedPath.canNodeFitAtStart(node->getReverseComplement(), &extendedPath))
         pathText = extendedPath.getString(true);
 
     //If all of the above failed, we do nothing.  I.e. if the node cannot be

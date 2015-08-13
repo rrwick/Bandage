@@ -1232,7 +1232,7 @@ void MainWindow::setNodeCustomColour()
     if (selectedNodes.size() > 1)
         dialogTitle += "s";
 
-    QColor newColour = QColorDialog::getColor(selectedNodes[0]->m_customColour, this, dialogTitle);
+    QColor newColour = QColorDialog::getColor(selectedNodes[0]->getCustomColour(), this, dialogTitle);
     if (newColour.isValid())
     {
         //If the colouring scheme is not currently custom, change it to custom now
@@ -1241,9 +1241,9 @@ void MainWindow::setNodeCustomColour()
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
         {
-            selectedNodes[i]->m_customColour = newColour;
-            if (selectedNodes[i]->m_graphicsItemNode != 0)
-                selectedNodes[i]->m_graphicsItemNode->setNodeColour();
+            selectedNodes[i]->setCustomColour(newColour);
+            if (selectedNodes[i]->getGraphicsItemNode() != 0)
+                selectedNodes[i]->getGraphicsItemNode()->setNodeColour();
 
         }
         g_graphicsView->viewport()->update();
@@ -1263,7 +1263,7 @@ void MainWindow::setNodeCustomLabel()
 
     bool ok;
     QString newLabel = QInputDialog::getText(this, "Custom label", dialogMessage, QLineEdit::Normal,
-                                             selectedNodes[0]->m_customLabel, &ok);
+                                             selectedNodes[0]->getCustomLabel(), &ok);
 
     if (ok)
     {
@@ -1271,7 +1271,7 @@ void MainWindow::setNodeCustomLabel()
         ui->nodeCustomLabelsCheckBox->setChecked(true);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
-            selectedNodes[i]->m_customLabel = newLabel;
+            selectedNodes[i]->setCustomLabel(newLabel);
     }
 }
 
@@ -1290,21 +1290,22 @@ void MainWindow::removeNodes()
         //If the graph is on single mode, then also try to remove any
         //edges connected to the reverse complement node
         if (!g_settings->doubleMode)
-            removeAllGraphicsEdgesFromNode(selectedNodes[i]->m_reverseComplement);
+            removeAllGraphicsEdgesFromNode(selectedNodes[i]->getReverseComplement());
 
         //Now remove the node itself
-        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->getGraphicsItemNode();
         m_scene->removeItem(graphicsItemNode);
         delete graphicsItemNode;
-        selectedNodes[i]->m_graphicsItemNode = 0;
+        selectedNodes[i]->setGraphicsItemNode(0);
     }
 }
 
 void MainWindow::removeAllGraphicsEdgesFromNode(DeBruijnNode * node)
 {
-    for (size_t i = 0; i < node->m_edges.size(); ++i)
+    const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+    for (size_t i = 0; i < edges->size(); ++i)
     {
-        DeBruijnEdge * deBruijnEdge = node->m_edges[i];
+        DeBruijnEdge * deBruijnEdge = (*edges)[i];
         GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->m_graphicsItemEdge;
         if (graphicsItemEdge != 0)
         {
@@ -1396,12 +1397,12 @@ void MainWindow::selectUserSpecifiedNodes()
     int foundNodes = 0;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
-        GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->getGraphicsItemNode();
 
         //If the GraphicsItemNode isn't found, try the reverse complement.  This
         //is only done for single node mode.
         if (graphicsItemNode == 0 && !g_settings->doubleMode)
-            graphicsItemNode = nodesToSelect[i]->m_reverseComplement->m_graphicsItemNode;
+            graphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
 
         if (graphicsItemNode != 0)
         {
@@ -1734,7 +1735,7 @@ void MainWindow::bringSelectedNodesToFront()
 
     for (size_t i = 0; i < selectedNodes.size(); ++i)
     {
-        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->getGraphicsItemNode();
 
         if (graphicsItemNode == 0)
             continue;
@@ -1757,7 +1758,7 @@ void MainWindow::selectNodesWithBlastHits()
     {
         i.next();
         DeBruijnNode * node = i.value();
-        GraphicsItemNode * graphicsItemNode = node->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
 
         if (graphicsItemNode == 0)
             continue;
@@ -1765,7 +1766,7 @@ void MainWindow::selectNodesWithBlastHits()
         //If we're in double mode, only select a node if it has a BLAST hit itself.
         if (g_settings->doubleMode)
         {
-            if (node->m_blastHits.size() > 0)
+            if (node->thisNodeHasBlastHits())
             {
                 graphicsItemNode->setSelected(true);
                 atLeastOneNodeSelected = true;
@@ -1775,7 +1776,7 @@ void MainWindow::selectNodesWithBlastHits()
         //In single mode, select a node if it or its reverse complement has a BLAST hit.
         else
         {
-            if (node->m_blastHits.size() > 0 || node->m_reverseComplement->m_blastHits.size() > 0)
+            if (node->thisNodeOrReverseComplementHasBlastHits())
             {
                 graphicsItemNode->setSelected(true);
                 atLeastOneNodeSelected = true;
@@ -1897,17 +1898,17 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
     {
         i.next();
         DeBruijnNode * node = i.value();
-        GraphicsItemNode * graphicsItemNode = node->m_graphicsItemNode;
+        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
 
         if (graphicsItemNode == 0)
             continue;
 
         //For single nodes, choose the greatest contiguity status of this
         //node and its complement.
-        ContiguityStatus nodeContiguityStatus = node->m_contiguityStatus;
+        ContiguityStatus nodeContiguityStatus = node->getContiguityStatus();
         if (!g_settings->doubleMode)
         {
-            ContiguityStatus twinContiguityStatus = node->m_reverseComplement->m_contiguityStatus;
+            ContiguityStatus twinContiguityStatus = node->getReverseComplement()->getContiguityStatus();
             if (twinContiguityStatus < nodeContiguityStatus)
                 nodeContiguityStatus = twinContiguityStatus;
         }

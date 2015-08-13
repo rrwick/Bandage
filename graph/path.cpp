@@ -79,9 +79,10 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
         DeBruijnNode * node2 = path.m_nodes[secondNodeIndex];
 
         bool foundEdge = false;
-        for (size_t j = 0; j < node1->m_edges.size(); ++j)
+        const std::vector<DeBruijnEdge *> * edges = node1->getEdgesPointer();
+        for (size_t j = 0; j < edges->size(); ++j)
         {
-            DeBruijnEdge * edge = node1->m_edges[j];
+            DeBruijnEdge * edge = (*edges)[j];
             if (edge->m_startingNode == node1 && edge->m_endingNode == node2)
             {
                 path.m_edges.push_back(edge);
@@ -314,8 +315,8 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     DeBruijnEdge * revCompEdgeAwayFromLast = 0;
     if (!strandSpecific)
     {
-        revCompEdgeIntoFirst = firstNode->doesNodeLeadIn(newNode->m_reverseComplement);
-        revCompEdgeAwayFromLast = lastNode->doesNodeLeadAway(newNode->m_reverseComplement);
+        revCompEdgeIntoFirst = firstNode->doesNodeLeadIn(newNode->getReverseComplement());
+        revCompEdgeAwayFromLast = lastNode->doesNodeLeadAway(newNode->getReverseComplement());
     }
 
     //To be successful, either:
@@ -346,7 +347,7 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     if (edgeIntoFirst == 0 && edgeAwayFromLast == 0 &&
             revCompEdgeIntoFirst != 0 && revCompEdgeAwayFromLast == 0)
     {
-        m_nodes.push_front(newNode->m_reverseComplement);
+        m_nodes.push_front(newNode->getReverseComplement());
         m_edges.push_front(revCompEdgeIntoFirst);
         return true;
     }
@@ -354,7 +355,7 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     if (edgeIntoFirst == 0 && edgeAwayFromLast == 0 &&
             revCompEdgeIntoFirst == 0 && revCompEdgeAwayFromLast != 0)
     {
-        m_nodes.push_back(newNode->m_reverseComplement);
+        m_nodes.push_back(newNode->getReverseComplement());
         m_edges.push_back(revCompEdgeAwayFromLast);
         return true;
     }
@@ -372,7 +373,7 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
             revCompEdgeIntoFirst != 0 && revCompEdgeAwayFromLast != 0)
     {
         m_edges.push_back(revCompEdgeAwayFromLast);
-        m_nodes.push_back(newNode->m_reverseComplement);
+        m_nodes.push_back(newNode->getReverseComplement());
         m_edges.push_back(revCompEdgeIntoFirst);
         return true;
     }
@@ -394,12 +395,13 @@ bool Path::checkForOtherEdges()
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         DeBruijnNode * startingNode = m_nodes[i];
+        const std::vector<DeBruijnEdge *> * startingNodeEdges = startingNode->getEdgesPointer();
         for (int j = 0; j < m_nodes.size(); ++j)
         {
             DeBruijnNode * endingNode = m_nodes[j];
-            for (size_t k = 0; k < startingNode->m_edges.size(); ++k)
+            for (size_t k = 0; k < startingNodeEdges->size(); ++k)
             {
-                DeBruijnEdge * edge = startingNode->m_edges[k];
+                DeBruijnEdge * edge = (*startingNodeEdges)[k];
                 if (edge->m_startingNode == startingNode &&
                         edge->m_endingNode == endingNode)
                     allConnectingEdges.push_back(edge);
@@ -580,9 +582,10 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const
         return false;
 
     DeBruijnNode * lastNode = m_nodes.back();
-    for (size_t i = 0; i < lastNode->m_edges.size(); ++i)
+    const std::vector<DeBruijnEdge *> * lastNodeEdges = lastNode->getEdgesPointer();
+    for (size_t i = 0; i < lastNodeEdges->size(); ++i)
     {
-        DeBruijnEdge * edge = lastNode->m_edges[i];
+        DeBruijnEdge * edge = (*lastNodeEdges)[i];
         if (edge->m_startingNode == lastNode && edge->m_endingNode == node)
         {
             *extendedPath = *this;
@@ -609,9 +612,10 @@ bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const
         return false;
 
     DeBruijnNode * firstNode = m_nodes.front();
-    for (size_t i = 0; i < firstNode->m_edges.size(); ++i)
+    const std::vector<DeBruijnEdge *> * firstNodeEdges = firstNode->getEdgesPointer();
+    for (size_t i = 0; i < firstNodeEdges->size(); ++i)
     {
-        DeBruijnEdge * edge = firstNode->m_edges[i];
+        DeBruijnEdge * edge = (*firstNodeEdges)[i];
         if (edge->m_startingNode == node && edge->m_endingNode == firstNode)
         {
             *extendedPath = *this;

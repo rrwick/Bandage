@@ -53,7 +53,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 {
     setWidth();
 
-    OgdfNode * pathOgdfNode = deBruijnNode->m_ogdfNode;
+    OgdfNode * pathOgdfNode = deBruijnNode->getOgdfNode();
     if (pathOgdfNode != 0)
     {
         for (size_t i = 0; i < pathOgdfNode->m_ogdfNodes.size(); ++i)
@@ -65,7 +65,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
     }
     else
     {
-        pathOgdfNode = deBruijnNode->m_reverseComplement->m_ogdfNode;
+        pathOgdfNode = deBruijnNode->getReverseComplement()->getOgdfNode();
         for (int i = int(pathOgdfNode->m_ogdfNodes.size()) - 1; i >= 0; --i)
         {
             ogdf::node ogdfNode = pathOgdfNode->m_ogdfNodes[i];
@@ -77,7 +77,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
     //If we are in double mode and this node's complement is also drawn,
     //then we should shift the points so the two nodes are not drawn directly
     //on top of each other.
-    if (g_settings->doubleMode && deBruijnNode->m_reverseComplement->m_drawn)
+    if (g_settings->doubleMode && deBruijnNode->getReverseComplement()->isDrawn())
         shiftPointsLeft();
 
     remakePath();
@@ -265,7 +265,7 @@ void GraphicsItemNode::setNodeColour()
     switch (g_settings->nodeColourScheme)
     {
     case ONE_COLOUR:
-        if (m_deBruijnNode->m_startingNode)
+        if (m_deBruijnNode->isSpecialNode())
             m_colour = g_settings->uniformNodeSpecialColour;
         else if (usePositiveNodeColour())
             m_colour = g_settings->uniformPositiveNodeColour;
@@ -303,10 +303,10 @@ void GraphicsItemNode::setNodeColour()
         }
 
         m_colour = colour1;
-        DeBruijnNode * revCompNode = m_deBruijnNode->m_reverseComplement;
+        DeBruijnNode * revCompNode = m_deBruijnNode->getReverseComplement();
         if (revCompNode != 0)
         {
-            GraphicsItemNode * revCompGraphNode = revCompNode->m_graphicsItemNode;
+            GraphicsItemNode * revCompGraphNode = revCompNode->getGraphicsItemNode();
             if (revCompGraphNode != 0)
                 revCompGraphNode->m_colour = colour2;
         }
@@ -333,7 +333,7 @@ void GraphicsItemNode::setNodeColour()
 
     case CUSTOM_COLOURS:
     {
-        m_colour = m_deBruijnNode->m_customColour;
+        m_colour = m_deBruijnNode->getCustomColour();
         break;
     }
 
@@ -341,10 +341,10 @@ void GraphicsItemNode::setNodeColour()
     {
         //For single nodes, display the colour of whichever of the
         //twin nodes has the greatest contiguity status.
-        ContiguityStatus contiguityStatus = m_deBruijnNode->m_contiguityStatus;
+        ContiguityStatus contiguityStatus = m_deBruijnNode->getContiguityStatus();
         if (!m_hasArrow)
         {
-            ContiguityStatus twinContiguityStatus = m_deBruijnNode->m_reverseComplement->m_contiguityStatus;
+            ContiguityStatus twinContiguityStatus = m_deBruijnNode->getReverseComplement()->getContiguityStatus();
             if (twinContiguityStatus < contiguityStatus)
                 contiguityStatus = twinContiguityStatus;
         }
@@ -477,8 +477,9 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     for (size_t i = 0; i < nodesToMove.size(); ++i)
     {
         DeBruijnNode * node = nodesToMove[i]->m_deBruijnNode;
-        for (size_t j = 0; j < node->m_edges.size(); ++j)
-            edgesToFix.insert(node->m_edges[j]);
+        const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+        for (size_t j = 0; j < edges->size(); ++j)
+            edgesToFix.insert((*edges)[j]);
     }
 
     for (std::set<DeBruijnEdge *>::iterator i = edgesToFix.begin(); i != edgesToFix.end(); ++i)
@@ -751,8 +752,8 @@ QStringList GraphicsItemNode::getNodeText()
 {
     QStringList nodeText;
 
-    if (g_settings->displayNodeCustomLabels && m_deBruijnNode->m_customLabel.length() > 0)
-        nodeText << m_deBruijnNode->m_customLabel;
+    if (g_settings->displayNodeCustomLabels && m_deBruijnNode->getCustomLabel().length() > 0)
+        nodeText << m_deBruijnNode->getCustomLabel();
     if (g_settings->displayNodeNames)
     {
         QString nodeName = m_deBruijnNode->getName();
@@ -906,13 +907,13 @@ void GraphicsItemNode::shiftPointsLeft()
 void GraphicsItemNode::getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
                                                        std::vector<QPointF> * blastHitLocation)
 {
-    for (size_t i = 0; i < m_deBruijnNode->m_blastHits.size(); ++i)
+    const std::vector<BlastHit *> * blastHits = m_deBruijnNode->getBlastHitsPointer();
+    for (size_t i = 0; i < blastHits->size(); ++i)
     {
-        BlastHit * hit = m_deBruijnNode->m_blastHits[i];
+        BlastHit * hit = (*blastHits)[i];
         blastHitText->push_back(hit->m_query->getName());
         blastHitLocation->push_back(findLocationOnPath(hit->getNodeCentreFraction()));
     }
-
 }
 
 void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
@@ -920,9 +921,10 @@ void GraphicsItemNode::getBlastHitsTextAndLocationThisNodeOrReverseComplement(st
 {
     getBlastHitsTextAndLocationThisNode(blastHitText, blastHitLocation);
 
-    for (size_t i = 0; i < m_deBruijnNode->m_reverseComplement->m_blastHits.size(); ++i)
+    const std::vector<BlastHit *> * blastHits = m_deBruijnNode->getReverseComplement()->getBlastHitsPointer();
+    for (size_t i = 0; i < blastHits->size(); ++i)
     {
-        BlastHit * hit = m_deBruijnNode->m_reverseComplement->m_blastHits[i];
+        BlastHit * hit = (*blastHits)[i];
         blastHitText->push_back(hit->m_query->getName());
         blastHitLocation->push_back(findLocationOnPath(1.0 - hit->getNodeCentreFraction()));
     }
@@ -939,8 +941,8 @@ void GraphicsItemNode::exactPathHighlightNode(QPainter * painter)
         pathHighlightNode2(painter, m_deBruijnNode, false, &g_memory->userSpecifiedPath);
 
     if (!g_settings->doubleMode &&
-            g_memory->userSpecifiedPath.containsNode(m_deBruijnNode->m_reverseComplement))
-        pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, &g_memory->userSpecifiedPath);
+            g_memory->userSpecifiedPath.containsNode(m_deBruijnNode->getReverseComplement()))
+        pathHighlightNode2(painter, m_deBruijnNode->getReverseComplement(), true, &g_memory->userSpecifiedPath);
 }
 
 
@@ -959,8 +961,8 @@ void GraphicsItemNode::queryPathHighlightNode(QPainter * painter)
             pathHighlightNode2(painter, m_deBruijnNode, false, path);
 
         if (!g_settings->doubleMode &&
-                path->containsNode(m_deBruijnNode->m_reverseComplement))
-            pathHighlightNode2(painter, m_deBruijnNode->m_reverseComplement, true, path);
+                path->containsNode(m_deBruijnNode->getReverseComplement()))
+            pathHighlightNode2(painter, m_deBruijnNode->getReverseComplement(), true, path);
     }
 }
 

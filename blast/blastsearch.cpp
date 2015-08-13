@@ -313,7 +313,7 @@ void BlastSearch::blastQueryChanged(QString queryName)
         {
             BlastHit * hit = g_blastSearch->m_allHits[j].data();
             if (hit->m_query == query)
-                hit->m_node->m_blastHits.push_back(hit);
+                hit->m_node->addBlastHit(hit);
         }
     }
 }
