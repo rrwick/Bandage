@@ -90,8 +90,8 @@ void GraphicsItemEdge::calculateAndSetPath()
     //is made of only one line segment, then a special path is
     //required, otherwise the edge will be mostly hidden underneath
     //the node.
-    DeBruijnNode * startingNode = m_deBruijnEdge->m_startingNode;
-    if (startingNode == m_deBruijnEdge->m_endingNode)
+    DeBruijnNode * startingNode = m_deBruijnEdge->getStartingNode();
+    if (startingNode == m_deBruijnEdge->getEndingNode())
     {
         GraphicsItemNode * graphicsItemNode = startingNode->getGraphicsItemNode();
         if (graphicsItemNode == 0)
@@ -113,8 +113,8 @@ void GraphicsItemEdge::calculateAndSetPath()
 
 void GraphicsItemEdge::setControlPointLocations()
 {
-    DeBruijnNode * startingNode = m_deBruijnEdge->m_startingNode;
-    DeBruijnNode * endingNode = m_deBruijnEdge->m_endingNode;
+    DeBruijnNode * startingNode = m_deBruijnEdge->getStartingNode();
+    DeBruijnNode * endingNode = m_deBruijnEdge->getEndingNode();
 
     if (startingNode->hasGraphicsItem())
     {

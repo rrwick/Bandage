@@ -485,7 +485,7 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     for (std::set<DeBruijnEdge *>::iterator i = edgesToFix.begin(); i != edgesToFix.end(); ++i)
     {
         DeBruijnEdge * deBruijnEdge = *i;
-        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->m_graphicsItemEdge;
+        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->getGraphicsItemEdge();
 
         //If this edge has a graphics item, adjust it now.
         if (graphicsItemEdge != 0)
@@ -493,10 +493,10 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
         //If this edge does not have a graphics item, then perhaps its
         //reverse complment does.  Only do this check if the graph was drawn
-        //on single mode
+        //on single mode.
         else if (!g_settings->doubleMode)
         {
-            graphicsItemEdge = deBruijnEdge->m_reverseComplement->m_graphicsItemEdge;
+            graphicsItemEdge = deBruijnEdge->getReverseComplement()->getGraphicsItemEdge();
             if (graphicsItemEdge != 0)
                 graphicsItemEdge->calculateAndSetPath();
         }

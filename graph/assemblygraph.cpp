@@ -97,8 +97,8 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int
     const std::vector<DeBruijnEdge *> * edges = node1->getEdgesPointer();
     for (size_t i = 0; i < edges->size(); ++i)
     {
-        if ((*edges)[i]->m_startingNode == node1 &&
-                (*edges)[i]->m_endingNode == node2)
+        if ((*edges)[i]->getStartingNode() == node1 &&
+                (*edges)[i]->getEndingNode() == node2)
             return;
     }
 
@@ -114,11 +114,11 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int
     else
         backwardEdge = new DeBruijnEdge(negNode2, negNode1);
 
-    forwardEdge->m_reverseComplement = backwardEdge;
-    backwardEdge->m_reverseComplement = forwardEdge;
+    forwardEdge->setReverseComplement(backwardEdge);
+    backwardEdge->setReverseComplement(forwardEdge);
 
-    forwardEdge->m_overlap = overlap;
-    backwardEdge->m_overlap = overlap;
+    forwardEdge->setOverlap(overlap);
+    backwardEdge->setOverlap(overlap);
 
     m_deBruijnGraphEdges.push_back(forwardEdge);
     if (!isOwnPair)
@@ -321,7 +321,7 @@ void AssemblyGraph::determineGraphInfo()
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
         DeBruijnEdge * edge = m_deBruijnGraphEdges[i];
-        if (edge != edge->m_reverseComplement)
+        if (edge != edge->getReverseComplement())
             ++edgeCount;
     }
     edgeCount /= 2;
@@ -1030,7 +1030,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
         m_deBruijnGraphEdges[i]->determineIfDrawn();
-        if (m_deBruijnGraphEdges[i]->m_drawn)
+        if (m_deBruijnGraphEdges[i]->isDrawn())
             m_deBruijnGraphEdges[i]->addToOgdfGraph(m_ogdfGraph);
     }
 }
@@ -1069,10 +1069,10 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
     //so they are drawn underneath
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
-        if (m_deBruijnGraphEdges[i]->m_drawn)
+        if (m_deBruijnGraphEdges[i]->isDrawn())
         {
             GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(m_deBruijnGraphEdges[i]);
-            m_deBruijnGraphEdges[i]->m_graphicsItemEdge = graphicsItemEdge;
+            m_deBruijnGraphEdges[i]->setGraphicsItemEdge(graphicsItemEdge);
             graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
             scene->addItem(graphicsItemEdge);
         }
@@ -1396,11 +1396,11 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
         DeBruijnEdge * edge = m_deBruijnGraphEdges[i];
         for (size_t j = 0; j < sortedOverlaps.size(); ++j)
         {
-            if (edge->m_overlap == sortedOverlaps[j])
+            if (edge->getOverlap() == sortedOverlaps[j])
                 break;
             else if (edge->testExactOverlap(sortedOverlaps[j]))
             {
-                edge->m_overlap = sortedOverlaps[j];
+                edge->setOverlap(sortedOverlaps[j]);
                 break;
             }
         }
@@ -1418,7 +1418,7 @@ std::vector<int> AssemblyGraph::makeOverlapCountVector()
 
     for (size_t i = 0; i < m_deBruijnGraphEdges.size(); ++i)
     {
-        int overlap = m_deBruijnGraphEdges[i]->m_overlap;
+        int overlap = m_deBruijnGraphEdges[i]->getOverlap();
 
         //Add the overlap to the count vector
         if (int(overlapCounts.size()) < overlap + 1)

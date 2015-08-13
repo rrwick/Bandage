@@ -83,7 +83,7 @@ Path Path::makeFromOrderedNodes(QList<DeBruijnNode *> nodes, bool circular)
         for (size_t j = 0; j < edges->size(); ++j)
         {
             DeBruijnEdge * edge = (*edges)[j];
-            if (edge->m_startingNode == node1 && edge->m_endingNode == node2)
+            if (edge->getStartingNode() == node1 && edge->getEndingNode() == node2)
             {
                 path.m_edges.push_back(edge);
                 foundEdge = true;
@@ -402,8 +402,8 @@ bool Path::checkForOtherEdges()
             for (size_t k = 0; k < startingNodeEdges->size(); ++k)
             {
                 DeBruijnEdge * edge = (*startingNodeEdges)[k];
-                if (edge->m_startingNode == startingNode &&
-                        edge->m_endingNode == endingNode)
+                if (edge->getStartingNode() == startingNode &&
+                        edge->getEndingNode() == endingNode)
                     allConnectingEdges.push_back(edge);
             }
         }
@@ -433,7 +433,7 @@ QByteArray Path::getPathSequence() const
     //node.
     if (isCircular())
     {
-        int overlap = m_edges.back()->m_overlap;
+        int overlap = m_edges.back()->getOverlap();
         int rightChars = firstNodeSequence.length() - overlap;
         if (rightChars > 0)
             sequence += firstNodeSequence.right(rightChars);
@@ -451,7 +451,7 @@ QByteArray Path::getPathSequence() const
     //or has partial node ends.
     for (int i = 1; i < m_nodes.size(); ++i)
     {
-        int overlap = m_edges[i-1]->m_overlap;
+        int overlap = m_edges[i-1]->getOverlap();
         QByteArray nodeSequence = m_nodes[i]->getSequence();
         int rightChars = nodeSequence.length() - overlap;
         if (rightChars > 0)
@@ -473,7 +473,7 @@ int Path::getLength() const
         length += m_nodes[i]->getLength();
 
     for (int i = 0; i < m_edges.size(); ++i)
-        length -= m_edges[i]->m_overlap;
+        length -= m_edges[i]->getOverlap();
 
     length -= m_startLocation.getPosition() - 1;
 
@@ -559,8 +559,8 @@ bool Path::isCircular() const
     DeBruijnNode * firstNode = m_nodes.front();
     DeBruijnNode * lastNode = m_nodes.back();
 
-    return (lastEdge->m_startingNode == lastNode &&
-            lastEdge->m_endingNode == firstNode);
+    return (lastEdge->getStartingNode() == lastNode &&
+            lastEdge->getEndingNode() == firstNode);
 }
 
 
@@ -586,7 +586,7 @@ bool Path::canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const
     for (size_t i = 0; i < lastNodeEdges->size(); ++i)
     {
         DeBruijnEdge * edge = (*lastNodeEdges)[i];
-        if (edge->m_startingNode == lastNode && edge->m_endingNode == node)
+        if (edge->getStartingNode() == lastNode && edge->getEndingNode() == node)
         {
             *extendedPath = *this;
             extendedPath->m_edges.push_back(edge);
@@ -616,7 +616,7 @@ bool Path::canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const
     for (size_t i = 0; i < firstNodeEdges->size(); ++i)
     {
         DeBruijnEdge * edge = (*firstNodeEdges)[i];
-        if (edge->m_startingNode == node && edge->m_endingNode == firstNode)
+        if (edge->getStartingNode() == node && edge->getEndingNode() == firstNode)
         {
             *extendedPath = *this;
             extendedPath->m_edges.push_front(edge);
@@ -707,7 +707,7 @@ QList<Path> Path::extendPathInAllPossibleWays() const
     for (size_t i = 0; i < nextEdges.size(); ++i)
     {
         DeBruijnEdge * nextEdge = nextEdges[i];
-        DeBruijnNode * nextNode = nextEdge->m_endingNode;
+        DeBruijnNode * nextNode = nextEdge->getEndingNode();
 
         Path newPath(*this);
         newPath.m_edges.push_back(nextEdge);

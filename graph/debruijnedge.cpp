@@ -32,7 +32,7 @@ DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode)
 
 //This function assumes that the parameter node pointer is one of the two nodes
 //in this edge, and it returns the other one.
-DeBruijnNode * DeBruijnEdge::getOtherNode(DeBruijnNode * node)
+DeBruijnNode * DeBruijnEdge::getOtherNode(DeBruijnNode * node) const
 {
     if (node == m_startingNode)
         return m_endingNode;
@@ -42,7 +42,7 @@ DeBruijnNode * DeBruijnEdge::getOtherNode(DeBruijnNode * node)
 
 
 //This function determines whether the edge should be drawn to the screen.
-bool DeBruijnEdge::edgeIsVisible()
+bool DeBruijnEdge::edgeIsVisible() const
 {
     //If the program is in double mode, then draw any edge where both of its
     //nodes are drawn.
@@ -78,7 +78,7 @@ bool DeBruijnEdge::edgeIsVisible()
 }
 
 
-void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph)
+void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph) const
 {
     ogdf::node firstEdgeOgdfNode;
     ogdf::node secondEdgeOgdfNode;
@@ -116,7 +116,7 @@ void DeBruijnEdge::tracePaths(bool forward,
                               int stepsRemaining,
                               std::vector< std::vector <DeBruijnNode *> > * allPaths,
                               DeBruijnNode * startingNode,
-                              std::vector<DeBruijnNode *> pathSoFar)
+                              std::vector<DeBruijnNode *> pathSoFar) const
 {
     //This can go for a while, so keep the UI responsive.
     QApplication::processEvents();
@@ -183,7 +183,7 @@ void DeBruijnEdge::tracePaths(bool forward,
 
 
 //This function counts how many times a node appears in a path
-int DeBruijnEdge::timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path)
+int DeBruijnEdge::timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path) const
 {
     int count = 0;
     for (size_t i = 0; i < path->size(); ++i)
@@ -201,7 +201,7 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
                                    int stepsRemaining,
                                    DeBruijnNode * target,
                                    std::vector<DeBruijnNode *> pathSoFar,
-                                   bool includeReverseComplement)
+                                   bool includeReverseComplement) const
 {
     //This can go for a while, so keep the UI responsive.
     QApplication::processEvents();
@@ -277,7 +277,7 @@ bool DeBruijnEdge::leadsOnlyToNode(bool forward,
 
 
 std::vector<DeBruijnEdge *> DeBruijnEdge::findNextEdgesInPath(DeBruijnNode * nextNode,
-                                                              bool forward)
+                                                              bool forward) const
 {
     std::vector<DeBruijnEdge *> nextEdges;
     const std::vector<DeBruijnEdge *> * nextNodeEdges = nextNode->getEdgesPointer();
@@ -335,7 +335,7 @@ void DeBruijnEdge::autoDetermineExactOverlap()
 
 //This function tries the given overlap between the two nodes.
 //If the overlap works perfectly, it returns true.
-bool DeBruijnEdge::testExactOverlap(int overlap)
+bool DeBruijnEdge::testExactOverlap(int overlap) const
 {
     bool mismatchFound = false;
 

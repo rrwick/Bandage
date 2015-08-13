@@ -451,8 +451,8 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
 
 bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
 {
-    QString aStart = a->m_startingNode->getName();
-    QString bStart = b->m_startingNode->getName();
+    QString aStart = a->getStartingNode()->getName();
+    QString bStart = b->getStartingNode()->getName();
     QString aStartNoSign = aStart;
     aStartNoSign.chop(1);
     QString bStartNoSign = bStart;
@@ -462,8 +462,8 @@ bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
     bool ok2;
     long long bStartNumber = bStartNoSign.toLongLong(&ok2);
 
-    QString aEnd = a->m_endingNode->getName();
-    QString bEnd = b->m_endingNode->getName();
+    QString aEnd = a->getEndingNode()->getName();
+    QString bEnd = b->getEndingNode()->getName();
     QString aEndNoSign = aEnd;
     aEndNoSign.chop(1);
     QString bEndNoSign = bEnd;
@@ -497,9 +497,9 @@ QString MainWindow::getSelectedEdgeListText()
     QString edgeText;
     for (size_t i = 0; i < selectedEdges.size(); ++i)
     {
-        edgeText += selectedEdges[i]->m_startingNode->getName();
+        edgeText += selectedEdges[i]->getStartingNode()->getName();
         edgeText += " to ";
-        edgeText += selectedEdges[i]->m_endingNode->getName();
+        edgeText += selectedEdges[i]->getEndingNode()->getName();
         if (i != selectedEdges.size() - 1)
             edgeText += ", ";
     }
@@ -1306,12 +1306,12 @@ void MainWindow::removeAllGraphicsEdgesFromNode(DeBruijnNode * node)
     for (size_t i = 0; i < edges->size(); ++i)
     {
         DeBruijnEdge * deBruijnEdge = (*edges)[i];
-        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->m_graphicsItemEdge;
+        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->getGraphicsItemEdge();
         if (graphicsItemEdge != 0)
         {
             m_scene->removeItem(graphicsItemEdge);
             delete graphicsItemEdge;
-            deBruijnEdge->m_graphicsItemEdge = 0;
+            deBruijnEdge->setGraphicsItemEdge(0);
         }
     }
 }

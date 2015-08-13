@@ -135,7 +135,7 @@ void DeBruijnNode::determineContiguity()
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        bool outgoingEdge = (this == edge->m_startingNode);
+        bool outgoingEdge = (this == edge->getStartingNode());
 
         std::vector< std::vector <DeBruijnNode *> > allPaths;
         edge->tracePaths(outgoingEdge, g_settings->contiguitySearchSteps, &allPaths, this);
@@ -255,7 +255,7 @@ bool DeBruijnNode::doesPathLeadOnlyToNode(DeBruijnNode * node, bool includeRever
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        bool outgoingEdge = (this == edge->m_startingNode);
+        bool outgoingEdge = (this == edge->getStartingNode());
 
         std::vector<DeBruijnNode *> pathSoFar;
         pathSoFar.push_back(this);
@@ -425,7 +425,7 @@ DeBruijnEdge * DeBruijnNode::doesNodeLeadIn(DeBruijnNode * node) const
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        if (edge->m_startingNode == node && edge->m_endingNode == this)
+        if (edge->getStartingNode() == node && edge->getEndingNode() == this)
             return edge;
     }
     return 0;
@@ -439,7 +439,7 @@ DeBruijnEdge * DeBruijnNode::doesNodeLeadAway(DeBruijnNode * node) const
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        if (edge->m_startingNode == this && edge->m_endingNode == node)
+        if (edge->getStartingNode() == this && edge->getEndingNode() == node)
             return edge;
     }
     return 0;
@@ -451,7 +451,7 @@ bool DeBruijnNode::isNodeConnected(DeBruijnNode * node) const
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        if (edge->m_startingNode == node || edge->m_endingNode == node)
+        if (edge->getStartingNode() == node || edge->getEndingNode() == node)
             return true;
     }
     return false;
@@ -465,7 +465,7 @@ std::vector<DeBruijnEdge *> DeBruijnNode::getEnteringEdges() const
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        if (this == edge->m_endingNode)
+        if (this == edge->getEndingNode())
             returnVector.push_back(edge);
     }
     return returnVector;
@@ -476,7 +476,7 @@ std::vector<DeBruijnEdge *> DeBruijnNode::getLeavingEdges() const
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
         DeBruijnEdge * edge = m_edges[i];
-        if (this == edge->m_startingNode)
+        if (this == edge->getStartingNode())
             returnVector.push_back(edge);
     }
     return returnVector;
@@ -490,7 +490,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getDownstreamNodes() const
 
     std::vector<DeBruijnNode *> returnVector;
     for (size_t i = 0; i < leavingEdges.size(); ++i)
-        returnVector.push_back(leavingEdges[i]->m_endingNode);
+        returnVector.push_back(leavingEdges[i]->getEndingNode());
 
     return returnVector;
 }
@@ -502,7 +502,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes() const
 
     std::vector<DeBruijnNode *> returnVector;
     for (size_t i = 0; i < enteringEdges.size(); ++i)
-        returnVector.push_back(enteringEdges[i]->m_startingNode);
+        returnVector.push_back(enteringEdges[i]->getStartingNode());
 
     return returnVector;
 }

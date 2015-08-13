@@ -27,41 +27,63 @@ class GraphicsItemEdge;
 class DeBruijnEdge
 {
 public:
+    //CREATORS
     DeBruijnEdge(DeBruijnNode * startingNode, DeBruijnNode * endingNode);
 
+    //ACCESSORS
+    bool isStartingNode(DeBruijnNode * node) const {return node == m_startingNode;}
+    DeBruijnNode * getStartingNode() const {return m_startingNode;}
+    DeBruijnNode * getEndingNode() const {return m_endingNode;}
+    GraphicsItemEdge * getGraphicsItemEdge() const {return m_graphicsItemEdge;}
+    DeBruijnEdge * getReverseComplement() const {return m_reverseComplement;}
+    bool isDrawn() const {return m_drawn;}
+    int getOverlap() const {return m_overlap;}
+    DeBruijnNode * getOtherNode(DeBruijnNode * node) const;
+    bool testExactOverlap(int overlap) const;
+    void tracePaths(bool forward,
+                    int stepsRemaining,
+                    std::vector<std::vector<DeBruijnNode *> > * allPaths,
+                    DeBruijnNode * startingNode,
+                    std::vector<DeBruijnNode *> pathSoFar = std::vector<DeBruijnNode *>()) const;
+    bool leadsOnlyToNode(bool forward,
+                         int stepsRemaining,
+                         DeBruijnNode * target,
+                         std::vector<DeBruijnNode *> pathSoFar,
+                         bool includeReverseComplement) const;
+
+    //MODIFERS
+    void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}
+    void setReverseComplement(DeBruijnEdge * rc) {m_reverseComplement = rc;}
+    void setOverlap(int ol) {m_overlap = ol;}
+    void reset() {m_graphicsItemEdge = 0; m_drawn = false;}
+    void determineIfDrawn() {m_drawn = edgeIsVisible();}
+    void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
+    void autoDetermineExactOverlap();
+
+
+
+
+
+
+
+
+    void addToOgdfGraph(ogdf::Graph * ogdfGraph) const;
+
+
+
+private:
     DeBruijnNode * m_startingNode;
     DeBruijnNode * m_endingNode;
     GraphicsItemEdge * m_graphicsItemEdge;
     DeBruijnEdge * m_reverseComplement;
     bool m_drawn;
-
     EdgeOverlapType m_overlapType;
     int m_overlap;
 
-    bool isStartingNode(DeBruijnNode * node) {return node == m_startingNode;}
-    DeBruijnNode * getOtherNode(DeBruijnNode * node);
-    void addToOgdfGraph(ogdf::Graph * ogdfGraph);
-    void reset() {m_graphicsItemEdge = 0; m_drawn = false;}
-    void determineIfDrawn() {m_drawn = edgeIsVisible();}
-    void tracePaths(bool forward,
-                    int stepsRemaining,
-                    std::vector<std::vector<DeBruijnNode *> > * allPaths,
-                    DeBruijnNode * startingNode,
-                    std::vector<DeBruijnNode *> pathSoFar = std::vector<DeBruijnNode *>());
-    bool leadsOnlyToNode(bool forward,
-                         int stepsRemaining,
-                         DeBruijnNode * target,
-                         std::vector<DeBruijnNode *> pathSoFar,
-                         bool includeReverseComplement);
+    bool edgeIsVisible() const;
+    int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path) const;
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,
-                                                    bool forward);
-    int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path);
-    void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
-    void autoDetermineExactOverlap();
-    bool testExactOverlap(int overlap);
-
-private:
-    bool edgeIsVisible();
+                                                    bool forward) const;
 
 };
 
