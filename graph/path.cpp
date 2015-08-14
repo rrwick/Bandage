@@ -285,11 +285,13 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     if (m_nodes.isEmpty())
     {
         m_nodes.push_back(newNode);
+        m_startLocation = GraphLocation::startOfNode(newNode);
+        m_endLocation = GraphLocation::endOfNode(newNode);
         return true;
     }
 
     //If the Path is circular, then this function fails, as there
-    //is no way to add a node to a circular sequence without making
+    //is no way to add a node to a circular path without making
     //it ambiguous.
     if (isCircular())
         return false;
@@ -332,6 +334,7 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
             revCompEdgeIntoFirst == 0 && revCompEdgeAwayFromLast == 0)
     {
         m_nodes.push_front(newNode);
+        m_startLocation = GraphLocation::startOfNode(newNode);
         m_edges.push_front(edgeIntoFirst);
         return true;
     }
@@ -340,6 +343,7 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
             revCompEdgeIntoFirst == 0 && revCompEdgeAwayFromLast == 0)
     {
         m_nodes.push_back(newNode);
+        m_endLocation = GraphLocation::endOfNode(newNode);
         m_edges.push_back(edgeAwayFromLast);
         return true;
     }
@@ -347,7 +351,9 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     if (edgeIntoFirst == 0 && edgeAwayFromLast == 0 &&
             revCompEdgeIntoFirst != 0 && revCompEdgeAwayFromLast == 0)
     {
-        m_nodes.push_front(newNode->getReverseComplement());
+        newNode = newNode->getReverseComplement();
+        m_nodes.push_front(newNode);
+        m_startLocation = GraphLocation::startOfNode(newNode);
         m_edges.push_front(revCompEdgeIntoFirst);
         return true;
     }
@@ -355,7 +361,9 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
     if (edgeIntoFirst == 0 && edgeAwayFromLast == 0 &&
             revCompEdgeIntoFirst == 0 && revCompEdgeAwayFromLast != 0)
     {
-        m_nodes.push_back(newNode->getReverseComplement());
+        newNode = newNode->getReverseComplement();
+        m_nodes.push_back(newNode);
+        m_endLocation = GraphLocation::endOfNode(newNode);
         m_edges.push_back(revCompEdgeAwayFromLast);
         return true;
     }
