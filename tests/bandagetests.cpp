@@ -35,6 +35,7 @@ private slots:
     void loadFastg();
     void loadLastGraph();
     void pathFunctionsOnLastGraph();
+    void pathFunctionsOnFastg();
 
 private:
     void createGlobals();
@@ -63,34 +64,6 @@ void BandageTests::loadFastg()
 }
 
 
-
-void BandageTests::pathFunctionsOnLastGraph()
-{
-    createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
-
-    QString pathStringFailure;
-    Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
-    Path testPath2 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
-    Path testPath3 = Path::makeFromString("(1996) 9+, 13+ (6)", false, &pathStringFailure);
-    Path testPath4 = Path::makeFromString("9+, 13+, 14-", false, &pathStringFailure);
-
-    QCOMPARE(testPath1.getLength(), 10);
-    QCOMPARE(testPath1.getPathSequence(), QByteArray("GACCTATAGA"));
-    QCOMPARE(testPath1.isEmpty(), false);
-    QCOMPARE(testPath1.isCircular(), false);
-    QCOMPARE(testPath1 == testPath2, true);
-    QCOMPARE(testPath1 == testPath3, false);
-    QCOMPARE(testPath1.haveSameNodes(testPath3), true);
-    QCOMPARE(testPath1.hasNodeSubset(testPath4), true);
-    QCOMPARE(testPath4.hasNodeSubset(testPath1), false);
-    QCOMPARE(testPath1.getString(true), QString("(1996) 9+, 13+ (5)"));
-    QCOMPARE(testPath1.getString(false), QString("(1996)9+,13+(5)"));
-    QCOMPARE(testPath4.getString(true), QString("9+, 13+, 14-"));
-    QCOMPARE(testPath4.getString(false), QString("9+,13+,14-"));
-}
-
-
 void BandageTests::loadLastGraph()
 {
     createGlobals();
@@ -109,6 +82,88 @@ void BandageTests::loadLastGraph()
     QCOMPARE(node1->getLength(), 2000);
     QCOMPARE(node14->getLength(), 60);
 }
+
+
+
+//LastGraph files have no overlap in the edges, so these tests look at paths
+//where the connections are simple.
+void BandageTests::pathFunctionsOnLastGraph()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+
+    QString pathStringFailure;
+    Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
+    Path testPath2 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
+    Path testPath3 = Path::makeFromString("(1996) 9+, 13+ (6)", false, &pathStringFailure);
+    Path testPath4 = Path::makeFromString("9+, 13+, 14-", false, &pathStringFailure);
+
+    DeBruijnNode * node4Minus = g_assemblyGraph->m_deBruijnGraphNodes["4-"];
+    DeBruijnNode * node9Plus = g_assemblyGraph->m_deBruijnGraphNodes["9+"];
+    DeBruijnNode * node13Plus = g_assemblyGraph->m_deBruijnGraphNodes["13+"];
+    DeBruijnNode * node14Minus = g_assemblyGraph->m_deBruijnGraphNodes["14+"];
+    DeBruijnNode * node7Plus = g_assemblyGraph->m_deBruijnGraphNodes["7+"];
+
+    QCOMPARE(testPath1.getLength(), 10);
+    QCOMPARE(testPath1.getPathSequence(), QByteArray("GACCTATAGA"));
+    QCOMPARE(testPath1.isEmpty(), false);
+    QCOMPARE(testPath1.isCircular(), false);
+    QCOMPARE(testPath1 == testPath2, true);
+    QCOMPARE(testPath1 == testPath3, false);
+    QCOMPARE(testPath1.haveSameNodes(testPath3), true);
+    QCOMPARE(testPath1.hasNodeSubset(testPath4), true);
+    QCOMPARE(testPath4.hasNodeSubset(testPath1), false);
+    QCOMPARE(testPath1.getString(true), QString("(1996) 9+, 13+ (5)"));
+    QCOMPARE(testPath1.getString(false), QString("(1996)9+,13+(5)"));
+    QCOMPARE(testPath4.getString(true), QString("9+, 13+, 14-"));
+    QCOMPARE(testPath4.getString(false), QString("9+,13+,14-"));
+    QCOMPARE(testPath1.containsEntireNode(node13Plus), false);
+    QCOMPARE(testPath4.containsEntireNode(node13Plus), true);
+    QCOMPARE(testPath4.isInMiddleOfPath(node13Plus), true);
+    QCOMPARE(testPath4.isInMiddleOfPath(node14Minus), false);
+    QCOMPARE(testPath4.isInMiddleOfPath(node9Plus), false);
+
+    Path testPath4Extended;
+    QCOMPARE(testPath4.canNodeFitOnEnd(node7Plus, &testPath4Extended), true);
+    QCOMPARE(testPath4Extended.getString(true), QString("9+, 13+, 14-, 7+"));
+    QCOMPARE(testPath4.canNodeFitAtStart(node4Minus, &testPath4Extended), true);
+    QCOMPARE(testPath4Extended.getString(true), QString("4-, 9+, 13+, 14-"));
+}
+
+
+
+//FASTG files have overlaps in the edges, so these tests look at paths where
+//the overlap has to be removed from the path sequence.
+void BandageTests::pathFunctionsOnFastg()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+
+    QString pathStringFailure;
+    Path testPath1 = Path::makeFromString("(50234) 6+, 26+, 23+, 26+, 24+ (200)", false, &pathStringFailure);
+    Path testPath2 = Path::makeFromString("26+, 23+", true, &pathStringFailure);
+    QCOMPARE(testPath1.getLength(), 1764);
+    QCOMPARE(testPath2.getLength(), 1387);
+    QCOMPARE(testPath1.isCircular(), false);
+    QCOMPARE(testPath2.isCircular(), true);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
