@@ -60,6 +60,7 @@ private:
     bool m_drawGraphAfterLoad;
     UiState m_uiState;
     BlastSearchDialog * m_blastSearchDialog;
+    bool m_alreadyShown;
 
     void cleanUp();
     void displayGraphDetails();

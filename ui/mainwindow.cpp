@@ -68,7 +68,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
     ui(new Ui::MainWindow), m_layoutThread(0), m_imageFilter("PNG (*.png)"),
     m_fileToLoadOnStartup(fileToLoadOnStartup), m_drawGraphAfterLoad(drawGraphAfterLoad),
-    m_uiState(NO_GRAPH_LOADED), m_blastSearchDialog(0)
+    m_uiState(NO_GRAPH_LOADED), m_blastSearchDialog(0), m_alreadyShown(false)
 {
     ui->setupUi(this);
 
@@ -194,6 +194,9 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 //will fill the BLAST query combo box and screw up widget sizes.
 void MainWindow::afterMainWindowShow()
 {
+    if (m_alreadyShown)
+        return;
+
     //If the user passed a filename as a command line argument, try to open it now.
     if (m_fileToLoadOnStartup != "")
         loadGraph(m_fileToLoadOnStartup);
@@ -209,6 +212,8 @@ void MainWindow::afterMainWindowShow()
     //is at least one node), then draw the graph.
     if (m_fileToLoadOnStartup != "" && m_drawGraphAfterLoad && g_assemblyGraph->m_deBruijnGraphNodes.size() > 0)
         drawGraph();
+
+    m_alreadyShown = true;
 }
 
 MainWindow::~MainWindow()
