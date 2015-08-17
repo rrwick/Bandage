@@ -49,7 +49,6 @@ public:
     QList<DeBruijnEdge *> getEdges() const {return m_edges;}
     bool isEmpty() const {return m_nodes.empty();}
     bool isCircular() const;
-    bool areIdentical(Path other) const;
     bool haveSameNodes(Path other) const;
     bool hasNodeSubset(Path other) const;
     QByteArray getPathSequence() const;
@@ -71,6 +70,7 @@ public:
     int getNodeCount() const;
     GraphLocation getStartLocation() const {return m_startLocation;}
     GraphLocation getEndLocation() const {return m_endLocation;}
+    bool operator==(Path const &other) const;
 
     //MODIFERS
     bool addNode(DeBruijnNode * newNode, bool strandSpecific);

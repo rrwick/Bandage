@@ -199,7 +199,7 @@ bool GraphLocation::isAtEndOfNode() const
     return (isValid() && m_position == m_node->getLength());
 }
 
-bool GraphLocation::areIdentical(GraphLocation other) const
+bool GraphLocation::operator==(GraphLocation const &other) const
 {
     return (m_node == other.m_node && m_position == other.m_position);
 }

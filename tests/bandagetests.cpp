@@ -34,6 +34,7 @@ class BandageTests : public QObject
 private slots:
     void loadFastg();
     void loadLastGraph();
+    void pathFunctionsOnLastGraph();
 
 private:
     void createGlobals();
@@ -60,6 +61,35 @@ void BandageTests::loadFastg()
     QCOMPARE(node1->getLength(), 6070);
     QCOMPARE(node28->getLength(), 79);
 }
+
+
+
+void BandageTests::pathFunctionsOnLastGraph()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+
+    QString pathStringFailure;
+    Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
+    Path testPath2 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
+    Path testPath3 = Path::makeFromString("(1996) 9+, 13+ (6)", false, &pathStringFailure);
+    Path testPath4 = Path::makeFromString("9+, 13+, 14-", false, &pathStringFailure);
+
+    QCOMPARE(testPath1.getLength(), 10);
+    QCOMPARE(testPath1.getPathSequence(), QByteArray("GACCTATAGA"));
+    QCOMPARE(testPath1.isEmpty(), false);
+    QCOMPARE(testPath1.isCircular(), false);
+    QCOMPARE(testPath1 == testPath2, true);
+    QCOMPARE(testPath1 == testPath3, false);
+    QCOMPARE(testPath1.haveSameNodes(testPath3), true);
+    QCOMPARE(testPath1.hasNodeSubset(testPath4), true);
+    QCOMPARE(testPath4.hasNodeSubset(testPath1), false);
+    QCOMPARE(testPath1.getString(true), QString("(1996) 9+, 13+ (5)"));
+    QCOMPARE(testPath1.getString(false), QString("(1996)9+,13+(5)"));
+    QCOMPARE(testPath4.getString(true), QString("9+, 13+, 14-"));
+    QCOMPARE(testPath4.getString(false), QString("9+,13+,14-"));
+}
+
 
 void BandageTests::loadLastGraph()
 {

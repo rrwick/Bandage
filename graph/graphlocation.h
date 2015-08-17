@@ -41,7 +41,7 @@ public:
     char getBase() const;
     bool isAtStartOfNode() const;
     bool isAtEndOfNode() const;
-    bool areIdentical(GraphLocation other) const;
+    bool operator==(GraphLocation const &other) const;
 
     //MODIFERS
     void moveLocation(int change);

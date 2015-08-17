@@ -746,11 +746,11 @@ double Path::getMeanReadDepth() const
 
 
 
-bool Path::areIdentical(Path other) const
+bool Path::operator==(Path const &other) const
 {
     return (m_nodes == other.m_nodes &&
-            m_startLocation.areIdentical(other.m_startLocation) &&
-            m_endLocation.areIdentical(other.m_endLocation));
+            m_startLocation == other.m_startLocation &&
+            m_endLocation == other.m_endLocation);
 }
 
 
