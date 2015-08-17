@@ -33,6 +33,7 @@ class BandageTests : public QObject
 
 private slots:
     void loadFastg();
+    void loadLastGraph();
 
 private:
     void createGlobals();
@@ -58,6 +59,25 @@ void BandageTests::loadFastg()
     DeBruijnNode * node28 = g_assemblyGraph->m_deBruijnGraphNodes["28-"];
     QCOMPARE(node1->getLength(), 6070);
     QCOMPARE(node28->getLength(), 79);
+}
+
+void BandageTests::loadLastGraph()
+{
+    createGlobals();
+    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+
+    //Check that the graph loaded properly.
+    QCOMPARE(lastGraphLoaded, true);
+
+    //Check that the appropriate number of nodes/edges are present.
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 34);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 32);
+
+    //Check the length of a couple nodes.
+    DeBruijnNode * node1 = g_assemblyGraph->m_deBruijnGraphNodes["1+"];
+    DeBruijnNode * node14 = g_assemblyGraph->m_deBruijnGraphNodes["14-"];
+    QCOMPARE(node1->getLength(), 2000);
+    QCOMPARE(node14->getLength(), 60);
 }
 
 
