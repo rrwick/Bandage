@@ -36,6 +36,7 @@ private slots:
     void loadLastGraph();
     void pathFunctionsOnLastGraph();
     void pathFunctionsOnFastg();
+    void graphLocationFunctions();
 
 private:
     void createGlobals();
@@ -47,7 +48,7 @@ private:
 void BandageTests::loadFastg()
 {
     createGlobals();
-    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
 
     //Check that the graph loaded properly.
     QCOMPARE(fastgGraphLoaded, true);
@@ -67,7 +68,7 @@ void BandageTests::loadFastg()
 void BandageTests::loadLastGraph()
 {
     createGlobals();
-    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
 
     //Check that the graph loaded properly.
     QCOMPARE(lastGraphLoaded, true);
@@ -90,7 +91,7 @@ void BandageTests::loadLastGraph()
 void BandageTests::pathFunctionsOnLastGraph()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
@@ -137,7 +138,7 @@ void BandageTests::pathFunctionsOnLastGraph()
 void BandageTests::pathFunctionsOnFastg()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(50234) 6+, 26+, 23+, 26+, 24+ (200)", false, &pathStringFailure);
@@ -150,6 +151,65 @@ void BandageTests::pathFunctionsOnFastg()
 
 
 
+void BandageTests::graphLocationFunctions()
+{
+    //First do some tests with a FASTG, where the overlap results in a simpler
+    //sitations: all positions have a reverse complement position in the
+    //reverse complement node.
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
+    DeBruijnNode * node12Plus = g_assemblyGraph->m_deBruijnGraphNodes["12+"];
+    DeBruijnNode * node3Plus = g_assemblyGraph->m_deBruijnGraphNodes["3+"];
+
+    GraphLocation location1(node12Plus, 1);
+    GraphLocation revCompLocation1 = location1.reverseComplementLocation();
+
+    QCOMPARE(location1.getBase(), 'C');
+    QCOMPARE(revCompLocation1.getBase(), 'G');
+    QCOMPARE(revCompLocation1.getPosition(), 394);
+
+    GraphLocation location2 = GraphLocation::endOfNode(node3Plus);
+    QCOMPARE(location2.getPosition(), 5869);
+
+    location2.moveLocation(-1);
+    QCOMPARE(location2.getPosition(), 5868);
+
+    location2.moveLocation(2);
+    QCOMPARE(location2.getNode()->getName(), QString("38-"));
+    QCOMPARE(location2.getPosition(), 1);
+
+    GraphLocation location3;
+    QCOMPARE(location2.isNull(), false);
+    QCOMPARE(location3.isNull(), true);
+
+    //Now look at a LastGraph file which is more complex.  Because of the
+    //offset, reverse complement positions can be in different nodes and may
+    //not even exist.
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
+    int kmer = g_assemblyGraph->m_kmer;
+    DeBruijnNode * node13Plus = g_assemblyGraph->m_deBruijnGraphNodes["13+"];
+    DeBruijnNode * node8Minus = g_assemblyGraph->m_deBruijnGraphNodes["8-"];
+
+    GraphLocation location4 = GraphLocation::startOfNode(node13Plus);
+    QCOMPARE(location4.getBase(), 'A');
+    QCOMPARE(location4.getPosition(), 1);
+
+    GraphLocation revCompLocation4 = location4.reverseComplementLocation();
+    QCOMPARE(revCompLocation4.getBase(), 'T');
+    QCOMPARE(revCompLocation4.getNode()->getName(), QString("13-"));
+    QCOMPARE(revCompLocation4.getPosition(), node13Plus->getLength() - kmer + 1);
+
+    GraphLocation location5 = GraphLocation::endOfNode(node8Minus);
+    GraphLocation location6 = location5;
+    location6.moveLocation(-60);
+    GraphLocation revCompLocation5 = location5.reverseComplementLocation();
+    GraphLocation revCompLocation6 = location6.reverseComplementLocation();
+    QCOMPARE(revCompLocation5.isNull(), true);
+    QCOMPARE(revCompLocation6.isNull(), false);
+    QCOMPARE(revCompLocation6.getNode()->getName(), QString("8+"));
+    QCOMPARE(revCompLocation6.getPosition(), 1);
+}
 
 
 
