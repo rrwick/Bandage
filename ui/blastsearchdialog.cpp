@@ -739,7 +739,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(QPixmap());
         ui->step3TickLabel->setPixmap(QPixmap());
-        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(false);
@@ -767,7 +767,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
         ui->step3TickLabel->setPixmap(QPixmap());
-        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
@@ -795,7 +795,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
         ui->step3TickLabel->setPixmap(QPixmap());
-        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
@@ -823,7 +823,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->step1TickLabel->setPixmap(tickScaled);
         ui->step2TickLabel->setPixmap(tickScaled);
         ui->step3TickLabel->setPixmap(tickScaled);
-        ui->buildBlastDatabaseInfoText->setEnabled(false);
+        ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
         ui->parametersInfoText->setEnabled(true);
