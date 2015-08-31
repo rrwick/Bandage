@@ -58,7 +58,7 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
     newQuery->setName(getUniqueName(newQuery->getName()));
 
     //Give the new query a colour
-    int colourIndex = m_queries.size();
+    int colourIndex = int(m_queries.size());
     colourIndex %= presetColours.size();
     newQuery->setColour(presetColours[colourIndex]);
 
@@ -166,7 +166,7 @@ void BlastQueries::clearSearchResults()
 
 int BlastQueries::getQueryCount()
 {
-    return m_queries.size();
+    return int(m_queries.size());
 }
 
 int BlastQueries::getQueryCount(SequenceType sequenceType)

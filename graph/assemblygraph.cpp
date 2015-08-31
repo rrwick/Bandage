@@ -1343,7 +1343,7 @@ void AssemblyGraph::setAllEdgesExactOverlap(int overlap)
 
 void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
 {
-    int edgeCount = m_deBruijnGraphEdges.size();
+    int edgeCount = int(m_deBruijnGraphEdges.size());
     if (edgeCount == 0)
         return;
 
@@ -1377,7 +1377,7 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
         {
             if (overlapCounts[i] > mostCommonOverlapCount)
             {
-                mostCommonOverlap = i;
+                mostCommonOverlap = int(i);
                 mostCommonOverlapCount = overlapCounts[i];
             }
         }
