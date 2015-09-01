@@ -307,22 +307,21 @@ QByteArray DeBruijnNode::getFasta() const
     fasta += "NODE_";
     fasta += m_name;
     fasta += "_length_";
-    fasta += QString::number(getLength());
+    fasta += QByteArray::number(getLength());
     fasta += "_cov_";
-    fasta += QString::number(getReadDepth());
+    fasta += QByteArray::number(getReadDepth());
     fasta += "\n";
 
-    int charactersOnLine = 0;
-    for (int i = 0; i < m_sequence.length(); ++i)
+    int charactersRemaining = m_sequence.length();
+    int currentIndex = 0;
+    while (charactersRemaining > 70)
     {
-        fasta += m_sequence.at(i);
-        ++charactersOnLine;
-        if (charactersOnLine >= 70)
-        {
-            fasta += "\n";
-            charactersOnLine = 0;
-        }
+        fasta += m_sequence.mid(currentIndex, 70);
+        fasta += "\n";
+        charactersRemaining -= 70;
+        currentIndex += 70;
     }
+    fasta += m_sequence.mid(currentIndex);
     fasta += "\n";
 
     return fasta;
