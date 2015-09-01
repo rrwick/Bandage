@@ -92,6 +92,7 @@ private:
 
 private slots:
     void loadGraph(QString fullFileName = "");
+    void loadCSV(QString fullFileNAme = "");
     void selectionChanged();
     void graphScopeChanged();
     void drawGraph();

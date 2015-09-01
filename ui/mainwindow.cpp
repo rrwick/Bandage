@@ -121,6 +121,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
+    connect(ui->actionLoad_CSV, SIGNAL(triggered(bool)), this, SLOT(loadCSV()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -136,6 +137,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeReadDepthCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->csvCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->csvComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setTextDisplaySettings()));
     connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
@@ -247,6 +250,49 @@ void MainWindow::cleanUp()
     {
         delete m_blastSearchDialog;
         m_blastSearchDialog = 0;
+    }
+
+    ui->csvComboBox->clear();
+    ui->csvComboBox->setEnabled(false);
+    g_settings->displayNodeCsvDataCol = 0;
+}
+
+void MainWindow::loadCSV(QString fullFileName)
+{
+    QString selectedFilter = "Comma separated value (*.csv)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load CSV", g_memory->rememberedPath,
+                                                    "Comma separated value (*.csv)",
+                                                    &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        MyProgressDialog progress(this, "Loading CSV...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        g_assemblyGraph->loadCSV(fullFileName, &columns, &errormsg);
+
+        ui->csvComboBox->setEnabled(true);
+        ui->csvComboBox->clear();
+        ui->csvComboBox->addItems(columns);
+    }
+
+    catch (...)
+    {
+        QString errorTitle = "Error loading CSV";
+        QString errorMessage = "There was an error when attempting to load:\n"
+                               + fullFileName + "\n\n"
+                               "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
     }
 }
 
@@ -1211,6 +1257,8 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
     g_settings->displayNodeReadDepth = ui->nodeReadDepthCheckBox->isChecked();
     g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
+    g_settings->displayNodeCsvData = ui->csvCheckBox->isChecked();
+    g_settings->displayNodeCsvDataCol = ui->csvComboBox->currentIndex();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
 
     g_graphicsView->viewport()->update();
@@ -1695,6 +1743,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
+        ui->actionLoad_CSV->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1703,6 +1752,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(false);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
+        ui->actionLoad_CSV->setEnabled(true);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1711,6 +1761,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->nodeLabelsWidget->setEnabled(true);
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionScrollAreaWidgetContents->setEnabled(true);
+        ui->actionZoom_to_selection->setEnabled(true);
+        ui->actionLoad_CSV->setEnabled(true);
         break;
     }
 }

@@ -75,6 +75,9 @@ public:
     DeBruijnEdge * doesNodeLeadAway(DeBruijnNode * node) const;
     std::vector<BlastHitPart> getBlastHitPartsForThisNode(double scaledNodeLength) const;
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength) const;
+    bool hasCsvData() const {return !m_csvData.isEmpty();}
+    QStringList getAllCsvData() const {return m_csvData;}
+    QString getCsvLine(int i) {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}
@@ -96,6 +99,8 @@ public:
     void clearBlastHits() {m_blastHits.clear();}
     void addBlastHit(BlastHit * newHit) {m_blastHits.push_back(newHit);}
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
+    void setCsvData(QStringList csvData) {m_csvData = csvData;}
+    void clearCsvData() {m_csvData.clear();}
 
 private:
     QString m_name;
@@ -113,6 +118,7 @@ private:
     QColor m_customColour;
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
+    QStringList m_csvData;
 
     int getBasePairsPerSegment() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,

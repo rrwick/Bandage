@@ -1027,10 +1027,24 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0" colspan="2">
+                 <item row="3" column="0">
                   <widget class="QCheckBox" name="blastHitsCheckBox">
                    <property name="text">
                     <string>BLAST hits</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QComboBox" name="csvComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QCheckBox" name="csvCheckBox">
+                   <property name="text">
+                    <string>CSV data:</string>
                    </property>
                   </widget>
                  </item>
@@ -1647,6 +1661,7 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad_graph"/>
+    <addaction name="actionLoad_CSV"/>
     <addaction name="separator"/>
     <addaction name="actionSave_image_current_view"/>
     <addaction name="actionSave_image_entire_scene"/>
@@ -1725,6 +1740,9 @@
    </property>
    <property name="text">
     <string>Load graph</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionSave_image_current_view">
@@ -1945,6 +1963,15 @@
    </property>
    <property name="text">
     <string>Specify exact path for copy/save</string>
+   </property>
+  </action>
+  <action name="actionLoad_CSV">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load CSV</string>
    </property>
   </action>
  </widget>

@@ -765,6 +765,8 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << formatIntForDisplay(m_deBruijnNode->getLength()) + " bp";
     if (g_settings->displayNodeReadDepth)
         nodeText << formatDoubleForDisplay(m_deBruijnNode->getReadDepth(), 1) + "x";
+    if (g_settings->displayNodeCsvData && m_deBruijnNode->hasCsvData())
+        nodeText << m_deBruijnNode->getCsvLine(g_settings->displayNodeCsvDataCol);
 
     return nodeText;
 }
@@ -1051,5 +1053,6 @@ bool GraphicsItemNode::anyNodeDisplayText()
     return g_settings->displayNodeCustomLabels ||
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
-            g_settings->displayNodeReadDepth;
+            g_settings->displayNodeReadDepth ||
+            g_settings->displayNodeCsvData;
 }

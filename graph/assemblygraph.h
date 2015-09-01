@@ -86,11 +86,14 @@ public:
                                          int nodeDistance);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
+    QStringList splitCsv(QString line, QString sep=",");
+    bool loadCSV(QString filename, QStringList * columns,QString * errormsg);
     std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle,
                                                  QString * errorMessage,
                                                  bool doubleMode,
                                                  QString nodesList,
                                                  QString blastQueryName);
+
     bool checkIfStringHasNodes(QString nodesString);
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph,
                                               bool exact);
@@ -119,6 +122,7 @@ private:
     int getLengthFromCigar(QString cigar);
     int getCigarCount(QString cigarCode, QString cigar);
     QString getOppositeNodeName(QString nodeName);
+    void clearAllCsvData();
 };
 
 #endif // ASSEMBLYGRAPH_H

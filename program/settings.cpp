@@ -59,6 +59,8 @@ Settings::Settings()
     displayNodeNames = false;
     displayNodeLengths = false;
     displayNodeReadDepth = false;
+    displayNodeCsvData = false;
+    displayNodeCsvDataCol = 0;
     displayBlastHits = false;
     labelFont = QFont();
     textOutline = true;

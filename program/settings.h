@@ -70,6 +70,8 @@ public:
     bool displayNodeNames;
     bool displayNodeLengths;
     bool displayNodeReadDepth;
+    bool displayNodeCsvData;
+    int  displayNodeCsvDataCol;
     bool displayBlastHits;
     QFont labelFont;
     bool textOutline;

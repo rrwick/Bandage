@@ -40,7 +40,8 @@ DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence) 
     m_specialNode(false),
     m_drawn(false),
     m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190))
+    m_customColour(QColor(190, 190, 190)),
+    m_csvData()
 {
 }
 

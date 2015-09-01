@@ -950,6 +950,92 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
     return false;
 }
 
+/* Split a QString according to CSV rules
+ *
+ * @param line  line of a csv
+ * @param sep   field separator to use
+ * @result      list of fields with escaping removed
+ *
+ * Known Bugs: CSV (as per RFC4180) allows multi-line fields (\r\n between "..."), which
+ *             can't be parsed line-by line an hence isn't supported.
+ */
+QStringList AssemblyGraph::splitCsv(QString line, QString sep)
+{
+    QStringList list;
+    QRegExp rx("(\"(?:[^\"]|\"\")*\"|[^"+sep+"]*)");
+    int pos = 0;
+
+    while (rx.indexIn(line, pos) != -1)
+    {
+        QString field = rx.cap().replace("\"\"","\"");
+        if (field[0] == '"' && field[field.length()-1] == '"')
+            field=field.mid(1,field.length()-2);
+        list << field;
+        pos += rx.matchedLength() +1;
+    }
+    return list;
+}
+
+/* Load data from CSV and add to deBruijnGraphNodes
+ *
+ * @param filename  the full path of the file to be loaded
+ * @param *columns  will contain the names of each column after loading data
+ *                  (to add these to the GUI)
+ * @param *errormsg if not empty, message to be displayed to user containing warning
+ *                  or other information
+ * @returns         true/false if loading data worked
+ */
+bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * errormsg)
+{
+    clearAllCsvData();
+
+    QFile inputFile(filename);
+    if (!inputFile.open(QIODevice::ReadOnly))
+    {
+        *errormsg = "Unable to read from specified file.";
+        return false;
+    }
+    QTextStream in(&inputFile);
+    QString line = in.readLine();
+
+    // guess at separator; this assumes that any tab in the first line means
+    // we have a tab separated file
+    QString sep = "\t";
+    if (line.split(sep).length() == 1)
+    {
+        sep = ",";
+        if (line.split(sep).length() == 1)
+        {
+            *errormsg = "Neither tab nor comma in first line. Please check file format.";
+            return false;
+        }
+    }
+
+    int unmatched_nodes = 0; // keep a counter for lines in file that can't be matched to nodes
+
+    // Regex to capture node number from ID field.
+    // Works for "NODE_xxx_..." or "k123_xxx ..."
+    QRegExp rx("^[^_]*_([0-9]*)[_ ]");
+
+    *columns = splitCsv(line, sep);
+    while (!in.atEnd())
+    {
+        QApplication::processEvents();
+
+        QStringList cols = splitCsv(in.readLine(), sep);
+        rx.indexIn(cols.at(0));
+        QString nodeName = rx.cap(1);
+        if (m_deBruijnGraphNodes.contains(nodeName + "+"))
+            m_deBruijnGraphNodes[nodeName + "+"]->setCsvData(cols);
+        else
+            unmatched_nodes++;
+    }
+
+    if (unmatched_nodes)
+        *errormsg = "There were " + QString::number(unmatched_nodes) + " unmatched entries in the CSV.";
+
+    return true;
+}
 
 //Returns true if successful, false if not.
 bool AssemblyGraph::loadGraphFromFile(QString filename)
@@ -1502,5 +1588,17 @@ void AssemblyGraph::recalculateAllNodeWidths()
         GraphicsItemNode * graphicsItemNode = i.value()->getGraphicsItemNode();
         if (graphicsItemNode != 0)
             graphicsItemNode->setWidth();
+    }
+}
+
+
+
+void AssemblyGraph::clearAllCsvData()
+{
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        i.value()->clearCsvData();
     }
 }
