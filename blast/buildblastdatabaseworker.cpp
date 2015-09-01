@@ -51,10 +51,7 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
 
         i.next();
         if (i.value()->getLength() > 0)
-        {
             out << i.value()->getFasta();
-            out << "\n";
-        }
     }
     file.close();
 
