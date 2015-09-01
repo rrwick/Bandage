@@ -1,0 +1,12 @@
+Node name,DATA1,DATA2,DATA3
+NODE_6+_length_50434_cov_42.3615,SIX_PLUS,6plus,plus6
+NODE_6-_length_50434_cov_42.3615,SIX_MINUS,6minus,minus6
+ABCD_7+_length_50434_cov_42.3615,SEVEN_PLUS,7plus,plus7
+NODE_4+,FOUR_PLUS,4plus,plus4
+4-,FOUR_MINUS,4minus,minus4
+3,THREE_PLUS,3plus,plus3
+NODE_5-,FIVE_MINUS
+NODE_8,EIGHT_PLUS,8plus,plus8
+NODE_9+,NINE_PLUS,9plus,plus9,extra,extra,extra
+BADLINE
+BADLINE_BADLINE_BADLINE_BADLINE_BADLINE
