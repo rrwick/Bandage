@@ -1013,13 +1013,25 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
     int unmatched_nodes = 0; // keep a counter for lines in file that can't be matched to nodes
 
-    *columns = splitCsv(line, sep);
+    QStringList headers = splitCsv(line, sep);
+    if (headers.size() < 2)
+    {
+        *errormsg = "Not enough CSV headers: at least two required.";
+        return false;
+    }
+
+    headers.pop_front();
+    *columns = headers;
+
     while (!in.atEnd())
     {
         QApplication::processEvents();
 
         QStringList cols = splitCsv(in.readLine(), sep);
         QString nodeName = getNodeNameFromString(cols[0]);
+
+        //Get rid of the node name - no need to save that.
+        cols.pop_front();
 
         if (nodeName != "" && m_deBruijnGraphNodes.contains(nodeName))
             m_deBruijnGraphNodes[nodeName]->setCsvData(cols);
