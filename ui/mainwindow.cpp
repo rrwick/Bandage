@@ -1701,7 +1701,12 @@ void MainWindow::setInfoTexts()
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.<br><br>"
                                         "When 'BLAST hits' labels are shown, they are displayed over any "
-                                        "BLAST hits present in the node.");
+                                        "BLAST hits present in the node.<br><br>"
+                                        "The 'CSV data' option allows you to import custom labels. To use this, "
+                                        "you must first load a CSV file (using the 'Load CSV label data' item in "
+                                        "the 'File' menu) which contains the node names in the first column and "
+                                        "custom labels in subsequent columns. The CSV file must also contain a "
+                                        "header row.");
     ui->nodeFontInfoText->setInfoText("Click the 'Font' button to choose the font used for node labels. The "
                                       "colour of the font is configurable in Bandage's " + settingsDialogTitle + ".<br><br>"
                                       "Ticking 'Text outline' will surround the text with a white outline. "
