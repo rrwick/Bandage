@@ -1974,7 +1974,10 @@
      <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
    </property>
    <property name="text">
-    <string>Load CSV</string>
+    <string>Load CSV label data</string>
+   </property>
+   <property name="toolTip">
+    <string>Load CSV label data</string>
    </property>
   </action>
   <action name="actionSave_entire_graph_to_FASTA">
