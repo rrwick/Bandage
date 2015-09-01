@@ -1022,6 +1022,7 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
     headers.pop_front();
     *columns = headers;
+    int columnCount = headers.size();
 
     while (!in.atEnd())
     {
@@ -1032,6 +1033,10 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
         //Get rid of the node name - no need to save that.
         cols.pop_front();
+
+        //Get rid of any extra data that doesn't have a header.
+        while (cols.size() > columnCount)
+            cols.pop_back();
 
         if (nodeName != "" && m_deBruijnGraphNodes.contains(nodeName))
             m_deBruijnGraphNodes[nodeName]->setCsvData(cols);
@@ -1046,17 +1051,19 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 }
 
 
-//This function extracts a node name from a string.  It assumes the string has
-//the format: NODE_6+_length_50434_cov_42.3615
-//The node name is the second part delimited by underscores.  If the node name
-//it finds does not end in a '+' or '-', it will add '+' to the node name.
+//This function extracts a node name from a string.
+//It first assumes the string has this format: NODE_6+_length_50434_cov_42.3615
+//If that doesn't seem to work, it assumes the string is just the node name.
+//If the node name it finds does not end in a '+' or '-', it will add '+'.
 QString AssemblyGraph::getNodeNameFromString(QString string)
 {
+    QString nodeName;
     QStringList parts = string.split("_");
-    if (parts.size() < 2)
-        return "";
+    if (parts.size() >= 2)
+        nodeName = parts[1];
+    else
+        nodeName = parts[0];
 
-    QString nodeName = parts[1];
     int nameLength = nodeName.length();
     if (nameLength == 0)
         return "";
