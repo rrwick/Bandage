@@ -286,6 +286,7 @@ void MainWindow::loadCSV(QString fullFileName)
         ui->csvComboBox->setEnabled(true);
         ui->csvComboBox->clear();
         ui->csvComboBox->addItems(columns);
+        g_settings->displayNodeCsvDataCol = 0;
     }
 
     catch (...)
