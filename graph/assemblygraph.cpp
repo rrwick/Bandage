@@ -1013,20 +1013,16 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
     int unmatched_nodes = 0; // keep a counter for lines in file that can't be matched to nodes
 
-    // Regex to capture node number from ID field.
-    // Works for "NODE_xxx_..." or "k123_xxx ..."
-    QRegExp rx("^[^_]*_([0-9]*)[_ ]");
-
     *columns = splitCsv(line, sep);
     while (!in.atEnd())
     {
         QApplication::processEvents();
 
         QStringList cols = splitCsv(in.readLine(), sep);
-        rx.indexIn(cols.at(0));
-        QString nodeName = rx.cap(1);
-        if (m_deBruijnGraphNodes.contains(nodeName + "+"))
-            m_deBruijnGraphNodes[nodeName + "+"]->setCsvData(cols);
+        QString nodeName = getNodeNameFromString(cols[0]);
+
+        if (nodeName != "" && m_deBruijnGraphNodes.contains(nodeName))
+            m_deBruijnGraphNodes[nodeName]->setCsvData(cols);
         else
             unmatched_nodes++;
     }
@@ -1035,6 +1031,29 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
         *errormsg = "There were " + QString::number(unmatched_nodes) + " unmatched entries in the CSV.";
 
     return true;
+}
+
+
+//This function extracts a node name from a string.  It assumes the string has
+//the format: NODE_6+_length_50434_cov_42.3615
+//The node name is the second part delimited by underscores.  If the node name
+//it finds does not end in a '+' or '-', it will add '+' to the node name.
+QString AssemblyGraph::getNodeNameFromString(QString string)
+{
+    QStringList parts = string.split("_");
+    if (parts.size() < 2)
+        return "";
+
+    QString nodeName = parts[1];
+    int nameLength = nodeName.length();
+    if (nameLength == 0)
+        return "";
+
+    QChar lastChar = nodeName.at(nameLength - 1);
+    if (lastChar == '+' || lastChar == '-')
+        return nodeName;
+    else
+        return nodeName + "+";
 }
 
 //Returns true if successful, false if not.

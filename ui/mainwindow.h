@@ -137,6 +137,8 @@ private slots:
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();
     void nodeWidthChanged();
+    void saveEntireGraphToFasta();
+    void saveEntireGraphToFastaOnlyPositiveNodes();
 
 protected:
       void showEvent(QShowEvent *ev);

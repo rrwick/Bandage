@@ -170,6 +170,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
     connect(g_graphicsView, SIGNAL(copySelectedSequencesToClipboard()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
+    connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
+    connect(ui->actionSave_entire_graph_to_FASTA_only_positive_nodes, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFastaOnlyPositiveNodes()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
@@ -2129,4 +2131,53 @@ void MainWindow::nodeWidthChanged()
     g_settings->averageNodeWidth = ui->nodeWidthSpinBox->value();
     g_assemblyGraph->recalculateAllNodeWidths();
     g_graphicsView->viewport()->update();
+}
+
+
+void MainWindow::saveEntireGraphToFasta()
+{
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/all_graph_nodes.fasta";
+
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save entire graph", defaultFileNameAndPath, "FASTA (*.fasta)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            out << i.value()->getFasta();
+        }
+    }
+}
+
+void MainWindow::saveEntireGraphToFastaOnlyPositiveNodes()
+{
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/all_positive_graph_nodes.fasta";
+
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save entire graph (only positive nodes)", defaultFileNameAndPath, "FASTA (*.fasta)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            if (node->isPositiveNode())
+                out << node->getFasta();
+        }
+    }
 }

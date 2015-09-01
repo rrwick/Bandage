@@ -123,6 +123,7 @@ private:
     int getCigarCount(QString cigarCode, QString cigar);
     QString getOppositeNodeName(QString nodeName);
     void clearAllCsvData();
+    QString getNodeNameFromString(QString string);
 };
 
 #endif // ASSEMBLYGRAPH_H

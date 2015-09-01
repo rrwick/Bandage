@@ -1724,6 +1724,9 @@
     <addaction name="actionCopy_selected_node_path_to_clipboard"/>
     <addaction name="actionSave_selected_node_path_to_FASTA"/>
     <addaction name="actionSpecify_exact_path_for_copy_save"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_entire_graph_to_FASTA"/>
+    <addaction name="actionSave_entire_graph_to_FASTA_only_positive_nodes"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -1972,6 +1975,24 @@
    </property>
    <property name="text">
     <string>Load CSV</string>
+   </property>
+  </action>
+  <action name="actionSave_entire_graph_to_FASTA">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save entire graph to FASTA (both positive and negative nodes)</string>
+   </property>
+  </action>
+  <action name="actionSave_entire_graph_to_FASTA_only_positive_nodes">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save entire graph to FASTA (only positive nodes)</string>
    </property>
   </action>
  </widget>
