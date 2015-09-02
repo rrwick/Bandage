@@ -10,9 +10,7 @@ More information and screenshots are on the Bandage website: <a href="http://rrw
 
 Bandage documentation is available on the <a href="https://github.com/rrwick/Bandage/wiki" target="_blank">Bandage GitHub wiki</a>.
 
-Bandage help is also built into the program. Throughout the UI, you will find these help icons next to controls and settings: <img src="http://rrwick.github.io/Bandage/images/helptext.png" alt="help text icon" width="16" height="16">
-
-Click on these icons to read a description of how to use that element of Bandage.
+Bandage help is also built into the program. Throughout the UI, you will find these help icons next to controls and settings: <img src="http://rrwick.github.io/Bandage/images/helptext.png" alt="help text icon" width="16" height="16">. Click on these icons to read a description of how to use that element of Bandage.
 
 ## Building from source
 
