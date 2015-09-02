@@ -8,11 +8,13 @@ More information and screenshots are on the Bandage website: <a href="http://rrw
 
 ## Help
 
-Bandage's help is built into the program. Throughout the UI, you will find these help icons next to controls and settings: <img src="http://rrwick.github.io/Bandage/images/helptext.png" alt="help text icon" width="16" height="16">
+Bandage documentation is available on the <a href="https://github.com/rrwick/Bandage/wiki" target="_blank">Bandage GitHub wiki</a>.
+
+Bandage help is also built into the program. Throughout the UI, you will find these help icons next to controls and settings: <img src="http://rrwick.github.io/Bandage/images/helptext.png" alt="help text icon" width="16" height="16">
 
 Click on these icons to read a description of how to use that element of Bandage.
 
-## Installation
+## Building from source
 
 Compiled 64-bit binaries for Linux, OS X and Windows are available in the GitHub <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">'Releases' section</a> and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
 
@@ -71,88 +73,13 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 
 Building Bandage in Windows is more challenging than in Linux or OS X, but it can be done. If you would like to, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
 
-## Usage
-
-### Basics
-
-##### Usage
-
-1. Open a Bandage window.
-2. Load a graph file using the 'File' menu, either a LastGraph file from Velvet or a FASTG file from SPAdes. For large graph files, this may take a few seconds or more.
-3. Click the 'Draw graph' button now to visualise the entire graph.
-
-##### Drawing options
-
-* Due to the stochastic nature of the graph layout algorithm, clicking the 'Draw graph' button again will redraw the graph with nodes in different positions.
-* By changing the scope from 'Entire graph' to 'Around nodes' or 'Around BLAST hits', it is possible to draw only a subsection of the graph. The specified nodes will be drawn, along with all nodes within the given distance. For example, a distance of zero will draw only the specified nodes, a distance of one will draw the specified nodes and their immediate neighbours, etc.
-
-##### Node style
-
-* Single nodes are the default setting. This is where only positive nodes are displayed, not negative nodes (the reverse complement nodes).
-* Double nodes show nodes and their reverse complement as two separate objects with arrow heads to indicate direction. This style can be useful for deciphering particular complex regions or extracting strand-specific sequences.
-
-### Command line
-
-##### General
-
-Bandage is run from the command line using this usage: `Bandage <command> [options]`
-
-Type `Bandage --help` to see general help and `Bandage <command> --help` to see help for that particular command. The `--helpall` option will show all possible Bandage settings that can be specified on the command line.
-
-##### Linux
-
-Command line usage on Linux is straightforward. Either run Bandage from a particular directory (e.g. `./Bandage` or `~/programs/Bandage`) or copy it to a directory in your path to run it simply using `Bandage`.
-
-##### Mac
-
-Bandage for Mac is packaged as an application bundle which is actually a directory. To run Bandage via the command line, you must call the executable that is contained in the bundle: `<path>/Bandage.app/Contents/MacOS/Bandage`
-
-##### Windows
-
-Command line support is only partially functional on Windows. The program can be called with commands and options, and it should run correctly. But since Windows views it as a GUI application, not a command line appltication, there will be no output to the console.
-
-### Controls
-
-Note that on a Mac, the Command key is used instead of the Ctrl key in the below instructions.
-
-##### Selection
-
-* Click on any node or edge to select it.
-* Holding Ctrl while clicking on nodes or edges adds them to the selection.
-* Click and drag to select large numbers of nodes and edges.
-
-##### Moving nodes
-
-* Left click and drag on any node to move it. For short nodes, this will move the entire node. For long nodes, this will move the region of the node near the mouse cursor.
-* Right click and drag on any node to move it one piece at a time. This is useful for fine tuning the shape of a graph or for rotating short nodes.
-* Selected nodes are moved in their entirety when dragged. If multiple nodes are selected, they will all be moved together when dragged.
-
-##### Mouse navigation
-
-* Ctrl+mouse wheel will zoom the view in to and out from the location of your mouse cursor.
-* Ctrl+click and drag with the left mouse button will pan the view.
-* Ctrl+click and drag with the right mouse button will rotate the view.
-
-##### Keyboard navigation controls
-
-* It is first necessary to click in the viewport (or use tab until it is selected) so it will receive keyboard input.
-* Plus and minus keys will zoom in and out.
-* Arrow keys will pan the viewport horizontally and vertically.
-* Shift+plus and shift+minus will rotate the view clockwise and anti-clockwise.
-
-### Assembly tips
-
-The structure of the graph is highly dependant on the k-mer size used for assembly. Small k-mers result in shorter contigs but with lots of connections, while large k-mers can result in longer contigs but with fewer connections.
-
-If your graph consists of many separate disconnected subgraphs (i.e. there are many small groups of contigs that have no connections to the rest of the graph), then your k-mer size may be too large. Alternatively, if your graph is connected (i.e. all contigs are tied together in a single graph structure) but is very dense and tangled, then your k-mer size may be too small.
-
-When assembling 100 bp reads in Velvet, a k-mer of 51 would be a good starting point, and then adjust up or down as needed. SPAdes conducts assembly multiple times using different k-mers, so you can look at the FASTG files for each assembly (in folders named like K21, K33, etc.) to find the best graph for viewing in Bandage.
-
-## Contributing
-
-New contributors are welcome!  If you're interested or have ideas, please contact me (Ryan) at rrwick@gmail.com.
-
 ## History
+
+Version 0.6.3 - improvements to BLAST functionality
+
+Version 0.6.2 - new features for working with graph paths
+
+Version 0.6.1 - improvements to BLAST functionality
 
 Version 0.6.0 - new features, including command line functionality
 
@@ -177,6 +104,10 @@ Version 0.4.1 - bug fixes
 Version 0.4.0 - new features, including BLAST integration
 
 Version 0.3.0 – initial release on GitHub
+
+## Contributing
+
+New contributors are welcome!  If you're interested or have ideas, please contact me (Ryan) at rrwick@gmail.com.
 
 ## License
 
