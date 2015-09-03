@@ -1712,7 +1712,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
-    <addaction name="actionBandage_website"/>
+    <addaction name="actionBandage_online_help"/>
    </widget>
    <widget class="QMenu" name="menuOutput">
     <property name="title">
@@ -1932,13 +1932,16 @@
     <string>Select not contiguous nodes</string>
    </property>
   </action>
-  <action name="actionBandage_website">
+  <action name="actionBandage_online_help">
    <property name="icon">
     <iconset resource="../images/images.qrc">
      <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
    </property>
    <property name="text">
-    <string>Bandage website</string>
+    <string>Bandage online help</string>
+   </property>
+   <property name="toolTip">
+    <string>Bandage online help</string>
    </property>
   </action>
   <action name="actionCopy_selected_node_path_to_clipboard">

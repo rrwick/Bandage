@@ -163,7 +163,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectContiguous()));
     connect(ui->actionSelect_possibly_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectMaybeContiguous()));
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
-    connect(ui->actionBandage_website, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
+    connect(ui->actionBandage_online_help, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
@@ -1999,7 +1999,7 @@ void MainWindow::selectBasedOnContiguity(ContiguityStatus targetContiguityStatus
 
 void MainWindow::openBandageUrl()
 {
-    QDesktopServices::openUrl(QUrl("http://rrwick.github.io/Bandage/"));
+    QDesktopServices::openUrl(QUrl("https://github.com/rrwick/Bandage/wiki"));
 }
 
 
