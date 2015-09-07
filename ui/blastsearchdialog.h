@@ -81,6 +81,7 @@ private slots:
     void queryShownChanged();
     void showPathsDialog(BlastQuery * query);
     void queryPathSelectionChangedSlot();
+    void openFiltersDialog();
 
 signals:
     void blastChanged();

@@ -116,4 +116,16 @@ Settings::Settings()
     maxEValueProductPower = -10;
 
     blastSearchParameters = "";
+
+    blastAlignmentLengthFilterOn = false;
+    blastAlignmentLengthFilterValue = 100;
+    blastQueryCoverageFilterOn = false;
+    blastQueryCoverageFilterValue = 50.0;
+    blastIdentityFilterOn = false;
+    blastIdentityFilterValue = 90.0;
+    blastEValueFilterOn = false;
+    blastEValueBaseFilterValue = 1.0;
+    blastEValueExponentFilterValue = -10;
+    blastBitScoreFilterOn = false;
+    blastBitScoreFilterValue = 1000;
 }

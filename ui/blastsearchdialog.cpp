@@ -49,6 +49,7 @@
 #include <QCheckBox>
 #include "querypathspushbutton.h"
 #include "querypathsdialog.h"
+#include "blasthitfiltersdialog.h"
 
 BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     QDialog(parent),
@@ -130,6 +131,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     connect(ui->runBlastSearchButton, SIGNAL(clicked()), this, SLOT(runBlastSearchesInThread()));
     connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
     connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
+    connect(ui->blastFiltersButton, SIGNAL(clicked(bool)), this, SLOT(openFiltersDialog()));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -686,11 +688,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(false);
         ui->enterQueryManuallyInfoText->setEnabled(false);
-        ui->parametersInfoText->setEnabled(false);
-        ui->startBlastSearchInfoText->setEnabled(false);
         ui->clearAllQueriesInfoText->setEnabled(false);
         ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(false);
+        ui->blastHitsTableInfoText->setEnabled(false);
         break;
 
     case BLAST_DB_BUILD_IN_PROGRESS:
@@ -714,11 +716,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(false);
         ui->loadQueriesFromFastaInfoText->setEnabled(false);
         ui->enterQueryManuallyInfoText->setEnabled(false);
-        ui->parametersInfoText->setEnabled(false);
-        ui->startBlastSearchInfoText->setEnabled(false);
         ui->clearAllQueriesInfoText->setEnabled(false);
         ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(false);
+        ui->blastHitsTableInfoText->setEnabled(false);
         break;
 
     case BLAST_DB_BUILT_BUT_NO_QUERIES:
@@ -742,11 +744,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
-        ui->parametersInfoText->setEnabled(false);
-        ui->startBlastSearchInfoText->setEnabled(false);
         ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->clearSelectedQueriesInfoText->setEnabled(false);
         ui->blastHitsTableWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(false);
+        ui->blastHitsTableInfoText->setEnabled(false);
         break;
 
     case READY_FOR_BLAST_SEARCH:
@@ -770,11 +772,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->startBlastSearchInfoText->setEnabled(true);
         ui->clearAllQueriesInfoText->setEnabled(true);
         ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(true);
+        ui->blastHitsTableInfoText->setEnabled(false);
         break;
 
     case BLAST_SEARCH_IN_PROGRESS:
@@ -798,11 +800,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->startBlastSearchInfoText->setEnabled(true);
         ui->clearAllQueriesInfoText->setEnabled(true);
         ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(false);
+        ui->blastSearchWidget->setEnabled(true);
+        ui->blastHitsTableInfoText->setEnabled(false);
         break;
 
     case BLAST_SEARCH_COMPLETE:
@@ -826,11 +828,11 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);
-        ui->parametersInfoText->setEnabled(true);
-        ui->startBlastSearchInfoText->setEnabled(true);
         ui->clearAllQueriesInfoText->setEnabled(true);
         ui->clearSelectedQueriesInfoText->setEnabled(true);
         ui->blastHitsTableWidget->setEnabled(true);
+        ui->blastSearchWidget->setEnabled(true);
+        ui->blastHitsTableInfoText->setEnabled(true);
         break;
     }
 }
@@ -987,4 +989,17 @@ void BlastSearchDialog::deleteQueryPathsDialog()
 void BlastSearchDialog::queryPathSelectionChangedSlot()
 {
     emit queryPathSelectionChanged();
+}
+
+
+void BlastSearchDialog::openFiltersDialog()
+{
+    BlastHitFiltersDialog filtersDialog(this);
+    filtersDialog.setWidgetsFromSettings();
+
+    if (filtersDialog.exec()) //The user clicked OK
+    {
+        filtersDialog.setSettingsFromWidgets();
+        ui->blastHitFiltersLabel2->setText(filtersDialog.getFilterText());
+    }
 }

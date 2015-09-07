@@ -133,6 +133,20 @@ public:
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.
     QString blastSearchParameters;
+
+    //These are the optional BLAST hit filters: whether or not they are used and
+    //what their values are.
+    bool blastAlignmentLengthFilterOn;
+    int blastAlignmentLengthFilterValue;
+    bool blastQueryCoverageFilterOn;
+    double blastQueryCoverageFilterValue;
+    bool blastIdentityFilterOn;
+    double blastIdentityFilterValue;
+    bool blastEValueFilterOn;
+    double blastEValueBaseFilterValue;
+    int blastEValueExponentFilterValue;
+    bool blastBitScoreFilterOn;
+    int blastBitScoreFilterValue;
 };
 
 #endif // SETTINGS_H
