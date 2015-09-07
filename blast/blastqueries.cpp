@@ -79,8 +79,8 @@ QString BlastQueries::renameQuery(BlastQuery * newQuery, QString newName)
 
 
 //This function looks at the name, and if it is not unique, it adds a suffix
-//to make it unique.  Also make sure it's not "all", as that will conflict
-//with viewing all queries at once.
+//to make it unique.  Also make sure it's not "all" or "none", as those will
+//conflict with viewing all queries at once or no queries.
 QString BlastQueries::getUniqueName(QString name)
 {
     //The name can't be empty.
@@ -89,7 +89,8 @@ QString BlastQueries::getUniqueName(QString name)
 
     int queryNumber = 2;
     QString finalName = name;
-    while (getQueryFromName(finalName) != 0 || finalName == "all")
+    while (getQueryFromName(finalName) != 0 ||
+           finalName == "all" || finalName == "none")
         finalName = name + "_" + QString::number(queryNumber++);
     return finalName;
 }

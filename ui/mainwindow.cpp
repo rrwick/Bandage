@@ -1814,47 +1814,64 @@ void MainWindow::bringSelectedNodesToFront()
 
 void MainWindow::selectNodesWithBlastHits()
 {
+    if (ui->blastQueryComboBox->currentText() == "none")
+    {
+        QMessageBox::information(this, "No BLAST hits",
+                                       "To select nodes with BLAST hits, you must first conduct a BLAST search.");
+        return;
+    }
+
     m_scene->blockSignals(true);
     m_scene->clearSelection();
 
+    bool atLeastOneNodeHasBlastHits = false;
     bool atLeastOneNodeSelected = false;
+
     QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
         DeBruijnNode * node = i.value();
+
+        bool nodeHasBlastHits;
+
+        //If we're in double mode, only select a node if it has a BLAST hit itself.
+        if (g_settings->doubleMode)
+            nodeHasBlastHits = node->thisNodeHasBlastHits();
+
+        //In single mode, select a node if it or its reverse complement has a BLAST hit.
+        else
+            nodeHasBlastHits = node->thisNodeOrReverseComplementHasBlastHits();
+
+        if (nodeHasBlastHits)
+            atLeastOneNodeHasBlastHits = true;
+
         GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
 
         if (graphicsItemNode == 0)
             continue;
 
-        //If we're in double mode, only select a node if it has a BLAST hit itself.
-        if (g_settings->doubleMode)
+        if (nodeHasBlastHits)
         {
-            if (node->thisNodeHasBlastHits())
-            {
-                graphicsItemNode->setSelected(true);
-                atLeastOneNodeSelected = true;
-            }
-        }
-
-        //In single mode, select a node if it or its reverse complement has a BLAST hit.
-        else
-        {
-            if (node->thisNodeOrReverseComplementHasBlastHits())
-            {
-                graphicsItemNode->setSelected(true);
-                atLeastOneNodeSelected = true;
-            }
+            graphicsItemNode->setSelected(true);
+            atLeastOneNodeSelected = true;
         }
     }
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
 
-    if (!atLeastOneNodeSelected)
+    if (!atLeastOneNodeHasBlastHits)
+    {
         QMessageBox::information(this, "No BLAST hits",
                                        "To select nodes with BLAST hits, you must first conduct a BLAST search.");
+        return;
+    }
+
+    if (!atLeastOneNodeSelected)
+        QMessageBox::information(this, "No BLAST hits in visible nodes",
+                                       "No nodes with BLAST hits are currently visible, so there is nothing to select. "
+                                       "Adjust the graph scope to make the nodes with BLAST hits visible.");
     else
         zoomToSelection();
 }
