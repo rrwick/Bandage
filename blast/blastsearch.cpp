@@ -92,18 +92,21 @@ void BlastSearch::buildHitsFromBlastOutput()
         else
             continue;
 
-        //Check the user-defined filters.
         BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
         if (query == 0)
             continue;
 
+        QSharedPointer<BlastHit> hit(new BlastHit(query, node, percentIdentity, alignmentLength,
+                                                  numberMismatches, numberGapOpens, queryStart, queryEnd,
+                                                  nodeStart, nodeEnd, eValue, bitScore));
+
+        //Check the user-defined filters.
         if (g_settings->blastAlignmentLengthFilterOn &&
                 alignmentLength < g_settings->blastAlignmentLengthFilterValue)
             continue;
         if (g_settings->blastQueryCoverageFilterOn)
         {
-            double queryCoverage = 100.0 * double(alignmentLength) / query->getLength();
-            if (queryCoverage <= g_settings->blastQueryCoverageFilterValue)
+            if (100.0 * hit->getQueryCoverageFraction() <= g_settings->blastQueryCoverageFilterValue)
                 continue;
         }
         if (g_settings->blastIdentityFilterOn &&
@@ -120,10 +123,6 @@ void BlastSearch::buildHitsFromBlastOutput()
         if (g_settings->blastBitScoreFilterOn &&
                 bitScore < g_settings->blastBitScoreFilterValue)
             continue;
-
-        QSharedPointer<BlastHit> hit(new BlastHit(query, node, percentIdentity, alignmentLength,
-                                                  numberMismatches, numberGapOpens, queryStart, queryEnd,
-                                                  nodeStart, nodeEnd, eValue, bitScore));
 
         m_allHits.push_back(hit);
         query->addHit(hit);

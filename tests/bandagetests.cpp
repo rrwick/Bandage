@@ -38,9 +38,12 @@ private slots:
     void pathFunctionsOnFastg();
     void graphLocationFunctions();
     void loadCsvData();
+    void blastSearchFilters();
 
 private:
     void createGlobals();
+    bool createBlastTempDirectory();
+    void deleteBlastTempDirectory();
 };
 
 
@@ -49,7 +52,7 @@ private:
 void BandageTests::loadFastg()
 {
     createGlobals();
-    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
+    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
 
     //Check that the graph loaded properly.
     QCOMPARE(fastgGraphLoaded, true);
@@ -69,7 +72,7 @@ void BandageTests::loadFastg()
 void BandageTests::loadLastGraph()
 {
     createGlobals();
-    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
+    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
 
     //Check that the graph loaded properly.
     QCOMPARE(lastGraphLoaded, true);
@@ -92,7 +95,7 @@ void BandageTests::loadLastGraph()
 void BandageTests::pathFunctionsOnLastGraph()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
@@ -139,7 +142,7 @@ void BandageTests::pathFunctionsOnLastGraph()
 void BandageTests::pathFunctionsOnFastg()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(50234) 6+, 26+, 23+, 26+, 24+ (200)", false, &pathStringFailure);
@@ -158,7 +161,7 @@ void BandageTests::graphLocationFunctions()
     //sitations: all positions have a reverse complement position in the
     //reverse complement node.
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
     DeBruijnNode * node12Plus = g_assemblyGraph->m_deBruijnGraphNodes["12+"];
     DeBruijnNode * node3Plus = g_assemblyGraph->m_deBruijnGraphNodes["3+"];
 
@@ -187,7 +190,7 @@ void BandageTests::graphLocationFunctions()
     //offset, reverse complement positions can be in different nodes and may
     //not even exist.
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.LastGraph");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
     int kmer = g_assemblyGraph->m_kmer;
     DeBruijnNode * node13Plus = g_assemblyGraph->m_deBruijnGraphNodes["13+"];
     DeBruijnNode * node8Minus = g_assemblyGraph->m_deBruijnGraphNodes["8-"];
@@ -217,11 +220,11 @@ void BandageTests::graphLocationFunctions()
 void BandageTests::loadCsvData()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test1.fastg");
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
 
     QString errormsg;
     QStringList columns;
-    g_assemblyGraph->loadCSV("/Users/Ryan/Programs/Bandage/tests/test1.csv", &columns, &errormsg);
+    g_assemblyGraph->loadCSV("/Users/Ryan/Programs/Bandage/tests/test.csv", &columns, &errormsg);
 
     DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
     DeBruijnNode * node6Minus = g_assemblyGraph->m_deBruijnGraphNodes["6-"];
@@ -280,6 +283,45 @@ void BandageTests::loadCsvData()
 
 
 
+void BandageTests::blastSearchFilters()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries.fasta";
+    createBlastTempDirectory();
+
+    //First do the search with no filters
+    g_blastSearch->doAutoBlastSearch();
+    int unfilteredHitCount = g_blastSearch->m_allHits.size();
+
+    //Now filter by e-value.
+    g_settings->blastEValueFilterOn = true;
+    g_settings->blastEValueFilterCoefficientValue = 1.0;
+    g_settings->blastEValueFilterExponentValue = -5;
+    g_blastSearch->doAutoBlastSearch();
+    QCOMPARE(g_blastSearch->m_allHits.size(), 14);
+    QCOMPARE(g_blastSearch->m_allHits.size() < unfilteredHitCount, true);
+
+    //Now add a bit score filter.
+    g_settings->blastBitScoreFilterOn = true;
+    g_settings->blastBitScoreFilterValue = 100.0;
+    g_blastSearch->doAutoBlastSearch();
+    QCOMPARE(g_blastSearch->m_allHits.size(), 9);
+
+    //Now add an alignment length filter.
+    g_settings->blastAlignmentLengthFilterOn = true;
+    g_settings->blastAlignmentLengthFilterValue = 100;
+    g_blastSearch->doAutoBlastSearch();
+    QCOMPARE(g_blastSearch->m_allHits.size(), 8);
+
+    //Now add an identity filter.
+    g_settings->blastIdentityFilterOn = true;
+    g_settings->blastIdentityFilterValue = 50.0;
+    g_blastSearch->doAutoBlastSearch();
+    QCOMPARE(g_blastSearch->m_allHits.size(), 7);
+}
+
+
 
 
 
@@ -301,6 +343,28 @@ void BandageTests::createGlobals()
     g_assemblyGraph.reset(new AssemblyGraph());
     g_graphicsView = new MyGraphicsView();
 }
+
+bool BandageTests::createBlastTempDirectory()
+{
+    //Running from the command line, it makes more sense to put the temp
+    //directory in the current directory.
+    g_blastSearch->m_tempDirectory = "bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+
+    if (!QDir().mkdir(g_blastSearch->m_tempDirectory))
+        return false;
+
+    g_blastSearch->m_blastQueries.createTempQueryFiles();
+    return true;
+}
+
+void BandageTests::deleteBlastTempDirectory()
+{
+    if (g_blastSearch->m_tempDirectory != "" &&
+            QDir(g_blastSearch->m_tempDirectory).exists() &&
+            QDir(g_blastSearch->m_tempDirectory).dirName().contains("bandage_temp"))
+        QDir(g_blastSearch->m_tempDirectory).removeRecursively();
+}
+
 
 
 QTEST_MAIN(BandageTests)

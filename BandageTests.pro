@@ -73,7 +73,8 @@ SOURCES += \
     ui/querypathspushbutton.cpp \
     ui/querypathsdialog.cpp \
     blast/blastquerypath.cpp \
-    tests/bandagetests.cpp
+    tests/bandagetests.cpp \
+    ui/blasthitfiltersdialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -121,7 +122,8 @@ HEADERS  += \
     graph/querydistance.h \
     ui/querypathspushbutton.h \
     ui/querypathsdialog.h \
-    blast/blastquerypath.h
+    blast/blastquerypath.h \
+    ui/blasthitfiltersdialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -131,7 +133,8 @@ FORMS    += \
     ui/blastsearchdialog.ui \
     ui/myprogressdialog.ui \
     ui/pathspecifydialog.ui \
-    ui/querypathsdialog.ui
+    ui/querypathsdialog.ui \
+    ui/blasthitfiltersdialog.ui
 
 
 # These includes are configured assuming that the OGDF

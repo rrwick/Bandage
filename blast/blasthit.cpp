@@ -109,7 +109,7 @@ bool BlastHit::compareTwoBlastHitPointers(BlastHit * a, BlastHit * b)
 
 double BlastHit::getQueryCoverageFraction()
 {
-    int queryRegionSize = m_queryEnd - m_queryStart;
+    int queryRegionSize = m_queryEnd - m_queryStart + 1;
     int queryLength = m_query->getLength();
 
     if (queryLength == 0)
