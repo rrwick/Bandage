@@ -885,10 +885,11 @@ void BlastSearchDialog::setInfoTexts()
                                                "<b>Length</b>: This is the length of the query, in bases (for nucleotide queries) "
                                                "or amino acids (for protein queries).<br><br>"
                                                "<b>Hits</b>: This is the number of BLAST hits acquired for the query.<br><br>"
-                                               "<b>Percent found</b>: This is the total fraction of the query captured by all of "
+                                               "<b>Query cover</b>: This is the total fraction of the query captured by all of "
                                                "the BLAST hits. However, the hits may not be proximal to each other. For "
                                                "example, if the first half a query was found in one part of the graph and "
-                                               "the second half in a different part, this value would be 100%.<br><br>"
+                                               "the second half in a different part, this value would be 100%. This value "
+                                               "is equivalent to the 'qcovs' output option in BLAST.<br><br>"
                                                "<b>Paths</b>: These are the number of possible paths through the graph which "
                                                "represent the entire query.  If there is at least one path, you can click on "
                                                "this button to view a table of the paths' properties.");

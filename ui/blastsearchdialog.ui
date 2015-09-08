@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>BLAST search</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0,0">
+  <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0">
    <item row="4" column="2">
     <widget class="QWidget" name="blastQueriesWidget2" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -79,7 +79,7 @@
         </column>
         <column>
          <property name="text">
-          <string>Percent found</string>
+          <string>Query cover</string>
          </property>
         </column>
         <column>
