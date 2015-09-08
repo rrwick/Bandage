@@ -319,6 +319,12 @@ void BandageTests::blastSearchFilters()
     g_settings->blastIdentityFilterValue = 50.0;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 7);
+
+    //Now add a query coverage filter.
+    g_settings->blastQueryCoverageFilterOn = true;
+    g_settings->blastQueryCoverageFilterValue = 90.0;
+    g_blastSearch->doAutoBlastSearch();
+    QCOMPARE(g_blastSearch->m_allHits.size(), 5);
 }
 
 
