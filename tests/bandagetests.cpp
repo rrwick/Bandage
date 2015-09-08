@@ -38,6 +38,7 @@ private slots:
     void pathFunctionsOnFastg();
     void graphLocationFunctions();
     void loadCsvData();
+    void blastSearch();
     void blastSearchFilters();
 
 private:
@@ -282,12 +283,54 @@ void BandageTests::loadCsvData()
 }
 
 
+void BandageTests::blastSearch()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries1.fasta";
+    createBlastTempDirectory();
+
+    g_blastSearch->doAutoBlastSearch();
+
+    BlastQuery * exact = g_blastSearch->m_blastQueries.getQueryFromName("test_query_exact");
+    BlastQuery * one_mismatch = g_blastSearch->m_blastQueries.getQueryFromName("test_query_one_mismatch");
+    BlastQuery * one_insertion = g_blastSearch->m_blastQueries.getQueryFromName("test_query_one_insertion");
+    BlastQuery * one_deletion = g_blastSearch->m_blastQueries.getQueryFromName("test_query_one_deletion");
+
+    QCOMPARE(exact->getLength(), 100);
+    QCOMPARE(one_mismatch->getLength(), 100);
+    QCOMPARE(one_insertion->getLength(), 101);
+    QCOMPARE(one_deletion->getLength(), 99);
+
+    QSharedPointer<BlastHit> exactHit = exact->getHits().at(0);
+    QSharedPointer<BlastHit> one_mismatchHit = one_mismatch->getHits().at(0);
+    QSharedPointer<BlastHit> one_insertionHit = one_insertion->getHits().at(0);
+    QSharedPointer<BlastHit> one_deletionHit = one_deletion->getHits().at(0);
+
+    QCOMPARE(exactHit->m_numberMismatches, 0);
+    QCOMPARE(exactHit->m_numberGapOpens, 0);
+    QCOMPARE(one_mismatchHit->m_numberMismatches, 1);
+    QCOMPARE(one_mismatchHit->m_numberGapOpens, 0);
+    QCOMPARE(one_insertionHit->m_numberMismatches, 0);
+    QCOMPARE(one_insertionHit->m_numberGapOpens, 1);
+    QCOMPARE(one_deletionHit->m_numberMismatches, 0);
+    QCOMPARE(one_deletionHit->m_numberGapOpens, 1);
+
+    QCOMPARE(exactHit->m_percentIdentity < 100.0, false);
+    QCOMPARE(one_mismatchHit->m_percentIdentity < 100.0, true);
+    QCOMPARE(one_insertionHit->m_percentIdentity < 100.0, true);
+    QCOMPARE(one_deletionHit->m_percentIdentity < 100.0, true);
+
+    deleteBlastTempDirectory();
+}
+
+
 
 void BandageTests::blastSearchFilters()
 {
     createGlobals();
     g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
-    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries.fasta";
+    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries2.fasta";
     createBlastTempDirectory();
 
     //First do the search with no filters
@@ -325,6 +368,8 @@ void BandageTests::blastSearchFilters()
     g_settings->blastQueryCoverageFilterValue = 90.0;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 5);
+
+    deleteBlastTempDirectory();
 }
 
 
