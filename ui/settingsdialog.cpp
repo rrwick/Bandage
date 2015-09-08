@@ -310,9 +310,9 @@ void SettingsDialog::setInfoTexts()
                                                 "nodes with read depth above the high read depth value.<br><br>"
                                                 "Nodes with read depth between the low and high read depth values will get an "
                                                 "intermediate colour.");
-    ui->readDepthValuesInfoText->setInfoText("When set to 'Auto', the low read depth value is set to the first quartile and the high "
-                                            "read depth value is set to the third quartile.<br><br>"
-                                            "When set to 'Manual', you can specify the values used for read depth colouring.");
+    ui->readDepthAutoValuesInfoText->setInfoText("When set to 'Auto', the low read depth value is set to the first quartile and the high "
+                                                 "read depth value is set to the third quartile.");
+    ui->readDepthManualValuesInfoText->setInfoText("When set to 'Manual', you can specify the values used for read depth colouring.");
     ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is "
                                                "used for nodes that do not have any BLAST hits. It is also used for any region "
                                                "of a node without BLAST hits, even if there are BLAST hits in other regions of "
