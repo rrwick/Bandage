@@ -24,6 +24,7 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QProcess>
+#include <math.h>
 
 QSharedPointer<Settings> g_settings;
 QSharedPointer<Memory> g_memory;
@@ -48,6 +49,10 @@ QString formatIntForDisplay(long long num)
 
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
 {
+    //Add a bit for rounding
+    double addValue = 0.5 / pow(10, decimalPlacesToDisplay);
+    num += addValue;
+
     QLocale locale;
     QString withCommas = locale.toString(num, 'f');
 
