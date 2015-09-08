@@ -506,6 +506,11 @@
         </column>
         <column>
          <property name="text">
+          <string>Query cover</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
           <string>Mismatches</string>
          </property>
         </column>

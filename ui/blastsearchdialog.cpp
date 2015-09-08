@@ -81,7 +81,7 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
 
     //Prepare the query and hits tables
     ui->blastHitsTableWidget->setHorizontalHeaderLabels(QStringList() << "" << "Query\nname" << "Node\nname" <<
-                                                        "Percent\nidentity" << "Alignment\nlength" << "Mis-\nmatches" <<
+                                                        "Percent\nidentity" << "Alignment\nlength" << "Query\ncover" << "Mis-\nmatches" <<
                                                         "Gap\nopens" << "Query\nstart" << "Query\nend" << "Node\nstart" <<
                                                         "Node\nend" <<"E-\nvalue" << "Bit\nscore");
     QFont font = ui->blastQueriesTableWidget->horizontalHeader()->font();
@@ -303,11 +303,15 @@ void BlastSearchDialog::fillHitsTable()
         QTableWidgetItem * nodeName = new QTableWidgetItem(hit->m_node->getName());
         nodeName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        TableWidgetItemDouble * percentIdentity = new TableWidgetItemDouble(QString::number(hit->m_percentIdentity) + "%", hit->m_percentIdentity);
+        TableWidgetItemDouble * percentIdentity = new TableWidgetItemDouble(formatDoubleForDisplay(hit->m_percentIdentity, 2) + "%", hit->m_percentIdentity);
         percentIdentity->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         TableWidgetItemInt * alignmentLength = new TableWidgetItemInt(formatIntForDisplay(hit->m_alignmentLength), hit->m_alignmentLength);
         alignmentLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        double queryCoverPercent = 100.0 * hit->getQueryCoverageFraction();
+        TableWidgetItemDouble * queryCover = new TableWidgetItemDouble(formatDoubleForDisplay(queryCoverPercent, 2) + "%", queryCoverPercent);
+        queryCover->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         TableWidgetItemInt * numberMismatches = new TableWidgetItemInt(formatIntForDisplay(hit->m_numberMismatches), hit->m_numberMismatches);
         numberMismatches->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -338,14 +342,15 @@ void BlastSearchDialog::fillHitsTable()
         ui->blastHitsTableWidget->setItem(i, 2, nodeName);
         ui->blastHitsTableWidget->setItem(i, 3, percentIdentity);
         ui->blastHitsTableWidget->setItem(i, 4, alignmentLength);
-        ui->blastHitsTableWidget->setItem(i, 5, numberMismatches);
-        ui->blastHitsTableWidget->setItem(i, 6, numberGapOpens);
-        ui->blastHitsTableWidget->setItem(i, 7, queryStart);
-        ui->blastHitsTableWidget->setItem(i, 8, queryEnd);
-        ui->blastHitsTableWidget->setItem(i, 9, nodeStart);
-        ui->blastHitsTableWidget->setItem(i, 10, nodeEnd);
-        ui->blastHitsTableWidget->setItem(i, 11, eValue);
-        ui->blastHitsTableWidget->setItem(i, 12, bitScore);
+        ui->blastHitsTableWidget->setItem(i, 5, queryCover);
+        ui->blastHitsTableWidget->setItem(i, 6, numberMismatches);
+        ui->blastHitsTableWidget->setItem(i, 7, numberGapOpens);
+        ui->blastHitsTableWidget->setItem(i, 8, queryStart);
+        ui->blastHitsTableWidget->setItem(i, 9, queryEnd);
+        ui->blastHitsTableWidget->setItem(i, 10, nodeStart);
+        ui->blastHitsTableWidget->setItem(i, 11, nodeEnd);
+        ui->blastHitsTableWidget->setItem(i, 12, eValue);
+        ui->blastHitsTableWidget->setItem(i, 13, bitScore);
     }
 
     ui->blastHitsTableWidget->resizeColumns();
