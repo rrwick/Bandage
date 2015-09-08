@@ -745,8 +745,6 @@
   <tabstop>blastFiltersButton</tabstop>
   <tabstop>runBlastSearchButton</tabstop>
   <tabstop>blastHitsTableWidget</tabstop>
-  <tabstop>parametersLineEdit_2</tabstop>
-  <tabstop>parametersLineEdit_3</tabstop>
  </tabstops>
  <resources/>
  <connections>

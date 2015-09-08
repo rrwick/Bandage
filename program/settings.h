@@ -143,10 +143,10 @@ public:
     bool blastIdentityFilterOn;
     double blastIdentityFilterValue;
     bool blastEValueFilterOn;
-    double blastEValueBaseFilterValue;
-    int blastEValueExponentFilterValue;
+    double blastEValueFilterCoefficientValue;
+    int blastEValueFilterExponentValue;
     bool blastBitScoreFilterOn;
-    int blastBitScoreFilterValue;
+    double blastBitScoreFilterValue;
 };
 
 #endif // SETTINGS_H

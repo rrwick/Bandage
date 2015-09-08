@@ -10,6 +10,8 @@ BlastHitFiltersDialog::BlastHitFiltersDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setInfoTexts();
+
     connect(ui->alignmentLengthCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
     connect(ui->queryCoverageCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
     connect(ui->identityCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
@@ -26,10 +28,14 @@ BlastHitFiltersDialog::~BlastHitFiltersDialog()
 void BlastHitFiltersDialog::checkBoxesChanged()
 {
     ui->alignmentLengthSpinBox->setEnabled(ui->alignmentLengthCheckBox->isChecked());
+
     ui->queryCoverageSpinBox->setEnabled(ui->queryCoverageCheckBox->isChecked());
+
     ui->identitySpinBox->setEnabled(ui->identityCheckBox->isChecked());
+
     ui->eValueBaseSpinBox->setEnabled(ui->eValueCheckBox->isChecked());
     ui->eValueExponentSpinBox->setEnabled(ui->eValueCheckBox->isChecked());
+
     ui->bitScoreSpinBox->setEnabled(ui->bitScoreCheckBox->isChecked());
 }
 
@@ -45,9 +51,11 @@ void BlastHitFiltersDialog::setWidgetsFromSettings()
     ui->alignmentLengthSpinBox->setValue(g_settings->blastAlignmentLengthFilterValue);
     ui->queryCoverageSpinBox->setValue(g_settings->blastQueryCoverageFilterValue);
     ui->identitySpinBox->setValue(g_settings->blastIdentityFilterValue);
-    ui->eValueBaseSpinBox->setValue(g_settings->blastEValueBaseFilterValue);
-    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueExponentFilterValue);
+    ui->eValueBaseSpinBox->setValue(g_settings->blastEValueFilterCoefficientValue);
+    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueFilterExponentValue);
     ui->bitScoreSpinBox->setValue(g_settings->blastBitScoreFilterValue);
+
+    checkBoxesChanged();
 }
 
 
@@ -62,55 +70,68 @@ void BlastHitFiltersDialog::setSettingsFromWidgets()
     g_settings->blastAlignmentLengthFilterValue = ui->alignmentLengthSpinBox->value();
     g_settings->blastQueryCoverageFilterValue = ui->queryCoverageSpinBox->value();
     g_settings->blastIdentityFilterValue = ui->identitySpinBox->value();
-    g_settings->blastEValueBaseFilterValue = ui->eValueBaseSpinBox->value();
-    g_settings->blastEValueExponentFilterValue = ui->eValueExponentSpinBox->value();
+    g_settings->blastEValueFilterCoefficientValue = ui->eValueBaseSpinBox->value();
+    g_settings->blastEValueFilterExponentValue = ui->eValueExponentSpinBox->value();
     g_settings->blastBitScoreFilterValue = ui->bitScoreSpinBox->value();
 }
 
 
 QString BlastHitFiltersDialog::getFilterText() const
 {
-    QString lessThanOrEqualTo = QChar(0x2264);
-    QString greaterThanOrEqualTo = QChar(0x2265);
-
     QString filterText;
-
     if (g_settings->blastAlignmentLengthFilterOn)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "alignment length " + greaterThanOrEqualTo + QString::number(g_settings->blastAlignmentLengthFilterValue);
+        filterText += "alignment length: " + QString::number(g_settings->blastAlignmentLengthFilterValue);
     }
     if (g_settings->blastQueryCoverageFilterOn)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "query coverage " + greaterThanOrEqualTo + QString::number(g_settings->blastQueryCoverageFilterValue) + "%";
+        filterText += "query coverage: " + QString::number(g_settings->blastQueryCoverageFilterValue) + "%";
     }
-
     if (g_settings->blastIdentityFilterOn)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "identity " + greaterThanOrEqualTo + QString::number(g_settings->blastIdentityFilterValue) + "%";
+        filterText += "identity: " + QString::number(g_settings->blastIdentityFilterValue) + "%";
     }
-
     if (g_settings->blastEValueFilterOn)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "e-value " + lessThanOrEqualTo + QString::number(g_settings->blastEValueBaseFilterValue) + " x 10^" + QString::number(g_settings->blastEValueExponentFilterValue);
+        filterText += "e-value: " + QString::number(g_settings->blastEValueFilterCoefficientValue) + "x10^" + QString::number(g_settings->blastEValueFilterExponentValue);
     }
-
     if (g_settings->blastBitScoreFilterOn)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "bit score " + greaterThanOrEqualTo + QString::number(g_settings->blastBitScoreFilterValue);
+        filterText += "bit score: " + QString::number(g_settings->blastBitScoreFilterValue);
     }
 
     if (filterText == "")
         filterText = "none";
 
     return filterText;
+}
+
+
+void BlastHitFiltersDialog::setInfoTexts()
+{
+    ui->alignmentLengthInfoText->setInfoText("This filter will exclude any BLAST hits with an alignment length shorter than the "
+                                             "specified value.  I.e. only hits with an alignment length greater than or equal to "
+                                             "the value will be included in BLAST results.");
+    ui->queryCoverageInfoText->setInfoText("This filter will exclude any BLAST hits with a query coverage less than the "
+                                             "specified value.  I.e. only hits with a query coverage greater than or equal to "
+                                             "the value will be included in BLAST results.");
+    ui->identityInfoText->setInfoText("This filter will exclude any BLAST hits with an identity less than the "
+                                             "specified value.  I.e. only hits with an identity greater than or equal to "
+                                             "the value will be included in BLAST results.");
+    ui->eValueInfoText->setInfoText("This filter will exclude any BLAST hits with an e-value greater than the "
+                                             "specified value.  I.e. only hits with an e-value less than or equal to "
+                                             "the value will be included in BLAST results.");
+    ui->bitScoreInfoText->setInfoText("This filter will exclude any BLAST hits with a bit score length less than the "
+                                             "specified value.  I.e. only hits with a bit score greater than or equal to "
+                                             "the value will be included in BLAST results.");
 }

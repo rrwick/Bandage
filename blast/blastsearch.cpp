@@ -26,6 +26,7 @@
 #include <QApplication>
 #include "../graph/debruijnnode.h"
 #include "../program/memory.h"
+#include <math.h>
 
 BlastSearch::BlastSearch() :
     m_blastQueries(), m_tempDirectory("bandage_temp/")
@@ -53,6 +54,8 @@ void BlastSearch::cleanUp()
 
 //This function uses the contents of m_blastOutput (the raw output from the
 //BLAST search) to construct the BlastHit objects.
+//It looks at the filters to possibly exclude hits which fail to meet user-
+//defined thresholds.
 void BlastSearch::buildHitsFromBlastOutput()
 {
     QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
@@ -63,7 +66,7 @@ void BlastSearch::buildHitsFromBlastOutput()
         QStringList alignmentParts = hitString.split('\t');
 
         if (alignmentParts.size() < 12)
-            return;
+            continue;
 
         QString queryName = alignmentParts[0];
         QString nodeLabel = alignmentParts[1];
@@ -75,7 +78,7 @@ void BlastSearch::buildHitsFromBlastOutput()
         int queryEnd = alignmentParts[7].toInt();
         int nodeStart = alignmentParts[8].toInt();
         int nodeEnd = alignmentParts[9].toInt();
-        double eValue = alignmentParts[10].toDouble();
+        long double eValue = alignmentParts[10].toDouble();
         double bitScore = alignmentParts[11].toDouble();
 
         //Only save BLAST hits that are on forward strands.
@@ -87,11 +90,36 @@ void BlastSearch::buildHitsFromBlastOutput()
         if (g_assemblyGraph->m_deBruijnGraphNodes.contains(nodeName))
             node = g_assemblyGraph->m_deBruijnGraphNodes[nodeName];
         else
-            return;
+            continue;
 
+        //Check the user-defined filters.
         BlastQuery * query = g_blastSearch->m_blastQueries.getQueryFromName(queryName);
         if (query == 0)
-            return;
+            continue;
+
+        if (g_settings->blastAlignmentLengthFilterOn &&
+                alignmentLength < g_settings->blastAlignmentLengthFilterValue)
+            continue;
+        if (g_settings->blastQueryCoverageFilterOn)
+        {
+            double queryCoverage = 100.0 * double(alignmentLength) / query->getLength();
+            if (queryCoverage <= g_settings->blastQueryCoverageFilterValue)
+                continue;
+        }
+        if (g_settings->blastIdentityFilterOn &&
+                percentIdentity < g_settings->blastIdentityFilterValue)
+            continue;
+        if (g_settings->blastEValueFilterOn)
+        {
+            long double coefficient = g_settings->blastEValueFilterCoefficientValue;
+            long double exponent = g_settings->blastEValueFilterExponentValue;
+            long double eValueFilterValue = coefficient * pow(10.0, exponent);
+            if (eValue > eValueFilterValue)
+                continue;
+        }
+        if (g_settings->blastBitScoreFilterOn &&
+                bitScore < g_settings->blastBitScoreFilterValue)
+            continue;
 
         QSharedPointer<BlastHit> hit(new BlastHit(query, node, percentIdentity, alignmentLength,
                                                   numberMismatches, numberGapOpens, queryStart, queryEnd,

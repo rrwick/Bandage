@@ -22,6 +22,8 @@ public:
 private:
     Ui::BlastHitFiltersDialog *ui;
 
+    void setInfoTexts();
+
 private slots:
     void checkBoxesChanged();
 };

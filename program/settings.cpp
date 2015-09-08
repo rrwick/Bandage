@@ -124,8 +124,8 @@ Settings::Settings()
     blastIdentityFilterOn = false;
     blastIdentityFilterValue = 90.0;
     blastEValueFilterOn = false;
-    blastEValueBaseFilterValue = 1.0;
-    blastEValueExponentFilterValue = -10;
+    blastEValueFilterCoefficientValue = 1.0;
+    blastEValueFilterExponentValue = -10;
     blastBitScoreFilterOn = false;
-    blastBitScoreFilterValue = 1000;
+    blastBitScoreFilterValue = 1000.0;
 }
