@@ -45,6 +45,7 @@ private:
     void createGlobals();
     bool createBlastTempDirectory();
     void deleteBlastTempDirectory();
+    QString getTestDirectory();
 };
 
 
@@ -53,7 +54,7 @@ private:
 void BandageTests::loadFastg()
 {
     createGlobals();
-    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    bool fastgGraphLoaded = g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
 
     //Check that the graph loaded properly.
     QCOMPARE(fastgGraphLoaded, true);
@@ -73,7 +74,7 @@ void BandageTests::loadFastg()
 void BandageTests::loadLastGraph()
 {
     createGlobals();
-    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+    bool lastGraphLoaded = g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.LastGraph");
 
     //Check that the graph loaded properly.
     QCOMPARE(lastGraphLoaded, true);
@@ -96,7 +97,7 @@ void BandageTests::loadLastGraph()
 void BandageTests::pathFunctionsOnLastGraph()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.LastGraph");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(1996) 9+, 13+ (5)", false, &pathStringFailure);
@@ -143,7 +144,7 @@ void BandageTests::pathFunctionsOnLastGraph()
 void BandageTests::pathFunctionsOnFastg()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
 
     QString pathStringFailure;
     Path testPath1 = Path::makeFromString("(50234) 6+, 26+, 23+, 26+, 24+ (200)", false, &pathStringFailure);
@@ -162,7 +163,7 @@ void BandageTests::graphLocationFunctions()
     //sitations: all positions have a reverse complement position in the
     //reverse complement node.
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
     DeBruijnNode * node12Plus = g_assemblyGraph->m_deBruijnGraphNodes["12+"];
     DeBruijnNode * node3Plus = g_assemblyGraph->m_deBruijnGraphNodes["3+"];
 
@@ -191,7 +192,7 @@ void BandageTests::graphLocationFunctions()
     //offset, reverse complement positions can be in different nodes and may
     //not even exist.
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.LastGraph");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.LastGraph");
     int kmer = g_assemblyGraph->m_kmer;
     DeBruijnNode * node13Plus = g_assemblyGraph->m_deBruijnGraphNodes["13+"];
     DeBruijnNode * node8Minus = g_assemblyGraph->m_deBruijnGraphNodes["8-"];
@@ -221,11 +222,11 @@ void BandageTests::graphLocationFunctions()
 void BandageTests::loadCsvData()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
 
     QString errormsg;
     QStringList columns;
-    g_assemblyGraph->loadCSV("/Users/Ryan/Programs/Bandage/tests/test.csv", &columns, &errormsg);
+    g_assemblyGraph->loadCSV(getTestDirectory() + "test.csv", &columns, &errormsg);
 
     DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
     DeBruijnNode * node6Minus = g_assemblyGraph->m_deBruijnGraphNodes["6-"];
@@ -286,8 +287,8 @@ void BandageTests::loadCsvData()
 void BandageTests::blastSearch()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
-    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries1.fasta";
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+    g_settings->blastQueryFilename = getTestDirectory() + "test_queries1.fasta";
     createBlastTempDirectory();
 
     g_blastSearch->doAutoBlastSearch();
@@ -329,8 +330,8 @@ void BandageTests::blastSearch()
 void BandageTests::blastSearchFilters()
 {
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile("/Users/Ryan/Programs/Bandage/tests/test.fastg");
-    g_settings->blastQueryFilename = "/Users/Ryan/Programs/Bandage/tests/test_queries2.fasta";
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+    g_settings->blastQueryFilename = getTestDirectory() + "test_queries2.fasta";
     createBlastTempDirectory();
 
     //First do the search with no filters
@@ -416,6 +417,24 @@ void BandageTests::deleteBlastTempDirectory()
         QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
 
+QString BandageTests::getTestDirectory()
+{
+    QDir directory = QDir::current();
+
+    //We want to find a directory "Bandage/tests/".  Keep backing up in the
+    //directory structure until we find it.
+    QString path;
+    while (true)
+    {
+        path = directory.path() + "/Bandage/tests/";
+        if (QDir(path).exists())
+            return path;
+        if (!directory.cdUp())
+            return "";
+    }
+
+    return "";
+}
 
 
 QTEST_MAIN(BandageTests)
