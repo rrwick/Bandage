@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include "../program/settings.h"
 #include "colourbutton.h"
+#include "../graph/assemblygraph.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -56,7 +57,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->contiguityStartingColourButton->m_name = "Contiguity starting colour";
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
-    connect(ui->readDepthValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableReadDepthValueSpinBoxes()));
+    connect(ui->readDepthValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableReadDepthWidgets()));
     connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
     connect(ui->readDepthPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->readDepthEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
@@ -96,7 +97,7 @@ void SettingsDialog::setWidgetsFromSettings()
 {
     loadOrSaveSettingsToOrFromWidgets(true, g_settings.data());
 
-    enableDisableReadDepthValueSpinBoxes();
+    enableDisableReadDepthWidgets();
 }
 
 
@@ -178,7 +179,9 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->readDepthValueAutoRadioButton->setChecked(settings->autoReadDepthValue);
         ui->readDepthValueManualRadioButton->setChecked(!settings->autoReadDepthValue);
         basePairsPerSegmentManualChanged();
-        ui->basePairsPerSegmentAutoLabel->setText(QString::number(settings->autoBasePairsPerSegment));
+        ui->basePairsPerSegmentAutoLabel->setText(formatIntForDisplay(settings->autoBasePairsPerSegment));
+        ui->lowReadDepthAutoValueLabel2->setText(formatDoubleForDisplay(g_assemblyGraph->m_firstQuartileReadDepth, 2));
+        ui->highReadDepthAutoValueLabel2->setText(formatDoubleForDisplay(g_assemblyGraph->m_thirdQuartileReadDepth, 2));
         ui->basePairsPerSegmentAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
         ui->basePairsPerSegmentManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
         ui->positionVisibleRadioButton->setChecked(!settings->positionTextNodeCentre);
@@ -368,14 +371,12 @@ void SettingsDialog::setInfoTexts()
 }
 
 
-void SettingsDialog::enableDisableReadDepthValueSpinBoxes()
+void SettingsDialog::enableDisableReadDepthWidgets()
 {
-    bool enable = ui->readDepthValueManualRadioButton->isChecked();
+    bool manual = ui->readDepthValueManualRadioButton->isChecked();
 
-    ui->lowReadDepthValueLabel->setEnabled(enable);
-    ui->highReadDepthValueLabel->setEnabled(enable);
-    ui->lowReadDepthValueSpinBox->setEnabled(enable);
-    ui->highReadDepthValueSpinBox->setEnabled(enable);
+    ui->readDepthManualWidget->setEnabled(manual);
+    ui->readDepthAutoWidget->setEnabled(!manual);
 }
 
 

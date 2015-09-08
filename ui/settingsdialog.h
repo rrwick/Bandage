@@ -47,7 +47,7 @@ private:
 
 private slots:
     void restoreDefaults();
-    void enableDisableReadDepthValueSpinBoxes();
+    void enableDisableReadDepthWidgets();
     void basePairsPerSegmentManualChanged();
     void updateNodeWidthVisualAid();
     void colourSliderChanged();
