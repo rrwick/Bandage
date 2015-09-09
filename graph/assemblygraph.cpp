@@ -1265,6 +1265,13 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
 
     else if (g_settings->graphScope == READ_DEPTH_RANGE)
     {
+        if (g_settings->minReadDepthRange > g_settings->maxReadDepthRange)
+        {
+            *errorTitle = "Invalid read depth range";
+            *errorMessage = "The maximum read depth must be greater than or equal to the minimum read depth.";
+            return startingNodes;
+        }
+
         std::vector<DeBruijnNode *> startingNodes = getNodesInReadDepthRange(g_settings->minReadDepthRange,
                                                                              g_settings->maxReadDepthRange);
 

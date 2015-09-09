@@ -206,7 +206,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (isOptionPresent("--maxdepth", &argumentsCopy))
         maxReadDepth = getFloatOption("--maxdepth", &argumentsCopy);
     if (minReadDepth > maxReadDepth)
-        return "the max read depth must be greater than or equal to the min read depth";
+        return "the maximum read depth must be greater than or equal to the minimum read depth";
 
     if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND)
         return "The --query option can only be used with Bandage load and Bandage image";
