@@ -147,6 +147,10 @@ public:
     int blastEValueFilterExponentValue;
     bool blastBitScoreFilterOn;
     double blastBitScoreFilterValue;
+
+    //These are used for the 'Read depth range' graph scope.
+    double minReadDepthRange;
+    double maxReadDepthRange;
 };
 
 #endif // SETTINGS_H

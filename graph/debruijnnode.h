@@ -77,7 +77,8 @@ public:
     std::vector<BlastHitPart> getBlastHitPartsForThisNodeOrReverseComplement(double scaledNodeLength) const;
     bool hasCsvData() const {return !m_csvData.isEmpty();}
     QStringList getAllCsvData() const {return m_csvData;}
-    QString getCsvLine(int i) {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
+    QString getCsvLine(int i) const {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
+    bool isInReadDepthRange(double min, double max) const;
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}

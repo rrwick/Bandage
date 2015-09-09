@@ -118,6 +118,7 @@ private:
     std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
+    std::vector<DeBruijnNode *> getNodesInReadDepthRange(double min, double max);
     std::vector<int> makeOverlapCountVector();
     int getLengthFromCigar(QString cigar);
     int getCigarCount(QString cigarCode, QString cigar);

@@ -89,6 +89,10 @@ private:
     QString convertGraphFileTypeToString(GraphFileType graphFileType);
     void setSelectedNodesWidgetsVisibility(bool visible);
     void setSelectedEdgesWidgetsVisibility(bool visible);
+    void setStartingNodesWidgetVisibility(bool visible);
+    void setNodeDistanceWidgetVisibility(bool visible);
+    void setReadDepthRangeWidgetVisibility(bool visible);
+
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -133,6 +137,7 @@ private slots:
     void selectNotContiguous();
     void openBandageUrl();
     void nodeDistanceChanged();
+    void readDepthRangeChanged();
     void afterMainWindowShow();
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();

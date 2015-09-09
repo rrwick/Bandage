@@ -128,4 +128,7 @@ Settings::Settings()
     blastEValueFilterExponentValue = -10;
     blastBitScoreFilterOn = false;
     blastBitScoreFilterValue = 1000.0;
+
+    minReadDepthRange = 10.0;
+    maxReadDepthRange = 100.0;
 }

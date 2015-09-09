@@ -165,6 +165,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
     connect(ui->actionBandage_online_help, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
+    connect(ui->minReadDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(readDepthRangeChanged()));
+    connect(ui->maxReadDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(readDepthRangeChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
@@ -578,18 +580,9 @@ void MainWindow::graphScopeChanged()
     case 0:
         g_settings->graphScope = WHOLE_GRAPH;
 
-        ui->startingNodesInfoText->setVisible(false);
-        ui->startingNodesLabel->setVisible(false);
-        ui->startingNodesLineEdit->setVisible(false);
-
-        ui->startingNodesMatchTypeInfoText->setVisible(false);
-        ui->startingNodesMatchTypeLabel->setVisible(false);
-        ui->startingNodesExactMatchRadioButton->setVisible(false);
-        ui->startingNodesPartialMatchRadioButton->setVisible(false);
-
-        ui->nodeDistanceInfoText->setVisible(false);
-        ui->nodeDistanceLabel->setVisible(false);
-        ui->nodeDistanceSpinBox->setVisible(false);
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(false);
+        setReadDepthRangeWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -602,18 +595,9 @@ void MainWindow::graphScopeChanged()
     case 1:
         g_settings->graphScope = AROUND_NODE;
 
-        ui->startingNodesInfoText->setVisible(true);
-        ui->startingNodesLabel->setVisible(true);
-        ui->startingNodesLineEdit->setVisible(true);
-
-        ui->startingNodesMatchTypeInfoText->setVisible(true);
-        ui->startingNodesMatchTypeLabel->setVisible(true);
-        ui->startingNodesExactMatchRadioButton->setVisible(true);
-        ui->startingNodesPartialMatchRadioButton->setVisible(true);
-
-        ui->nodeDistanceInfoText->setVisible(true);
-        ui->nodeDistanceLabel->setVisible(true);
-        ui->nodeDistanceSpinBox->setVisible(true);
+        setStartingNodesWidgetVisibility(true);
+        setNodeDistanceWidgetVisibility(true);
+        setReadDepthRangeWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
@@ -641,18 +625,9 @@ void MainWindow::graphScopeChanged()
     case 2:
         g_settings->graphScope = AROUND_BLAST_HITS;
 
-        ui->startingNodesInfoText->setVisible(false);
-        ui->startingNodesLabel->setVisible(false);
-        ui->startingNodesLineEdit->setVisible(false);
-
-        ui->startingNodesMatchTypeInfoText->setVisible(false);
-        ui->startingNodesMatchTypeLabel->setVisible(false);
-        ui->startingNodesExactMatchRadioButton->setVisible(false);
-        ui->startingNodesPartialMatchRadioButton->setVisible(false);
-
-        ui->nodeDistanceInfoText->setVisible(true);
-        ui->nodeDistanceLabel->setVisible(true);
-        ui->nodeDistanceSpinBox->setVisible(true);
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(true);
+        setReadDepthRangeWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
@@ -670,9 +645,56 @@ void MainWindow::graphScopeChanged()
         ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 3, 1, 1, 2);
 
         break;
+
+    case 3:
+        g_settings->graphScope = READ_DEPTH_RANGE;
+
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(false);
+        setReadDepthRangeWidgetVisibility(true);
+
+        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthLabel, 1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthSpinBox, 1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthSpinBox, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 3, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 3, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 4, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 4, 1, 1, 2);
+
+        break;
     }
 }
 
+
+void MainWindow::setStartingNodesWidgetVisibility(bool visible)
+{
+    ui->startingNodesInfoText->setVisible(visible);
+    ui->startingNodesLabel->setVisible(visible);
+    ui->startingNodesLineEdit->setVisible(visible);
+    ui->startingNodesMatchTypeInfoText->setVisible(visible);
+    ui->startingNodesMatchTypeLabel->setVisible(visible);
+    ui->startingNodesExactMatchRadioButton->setVisible(visible);
+    ui->startingNodesPartialMatchRadioButton->setVisible(visible);
+}
+void MainWindow::setNodeDistanceWidgetVisibility(bool visible)
+{
+    ui->nodeDistanceInfoText->setVisible(visible);
+    ui->nodeDistanceLabel->setVisible(visible);
+    ui->nodeDistanceSpinBox->setVisible(visible);
+}
+void MainWindow::setReadDepthRangeWidgetVisibility(bool visible)
+{
+    ui->minReadDepthInfoText->setVisible(visible);
+    ui->minReadDepthLabel->setVisible(visible);
+    ui->minReadDepthSpinBox->setVisible(visible);
+    ui->maxReadDepthInfoText->setVisible(visible);
+    ui->maxReadDepthLabel->setVisible(visible);
+    ui->maxReadDepthSpinBox->setVisible(visible);
+}
 
 
 void MainWindow::drawGraph()
@@ -1738,6 +1760,10 @@ void MainWindow::setInfoTexts()
                                          "the underlying assembly graph, just the visualisation.<br><br>"
                                          "To see removed nodes again, you must redraw the graph by clicking "
                                          "'Draw graph'.");
+    ui->minReadDepthInfoText->setInfoText("This is the lower bound for the read depth range. Nodes with a read "
+                                          "depth less than this value will not be drawn.");
+    ui->maxReadDepthInfoText->setInfoText("This is the uper bound for the read depth range. Nodes with a read "
+                                          "depth greater than this value will not be drawn.");
 }
 
 
@@ -2050,6 +2076,9 @@ void MainWindow::setWidgetsFromSettings()
     setGraphScopeComboBox(g_settings->graphScope);
     ui->nodeDistanceSpinBox->setValue(g_settings->nodeDistance);
     ui->startingNodesLineEdit->setText(g_settings->startingNodes);
+
+    ui->minReadDepthSpinBox->setValue(g_settings->minReadDepthRange);
+    ui->maxReadDepthSpinBox->setValue(g_settings->maxReadDepthRange);
 }
 
 
@@ -2075,12 +2104,19 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
     case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
+    case READ_DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
     }
 }
 
 void MainWindow::nodeDistanceChanged()
 {
     g_settings->nodeDistance = ui->nodeDistanceSpinBox->value();
+}
+
+void MainWindow::readDepthRangeChanged()
+{
+    g_settings->minReadDepthRange = ui->minReadDepthSpinBox->value();
+    g_settings->maxReadDepthRange = ui->maxReadDepthSpinBox->value();
 }
 
 void MainWindow::showEvent(QShowEvent *ev)

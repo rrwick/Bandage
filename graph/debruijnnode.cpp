@@ -516,3 +516,10 @@ int DeBruijnNode::getBasePairsPerSegment() const
     else
         return g_settings->manualBasePairsPerSegment;
 }
+
+
+
+bool DeBruijnNode::isInReadDepthRange(double min, double max) const
+{
+    return m_readDepth >= min && m_readDepth <= max;
+}

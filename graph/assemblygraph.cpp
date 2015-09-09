@@ -1263,6 +1263,19 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         }
     }
 
+    else if (g_settings->graphScope == READ_DEPTH_RANGE)
+    {
+        std::vector<DeBruijnNode *> startingNodes = getNodesInReadDepthRange(g_settings->minReadDepthRange,
+                                                                             g_settings->maxReadDepthRange);
+
+        if (startingNodes.size() == 0)
+        {
+            *errorTitle = "No nodes in range";
+            *errorMessage = "There are no nodes with read depths in the specified range.";
+            return startingNodes;
+        }
+    }
+
     g_settings->doubleMode = doubleMode;
     clearOgdfGraphAndResetNodes();
 
@@ -1270,6 +1283,9 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         startingNodes = getNodesFromString(nodesList, g_settings->startingNodesExactMatch);
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
         startingNodes = getNodesFromBlastHits(blastQueryName);
+    else if (g_settings->graphScope == READ_DEPTH_RANGE)
+        startingNodes = getNodesInReadDepthRange(g_settings->minReadDepthRange,
+                                                 g_settings->maxReadDepthRange);
 
     return startingNodes;
 }
@@ -1431,6 +1447,22 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryNa
     return returnVector;
 }
 
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesInReadDepthRange(double min,
+                                                                    double max)
+{
+    std::vector<DeBruijnNode *> returnVector;
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        if (node->isInReadDepthRange(min, max))
+            returnVector.push_back(node);
+    }
+    return returnVector;
+}
 
 
 QStringList AssemblyGraph::removeNullStringsFromList(QStringList in)
