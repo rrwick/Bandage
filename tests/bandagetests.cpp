@@ -498,7 +498,45 @@ void BandageTests::graphScope()
     g_assemblyGraph->layoutGraph();
     drawnNodes = g_assemblyGraph->getDrawnNodeCount();
     QCOMPARE(drawnNodes, 42);
+
+    createBlastTempDirectory();
+
+    g_settings->blastQueryFilename = getTestDirectory() + "test_queries1.fasta";
+    g_blastSearch->doAutoBlastSearch();
+
+    g_settings->graphScope = AROUND_BLAST_HITS;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "all");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 1);
+
+    g_settings->graphScope = AROUND_BLAST_HITS;
+    g_settings->nodeDistance = 1;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "all");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 3);
+
+    g_settings->graphScope = AROUND_BLAST_HITS;
+    g_settings->nodeDistance = 2;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "all");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 9);
+
+    deleteBlastTempDirectory();
 }
+
+
+
+
 
 
 

@@ -1127,8 +1127,13 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
                 i.value()->setAsDrawn();
         }
     }
-    else //The scope is either around specified nodes or around nodes with BLAST hits
+    else //The scope is either around specified nodes, around nodes with BLAST hits or a read depth range.
     {
+        //Distance is only used for around nodes and around blast scopes, not
+        //for the read depth range scope.
+        if (g_settings->graphScope == READ_DEPTH_RANGE)
+            nodeDistance = 0;
+
         for (size_t i = 0; i < startingNodes.size(); ++i)
         {
             DeBruijnNode * node = startingNodes[i];
