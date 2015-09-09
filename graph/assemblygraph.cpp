@@ -212,7 +212,6 @@ void AssemblyGraph::resetEdges()
 
 double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
 {
-    int nodeCount = 0;
     long double readDepthSum = 0.0;
     long long totalLength = 0;
 
@@ -225,7 +224,6 @@ double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
         if (drawnNodesOnly && node->isNotDrawn())
             continue;
 
-        ++nodeCount;
         totalLength += node->getLength();
         readDepthSum += node->getLength() * node->getReadDepth();
     }
@@ -1683,4 +1681,22 @@ void AssemblyGraph::clearAllCsvData()
         i.next();
         i.value()->clearCsvData();
     }
+}
+
+
+int AssemblyGraph::getDrawnNodeCount() const
+{
+    int nodeCount = 0;
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        if (node->isDrawn())
+            ++nodeCount;
+    }
+
+    return nodeCount;
 }

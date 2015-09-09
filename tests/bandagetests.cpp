@@ -26,6 +26,7 @@
 #include "../ui/mygraphicsview.h"
 #include "../program/memory.h"
 #include "../graph/debruijnnode.h"
+#include "../program/globals.h"
 
 class BandageTests : public QObject
 {
@@ -40,6 +41,7 @@ private slots:
     void loadCsvData();
     void blastSearch();
     void blastSearchFilters();
+    void graphScope();
 
 private:
     void createGlobals();
@@ -374,6 +376,129 @@ void BandageTests::blastSearchFilters()
 }
 
 
+
+void BandageTests::graphScope()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+
+    QString errorTitle;
+    QString errorMessage;
+    int drawnNodes;
+    std::vector<DeBruijnNode *> startingNodes;
+
+    g_settings->graphScope = WHOLE_GRAPH;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 44);
+
+    g_settings->graphScope = WHOLE_GRAPH;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = true;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 88);
+
+    g_settings->graphScope = AROUND_NODE;
+    g_settings->startingNodes = "1";
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 1);
+
+    g_settings->graphScope = AROUND_NODE;
+    g_settings->startingNodes = "1";
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = true;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 2);
+
+    g_settings->graphScope = AROUND_NODE;
+    g_settings->startingNodes = "1+";
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = true;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 1);
+
+    g_settings->graphScope = AROUND_NODE;
+    g_settings->startingNodes = "1";
+    g_settings->nodeDistance = 1;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 3);
+
+    g_settings->graphScope = AROUND_NODE;
+    g_settings->startingNodes = "1";
+    g_settings->nodeDistance = 2;
+    g_settings->doubleMode = false;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 10);
+
+    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    g_settings->minReadDepthRange = 0.0;
+    g_settings->maxReadDepthRange = 211.0;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 43);
+
+    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->nodeDistance = 10;
+    g_settings->doubleMode = false;
+    g_settings->minReadDepthRange = 0.0;
+    g_settings->maxReadDepthRange = 211.0;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 43);
+
+    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    g_settings->minReadDepthRange = 211.0;
+    g_settings->maxReadDepthRange = 1000.0;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 1);
+
+    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->nodeDistance = 0;
+    g_settings->doubleMode = false;
+    g_settings->minReadDepthRange = 40.0;
+    g_settings->maxReadDepthRange = 211.0;
+    startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
+    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+    g_assemblyGraph->layoutGraph();
+    drawnNodes = g_assemblyGraph->getDrawnNodeCount();
+    QCOMPARE(drawnNodes, 42);
+}
 
 
 

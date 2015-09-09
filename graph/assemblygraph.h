@@ -108,6 +108,8 @@ public:
     static void readFastaFile(QString filename, std::vector<QString> * names,
                               std::vector<QString> * sequences);
 
+    int getDrawnNodeCount() const;
+
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
