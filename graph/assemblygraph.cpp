@@ -210,7 +210,7 @@ void AssemblyGraph::resetEdges()
 }
 
 
-double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
+double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
 {
     int nodeCount = 0;
     long double readDepthSum = 0.0;
@@ -228,7 +228,6 @@ double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
         ++nodeCount;
         totalLength += node->getLength();
         readDepthSum += node->getLength() * node->getReadDepth();
-
     }
 
     if (totalLength == 0)
@@ -237,20 +236,26 @@ double AssemblyGraph::getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly)
         return readDepthSum / totalLength;
 }
 
-double AssemblyGraph::getMaxDeBruijnGraphReadDepthOfDrawnNodes()
+
+double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
 {
-    double maxReadDepth = 1.0;
+    int nodeCount = 0;
+    long double readDepthSum = 0.0;
+    long long totalLength = 0;
 
-    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        i.next();
+        DeBruijnNode * node = nodes[i];
 
-        if (i.value()->getGraphicsItemNode() != 0 && i.value()->getReadDepth() > maxReadDepth)
-            maxReadDepth = i.value()->getReadDepth();
+        ++nodeCount;
+        totalLength += node->getLength();
+        readDepthSum += node->getLength() * node->getReadDepth();
     }
 
-    return maxReadDepth;
+    if (totalLength == 0)
+        return 0.0;
+    else
+        return readDepthSum / totalLength;
 }
 
 
@@ -329,7 +334,7 @@ void AssemblyGraph::determineGraphInfo()
     m_nodeCount = nodeCount;
     m_edgeCount = edgeCount;
     m_totalLength = totalLength;
-    m_meanReadDepth = getMeanDeBruijnGraphReadDepth();
+    m_meanReadDepth = getMeanReadDepth();
 
     std::sort(nodeReadDepths.begin(), nodeReadDepths.end());
 
@@ -1165,7 +1170,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 {
     scene->clear();
 
-    double meanDrawnReadDepth = getMeanDeBruijnGraphReadDepth(true);
+    double meanDrawnReadDepth = getMeanReadDepth(true);
 
     //First make the GraphicsItemNode objects
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);

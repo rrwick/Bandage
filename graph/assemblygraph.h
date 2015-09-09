@@ -61,8 +61,8 @@ public:
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
-    double getMeanDeBruijnGraphReadDepth(bool drawnNodesOnly = false);
-    double getMaxDeBruijnGraphReadDepthOfDrawnNodes();
+    double getMeanReadDepth(bool drawnNodesOnly = false);
+    double getMeanReadDepth(std::vector<DeBruijnNode *> nodes);
     void resetNodeContiguityStatus();
     void resetAllNodeColours();
     void clearAllBlastHitPointers();

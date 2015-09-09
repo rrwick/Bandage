@@ -434,20 +434,23 @@ void MainWindow::selectionChanged()
         QString selectedNodeCountText;
         QString selectedNodeListText;
         QString selectedNodeLengthText;
+        QString selectedNodeDepthText;
 
-        getSelectedNodeInfo(selectedNodeCount, selectedNodeCountText, selectedNodeListText, selectedNodeLengthText);
+        getSelectedNodeInfo(selectedNodeCount, selectedNodeCountText, selectedNodeListText, selectedNodeLengthText, selectedNodeDepthText);
 
         if (selectedNodeCount == 1)
         {
             ui->selectedNodesTitleLabel->setText("Selected node");
             ui->removeNodeButton->setText("Remove node");
             ui->selectedNodesLengthLabel->setText("Length: " + selectedNodeLengthText);
+            ui->selectedNodesDepthLabel->setText("Read depth: " + selectedNodeDepthText);
         }
         else
         {
             ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
             ui->removeNodeButton->setText("Remove nodes");
             ui->selectedNodesLengthLabel->setText("Total length: " + selectedNodeLengthText);
+            ui->selectedNodesDepthLabel->setText("Mean read depth: " + selectedNodeDepthText);
         }
 
         ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);
@@ -474,7 +477,7 @@ void MainWindow::selectionChanged()
 }
 
 
-void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText)
+void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText, QString & selectedNodeDepthText)
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
 
@@ -499,6 +502,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
     }
 
     selectedNodeLengthText = formatIntForDisplay(totalLength);
+    selectedNodeDepthText = formatDoubleForDisplay(g_assemblyGraph->getMeanReadDepth(selectedNodes), 1);
 }
 
 
