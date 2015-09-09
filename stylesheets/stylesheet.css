@@ -622,6 +622,16 @@ a.button_github {
   line-height: 1.2;
   color: #182c09;
 }
+a.button_wiki {
+  width: 134px;
+  height: 58px;
+  padding-top: 22px;
+  padding-left: 68px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 23px;
+  line-height: 1.2;
+  color: #182c09;
+}
 a.button_windows small {
   display: block;
   font-size: 11px;
@@ -635,6 +645,10 @@ a.button_linux small {
   font-size: 11px;
 }
 a.button_github small {
+  display: block;
+  font-size: 11px;
+}
+a.button_wiki small {
   display: block;
   font-size: 11px;
 }
@@ -677,6 +691,16 @@ aside a.button_github {
   margin-right: 10px;
   font-size: 21px;
   background: transparent url(../images/github-button.png) 0 0 no-repeat;
+  background-size: 202px;
+}
+aside a.button_wiki {
+  display: block;
+  width: 132px;
+  padding-left: 70px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  font-size: 21px;
+  background: transparent url(../images/wiki-button.png) 0 0 no-repeat;
   background-size: 202px;
 }
 code, pre {
@@ -964,6 +988,9 @@ footer a:hover {
     display: inline-block;
   }
   aside#sidebar a.button_github {
+    display: inline-block;
+  }
+  aside#sidebar a.button_wiki {
     display: inline-block;
   }
   #main-content h1:before,

@@ -42,6 +42,10 @@
 	
 <p><em>De novo</em> genome assemblers work by building an assembly graph.  Different assemblers represent this graph in different ways, but they all contain sequences (which become assembled contigs) and connections between those sequences.  In the past, assembly graphs have not been easily accessible, and most users only use the assembled contigs, not the graph.  Bandage is a program for visualising assembly graphs. By displaying connections which are not present in the contigs file, Bandage opens up new possibilities for analysing <em>de novo</em> assemblies.</p>
 
+<div style="text-align: center;">
+<img src="images/wiki/bandage_gui.png" style="max-width:80%;"><br>
+</div>
+
 
 
 <h2>
@@ -57,7 +61,7 @@
   <li>Colour nodes using built-in colour schemes or user-defined colours.</li>
   <li>Label nodes using node number, length, coverage or user-defined labels.</li>
   <li>Find nodes quickly in a large graph using node numbers.</li>
-  <li>Specify the thickness of nodes and allow thickness to reflect the node's coverage.</li>
+  <li>Specify the thickness of nodes and allow thickness to reflect the node's read depth.</li>
   <li>Define the relationship between the length of a node and the length of its sequence.</li>
   <li>Draw graph in single node style: each node and its reverse complements appear as a single object.</li>
   <li>Draw graph in double node style: nodes and their reverse complements appear as separate objects with arrow heads to indicate direction.</li>
@@ -100,149 +104,6 @@
 <li><a href="samples/Trinity.fasta.zip" target="_blank">A small mouse transcriptome assembly from Trinity</a>. This data comes with Trinity in the 'sample_data/test_Trinity_Assembly/' folder.</li>
 </ul>
 
-<h2>
-<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
-
-<p>For a simple case, imagine a bacterial genome that contains a single repeated element in two separate places in the chromosome. A researcher (who does not yet know the structure of the genome) sequences it, and the resulting 100 bp reads are assembled with a <i>de novo</i> assembler.</p>
-
-
-<div style="text-align: center;">
-<div class="diagram" style="max-width:100%; margin-bottom: 20px;">
-<img src="images/simple1.png" class="diagram"><br>
-</div>
-</div>
-
-<p>Because the repeated element is longer than the sequencing reads, the assembler was not able to reproduce the original genome as a single contig. Rather, three contigs are produced: one for the repeated sequence (even though it occurs twice) and one for each sequence between the repeated elements.</p>
-
-<p>Given only the contigs, the relationship between these sequences is not clear. However, the assembly graph contains additional information which is made apparent in Bandage. There are two possible underlying sequences compatible with this graph: two separate circular sequences that share a region in common, or a single larger circular sequence with an element that occurs twice.</p>
-
-<div style="text-align: center;">
-
-<div class="diagram" style="max-width:25%; margin-right: 5%; margin-left: %; margin-bottom: 20px;">
-<img src="images/simple2.png" class="diagram"><br>
-<small-green>The assembly graph, as it appears in Bandage</small-green>
-</div>
-
-<div class="diagram" style="max-width:55%; margin-right: 5%; margin-left: 5%; margin-bottom: 20px;">
-<img src="images/simple3.png" class="diagram"><br>
-<small-green>Possible underlying sequences compatible with the assembly graph</small-green>
-</div>
-
-</div>
-
-
-<p>Additional knowledge, such as information on the approximate size of the bacterial chromosome, can help the researcher to rule out the first alternative. In this way, Bandage has assisted in turning a fragmented assembly of three contigs into a completed genome of one sequence.</p>
-
-
-
-<h2>
-<a id="videos" class="anchor" href="#videos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Videos</h2>
-
-<div class="wrapper" style="margin-bottom: 20px;">
-    <div class="h_iframe">
-        <img class="ratio" src="images/16x9.gif"/>
-        <iframe src="https://www.youtube.com/embed/cierloa5hS0?rel=0" frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>
-
-<div class="wrapper" style="margin-bottom: 20px;">
-    <div class="h_iframe">
-        <img class="ratio" src="images/16x9.gif"/>
-        <iframe src="https://www.youtube.com/embed/rzdQq663lQw?rel=0" frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>
-
-<div class="wrapper" style="margin-bottom: 20px;">
-    <div class="h_iframe">
-        <img class="ratio" src="images/16x9.gif"/>
-        <iframe src="https://www.youtube.com/embed/VuRN28XyFcI?rel=0" frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>
-
-
-<h2>
-<a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
-
-<p>These graphs are the same bacterial isolate assembled in SPAdes using three different k-mer values:</p>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot01.png" target="_blank">
-<img src="images/screenshots/screenshot01_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 21. This value is too small, resulting in short contigs and many connections, giving a dense tangled graph.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot02.png" target="_blank">
-<img src="images/screenshots/screenshot02_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 77. This is a good balance, giving long contigs that are well connected.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot03.png" target="_blank">
-<img src="images/screenshots/screenshot03_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>K-mer of 127. This value is too large, resulting in the graph breaking into many discontinuous pieces.</small-green>
-</div>
-
-<p></p>
-<p>The following two images illustrate the difference between single and double nodes:</p>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot04.png" target="_blank">
-<img src="images/screenshots/screenshot04_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Single nodes, each holding both forward and reverse sequences.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot05.png" target="_blank">
-<img src="images/screenshots/screenshot05_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Double nodes, where forward and reverse nodes are drawn separately.</small-green>
-</div>
-
-<p></p>
-<p>Examples of custom colouring and labelling of nodes in Bandage:</p>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot06.png" target="_blank">
-<img src="images/screenshots/screenshot06_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>A bacterial transposon that shares a gene with the cloning vector.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot07.png" target="_blank">
-<img src="images/screenshots/screenshot07_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Assembly graph from metagenomic reads that align to particular 16S genes.</small-green>
-</div>
-
-<p></p>
-<p>A very large graph from a metagenome assembly, displayed in Bandage:</p>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot08.png" target="_blank">
-<img src="images/screenshots/screenshot08_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Zoomed out view, showing large-scale structure.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot09.png" target="_blank">
-<img src="images/screenshots/screenshot09_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Zoomed in view of smaller subgraphs.</small-green>
-</div>
-
-<p></p>
-<p>A BLAST search for a 58 kb transposon in a bacterial assembly:</p>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot10.png" target="_blank">
-<img src="images/screenshots/screenshot10_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>The entire assembly graph.</small-green>
-</div>
-
-<div class="screenshot_thumbnail" style="width: 210px;">
-<a href="images/screenshots/screenshot11.png" target="_blank">
-<img src="images/screenshots/screenshot11_thumb.png" class="screenshot_thumbnail"></a><br>
-<small-green>Reduced scope to only nodes containing BLAST hits.</small-green>
-</div>
-
 
 <h2>
 <a id="cite" class="anchor" href="#cite" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cite</h2>
@@ -254,24 +115,30 @@
         </section>
 
         <aside id="sidebar">
-          <a href="https://github.com/rrwick/Bandage/releases/download/v0.6.3/Bandage_Linux_dynamic_v0.6.3.zip" class="button_linux">
-            <small>Download</small>
-            Linux
-          </a>
           <a href="https://github.com/rrwick/Bandage/releases/download/v0.6.3/Bandage_Mac_v0.6.3.zip" class="button_mac">
             <small>Download</small>
             Mac
+          </a>
+          <a href="https://github.com/rrwick/Bandage/releases/download/v0.6.3/Bandage_Linux_dynamic_v0.6.3.zip" class="button_linux">
+            <small>Download</small>
+            Linux
           </a>
           <a href="https://github.com/rrwick/Bandage/releases/download/v0.6.3/Bandage_Windows_v0.6.3.zip" class="button_windows">
             <small>Download</small>
             Windows
           </a>
-		  <a href="https://github.com/rrwick/Bandage" class="button_github">
-		    <small>View project on</small>
-			GitHub
-	      </a>
+          <a href="https://github.com/rrwick/Bandage" class="button_github">
+            <small>View project on</small>
+            GitHub
+          </a>
+          <a href="https://github.com/rrwick/Bandage/wiki" class="button_wiki">
+            <small>View documentation</small>
+            Wiki
+          </a>
 
-          <p class="repo-owner"><a href="https://github.com/rrwick/Bandage"></a>Bandage is made by <a href="https://github.com/rrwick">Ryan Wick</a>.</p>
+          <br><br>
+
+          <p class="repo-owner"><a href="https://github.com/rrwick/Bandage"></a>Bandage is made by <a href="https://github.com/rrwick">Ryan Wick</a> in <a href="http://holtlab.net/">Kathryn Holt's research group</a>.</p>
         </aside>
       </div>
     </div>
