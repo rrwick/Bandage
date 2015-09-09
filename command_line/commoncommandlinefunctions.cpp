@@ -42,14 +42,18 @@ void printSettingsUsage(QTextStream * out)
     *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
     *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
     *out << "          --scope <scope>     Graph scope, from one of the following options:" << endl;
-    *out << "                              entire, aroundnodes, aroundblast (default:" << endl;
-    *out << "                              entire)" << endl;
+    *out << "                              entire, aroundnodes, aroundblast, depthrange" << endl;
+    *out << "                              (default: entire)" << endl;
     *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
     *out << "                              aroundnodes scope (default: none)" << endl;
     *out << "          --partial           Use partial node name matching (default: exact" << endl;
     *out << "                              node name matching)" << endl;
     *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
     *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
+    *out << "          --mindepth <float>  The minimum allowed read depth for the depthrange" << endl;
+    *out << "                              scopes (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
+    *out << "          --maxdepth <float>  The maximum allowed read depth for the depthrange" << endl;
+    *out << "                              scopes (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
     *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -177,7 +181,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     QStringList argumentsCopy = *arguments;
 
     QStringList validScopeOptions;
-    validScopeOptions << "entire" << "aroundnodes" << "aroundblast";
+    validScopeOptions << "entire" << "aroundnodes" << "aroundblast" << "depthrange";
     QString error = checkOptionForString("--scope", arguments, validScopeOptions);
     if (error.length() > 0) return error;
 
@@ -186,6 +190,11 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--partial", arguments);
 
     error = checkOptionForInt("--distance", arguments, 0, 100);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--mindepth", arguments, 0.0, 1000000.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxdepth", arguments, 0.0, 1000000.0);
     if (error.length() > 0) return error;
 
     if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND)
@@ -202,7 +211,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--quality", arguments, 1, 5);
     if (error.length() > 0) return error;
 
-    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000);
+    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000.0);
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0);
     if (error.length() > 0) return error;
@@ -304,6 +313,11 @@ void parseSettings(QStringList arguments)
 
     if (isOptionPresent("--distance", &arguments))
         g_settings->nodeDistance = getIntOption("--distance", &arguments);
+
+    if (isOptionPresent("--mindepth", &arguments))
+        g_settings->minReadDepthRange = getFloatOption("--mindepth", &arguments);
+    if (isOptionPresent("--maxdepth", &arguments))
+        g_settings->maxReadDepthRange = getFloatOption("--maxdepth", &arguments);
 
     if (isOptionPresent("--nodes", &arguments))
         g_settings->startingNodes = getStringOption("--nodes", &arguments);
@@ -793,6 +807,8 @@ GraphScope getGraphScopeOption(QString option, QStringList * arguments)
         return AROUND_NODE;
     else if (scopeString == "aroundblast")
         return AROUND_BLAST_HITS;
+    else if (scopeString == "depthrange")
+        return READ_DEPTH_RANGE;
 
     //Entire graph scope is the default.
     return WHOLE_GRAPH;
