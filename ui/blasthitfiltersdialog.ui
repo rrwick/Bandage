@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>362</width>
-    <height>331</height>
+    <width>354</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -262,7 +262,7 @@
    <item row="0" column="0" colspan="5">
     <widget class="QLabel" name="filterDescriptionLabel">
      <property name="text">
-      <string>Turn on one or more of these filters to exclude BLAST hits which fail to meet the defined threshold.</string>
+      <string>Turn on one or more of these filters to exclude BLAST hits which fail to meet the defined threshold. To see the effects of changing these filters, it is necessary to rerun the BLAST search.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
