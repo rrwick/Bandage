@@ -17,7 +17,8 @@ public:
 
     void setWidgetsFromSettings();
     void setSettingsFromWidgets();
-    QString getFilterText() const;
+
+    static QString getFilterText();
 
 private:
     Ui::BlastHitFiltersDialog *ui;

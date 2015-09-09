@@ -60,6 +60,7 @@ private:
     void runBlastSearches(bool separateThread);
     void makeQueryRow(int row);
     void deleteQueryPathsDialog();
+    void setFilterText();
 
 private slots:
     void afterWindowShow();

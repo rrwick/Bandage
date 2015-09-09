@@ -30,6 +30,7 @@ bool checkForVersion(QStringList arguments);
 
 QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
 QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
+QString checkOptionForSciNotationFloat(QString option, QStringList * arguments, QString min, QString max);
 QString checkOptionForString(QString option, QStringList * arguments,
                              QStringList validOptionsList, QString validDescription = "");
 QString checkOptionForColour(QString option, QStringList * arguments);
@@ -45,6 +46,7 @@ bool isOptionAndValuePresent(QString option, QString value, QStringList * argume
 
 int getIntOption(QString option, QStringList * arguments);
 double getFloatOption(QString option, QStringList * arguments);
+QString getSciNotationFloatOption(QString option, QStringList * arguments);
 QColor getColourOption(QString option, QStringList * arguments);
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments);
 GraphScope getGraphScopeOption(QString option, QStringList * arguments);
@@ -62,5 +64,9 @@ QString getColourName(QColor colour);
 
 bool createBlastTempDirectory();
 void deleteBlastTempDirectory();
+
+bool parseSciNotation(QString numString, double * coefficient, int * exponent);
+bool lessThan(double aC, int aE, double bC, double bE);
+
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

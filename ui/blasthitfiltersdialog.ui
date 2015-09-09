@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>354</width>
+    <width>334</width>
     <height>323</height>
    </rect>
   </property>
@@ -82,6 +82,9 @@
       </property>
       <item>
        <widget class="QDoubleSpinBox" name="eValueBaseSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
         <property name="maximum">
          <double>9.990000000000000</double>
         </property>
@@ -89,8 +92,11 @@
       </item>
       <item>
        <widget class="QSpinBox" name="eValueExponentSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
         <property name="prefix">
-         <string>x10^</string>
+         <string>e</string>
         </property>
         <property name="minimum">
          <number>-999</number>
@@ -150,6 +156,9 @@
    </item>
    <item row="4" column="3">
     <widget class="QDoubleSpinBox" name="identitySpinBox">
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <property name="suffix">
       <string>%</string>
      </property>
@@ -193,8 +202,11 @@
    </item>
    <item row="2" column="3">
     <widget class="QSpinBox" name="alignmentLengthSpinBox">
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <property name="maximum">
-      <number>1000000000</number>
+      <number>1000000</number>
      </property>
     </widget>
    </item>
@@ -213,6 +225,9 @@
    </item>
    <item row="3" column="3">
     <widget class="QDoubleSpinBox" name="queryCoverageSpinBox">
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <property name="suffix">
       <string>%</string>
      </property>
@@ -271,6 +286,9 @@
    </item>
    <item row="6" column="3">
     <widget class="QDoubleSpinBox" name="bitScoreSpinBox">
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
      <property name="decimals">
       <number>1</number>
      </property>

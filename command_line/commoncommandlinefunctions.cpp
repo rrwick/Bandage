@@ -23,6 +23,7 @@
 #include "../blast/blastsearch.h"
 #include <QCoreApplication>
 #include "../program/memory.h"
+#include <QStringList>
 
 
 void printSettingsUsage(QTextStream * out)
@@ -113,12 +114,12 @@ void printSettingsUsage(QTextStream * out)
     *out << "          Random colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
     *out << "          These settings only apply when the random colour scheme is used." << endl;
-    *out << "          --ransatpos <int>   Positive node saturation (0-255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
-    *out << "          --ransatneg <int>   Negative node saturation (0-255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
-    *out << "          --ranligpos <int>   Positive node lightness (0-255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
-    *out << "          --ranligneg <int>   Negative node lightness (0-255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
-    *out << "          --ranopapos <int>   Positive node opacity (0-255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
-    *out << "          --ranopaneg <int>   Negative node opacity (0-255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
+    *out << "          --ransatpos <int>   Positive node saturation (0 to 255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
+    *out << "          --ransatneg <int>   Negative node saturation (0 to 255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
+    *out << "          --ranligpos <int>   Positive node lightness (0 to 255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
+    *out << "          --ranligneg <int>   Negative node lightness (0 to 255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
+    *out << "          --ranopapos <int>   Positive node opacity (0 to 255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
+    *out << "          --ranopaneg <int>   Negative node opacity (0 to 255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
     *out << endl;
     *out << "          Uniform colour scheme" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -148,6 +149,21 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              Format BLAST parameters exactly as they would be" << endl;
     *out << "                              used for blastn/tblastn on the command line, and" << endl;
     *out << "                              enclose them in quotes." << endl;
+    *out << "          --alfilter <int>    Alignment length filter for BLAST hits. Hits with" << endl;
+    *out << "                              shorter alignments will be excluded (0 to" << endl;
+    *out << "                              1000000, default: off)" << endl;
+    *out << "          --qcfilter <float>  Query coverage filter for BLAST hits. Hits with" << endl;
+    *out << "                              less coverage will be excluded (0 to 100," << endl;
+    *out << "                              default: off)" << endl;
+    *out << "          --ifilter <float>   Identity filter for BLAST hits. Hits with less" << endl;
+    *out << "                              identity will be excluded (0 to 100, default:" << endl;
+    *out << "                              off)" << endl;
+    *out << "          --evfilter <sci>    E-value filter for BLAST hits. Hits with larger" << endl;
+    *out << "                              e-values will be excluded (1e-999 to 9.9e1," << endl;
+    *out << "                              default: off)" << endl;
+    *out << "          --bsfilter <float>  Bit score filter for BLAST hits. Hits with lower" << endl;
+    *out << "                              bit scores will be excluded (0 to 1000000," << endl;
+    *out << "                              default: off)" << endl;
     *out << endl;
     *out << "          BLAST query paths" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -159,8 +175,8 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              covered by a query path (0.3 to 1.0, default:" << endl;
     *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
-    *out << "                              covered by BLAST hits in a query path (0.3 to 1.0," << endl;
-    *out << "                              default:" + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "                              covered by BLAST hits in a query path (0.3 to" << endl;
+    *out << "                              1.0, default:" + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
     *out << "                              path (0.0 to 1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
@@ -300,6 +316,17 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForFloat("--maxlendis", arguments, 0.0, 0.5);
     if (error.length() > 0) return error;
     error = checkOptionForInt("--maxevprod", arguments, -1000, 1);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForInt("--alfilter", arguments, 0, 1000000);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--qcfilter", arguments, 0.0, 100.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--ifilter", arguments, 0.0, 100.0);
+    if (error.length() > 0) return error;
+    error = checkOptionForSciNotationFloat("--evfilter", arguments, "1e-999", "9.9e1");
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0);
     if (error.length() > 0) return error;
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
@@ -461,6 +488,36 @@ void parseSettings(QStringList arguments)
         g_settings->maxLengthDiscrepancy = getFloatOption("--maxlendis", &arguments);
     if (isOptionPresent("--maxevprod", &arguments))
         g_settings->maxEValueProductPower = getIntOption("--maxevprod", &arguments);
+
+    if (isOptionPresent("--alfilter", &arguments))
+    {
+        g_settings->blastAlignmentLengthFilterOn = true;
+        g_settings->blastAlignmentLengthFilterValue = getIntOption("--alfilter", &arguments);
+    }
+    if (isOptionPresent("--qcfilter", &arguments))
+    {
+        g_settings->blastQueryCoverageFilterOn = true;
+        g_settings->blastQueryCoverageFilterValue = getFloatOption("--qcfilter", &arguments);
+    }
+    if (isOptionPresent("--ifilter", &arguments))
+    {
+        g_settings->blastIdentityFilterOn = true;
+        g_settings->blastIdentityFilterValue = getFloatOption("--ifilter", &arguments);
+    }
+    if (isOptionPresent("--evfilter", &arguments))
+    {
+        g_settings->blastEValueFilterOn = true;
+        double coefficient;
+        int exponent;
+        parseSciNotation(getSciNotationFloatOption("--evfilter", &arguments), &coefficient, &exponent);
+        g_settings->blastEValueFilterCoefficientValue = coefficient;
+        g_settings->blastEValueFilterExponentValue = exponent;
+    }
+    if (isOptionPresent("--bsfilter", &arguments))
+    {
+        g_settings->blastBitScoreFilterOn = true;
+        g_settings->blastBitScoreFilterValue = getFloatOption("--bsfilter", &arguments);
+    }
 }
 
 
@@ -564,6 +621,103 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
     arguments->removeAt(optionIndex);
 
     return "";
+}
+
+//Returns empty string if everything is okay and an error
+//message if there's a problem.  If everything is okay, it
+//also removes the option and its value from arguments.
+QString checkOptionForSciNotationFloat(QString option, QStringList * arguments, QString min, QString max)
+{
+    int optionIndex = arguments->indexOf(option);
+
+    //If the option isn't found, that's fine.
+    if (optionIndex == -1)
+        return "";
+
+    int floatIndex = optionIndex + 1;
+
+    //If nothing follows the option, that's a problem.
+    if (floatIndex >= arguments->size())
+        return option + " must be followed by a number in scientific notation";
+
+    //If the thing following the option isn't a number in scientific notation,
+    //that's a problem.
+    double numCoefficient;
+    int numExponent;
+    bool optionIsSciNot = parseSciNotation(arguments->at(floatIndex), &numCoefficient, &numExponent);
+    if (!optionIsSciNot)
+        return option + " must be followed by a number in scientific notation";
+
+    //Check the range of the option.
+    double minCoefficient;
+    int minExponent;
+    double maxCoefficient;
+    int maxExponent;
+    parseSciNotation(min, &minCoefficient, &minExponent);
+    parseSciNotation(max, &maxCoefficient, &maxExponent);
+
+    if (lessThan(numCoefficient, numExponent, minCoefficient, minExponent))
+        return "Value of " + option + " must be between "
+                + min + " and " + max +
+                " (inclusive)";
+    if (lessThan(maxCoefficient, maxExponent, numCoefficient, numExponent))
+        return "Value of " + option + " must be between "
+                + min + " and " + max +
+                " (inclusive)";
+
+    //If the code got here, the option and its number are okay.
+    //Remove them from the arguments.
+    arguments->removeAt(floatIndex);
+    arguments->removeAt(optionIndex);
+
+    return "";
+}
+
+
+bool parseSciNotation(QString numString, double * coefficient, int * exponent)
+{
+    QStringList parts = numString.split('e');
+    if (parts.size() != 2)
+        return false;
+
+    bool ok;
+    *coefficient = parts[0].toDouble(&ok);
+    if (!ok)
+        return false;
+
+    *exponent = parts[1].toInt(&ok);
+    if (!ok)
+        return false;
+
+    if (*coefficient < 0.0)
+        return false;
+
+    while (*coefficient > 10.0)
+    {
+        *coefficient /= 10.0;
+        ++*exponent;
+    }
+    while (*coefficient < 1.0)
+    {
+        *coefficient *= 10.0;
+        --*exponent;
+    }
+
+    return ok;
+}
+
+
+//This function compares two numbers in scientific notation.
+//It returns true if a < b.
+//It assumes the numbers are standardised (i.e. the coefficient is between 1.0
+//and 10.0).
+bool lessThan(double aC, int aE, double bC, double bE)
+{
+    if (aE < bE)
+        return true;
+    if (aE > bE)
+        return false;
+    return aC < bC;
 }
 
 
@@ -768,6 +922,20 @@ double getFloatOption(QString option, QStringList * arguments)
          return 0;
 
      return arguments->at(floatIndex).toDouble();
+}
+
+
+QString getSciNotationFloatOption(QString option, QStringList * arguments)
+{
+     int optionIndex = arguments->indexOf(option);
+     if (optionIndex == -1)
+         return 0;
+
+     int floatIndex = optionIndex + 1;
+     if (floatIndex >= arguments->size())
+         return 0;
+
+     return arguments->at(floatIndex);
 }
 
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)

@@ -64,6 +64,8 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     ui->blastQueriesTableWidget->m_smallFirstColumn = true;
     ui->blastQueriesTableWidget->m_smallSecondColumn = true;
 
+    setFilterText();
+
     //Load any previous parameters the user might have entered when previously using this dialog.
     ui->parametersLineEdit->setText(g_settings->blastSearchParameters);
 
@@ -1038,6 +1040,11 @@ void BlastSearchDialog::openFiltersDialog()
     if (filtersDialog.exec()) //The user clicked OK
     {
         filtersDialog.setSettingsFromWidgets();
-        ui->blastHitFiltersLabel2->setText(filtersDialog.getFilterText());
+        setFilterText();
     }
+}
+
+void BlastSearchDialog::setFilterText()
+{
+    ui->blastHitFiltersLabel2->setText(BlastHitFiltersDialog::getFilterText());
 }

@@ -76,7 +76,7 @@ void BlastHitFiltersDialog::setSettingsFromWidgets()
 }
 
 
-QString BlastHitFiltersDialog::getFilterText() const
+QString BlastHitFiltersDialog::getFilterText()
 {
     QString filterText;
     if (g_settings->blastAlignmentLengthFilterOn)
@@ -101,7 +101,7 @@ QString BlastHitFiltersDialog::getFilterText() const
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "e-value: " + QString::number(g_settings->blastEValueFilterCoefficientValue) + "x10^" + QString::number(g_settings->blastEValueFilterExponentValue);
+        filterText += "e-value: " + QString::number(g_settings->blastEValueFilterCoefficientValue) + "e" + QString::number(g_settings->blastEValueFilterExponentValue);
     }
     if (g_settings->blastBitScoreFilterOn)
     {
