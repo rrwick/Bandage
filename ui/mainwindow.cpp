@@ -758,9 +758,7 @@ void MainWindow::resetScene()
     connect(m_scene, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
     selectionChanged();
 
-    //Undo the graphics view rotation
-    g_graphicsView->rotate(-g_graphicsView->m_rotation);
-    g_graphicsView->m_rotation = 0.0;
+    g_graphicsView->undoRotation();
 }
 
 
@@ -1194,8 +1192,8 @@ void MainWindow::saveImageEntireScene()
         g_settings->positionTextNodeCentre = true;
 
         //Temporarily undo any rotation so labels appear upright.
-        double rotationBefore = g_graphicsView->m_rotation;
-        g_graphicsView->m_rotation = 0.0;
+        double rotationBefore = g_graphicsView->getRotation();
+        g_graphicsView->undoRotation();
 
         m_imageFilter = selectedFilter;
 
@@ -1255,7 +1253,7 @@ void MainWindow::saveImageEntireScene()
         }
 
         g_settings->positionTextNodeCentre = positionTextNodeCentreSettingBefore;
-        g_graphicsView->m_rotation = rotationBefore;
+        g_graphicsView->setRotation(rotationBefore);
     }
 }
 

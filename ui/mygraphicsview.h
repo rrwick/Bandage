@@ -30,11 +30,20 @@ class MyGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
+    // CREATORS
     explicit MyGraphicsView(QObject *parent = 0);
+
+    //ACCESSORS
+    double getRotation() const {return m_rotation;}
+
+    //MODIFERS
+    void setRotation(double newRotation);
+    void changeRotation(double rotationChange);
+    void undoRotation();
+
 
     GraphicsViewZoom * m_zoom;
     QPoint m_previousPos;
-    double m_rotation;
 
     void setAntialiasing(bool antialiasingOn);
     bool isPointVisible(QPointF p);
@@ -48,6 +57,8 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent * event);
 
 private:
+    double m_rotation;
+
     double distance(double x1, double y1, double x2, double y2);
     double angleBetweenTwoLines(QPointF line1Start, QPointF line1End, QPointF line2Start, QPointF line2End);
     void getFourViewportCornersInSceneCoordinates(QPointF * c1, QPointF * c2, QPointF * c3, QPointF * c4);

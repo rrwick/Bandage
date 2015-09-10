@@ -135,10 +135,7 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
             event->key() == Qt::Key_Plus)
     {
         if (shiftPressed)
-        {
-            rotate(1.0);
-            m_rotation += 1.0;
-        }
+            changeRotation(1.0);
         else
             angle = 120;
     }
@@ -150,10 +147,7 @@ void MyGraphicsView::keyPressEvent(QKeyEvent * event)
              event->key() == Qt::Key_Underscore)
     {
         if (shiftPressed)
-        {
-            rotate(-1.0);
-            m_rotation -= 1.0;
-        }
+            changeRotation(-1.0);
         else
             angle = -120;
     }
@@ -244,4 +238,22 @@ void MyGraphicsView::getFourViewportCornersInSceneCoordinates(QPointF * c1, QPoi
     *c2 = mapToScene(QPoint(viewport()->width(), 0));
     *c3 = mapToScene(QPoint(viewport()->width(), viewport()->height()));
     *c4 = mapToScene(QPoint(0, viewport()->height()));
+}
+
+void MyGraphicsView::setRotation(double newRotation)
+{
+    undoRotation();
+    changeRotation(newRotation);
+}
+
+void MyGraphicsView::changeRotation(double rotationChange)
+{
+    rotate(rotationChange);
+    m_rotation += rotationChange;
+}
+
+void MyGraphicsView::undoRotation()
+{
+    rotate(-g_graphicsView->m_rotation);
+    m_rotation = 0.0;
 }

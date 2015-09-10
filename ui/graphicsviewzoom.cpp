@@ -22,8 +22,9 @@
 #include <QScrollBar>
 #include <qmath.h>
 #include "../program/settings.h"
+#include "mygraphicsview.h"
 
-GraphicsViewZoom::GraphicsViewZoom(QGraphicsView* view) :
+GraphicsViewZoom::GraphicsViewZoom(MyGraphicsView * view) :
     QObject(view), m_view(view)
 {
     g_absoluteZoom = 1.0;
@@ -104,6 +105,11 @@ bool GraphicsViewZoom::eventFilter(QObject *object, QEvent *event)
             double factor = 1.0 + gestureEvent->value();
             gentleZoom(factor, GESTURE);
             return true;
+        }
+        else if (gestureEvent->gestureType() == Qt::RotateNativeGesture)
+        {
+            double angle = gestureEvent->value();
+            m_view->changeRotation(angle);
         }
     }
 

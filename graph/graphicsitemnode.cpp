@@ -239,7 +239,7 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
     QPointF offset(0.0, textHeight / 2.0);
 
     painter->translate(centre);
-    painter->rotate(-g_graphicsView->m_rotation);
+    painter->rotate(-g_graphicsView->getRotation());
     painter->translate(offset);
 
     if (g_settings->textOutline)
@@ -254,7 +254,7 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
 
     painter->fillPath(textPath, QBrush(g_settings->textColour));
     painter->translate(-offset);
-    painter->rotate(g_graphicsView->m_rotation);
+    painter->rotate(g_graphicsView->getRotation());
     painter->translate(-centre);
 }
 
