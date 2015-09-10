@@ -21,5 +21,6 @@
         <file>zoom.png</file>
         <file>cross-128.png</file>
         <file>specify-path.png</file>
+        <file>ncbi-256.png</file>
     </qresource>
 </RCC>

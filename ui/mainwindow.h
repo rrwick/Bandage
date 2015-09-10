@@ -92,7 +92,7 @@ private:
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
     void setReadDepthRangeWidgetVisibility(bool visible);
-
+    static QString makeStringUrlSafe(QString s);
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -144,6 +144,7 @@ private slots:
     void nodeWidthChanged();
     void saveEntireGraphToFasta();
     void saveEntireGraphToFastaOnlyPositiveNodes();
+    void webBlastSelectedNodes();
 
 protected:
       void showEvent(QShowEvent *ev);

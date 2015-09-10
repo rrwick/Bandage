@@ -304,12 +304,7 @@ QByteArray DeBruijnNode::getFasta() const
 {
     QByteArray fasta = ">";
 
-    fasta += "NODE_";
-    fasta += m_name;
-    fasta += "_length_";
-    fasta += QByteArray::number(getLength());
-    fasta += "_cov_";
-    fasta += QByteArray::number(getReadDepth());
+    fasta += getNodeNameForFasta();
     fasta += "\n";
 
     int charactersRemaining = m_sequence.length();
@@ -325,6 +320,34 @@ QByteArray DeBruijnNode::getFasta() const
     fasta += "\n";
 
     return fasta;
+}
+
+
+QByteArray DeBruijnNode::getFastaNoNewLinesInSequence() const
+{
+    QByteArray fasta = ">";
+
+    fasta += getNodeNameForFasta();
+    fasta += "\n";
+    fasta += getSequence();
+    fasta += "\n";
+
+    return fasta;
+}
+
+
+QString DeBruijnNode::getNodeNameForFasta() const
+{
+    QString nodeNameForFasta;
+
+    nodeNameForFasta += "NODE_";
+    nodeNameForFasta += m_name;
+    nodeNameForFasta += "_length_";
+    nodeNameForFasta += QByteArray::number(getLength());
+    nodeNameForFasta += "_cov_";
+    nodeNameForFasta += QByteArray::number(getReadDepth());
+
+    return nodeNameForFasta;
 }
 
 

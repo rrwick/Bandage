@@ -174,6 +174,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
     connect(ui->actionSave_entire_graph_to_FASTA_only_positive_nodes, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFastaOnlyPositiveNodes()));
+    connect(ui->actionWeb_BLAST_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(webBlastSelectedNodes()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 
@@ -2243,4 +2244,45 @@ void MainWindow::saveEntireGraphToFastaOnlyPositiveNodes()
                 out << node->getFasta();
         }
     }
+}
+
+
+
+void MainWindow::webBlastSelectedNodes()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "Web BLAST selected nodes", "No nodes are selected.\n\n"
+                                                                   "You must first select nodes in the graph before you can can use web BLAST.");
+        return;
+    }
+
+    QString selectedNodesFasta;
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+        selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence();
+    selectedNodesFasta.chop(1); //remove last newline
+
+    //CHECK LENGTH HERE!
+
+    QString urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
+    QString url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
+    QDesktopServices::openUrl(QUrl(url));
+}
+
+//http://www.ncbi.nlm.nih.gov/staff/tao/URLAPI/new/node101.html#sub:Escape-of-Unsafe
+QString MainWindow::makeStringUrlSafe(QString s)
+{
+    s.replace("%", "%25");
+    s.replace(">", "%3E");
+    s.replace("[", "%5B");
+    s.replace("]", "%5D");
+    s.replace("\n", "%0D%0A");
+    s.replace("|", "%7C");
+    s.replace("@", "%40");
+    s.replace("#", "%23");
+    s.replace("+", "%2B");
+    s.replace(QRegExp("\\s+"), "+");
+
+    return s;
 }

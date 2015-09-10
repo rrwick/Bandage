@@ -45,6 +45,7 @@ public:
     QByteArray getSequence() const {return m_sequence;}
     int getLength() const {return m_sequence.length();}
     QByteArray getFasta() const;
+    QByteArray getFastaNoNewLinesInSequence() const;
     char getBaseAt(int i) const {if (i >= 0 && i < m_sequence.length()) return m_sequence.at(i); else return '\0';}
     ContiguityStatus getContiguityStatus() const {return m_contiguityStatus;}
     DeBruijnNode * getReverseComplement() const {return m_reverseComplement;}
@@ -120,6 +121,7 @@ private:
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
     QStringList m_csvData;
+    QString getNodeNameForFasta() const;
 
     int getBasePairsPerSegment() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
