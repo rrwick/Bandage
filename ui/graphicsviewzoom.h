@@ -51,7 +51,7 @@
  * You can set keyboard modifiers used for zooming using set_modified(). Zooming will be
  * performed only on exact match of modifiers combination. The default modifier is Ctrl.
  *
- * You can change zoom velocity by calling set_zoom_factor_base().
+ * You can change zoom velocity by calling setZoomFactorBase().
  * Zoom coefficient is calculated as zoom_factor_base^angle_delta
  * (see QWheelEvent::angleDelta).
  * The default zoom factor base is 1.0015.
@@ -60,16 +60,16 @@ class GraphicsViewZoom : public QObject {
     Q_OBJECT
 public:
     GraphicsViewZoom(QGraphicsView* view);
-    void gentle_zoom(double factor, ZoomSource zoomSource);
-    void set_modifiers(Qt::KeyboardModifiers modifiers);
-    void set_zoom_factor_base(double value);
-    double _zoom_factor_base;
+    void gentleZoom(double factor, ZoomSource zoomSource);
+    void setModifiers(Qt::KeyboardModifiers modifiers);
+    void setZoomFactorBase(double value);
+    double m_zoomFactorBase;
 
 private:
-    QGraphicsView * _view;
-    Qt::KeyboardModifiers _modifiers;
-    QPointF target_scene_pos, target_viewport_pos;
-    bool eventFilter(QObject* object, QEvent* event);
+    QGraphicsView * m_view;
+    Qt::KeyboardModifiers m_modifiers;
+    QPointF targetScenePos, targetViewportPos;
+    bool eventFilter(QObject * object, QEvent * event);
 
 signals:
     void zoomed();

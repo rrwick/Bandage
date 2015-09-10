@@ -815,7 +815,7 @@ void MainWindow::zoomSpinBoxChanged()
     double zoomFactor = newValue / m_previousZoomSpinBoxValue;
     setZoomSpinBoxStep();
 
-    m_graphicsViewZoom->gentle_zoom(zoomFactor, SPIN_BOX);
+    m_graphicsViewZoom->gentleZoom(zoomFactor, SPIN_BOX);
 
     m_previousZoomSpinBoxValue = newValue;
 }
@@ -863,7 +863,7 @@ void MainWindow::zoomToFitRect(QRectF rect)
     if (g_absoluteZoom < g_settings->minZoom)
     {
         double newZoomFactor = g_settings->minZoom / g_absoluteZoom;
-        m_graphicsViewZoom->gentle_zoom(newZoomFactor, SPIN_BOX);
+        m_graphicsViewZoom->gentleZoom(newZoomFactor, SPIN_BOX);
         g_absoluteZoom *= newZoomFactor;
         g_absoluteZoom = g_settings->minZoom;
         newSpinBoxValue = g_settings->minZoom * 100.0;
@@ -871,7 +871,7 @@ void MainWindow::zoomToFitRect(QRectF rect)
     if (g_absoluteZoom > g_settings->maxZoom)
     {
         double newZoomFactor = g_settings->maxZoom / g_absoluteZoom;
-        m_graphicsViewZoom->gentle_zoom(newZoomFactor, SPIN_BOX);
+        m_graphicsViewZoom->gentleZoom(newZoomFactor, SPIN_BOX);
         g_absoluteZoom *= newZoomFactor;
         g_absoluteZoom = g_settings->maxZoom;
         newSpinBoxValue = g_settings->maxZoom * 100.0;

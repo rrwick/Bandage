@@ -23,17 +23,18 @@
 #include <qmath.h>
 #include "../program/settings.h"
 
-GraphicsViewZoom::GraphicsViewZoom(QGraphicsView* view)
-    : QObject(view), _view(view)
+GraphicsViewZoom::GraphicsViewZoom(QGraphicsView* view) :
+    QObject(view), m_view(view)
 {
     g_absoluteZoom = 1.0;
-    _view->viewport()->installEventFilter(this);
-    _view->setMouseTracking(true);
-    _modifiers = Qt::ControlModifier;
-    _zoom_factor_base = g_settings->zoomFactor;
+    m_view->viewport()->installEventFilter(this);
+    m_view->setMouseTracking(true);
+    m_modifiers = Qt::ControlModifier;
+    m_zoomFactorBase = g_settings->zoomFactor;
 }
 
-void GraphicsViewZoom::gentle_zoom(double factor, ZoomSource zoomSource) {
+void GraphicsViewZoom::gentleZoom(double factor, ZoomSource zoomSource)
+{
 
     if (g_absoluteZoom * factor >= g_settings->maxZoom)
         factor = g_settings->maxZoom / g_absoluteZoom;
@@ -42,51 +43,70 @@ void GraphicsViewZoom::gentle_zoom(double factor, ZoomSource zoomSource) {
 
     g_absoluteZoom *= factor;
 
-    _view->scale(factor, factor);
+    m_view->scale(factor, factor);
 
     if (zoomSource == MOUSE_WHEEL)
     {
-        _view->centerOn(target_scene_pos);
+        m_view->centerOn(targetScenePos);
 
 
-        QPointF delta_viewport_pos = target_viewport_pos - QPointF(_view->viewport()->width() / 2.0,
-                                                                   _view->viewport()->height() / 2.0);
-        QPointF viewport_center = _view->mapFromScene(target_scene_pos) - delta_viewport_pos;
-        _view->centerOn(_view->mapToScene(viewport_center.toPoint()));
+        QPointF deltaViewportPos = targetViewportPos - QPointF(m_view->viewport()->width() / 2.0,
+                                                                   m_view->viewport()->height() / 2.0);
+        QPointF viewport_center = m_view->mapFromScene(targetScenePos) - deltaViewportPos;
+        m_view->centerOn(m_view->mapToScene(viewport_center.toPoint()));
     }
 
     if (zoomSource != SPIN_BOX)
         emit zoomed();
 }
 
-void GraphicsViewZoom::set_modifiers(Qt::KeyboardModifiers modifiers) {
-    _modifiers = modifiers;
-
+void GraphicsViewZoom::setModifiers(Qt::KeyboardModifiers modifiers)
+{
+    m_modifiers = modifiers;
 }
 
-void GraphicsViewZoom::set_zoom_factor_base(double value) {
-    _zoom_factor_base = value;
+void GraphicsViewZoom::setZoomFactorBase(double value)
+{
+    m_zoomFactorBase = value;
 }
 
-bool GraphicsViewZoom::eventFilter(QObject *object, QEvent *event) {
-    if (event->type() == QEvent::MouseMove) {
-        QMouseEvent* mouse_event = static_cast<QMouseEvent*>(event);
-        QPointF delta = target_viewport_pos - mouse_event->pos();
-        if (qAbs(delta.x()) > 5 || qAbs(delta.y()) > 5) {
-            target_viewport_pos = mouse_event->pos();
-            target_scene_pos = _view->mapToScene(mouse_event->pos());
+bool GraphicsViewZoom::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(event);
+        QPointF delta = targetViewportPos - mouseEvent->pos();
+        if (qAbs(delta.x()) > 5 || qAbs(delta.y()) > 5)
+        {
+            targetViewportPos = mouseEvent->pos();
+            targetScenePos = m_view->mapToScene(mouseEvent->pos());
         }
-    } else if (event->type() == QEvent::Wheel) {
-        QWheelEvent* wheel_event = static_cast<QWheelEvent*>(event);
-        if (QApplication::keyboardModifiers() == _modifiers) {
-            if (wheel_event->orientation() == Qt::Vertical) {
-                double angle = wheel_event->angleDelta().y();
-                double factor = qPow(_zoom_factor_base, angle);
-                gentle_zoom(factor, MOUSE_WHEEL);
+    }
+    else if (event->type() == QEvent::Wheel)
+    {
+        QWheelEvent * wheelEvent = static_cast<QWheelEvent*>(event);
+        if (QApplication::keyboardModifiers() == m_modifiers)
+        {
+            if (wheelEvent->orientation() == Qt::Vertical)
+            {
+                double angle = wheelEvent->angleDelta().y();
+                double factor = qPow(m_zoomFactorBase, angle);
+                gentleZoom(factor, MOUSE_WHEEL);
                 return true;
             }
         }
     }
+    else if (event->type() == QEvent::NativeGesture)
+    {
+        QNativeGestureEvent * gestureEvent = static_cast<QNativeGestureEvent *>(event);
+        if (gestureEvent->gestureType() == Qt::ZoomNativeGesture)
+        {
+            double factor = 1.0 + gestureEvent->value();
+            gentleZoom(factor, GESTURE);
+            return true;
+        }
+    }
+
     Q_UNUSED(object)
     return false;
 }
