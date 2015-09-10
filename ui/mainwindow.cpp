@@ -2263,11 +2263,23 @@ void MainWindow::webBlastSelectedNodes()
         selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence();
     selectedNodesFasta.chop(1); //remove last newline
 
-    //CHECK LENGTH HERE!
-
     QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
     QByteArray url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
-    QDesktopServices::openUrl(QUrl(url));
+    
+    if (url.length() < 8190)
+        QDesktopServices::openUrl(QUrl(url));
+
+    else
+    {
+        QMessageBox::information(this, "Long sequences", "The selected node sequences are too long to pass to the BLAST web "
+                                                         "interface via the URL.  Bandage has put them in your clipboard so "
+                                                         "you can paste them in.");
+        QClipboard * clipboard = QApplication::clipboard();
+        clipboard->setText(selectedNodesFasta);
+
+        QByteArray url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome";
+        QDesktopServices::openUrl(QUrl(url));
+    }
 }
 
 //http://www.ncbi.nlm.nih.gov/staff/tao/URLAPI/new/node101.html#sub:Escape-of-Unsafe
