@@ -2258,20 +2258,20 @@ void MainWindow::webBlastSelectedNodes()
         return;
     }
 
-    QString selectedNodesFasta;
+    QByteArray selectedNodesFasta;
     for (size_t i = 0; i < selectedNodes.size(); ++i)
         selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence();
     selectedNodesFasta.chop(1); //remove last newline
 
     //CHECK LENGTH HERE!
 
-    QString urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
-    QString url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
+    QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
+    QByteArray url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
     QDesktopServices::openUrl(QUrl(url));
 }
 
 //http://www.ncbi.nlm.nih.gov/staff/tao/URLAPI/new/node101.html#sub:Escape-of-Unsafe
-QString MainWindow::makeStringUrlSafe(QString s)
+QByteArray MainWindow::makeStringUrlSafe(QByteArray s)
 {
     s.replace("%", "%25");
     s.replace(">", "%3E");
@@ -2282,7 +2282,8 @@ QString MainWindow::makeStringUrlSafe(QString s)
     s.replace("@", "%40");
     s.replace("#", "%23");
     s.replace("+", "%2B");
-    s.replace(QRegExp("\\s+"), "+");
+    s.replace(" ", "+");
+    s.replace("\t", "+");
 
     return s;
 }

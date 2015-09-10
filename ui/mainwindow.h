@@ -92,7 +92,7 @@ private:
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
     void setReadDepthRangeWidgetVisibility(bool visible);
-    static QString makeStringUrlSafe(QString s);
+    static QByteArray makeStringUrlSafe(QByteArray s);
 
 private slots:
     void loadGraph(QString fullFileName = "");
