@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.6.3");
+    QApplication::setApplicationVersion("0.6.4");
 
     QTextStream out(stdout);
     QTextStream err(stdout);
