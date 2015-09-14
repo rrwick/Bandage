@@ -183,7 +183,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              between a BLAST query and its path in the graph" << endl;
     *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->maxLengthDiscrepancy) + ")" << endl;
     *out << "          --maxevprod <sci>   Maximum e-value product for all BLAST hits in a" << endl;
-    *out << "                              query path, (1e-999 to 9.9e1, default: " << g_settings->maxEValueProduct.asString() + ")" << endl;
+    *out << "                              query path, (1e-999 to 9.9e1, default: " << g_settings->maxEValueProduct.asString(true) + ")" << endl;
     *out << endl;
 }
 
@@ -645,7 +645,7 @@ QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min
     //Check the range of the option.
     if (optionSciNot < min || optionSciNot > max)
         return "Value of " + option + " must be between "
-                + min.asString() + " and " + max.asString() +
+                + min.asString(true) + " and " + max.asString(true) +
                 " (inclusive)";
 
     //If the code got here, the option and its number are okay.

@@ -100,7 +100,7 @@ QString BlastHitFiltersDialog::getFilterText()
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "e-value: " + g_settings->blastEValueFilterValue.asString();
+        filterText += "e-value: " + g_settings->blastEValueFilterValue.asString(false);
     }
     if (g_settings->blastBitScoreFilterOn)
     {

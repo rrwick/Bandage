@@ -43,7 +43,7 @@ public:
     bool operator!=(SciNot const &other) const;
     double getCoefficient() const {return m_coefficient;}
     int getExponent() const {return m_exponent;}
-    QString asString() const;
+    QString asString(bool alwaysInSciNot) const;
     double toDouble() const;
     bool isPositive() const {return m_coefficient > 0.0;}
     bool isNegative() const {return m_coefficient < 0.0;}

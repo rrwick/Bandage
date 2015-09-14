@@ -141,13 +141,15 @@ bool SciNot::operator!=(SciNot const &other) const
 }
 
 
-QString SciNot::asString() const
+QString SciNot::asString(bool alwaysInSciNot) const
 {
-    //If the exponent is small enough, just output it as a normal number.
-    if (isZero())
-        return "0";
-    if (m_exponent < 3 || m_exponent > -3)
-        return QString::number(toDouble());
+    if (!alwaysInSciNot)
+    {
+        if (isZero())
+            return "0";
+        if (m_exponent < 3 && m_exponent > -3)
+            return QString::number(toDouble());
+    }
 
     return QString::number(m_coefficient) + "e" + QString::number(m_exponent);
 }
