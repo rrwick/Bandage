@@ -37,8 +37,13 @@ SciNot::SciNot(QString sciNotString) :
     m_coefficient(0.0), m_exponent(0.0)
 {
     QStringList parts = sciNotString.split('e');
-    if (parts.size() != 2)
+    if (parts.size() < 1)
         return;
+    if (parts.size() < 2)
+    {
+        m_coefficient = parts[0].toDouble();
+        return;
+    }
 
     bool ok;
     double coefficient = parts[0].toDouble(&ok);
