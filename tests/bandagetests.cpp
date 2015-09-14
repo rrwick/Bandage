@@ -27,6 +27,7 @@
 #include "../program/memory.h"
 #include "../graph/debruijnnode.h"
 #include "../program/globals.h"
+#include "../command_line/commoncommandlinefunctions.h"
 
 class BandageTests : public QObject
 {
@@ -42,6 +43,7 @@ private slots:
     void blastSearch();
     void blastSearchFilters();
     void graphScope();
+    void commandLineSettings();
 
 private:
     void createGlobals();
@@ -534,6 +536,290 @@ void BandageTests::graphScope()
     deleteBlastTempDirectory();
 }
 
+void BandageTests::commandLineSettings()
+{
+    createGlobals();
+    QStringList commandLineSettings;
+
+    commandLineSettings = QString("--scope entire").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->graphScope, WHOLE_GRAPH);
+
+    commandLineSettings = QString("--scope aroundnodes").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->graphScope, AROUND_NODE);
+
+    commandLineSettings = QString("--scope aroundblast").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->graphScope, AROUND_BLAST_HITS);
+
+    commandLineSettings = QString("--scope depthrange").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->graphScope, READ_DEPTH_RANGE);
+
+    commandLineSettings = QString("--nodes 5+").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->startingNodes, QString("5+"));
+
+    commandLineSettings = QString("--nodes 1,2,3").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->startingNodes, QString("1,2,3"));
+
+    QCOMPARE(g_settings->startingNodesExactMatch, true);
+    commandLineSettings = QString("--partial").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->startingNodesExactMatch, false);
+
+    commandLineSettings = QString("--distance 12").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeDistance, 12);
+
+    commandLineSettings = QString("--mindepth 1.2").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minReadDepthRange, 1.2);
+
+    commandLineSettings = QString("--maxdepth 2.1").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxReadDepthRange, 2.1);
+
+    QCOMPARE(g_settings->doubleMode, false);
+    commandLineSettings = QString("--double").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->doubleMode, true);
+
+    QCOMPARE(g_settings->nodeLengthMode, AUTO_NODE_LENGTH);
+    commandLineSettings = QString("--bases 1000").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeLengthMode, MANUAL_NODE_LENGTH);
+    QCOMPARE(g_settings->manualBasePairsPerSegment, 1000);
+
+    commandLineSettings = QString("--quality 1").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->graphLayoutQuality, 1);
+
+    commandLineSettings = QString("--nodewidth 4.2").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->averageNodeWidth, 4.2);
+
+    commandLineSettings = QString("--depwidth 0.222").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->readDepthEffectOnWidth, 0.222);
+
+    commandLineSettings = QString("--deppower 0.72").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->readDepthPower, 0.72);
+
+    QCOMPARE(g_settings->displayNodeNames, false);
+    commandLineSettings = QString("--names").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->displayNodeNames, true);
+
+    QCOMPARE(g_settings->displayNodeLengths, false);
+    commandLineSettings = QString("--lengths").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->displayNodeLengths, true);
+
+    QCOMPARE(g_settings->displayNodeReadDepth, false);
+    commandLineSettings = QString("--readdepth").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->displayNodeReadDepth, true);
+
+    QCOMPARE(g_settings->displayBlastHits, false);
+    commandLineSettings = QString("--blasthits").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->displayBlastHits, true);
+
+    commandLineSettings = QString("--fontsize 5").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->labelFont.pointSize(), 5);
+
+    commandLineSettings = QString("--edgecol #00ff00").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->edgeColour.name(), QString("#00ff00"));
+
+    commandLineSettings = QString("--edgewidth 5.5").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->edgeWidth, 5.5);
+
+    commandLineSettings = QString("--outcol #ff0000").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->outlineColour.name(), QString("#ff0000"));
+
+    commandLineSettings = QString("--outline 0.123").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->outlineThickness, 0.123);
+
+    commandLineSettings = QString("--selcol tomato").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->selectionColour.name(), QString("#ff6347"));
+
+    QCOMPARE(g_settings->antialiasing, true);
+    commandLineSettings = QString("--noaa").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->antialiasing, false);
+
+    commandLineSettings = QString("--textcol #550000ff").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->textColour.name(), QString("#0000ff"));
+    QCOMPARE(g_settings->textColour.alpha(), 85);
+
+    commandLineSettings = QString("--toutcol steelblue").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->textOutlineColour), QString("steelblue"));
+
+    commandLineSettings = QString("--toutline 0.321").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->textOutlineThickness, 0.321);
+
+    QCOMPARE(g_settings->positionTextNodeCentre, false);
+    commandLineSettings = QString("--centre").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->positionTextNodeCentre, true);
+
+    commandLineSettings = QString("--colour random").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeColourScheme, RANDOM_COLOURS);
+
+    commandLineSettings = QString("--colour uniform").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeColourScheme, UNIFORM_COLOURS);
+
+    commandLineSettings = QString("--colour readdepth").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeColourScheme, READ_DEPTH_COLOUR);
+
+    commandLineSettings = QString("--colour blastsolid").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeColourScheme, BLAST_HITS_SOLID_COLOUR);
+
+    commandLineSettings = QString("--colour blastrainbow").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->nodeColourScheme, BLAST_HITS_RAINBOW_COLOUR);
+
+    commandLineSettings = QString("--ransatpos 12").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourPositiveSaturation, 12);
+
+    commandLineSettings = QString("--ransatneg 23").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourNegativeSaturation, 23);
+
+    commandLineSettings = QString("--ranligpos 34").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourPositiveLightness, 34);
+
+    commandLineSettings = QString("--ranligneg 45").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourNegativeLightness, 45);
+
+    commandLineSettings = QString("--ranopapos 56").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourPositiveOpacity, 56);
+
+    commandLineSettings = QString("--ranopaneg 67").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->randomColourNegativeOpacity, 67);
+
+    commandLineSettings = QString("--unicolpos springgreen").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->uniformPositiveNodeColour), QString("springgreen"));
+
+    commandLineSettings = QString("--unicolneg teal").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->uniformNegativeNodeColour), QString("teal"));
+
+    commandLineSettings = QString("--unicolspe papayawhip").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->uniformNodeSpecialColour), QString("papayawhip"));
+
+    commandLineSettings = QString("--depcollow mediumorchid").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->lowReadDepthColour), QString("mediumorchid"));
+
+    commandLineSettings = QString("--depcolhi linen").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(getColourName(g_settings->highReadDepthColour), QString("linen"));
+
+    QCOMPARE(g_settings->autoReadDepthValue, true);
+    commandLineSettings = QString("--depvallow 56.7").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->lowReadDepthValue, 56.7);
+    QCOMPARE(g_settings->autoReadDepthValue, false);
+
+    commandLineSettings = QString("--depvalhi 67.8").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->highReadDepthValue, 67.8);
+
+    commandLineSettings = QString("--depvalhi 67.8").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->highReadDepthValue, 67.8);
+
+    commandLineSettings = QString("--query queries.fasta").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastQueryFilename, QString("queries.fasta"));
+
+    commandLineSettings = QString("--blastp --abc").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastSearchParameters, QString("--abc"));
+
+    QCOMPARE(g_settings->blastAlignmentLengthFilterOn, false);
+    commandLineSettings = QString("--alfilter 543").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastAlignmentLengthFilterOn, true);
+    QCOMPARE(g_settings->blastAlignmentLengthFilterValue, 543);
+
+    QCOMPARE(g_settings->blastQueryCoverageFilterOn, false);
+    commandLineSettings = QString("--qcfilter 67.8").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastQueryCoverageFilterOn, true);
+    QCOMPARE(g_settings->blastQueryCoverageFilterValue, 67.8);
+
+    QCOMPARE(g_settings->blastIdentityFilterOn, false);
+    commandLineSettings = QString("--ifilter 12.3").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastIdentityFilterOn, true);
+    QCOMPARE(g_settings->blastIdentityFilterValue, 12.3);
+
+    QCOMPARE(g_settings->blastEValueFilterOn, false);
+    commandLineSettings = QString("--evfilter 8.5e-14").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastEValueFilterOn, true);
+    QCOMPARE(g_settings->blastEValueFilterCoefficientValue, 8.5);
+    QCOMPARE(g_settings->blastEValueFilterExponentValue, -14);
+
+    QCOMPARE(g_settings->blastBitScoreFilterOn, false);
+    commandLineSettings = QString("--bsfilter 1234.5").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->blastBitScoreFilterOn, true);
+    QCOMPARE(g_settings->blastBitScoreFilterValue, 1234.5);
+
+    commandLineSettings = QString("--pathnodes 3").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxQueryPathNodes, 3);
+
+    commandLineSettings = QString("--minpatcov 0.543").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minQueryCoveredByPath, 0.543);
+
+    commandLineSettings = QString("--minhitcov 0.654").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minQueryCoveredByHits, 0.654);
+
+    commandLineSettings = QString("--minmeanid 0.765").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minMeanHitIdentity, 0.765);
+
+    commandLineSettings = QString("--maxlendis 0.03").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxLengthDiscrepancy, 0.03);
+
+
+
+
+
+}
+
+
 
 
 
@@ -598,7 +884,5 @@ QString BandageTests::getTestDirectory()
 
     return "";
 }
-
-
 QTEST_MAIN(BandageTests)
 #include "bandagetests.moc"

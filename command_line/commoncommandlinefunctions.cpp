@@ -176,7 +176,7 @@ void printSettingsUsage(QTextStream * out)
     *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
     *out << "                              covered by BLAST hits in a query path (0.3 to" << endl;
-    *out << "                              1.0, default:" + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "                              1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
     *out << "                              path (0.0 to 1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
     *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
@@ -956,7 +956,7 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
     if (colourString == "random")
         return RANDOM_COLOURS;
     else if (colourString == "uniform")
-        return ONE_COLOUR;
+        return UNIFORM_COLOURS;
     else if (colourString == "readdepth")
         return READ_DEPTH_COLOUR;
     else if (colourString == "blastsolid")

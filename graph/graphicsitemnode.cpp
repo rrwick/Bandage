@@ -264,7 +264,7 @@ void GraphicsItemNode::setNodeColour()
 {
     switch (g_settings->nodeColourScheme)
     {
-    case ONE_COLOUR:
+    case UNIFORM_COLOURS:
         if (m_deBruijnNode->isSpecialNode())
             m_colour = g_settings->uniformNodeSpecialColour;
         else if (usePositiveNodeColour())

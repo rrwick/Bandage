@@ -1032,7 +1032,7 @@ void MainWindow::switchColourScheme()
         ui->contiguityInfoText->setVisible(false);
         break;
     case 1:
-        g_settings->nodeColourScheme = ONE_COLOUR;
+        g_settings->nodeColourScheme = UNIFORM_COLOURS;
         ui->contiguityButton->setVisible(false);
         ui->contiguityInfoText->setVisible(false);
         break;
@@ -2087,7 +2087,7 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     switch (nodeColourScheme)
     {
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
-    case ONE_COLOUR: ui->coloursComboBox->setCurrentIndex(1); break;
+    case UNIFORM_COLOURS: ui->coloursComboBox->setCurrentIndex(1); break;
     case READ_DEPTH_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
     case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
     case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
