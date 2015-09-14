@@ -858,6 +858,10 @@ void BandageTests::sciNotComparisons()
     QCOMPARE(sn09 != sn10, false);
     QCOMPARE(sn11 == sn12, true);
     QCOMPARE(sn11 == sn13, true);
+    QCOMPARE(sn01.asString(true), QString("1e10"));
+    QCOMPARE(sn01.asString(false), QString("1e10"));
+    QCOMPARE(sn11.asString(true), QString("1.4e2"));
+    QCOMPARE(sn11.asString(false), QString("140"));
 }
 
 
