@@ -57,7 +57,7 @@ int bandageImage(QStringList arguments)
 
     if (!checkIfFileExists(graphFilename))
     {
-        err << "Bandage error: " << graphFilename << " does not exist." << endl;
+        err << "Bandage error: " << graphFilename << " does not exist" << endl;
         return 1;
     }
 

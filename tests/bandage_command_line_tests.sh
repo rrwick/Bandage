@@ -125,12 +125,13 @@ test_all "$bandagepath image test.fastg tmp/test.png  --width 400 --height 500" 
 test_image_width_and_height tmp/test.png 400 500; rm tmp/test.png
 test_all "$bandagepath image test.fastg tmp/test.png  --width 500 --height 400" 0 "" ""
 test_image_width_and_height tmp/test.png 500 400; rm tmp/test.png
-test_all "$bandagepath image abc.fastg test.png" 1 "" "Bandage error: abc.fastg does not exist."
+test_all "$bandagepath image abc.fastg test.png" 1 "" "Bandage error: abc.fastg does not exist"
 test_all "$bandagepath image test.fastg test.abc" 1 "" "Bandage error: the output filename must end in .png, .jpg or .svg"
 test_all "$bandagepath image test.csv tmp/test.png" 1 "" "Bandage error: could not load test.csv"
 
 # Bandage load tests
-test_all "$bandagepath load abc.fastg" 1 "" "Bandage error: abc.fastg does not exist."
+test_all "$bandagepath load abc.fastg" 1 "" "Bandage error: abc.fastg does not exist"
+test_all "$bandagepath load test.fastg --query abc.fasta" 1 "" "Bandage error: --query must be followed by a a valid filename"
 
 # Bandage help tests
 test_exit_code "$bandagepath --help" 0
@@ -139,10 +140,13 @@ test_exit_code "$bandagepath --version" 0
 
 # Bandage incorrect settings tests
 test_all "$bandagepath --abc" 1 "" "Bandage error: Invalid option: --abc"
+test_all "$bandagepath --scope" 1 "" "Bandage error: --scope must be followed by entire, aroundnodes, aroundblast or depthrange"
 test_all "$bandagepath --scope abc" 1 "" "Bandage error: --scope must be followed by entire, aroundnodes, aroundblast or depthrange"
 test_all "$bandagepath --nodes" 1 "" "Bandage error: --nodes must be followed by a list of node names"
 test_all "$bandagepath --distance" 1 "" "Bandage error: --distance must be followed by an integer"
+test_all "$bandagepath --distance abc" 1 "" "Bandage error: --distance must be followed by an integer"
 test_all "$bandagepath --mindepth" 1 "" "Bandage error: --mindepth must be followed by a number"
+test_all "$bandagepath --mindepth abc" 1 "" "Bandage error: --mindepth must be followed by a number"
 test_all "$bandagepath --maxdepth" 1 "" "Bandage error: --maxdepth must be followed by a number"
 test_all "$bandagepath --bases" 1 "" "Bandage error: --bases must be followed by an integer"
 test_all "$bandagepath --quality" 1 "" "Bandage error: --quality must be followed by an integer"
@@ -151,6 +155,7 @@ test_all "$bandagepath --depwidth" 1 "" "Bandage error: --depwidth must be follo
 test_all "$bandagepath --deppower" 1 "" "Bandage error: --deppower must be followed by a number"
 test_all "$bandagepath --fontsize" 1 "" "Bandage error: --fontsize must be followed by an integer"
 test_all "$bandagepath --edgecol" 1 "" "Bandage error: --edgecol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
+test_all "$bandagepath --edgecol abc" 1 "" "Bandage error: --edgecol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --edgewidth" 1 "" "Bandage error: --edgewidth must be followed by a number"
 test_all "$bandagepath --outcol" 1 "" "Bandage error: --outcol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --outline" 1 "" "Bandage error: --outline must be followed by a number"
@@ -158,6 +163,7 @@ test_all "$bandagepath --selcol" 1 "" "Bandage error: --selcol must be followed 
 test_all "$bandagepath --textcol" 1 "" "Bandage error: --textcol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --toutcol" 1 "" "Bandage error: --toutcol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --toutline" 1 "" "Bandage error: --toutline must be followed by a number"
+test_all "$bandagepath --colour" 1 "" "Bandage error: --colour must be followed by random, uniform, readdepth, blastsolid or blastrainbow"
 test_all "$bandagepath --colour abc" 1 "" "Bandage error: --colour must be followed by random, uniform, readdepth, blastsolid or blastrainbow"
 test_all "$bandagepath --ransatpos" 1 "" "Bandage error: --ransatpos must be followed by an integer"
 test_all "$bandagepath --ransatneg" 1 "" "Bandage error: --ransatneg must be followed by an integer"
@@ -178,6 +184,10 @@ test_all "$bandagepath --alfilter" 1 "" "Bandage error: --alfilter must be follo
 test_all "$bandagepath --qcfilter" 1 "" "Bandage error: --qcfilter must be followed by a number"
 test_all "$bandagepath --ifilter" 1 "" "Bandage error: --ifilter must be followed by a number"
 test_all "$bandagepath --evfilter" 1 "" "Bandage error: --evfilter must be followed by a number in scientific notation"
+test_all "$bandagepath --evfilter abc" 1 "" "Bandage error: --evfilter must be followed by a number in scientific notation"
+test_all "$bandagepath --evfilter 1" 1 "" "Bandage error: --evfilter must be followed by a number in scientific notation"
+test_all "$bandagepath --evfilter 1.0" 1 "" "Bandage error: --evfilter must be followed by a number in scientific notation"
+test_all "$bandagepath --evfilter e1" 1 "" "Bandage error: --evfilter must be followed by a number in scientific notation"
 test_all "$bandagepath --bsfilter" 1 "" "Bandage error: --bsfilter must be followed by a number"
 test_all "$bandagepath --pathnodes" 1 "" "Bandage error: --pathnodes must be followed by an integer"
 test_all "$bandagepath --minpatcov" 1 "" "Bandage error: --minpatcov must be followed by a number"
