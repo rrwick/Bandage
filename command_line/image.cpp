@@ -211,6 +211,8 @@ void printImageUsage(QTextStream * out, bool all)
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);
+    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
+    *out << endl;
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)

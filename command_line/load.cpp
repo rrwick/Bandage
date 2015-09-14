@@ -70,12 +70,15 @@ int bandageLoad(QApplication * a, QStringList arguments)
 void printLoadUsage(QTextStream * out, bool all)
 {
     *out << endl;
-    *out << "Usage:    Bandage load <graph> [options]" << endl << endl;
+    *out << "Usage:    Bandage load <graph> [options]" << endl;
+    *out << endl;
     *out << "Options:  --draw              draw graph after loading" << endl;
     *out << endl;
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);
+    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
+    *out << endl;
 }
 
 

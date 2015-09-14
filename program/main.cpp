@@ -49,6 +49,8 @@ void printUsage(QTextStream * out, bool all)
     *out << endl;
     if (all)
         printSettingsUsage(out);
+    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
+    *out << endl;
 }
 
 int main(int argc, char *argv[])
