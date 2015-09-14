@@ -71,12 +71,12 @@ void SciNot::normalise()
         return;
     }
 
-    while (m_coefficient > 10.0)
+    while (fabs(m_coefficient) >= 10.0)
     {
         m_coefficient /= 10.0;
         ++m_exponent;
     }
-    while (m_coefficient < 1.0)
+    while (fabs(m_coefficient) < 1.0)
     {
         m_coefficient *= 10.0;
         --m_exponent;

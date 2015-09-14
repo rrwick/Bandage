@@ -44,6 +44,7 @@ private slots:
     void blastSearchFilters();
     void graphScope();
     void commandLineSettings();
+    void sciNotComparisons();
 
 private:
     void createGlobals();
@@ -816,6 +817,29 @@ void BandageTests::commandLineSettings()
 
 
 
+}
+
+
+void BandageTests::sciNotComparisons()
+{
+    SciNot sn01(1.0, 10);
+    SciNot sn02(10.0, 9);
+    SciNot sn03(0.1, 11);
+    SciNot sn04(5.0, 10);
+    SciNot sn05(-5.0, 15);
+
+    QCOMPARE(sn01 == sn02, true);
+    QCOMPARE(sn01 == sn03, true);
+    QCOMPARE(sn01 == sn03, true);
+    QCOMPARE(sn01 >= sn03, true);
+    QCOMPARE(sn01 <= sn03, true);
+    QCOMPARE(sn01 != sn03, false);
+    QCOMPARE(sn01 < sn04, true);
+    QCOMPARE(sn01 <= sn04, true);
+    QCOMPARE(sn01 > sn04, false);
+    QCOMPARE(sn01 >= sn04, false);
+    QCOMPARE(sn04 > sn05, true);
+    QCOMPARE(sn04 < sn05, false);
 }
 
 
