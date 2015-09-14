@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     QApplication::setApplicationVersion("0.6.4");
 
     QTextStream out(stdout);
-    QTextStream err(stdout);
+    QTextStream err(stderr);
 
     //Create the important global objects.
     g_settings.reset(new Settings());

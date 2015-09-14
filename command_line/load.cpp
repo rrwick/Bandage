@@ -22,7 +22,7 @@
 int bandageLoad(QApplication * a, QStringList arguments)
 {
     QTextStream out(stdout);
-    QTextStream err(stdout);
+    QTextStream err(stderr);
 
     if (checkForHelp(arguments))
     {
