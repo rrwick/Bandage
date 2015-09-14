@@ -832,6 +832,9 @@ void BandageTests::sciNotComparisons()
     SciNot sn08(-0.3, 4);
     SciNot sn09(-3.0, -3);
     SciNot sn10(-0.3, -2);
+    SciNot sn11(1.4, 2);
+    SciNot sn12("1.4e2");
+    SciNot sn13("140");
 
     QCOMPARE(sn01 == sn02, true);
     QCOMPARE(sn01 == sn03, true);
@@ -853,6 +856,8 @@ void BandageTests::sciNotComparisons()
     QCOMPARE(sn07 != sn08, false);
     QCOMPARE(sn09 == sn10, true);
     QCOMPARE(sn09 != sn10, false);
+    QCOMPARE(sn11 == sn12, true);
+    QCOMPARE(sn11 != sn13, true);
 }
 
 
