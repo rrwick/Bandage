@@ -41,6 +41,7 @@ AssemblyGraph::AssemblyGraph() :
     m_ogdfGraph = new ogdf::Graph();
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
                                                   ogdf::GraphAttributes::edgeGraphics);
+    clearGraphInfo();
 }
 
 AssemblyGraph::~AssemblyGraph()
