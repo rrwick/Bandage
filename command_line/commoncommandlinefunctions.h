@@ -65,8 +65,5 @@ QString getColourName(QColor colour);
 bool createBlastTempDirectory();
 void deleteBlastTempDirectory();
 
-bool parseSciNotation(QString numString, double * coefficient, int * exponent);
-bool lessThan(double aC, int aE, double bC, double bE);
-
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

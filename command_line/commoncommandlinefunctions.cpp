@@ -674,52 +674,6 @@ QString checkOptionForSciNotationFloat(QString option, QStringList * arguments, 
 }
 
 
-bool parseSciNotation(QString numString, double * coefficient, int * exponent)
-{
-    QStringList parts = numString.split('e');
-    if (parts.size() != 2)
-        return false;
-
-    bool ok;
-    *coefficient = parts[0].toDouble(&ok);
-    if (!ok)
-        return false;
-
-    *exponent = parts[1].toInt(&ok);
-    if (!ok)
-        return false;
-
-    if (*coefficient < 0.0)
-        return false;
-
-    while (*coefficient > 10.0)
-    {
-        *coefficient /= 10.0;
-        ++*exponent;
-    }
-    while (*coefficient < 1.0)
-    {
-        *coefficient *= 10.0;
-        --*exponent;
-    }
-
-    return ok;
-}
-
-
-//This function compares two numbers in scientific notation.
-//It returns true if a < b.
-//It assumes the numbers are standardised (i.e. the coefficient is between 1.0
-//and 10.0).
-bool lessThan(double aC, int aE, double bC, double bE)
-{
-    if (aE < bE)
-        return true;
-    if (aE > bE)
-        return false;
-    return aC < bC;
-}
-
 
 //Returns empty string if everything is okay and an error
 //message if there's a problem.  If everything is okay, it
