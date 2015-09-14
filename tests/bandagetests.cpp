@@ -813,10 +813,10 @@ void BandageTests::commandLineSettings()
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->maxLengthDiscrepancy, 0.03);
 
-
-
-
-
+    commandLineSettings = QString("--maxevprod 4e-500").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxEValueProduct.getCoefficient(), 4.0);
+    QCOMPARE(g_settings->maxEValueProduct.getExponent(), -500);
 }
 
 
@@ -827,6 +827,11 @@ void BandageTests::sciNotComparisons()
     SciNot sn03(0.1, 11);
     SciNot sn04(5.0, 10);
     SciNot sn05(-5.0, 15);
+    SciNot sn06(-6.0, 15);
+    SciNot sn07(-3.0, 3);
+    SciNot sn08(-0.3, 4);
+    SciNot sn09(-3.0, -3);
+    SciNot sn10(-0.3, -2);
 
     QCOMPARE(sn01 == sn02, true);
     QCOMPARE(sn01 == sn03, true);
@@ -840,6 +845,14 @@ void BandageTests::sciNotComparisons()
     QCOMPARE(sn01 >= sn04, false);
     QCOMPARE(sn04 > sn05, true);
     QCOMPARE(sn04 < sn05, false);
+    QCOMPARE(sn06 < sn05, true);
+    QCOMPARE(sn06 <= sn05, true);
+    QCOMPARE(sn06 > sn05, false);
+    QCOMPARE(sn06 >= sn05, false);
+    QCOMPARE(sn07 == sn08, true);
+    QCOMPARE(sn07 != sn08, false);
+    QCOMPARE(sn09 == sn10, true);
+    QCOMPARE(sn09 != sn10, false);
 }
 
 
