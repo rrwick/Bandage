@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-2157</y>
+        <y>-1573</y>
         <width>395</width>
         <height>2905</height>
        </rect>
@@ -2301,6 +2301,12 @@
                 </property>
                 <item row="1" column="1">
                  <widget class="QLabel" name="highReadDepthAutoValueLabel2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>0.0</string>
                   </property>
@@ -2311,6 +2317,12 @@
                 </item>
                 <item row="0" column="1">
                  <widget class="QLabel" name="lowReadDepthAutoValueLabel2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>0.0</string>
                   </property>
@@ -2321,6 +2333,12 @@
                 </item>
                 <item row="1" column="0">
                  <widget class="QLabel" name="highReadDepthAutoValueLabel1">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>High:</string>
                   </property>
@@ -2328,6 +2346,12 @@
                 </item>
                 <item row="0" column="0">
                  <widget class="QLabel" name="lowReadDepthAutoValueLabel1">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>Low:</string>
                   </property>
