@@ -242,7 +242,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--depwidth", arguments, 0.1, 1.0);
+    error = checkOptionForFloat("--deppower", arguments, 0.1, 1.0);
     if (error.length() > 0) return error;
 
     error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
@@ -388,8 +388,8 @@ void parseSettings(QStringList arguments)
         g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
     if (isOptionPresent("--depwidth", &arguments))
         g_settings->readDepthEffectOnWidth = getFloatOption("--depwidth", &arguments);
-    if (isOptionPresent("--depwidth", &arguments))
-        g_settings->readDepthPower = getFloatOption("--depwidth", &arguments);
+    if (isOptionPresent("--deppower", &arguments))
+        g_settings->readDepthPower = getFloatOption("--deppower", &arguments);
 
     if (isOptionPresent("--edgewidth", &arguments))
         g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
