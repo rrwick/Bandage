@@ -40,22 +40,21 @@ SciNot::SciNot(QString sciNotString) :
     if (parts.size() < 1)
         return;
     if (parts.size() < 2)
-    {
         m_coefficient = parts[0].toDouble();
-        return;
+    else
+    {
+        bool ok;
+        double coefficient = parts[0].toDouble(&ok);
+        if (!ok)
+            return;
+
+        double exponent = parts[1].toInt(&ok);
+        if (!ok)
+            return;
+
+        m_coefficient = coefficient;
+        m_exponent = exponent;
     }
-
-    bool ok;
-    double coefficient = parts[0].toDouble(&ok);
-    if (!ok)
-        return;
-
-    double exponent = parts[1].toInt(&ok);
-    if (!ok)
-        return;
-
-    m_coefficient = coefficient;
-    m_exponent = exponent;
 
     normalise();
 }
