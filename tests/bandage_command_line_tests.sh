@@ -128,11 +128,11 @@ test_image_width_and_height tmp/test.png 500 400; rm tmp/test.png
 test_all "$bandagepath image abc.fastg test.png" 1 "" "Bandage error: abc.fastg does not exist"
 test_all "$bandagepath image test.fastg test.abc" 1 "" "Bandage error: the output filename must end in .png, .jpg or .svg"
 test_all "$bandagepath image test.csv tmp/test.png" 1 "" "Bandage error: could not load test.csv"
-test_all "$bandagepath image test.fastg test.png --query abc.fasta" 1 "" "Bandage error: --query must be followed by a a valid filename"
+test_all "$bandagepath image test.fastg test.png --query abc.fasta" 1 "" "Bandage error: --query must be followed by a valid filename"
 
 # Bandage load tests
 test_all "$bandagepath load abc.fastg" 1 "" "Bandage error: abc.fastg does not exist"
-test_all "$bandagepath load test.fastg --query abc.fasta" 1 "" "Bandage error: --query must be followed by a a valid filename"
+test_all "$bandagepath load test.fastg --query abc.fasta" 1 "" "Bandage error: --query must be followed by a valid filename"
 
 # Bandage help tests
 test_exit_code "$bandagepath --help" 0

@@ -811,7 +811,7 @@ QString checkOptionForFile(QString option, QStringList * arguments)
 
     //If the thing that follows the option isn't a file that's a problem
     if (!checkIfFileExists(arguments->at(fileIndex)))
-        return option + " must be followed by a a valid filename";
+        return option + " must be followed by a valid filename";
 
     //If the code got here, the option and its file are okay.
     //Remove them from the arguments.
