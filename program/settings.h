@@ -24,6 +24,7 @@
 #include "globals.h"
 #include <QString>
 #include "../graph/path.h"
+#include "scinot.h"
 
 class DeBruijnNode;
 
@@ -128,7 +129,7 @@ public:
     double minQueryCoveredByHits;
     double minMeanHitIdentity;
     double maxLengthDiscrepancy;
-    int maxEValueProductPower;
+    SciNot maxEValueProduct;
 
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.
@@ -143,8 +144,7 @@ public:
     bool blastIdentityFilterOn;
     double blastIdentityFilterValue;
     bool blastEValueFilterOn;
-    double blastEValueFilterCoefficientValue;
-    int blastEValueFilterExponentValue;
+    SciNot blastEValueFilterValue;
     bool blastBitScoreFilterOn;
     double blastBitScoreFilterValue;
 

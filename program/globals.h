@@ -70,10 +70,4 @@ QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
 
-//Functions for dealing with numbers in scientific notation
-bool parseSciNotation(QString numString, double * coefficient, int * exponent);
-bool lessThan(QString a, QString b);
-bool lessThan(double aC, int aE, double bC, double bE);
-
-
 #endif // GLOBALS_H

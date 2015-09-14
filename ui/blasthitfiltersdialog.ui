@@ -81,7 +81,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QDoubleSpinBox" name="eValueBaseSpinBox">
+       <widget class="QDoubleSpinBox" name="eValueCoefficientSpinBox">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
@@ -315,7 +315,7 @@
   <tabstop>identityCheckBox</tabstop>
   <tabstop>identitySpinBox</tabstop>
   <tabstop>eValueCheckBox</tabstop>
-  <tabstop>eValueBaseSpinBox</tabstop>
+  <tabstop>eValueCoefficientSpinBox</tabstop>
   <tabstop>eValueExponentSpinBox</tabstop>
   <tabstop>bitScoreCheckBox</tabstop>
  </tabstops>

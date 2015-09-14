@@ -33,7 +33,7 @@ void BlastHitFiltersDialog::checkBoxesChanged()
 
     ui->identitySpinBox->setEnabled(ui->identityCheckBox->isChecked());
 
-    ui->eValueBaseSpinBox->setEnabled(ui->eValueCheckBox->isChecked());
+    ui->eValueCoefficientSpinBox->setEnabled(ui->eValueCheckBox->isChecked());
     ui->eValueExponentSpinBox->setEnabled(ui->eValueCheckBox->isChecked());
 
     ui->bitScoreSpinBox->setEnabled(ui->bitScoreCheckBox->isChecked());
@@ -51,8 +51,8 @@ void BlastHitFiltersDialog::setWidgetsFromSettings()
     ui->alignmentLengthSpinBox->setValue(g_settings->blastAlignmentLengthFilterValue);
     ui->queryCoverageSpinBox->setValue(g_settings->blastQueryCoverageFilterValue);
     ui->identitySpinBox->setValue(g_settings->blastIdentityFilterValue);
-    ui->eValueBaseSpinBox->setValue(g_settings->blastEValueFilterCoefficientValue);
-    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueFilterExponentValue);
+    ui->eValueCoefficientSpinBox->setValue(g_settings->blastEValueFilterValue.getCoefficient());
+    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueFilterValue.getExponent());
     ui->bitScoreSpinBox->setValue(g_settings->blastBitScoreFilterValue);
 
     checkBoxesChanged();
@@ -70,8 +70,7 @@ void BlastHitFiltersDialog::setSettingsFromWidgets()
     g_settings->blastAlignmentLengthFilterValue = ui->alignmentLengthSpinBox->value();
     g_settings->blastQueryCoverageFilterValue = ui->queryCoverageSpinBox->value();
     g_settings->blastIdentityFilterValue = ui->identitySpinBox->value();
-    g_settings->blastEValueFilterCoefficientValue = ui->eValueBaseSpinBox->value();
-    g_settings->blastEValueFilterExponentValue = ui->eValueExponentSpinBox->value();
+    g_settings->blastEValueFilterValue = SciNot(ui->eValueCoefficientSpinBox->value(), ui->eValueExponentSpinBox->value());
     g_settings->blastBitScoreFilterValue = ui->bitScoreSpinBox->value();
 }
 
@@ -101,7 +100,7 @@ QString BlastHitFiltersDialog::getFilterText()
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "e-value: " + QString::number(g_settings->blastEValueFilterCoefficientValue) + "e" + QString::number(g_settings->blastEValueFilterExponentValue);
+        filterText += "e-value: " + g_settings->blastEValueFilterValue.asString();
     }
     if (g_settings->blastBitScoreFilterOn)
     {

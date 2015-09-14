@@ -99,13 +99,18 @@ double BlastQueryPath::getMeanHitPercIdentity() const
 
 //This function looks at all of the hits in the path for this query and
 //multiplies the evalues together.
-long double BlastQueryPath::getEvalueProduct() const
+SciNot BlastQueryPath::getEvalueProduct() const
 {
-    long double eValueProduct = 1.0;
-    for (int i = 0; i < m_hits.size(); ++i)
-        eValueProduct *= m_hits[i]->m_eValue;
+    double coefficientProduct = 1.0;
+    int exponentSum = 0;
 
-    return eValueProduct;
+    for (int i = 0; i < m_hits.size(); ++i)
+    {
+        coefficientProduct *= m_hits[i]->m_eValue.getCoefficient();
+        exponentSum += m_hits[i]->m_eValue.getExponent();
+    }
+
+    return SciNot(coefficientProduct, exponentSum);
 }
 
 
@@ -191,8 +196,8 @@ bool BlastQueryPath::operator<(BlastQueryPath const &other) const
 {
     //First we compare using the E-value product.  This seems to value stronger
     //hits as well as paths with fewer, longer hits.
-    long double aEValueProduct = getEvalueProduct();
-    long double bEValueProduct = other.getEvalueProduct();
+    SciNot aEValueProduct = getEvalueProduct();
+    SciNot bEValueProduct = other.getEvalueProduct();
     if (aEValueProduct != bEValueProduct)
         return aEValueProduct < bEValueProduct;
 

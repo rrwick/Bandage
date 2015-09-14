@@ -74,7 +74,8 @@ SOURCES += \
     ui/querypathsdialog.cpp \
     blast/blastquerypath.cpp \
     tests/bandagetests.cpp \
-    ui/blasthitfiltersdialog.cpp
+    ui/blasthitfiltersdialog.cpp \
+    program/scinot.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -123,7 +124,8 @@ HEADERS  += \
     ui/querypathspushbutton.h \
     ui/querypathsdialog.h \
     blast/blastquerypath.h \
-    ui/blasthitfiltersdialog.h
+    ui/blasthitfiltersdialog.h \
+    program/scinot.h
 
 FORMS    += \
     ui/mainwindow.ui \

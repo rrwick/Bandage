@@ -333,7 +333,7 @@ void BlastSearchDialog::fillHitsTable()
         TableWidgetItemInt * nodeEnd = new TableWidgetItemInt(formatIntForDisplay(hit->m_nodeEnd), hit->m_nodeEnd);
         nodeEnd->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        TableWidgetItemDouble * eValue = new TableWidgetItemDouble(QString::number(hit->m_eValue), hit->m_eValue);
+        TableWidgetItemDouble * eValue = new TableWidgetItemDouble(hit->m_eValue.asString(), hit->m_eValue.toDouble());
         eValue->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         TableWidgetItemDouble * bitScore = new TableWidgetItemDouble(QString::number(hit->m_bitScore), hit->m_bitScore);

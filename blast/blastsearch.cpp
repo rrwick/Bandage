@@ -78,7 +78,7 @@ void BlastSearch::buildHitsFromBlastOutput()
         int queryEnd = alignmentParts[7].toInt();
         int nodeStart = alignmentParts[8].toInt();
         int nodeEnd = alignmentParts[9].toInt();
-        long double eValue = alignmentParts[10].toDouble();
+        SciNot eValue = alignmentParts[10].toDouble();
         double bitScore = alignmentParts[11].toDouble();
 
         //Only save BLAST hits that are on forward strands.
@@ -112,14 +112,9 @@ void BlastSearch::buildHitsFromBlastOutput()
         if (g_settings->blastIdentityFilterOn &&
                 percentIdentity < g_settings->blastIdentityFilterValue)
             continue;
-        if (g_settings->blastEValueFilterOn)
-        {
-            long double coefficient = g_settings->blastEValueFilterCoefficientValue;
-            long double exponent = g_settings->blastEValueFilterExponentValue;
-            long double eValueFilterValue = coefficient * pow(10.0, exponent);
-            if (eValue > eValueFilterValue)
+        if (g_settings->blastEValueFilterOn &&
+                eValue > g_settings->blastEValueFilterValue)
                 continue;
-        }
         if (g_settings->blastBitScoreFilterOn &&
                 bitScore < g_settings->blastBitScoreFilterValue)
             continue;

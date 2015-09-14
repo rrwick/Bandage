@@ -162,12 +162,11 @@ void BlastQuery::findQueryPaths()
     //We now want to throw out any paths for which the hits fail to meet the
     //thresholds in settings.
     QList<BlastQueryPath> sufficientCoveragePaths;
-    long double maxEValueProduct = pow(10.0l, (long double)g_settings->maxEValueProductPower);
     for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
         if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->minQueryCoveredByHits &&
                 blastQueryPaths[i].getPathQueryCoverage() >= g_settings->minQueryCoveredByPath &&
-                blastQueryPaths[i].getEvalueProduct() <= maxEValueProduct &&
+                blastQueryPaths[i].getEvalueProduct() <= g_settings->maxEValueProduct &&
                 blastQueryPaths[i].getMeanHitPercIdentity() >= 100.0 * g_settings->minMeanHitIdentity &&
                 fabs(blastQueryPaths[i].getRelativeLengthDiscrepancy()) <= g_settings->maxLengthDiscrepancy)
             sufficientCoveragePaths.push_back(blastQueryPaths[i]);

@@ -27,6 +27,7 @@ class BlastQuery;
 #include <vector>
 #include "../graph/path.h"
 #include "../graph/graphlocation.h"
+#include "../program/scinot.h"
 
 class BlastHit
 {
@@ -35,7 +36,7 @@ public:
              double percentIdentity, int alignmentLength,
              int numberMismatches, int numberGapOpens,
              int queryStart, int queryEnd,
-             int nodeStart, int nodeEnd, double eValue, double bitScore);
+             int nodeStart, int nodeEnd, SciNot eValue, double bitScore);
     BlastHit();
 
     BlastQuery * m_query;
@@ -48,7 +49,7 @@ public:
     int m_queryEnd;
     int m_nodeStart;
     int m_nodeEnd;
-    double m_eValue;
+    SciNot m_eValue;
     double m_bitScore;
 
     double m_nodeStartFraction;

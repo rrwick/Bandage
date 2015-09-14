@@ -113,7 +113,7 @@ Settings::Settings()
     minQueryCoveredByHits = 0.9;
     minMeanHitIdentity = 0.5;
     maxLengthDiscrepancy = 0.05;
-    maxEValueProductPower = -10;
+    maxEValueProduct = SciNot(1.0, -10);
 
     blastSearchParameters = "";
 
@@ -124,8 +124,7 @@ Settings::Settings()
     blastIdentityFilterOn = false;
     blastIdentityFilterValue = 90.0;
     blastEValueFilterOn = false;
-    blastEValueFilterCoefficientValue = 1.0;
-    blastEValueFilterExponentValue = -10;
+    blastEValueFilterValue = SciNot(1.0, -10);
     blastBitScoreFilterOn = false;
     blastBitScoreFilterValue = 1000.0;
 

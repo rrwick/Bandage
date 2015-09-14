@@ -25,6 +25,7 @@
 #include <QString>
 #include <QList>
 #include <QSharedPointer>
+#include "../program/scinot.h"
 
 //This is a class to hold all BLAST search related stuff.
 //An instance of it is made available to the whole program

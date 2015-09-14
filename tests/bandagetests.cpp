@@ -344,8 +344,7 @@ void BandageTests::blastSearchFilters()
 
     //Now filter by e-value.
     g_settings->blastEValueFilterOn = true;
-    g_settings->blastEValueFilterCoefficientValue = 1.0;
-    g_settings->blastEValueFilterExponentValue = -5;
+    g_settings->blastEValueFilterValue = SciNot(1.0, -5);
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 14);
     QCOMPARE(g_blastSearch->m_allHits.size() < unfilteredHitCount, true);
@@ -784,8 +783,8 @@ void BandageTests::commandLineSettings()
     commandLineSettings = QString("--evfilter 8.5e-14").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->blastEValueFilterOn, true);
-    QCOMPARE(g_settings->blastEValueFilterCoefficientValue, 8.5);
-    QCOMPARE(g_settings->blastEValueFilterExponentValue, -14);
+    QCOMPARE(g_settings->blastEValueFilterValue.getCoefficient(), 8.5);
+    QCOMPARE(g_settings->blastEValueFilterValue.getExponent(), -14);
 
     QCOMPARE(g_settings->blastBitScoreFilterOn, false);
     commandLineSettings = QString("--bsfilter 1234.5").split(" ");

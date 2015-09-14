@@ -22,6 +22,7 @@
 #include "../graph/path.h"
 #include <QList>
 #include "blasthit.h"
+#include "../program/scinot.h"
 
 class BlastQuery;
 
@@ -35,7 +36,7 @@ public:
     //ACCESSORS
     Path getPath() const {return m_path;}
     QList<BlastHit *> getHits() const {return m_hits;}
-    long double getEvalueProduct() const;
+    SciNot getEvalueProduct() const;
     double getMeanHitPercIdentity() const;
     double getRelativeLengthDiscrepancy() const;
     double getPathQueryCoverage() const;

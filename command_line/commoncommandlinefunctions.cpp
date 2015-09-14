@@ -182,9 +182,8 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
     *out << "                              between a BLAST query and its path in the graph" << endl;
     *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->maxLengthDiscrepancy) + ")" << endl;
-    *out << "          --maxevprod <int>   Maximum e-value product for all BLAST hits in a" << endl;
-    *out << "                              query path, given as a power of ten" << endl;
-    *out << "                              (-1000 to 1, default: " << QString::number(g_settings->maxEValueProductPower) + ")" << endl;
+    *out << "          --maxevprod <sci>   Maximum e-value product for all BLAST hits in a" << endl;
+    *out << "                              query path, (1e-999 to 9.9e1, default: " << g_settings->maxEValueProduct.asString() + ")" << endl;
     *out << endl;
 }
 
@@ -315,7 +314,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--maxlendis", arguments, 0.0, 0.5);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--maxevprod", arguments, -1000, 1);
+    error = checkOptionForSciNot("--maxevprod", arguments, SciNot(1.0, -999), SciNot(9.9, 1));
     if (error.length() > 0) return error;
 
     error = checkOptionForInt("--alfilter", arguments, 0, 1000000);
@@ -324,7 +323,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--ifilter", arguments, 0.0, 100.0);
     if (error.length() > 0) return error;
-    error = checkOptionForSciNotationFloat("--evfilter", arguments, "1e-999", "9.9e1");
+    error = checkOptionForSciNot("--evfilter", arguments, SciNot(1.0, -999), SciNot(9.9, 1));
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0);
     if (error.length() > 0) return error;
@@ -487,7 +486,7 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--maxlendis", &arguments))
         g_settings->maxLengthDiscrepancy = getFloatOption("--maxlendis", &arguments);
     if (isOptionPresent("--maxevprod", &arguments))
-        g_settings->maxEValueProductPower = getIntOption("--maxevprod", &arguments);
+        g_settings->maxEValueProduct = getSciNotOption("--maxevprod", &arguments);
 
     if (isOptionPresent("--alfilter", &arguments))
     {
@@ -507,11 +506,7 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--evfilter", &arguments))
     {
         g_settings->blastEValueFilterOn = true;
-        double coefficient;
-        int exponent;
-        parseSciNotation(getSciNotationFloatOption("--evfilter", &arguments), &coefficient, &exponent);
-        g_settings->blastEValueFilterCoefficientValue = coefficient;
-        g_settings->blastEValueFilterExponentValue = exponent;
+        g_settings->blastEValueFilterValue = getSciNotOption("--evfilter", &arguments);
     }
     if (isOptionPresent("--bsfilter", &arguments))
     {
@@ -626,7 +621,7 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
 //Returns empty string if everything is okay and an error
 //message if there's a problem.  If everything is okay, it
 //also removes the option and its value from arguments.
-QString checkOptionForSciNotationFloat(QString option, QStringList * arguments, QString min, QString max)
+QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min, SciNot max)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -634,40 +629,28 @@ QString checkOptionForSciNotationFloat(QString option, QStringList * arguments, 
     if (optionIndex == -1)
         return "";
 
-    int floatIndex = optionIndex + 1;
+    int sciNotIndex = optionIndex + 1;
 
     //If nothing follows the option, that's a problem.
-    if (floatIndex >= arguments->size())
+    if (sciNotIndex >= arguments->size())
         return option + " must be followed by a number in scientific notation";
 
     //If the thing following the option isn't a number in scientific notation,
     //that's a problem.
-    double numCoefficient;
-    int numExponent;
-    bool optionIsSciNot = parseSciNotation(arguments->at(floatIndex), &numCoefficient, &numExponent);
-    if (!optionIsSciNot)
+    if (!SciNot::isValidSciNotString(arguments->at(sciNotIndex)))
         return option + " must be followed by a number in scientific notation";
 
-    //Check the range of the option.
-    double minCoefficient;
-    int minExponent;
-    double maxCoefficient;
-    int maxExponent;
-    parseSciNotation(min, &minCoefficient, &minExponent);
-    parseSciNotation(max, &maxCoefficient, &maxExponent);
+    SciNot optionSciNot = SciNot(arguments->at(sciNotIndex));
 
-    if (lessThan(numCoefficient, numExponent, minCoefficient, minExponent))
+    //Check the range of the option.
+    if (optionSciNot < min || optionSciNot > max)
         return "Value of " + option + " must be between "
-                + min + " and " + max +
-                " (inclusive)";
-    if (lessThan(maxCoefficient, maxExponent, numCoefficient, numExponent))
-        return "Value of " + option + " must be between "
-                + min + " and " + max +
+                + min.asString() + " and " + max.asString() +
                 " (inclusive)";
 
     //If the code got here, the option and its number are okay.
     //Remove them from the arguments.
-    arguments->removeAt(floatIndex);
+    arguments->removeAt(sciNotIndex);
     arguments->removeAt(optionIndex);
 
     return "";
@@ -879,17 +862,17 @@ double getFloatOption(QString option, QStringList * arguments)
 }
 
 
-QString getSciNotationFloatOption(QString option, QStringList * arguments)
+SciNot getSciNotOption(QString option, QStringList * arguments)
 {
      int optionIndex = arguments->indexOf(option);
      if (optionIndex == -1)
          return 0;
 
-     int floatIndex = optionIndex + 1;
-     if (floatIndex >= arguments->size())
-         return 0;
+     int sciNotIndex = optionIndex + 1;
+     if (sciNotIndex >= arguments->size())
+         return SciNot();
 
-     return arguments->at(floatIndex);
+     return SciNot(arguments->at(sciNotIndex));
 }
 
 NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)

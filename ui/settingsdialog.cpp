@@ -23,6 +23,7 @@
 #include "../program/settings.h"
 #include "colourbutton.h"
 #include "../graph/assemblygraph.h"
+#include "../program/scinot.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -87,9 +88,11 @@ SettingsDialog::~SettingsDialog()
 void setOneSettingFromWidget(double * setting, QDoubleSpinBox * widget, bool percentage) {*setting = widget->value() / (percentage ? 100.0 : 1.0);}
 void setOneSettingFromWidget(int * setting, QSpinBox * widget) {*setting = widget->value();}
 void setOneSettingFromWidget(QColor * setting, ColourButton * widget) {*setting = widget->m_colour;}
+void setOneSettingFromWidget(SciNot * setting, QDoubleSpinBox * coefficientWidget, QSpinBox * exponentWidget) {*setting = SciNot(coefficientWidget->value(), exponentWidget->value());}
 void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * widget, bool percentage) {widget->setValue(*setting * (percentage ? 100.0 : 1.0));}
 void setOneWidgetFromSetting(int * setting, QSpinBox * widget) {widget->setValue(*setting);}
 void setOneWidgetFromSetting(QColor * setting, ColourButton * widget) {widget->setColour(*setting);}
+void setOneWidgetFromSetting(SciNot * setting, QDoubleSpinBox * coefficientWidget, QSpinBox * exponentWidget) {coefficientWidget->setValue(setting->getCoefficient()); exponentWidget->setValue(setting->getExponent());}
 
 
 
@@ -117,18 +120,21 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     void (*doubleFunctionPointer)(double *, QDoubleSpinBox *, bool);
     void (*intFunctionPointer)(int *, QSpinBox *);
     void (*colourFunctionPointer)(QColor *, ColourButton *);
+    void (*sciNotFunctionPointer)(SciNot *, QDoubleSpinBox *, QSpinBox *);
 
     if (setWidgets)
     {
         doubleFunctionPointer = setOneWidgetFromSetting;
         intFunctionPointer = setOneWidgetFromSetting;
         colourFunctionPointer = setOneWidgetFromSetting;
+        sciNotFunctionPointer = setOneWidgetFromSetting;
     }
     else
     {
         doubleFunctionPointer = setOneSettingFromWidget;
         intFunctionPointer = setOneSettingFromWidget;
         colourFunctionPointer = setOneSettingFromWidget;
+        sciNotFunctionPointer = setOneSettingFromWidget;
     }
 
     intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
@@ -167,7 +173,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->minQueryCoveredByHits, ui->minQueryCoveredByHitsSpinBox, true);
     doubleFunctionPointer(&settings->minMeanHitIdentity, ui->minMeanHitIdentitySpinBox, true);
     doubleFunctionPointer(&settings->maxLengthDiscrepancy, ui->maxLengthDiscrepancySpinBox, true);
-    intFunctionPointer(&settings->maxEValueProductPower, ui->maxEvalueProductSpinBox);
+    sciNotFunctionPointer(&settings->maxEValueProduct, ui->maxEValueCoefficientSpinBox, ui->maxEValueExponentSpinBox);
 
     //A couple of settings are not in a spin box, so they
     //have to be done manually, not with those function pointers.

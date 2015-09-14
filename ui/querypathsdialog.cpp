@@ -102,8 +102,8 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         TableWidgetItemDouble * pathLengthDisc = new TableWidgetItemDouble(lengthDiscSign + formatDoubleForDisplay(100.0 * lengthDisc, 2) + "%", lengthDisc);
         pathLengthDisc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        double evalueProduct = queryPath->getEvalueProduct();
-        TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(QString::number(evalueProduct), evalueProduct);
+        SciNot evalueProduct = queryPath->getEvalueProduct();
+        TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(evalueProduct.asString(), evalueProduct.toDouble());
         pathEvalueProduct->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         ui->tableWidget->setItem(i, 0, pathString);

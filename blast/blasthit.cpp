@@ -29,7 +29,7 @@ BlastHit::BlastHit(BlastQuery * query, DeBruijnNode * node,
                    int numberMismatches, int numberGapOpens,
                    int queryStart, int queryEnd,
                    int nodeStart, int nodeEnd,
-                   double eValue, double bitScore) :
+                   SciNot eValue, double bitScore) :
     m_query(query), m_node(node),
     m_percentIdentity(percentIdentity), m_alignmentLength(alignmentLength),
     m_numberMismatches(numberMismatches), m_numberGapOpens(numberGapOpens),
