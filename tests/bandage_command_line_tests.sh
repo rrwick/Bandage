@@ -195,7 +195,7 @@ test_all "$bandagepath --minpatcov" 1 "" "Bandage error: --minpatcov must be fol
 test_all "$bandagepath --minhitcov" 1 "" "Bandage error: --minhitcov must be followed by a number"
 test_all "$bandagepath --minmeanid" 1 "" "Bandage error: --minmeanid must be followed by a number"
 test_all "$bandagepath --maxlendis" 1 "" "Bandage error: --maxlendis must be followed by a number"
-test_all "$bandagepath --maxevprod" 1 "" "Bandage error: --maxevprod must be followed by an integer"
+test_all "$bandagepath --maxevprod" 1 "" "Bandage error: --maxevprod must be followed by a number in scientific notation"
 
 
 
