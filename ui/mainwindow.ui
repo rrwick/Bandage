@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>247</width>
-         <height>1065</height>
+         <width>293</width>
+         <height>1063</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1348,8 +1348,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>221</width>
-         <height>1065</height>
+         <width>251</width>
+         <height>1063</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1732,7 +1732,7 @@
      <x>0</x>
      <y>0</y>
      <width>1301</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1817,6 +1817,8 @@
     <addaction name="separator"/>
     <addaction name="actionRemove_selection_from_graph"/>
     <addaction name="actionDuplicate_selected_nodes"/>
+    <addaction name="actionMerge_selected_nodes"/>
+    <addaction name="actionMerge_all_possible_nodes"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuManipulate"/>
@@ -2120,6 +2122,16 @@
   <action name="actionDuplicate_selected_nodes">
    <property name="text">
     <string>Duplicate selected nodes</string>
+   </property>
+  </action>
+  <action name="actionMerge_selected_nodes">
+   <property name="text">
+    <string>Merge selected nodes</string>
+   </property>
+  </action>
+  <action name="actionMerge_all_possible_nodes">
+   <property name="text">
+    <string>Merge all possible nodes</string>
    </property>
   </action>
  </widget>
