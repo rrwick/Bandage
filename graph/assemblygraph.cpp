@@ -1885,6 +1885,9 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
     newGraphicsItemNode->shiftPointsRight();
     originalGraphicsItemNode->fixEdgePaths();
 
+    originalGraphicsItemNode->setNodeColour();
+    newGraphicsItemNode->setNodeColour();
+
     scene->addItem(newGraphicsItemNode);
 
     const std::vector<DeBruijnEdge *> * newEdges = newNode->getEdgesPointer();
