@@ -152,6 +152,7 @@ private slots:
     void duplicateSelectedNodes();
     void mergeSelectedNodes();
     void mergeAllPossible();
+    void cleanUpAllBlast();
 
 protected:
       void showEvent(QShowEvent *ev);

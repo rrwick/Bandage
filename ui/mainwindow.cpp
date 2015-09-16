@@ -2268,6 +2268,7 @@ void MainWindow::removeSelection()
     g_assemblyGraph->deleteNodes(&selectedNodes);
 
     displayGraphDetails();
+    cleanUpAllBlast();
 }
 
 
@@ -2367,14 +2368,33 @@ void MainWindow::duplicateSelectedNodes()
         g_assemblyGraph->duplicateNodePair(nodesToDuplicate[i], m_scene);
 
     displayGraphDetails();
+    cleanUpAllBlast();
 }
 
 void MainWindow::mergeSelectedNodes()
 {
 
+
+
+
+    displayGraphDetails();
+    cleanUpAllBlast();
 }
 
 void MainWindow::mergeAllPossible()
 {
 
+
+
+
+
+    displayGraphDetails();
+    cleanUpAllBlast();
+}
+
+
+void MainWindow::cleanUpAllBlast()
+{
+    g_blastSearch->cleanUp();
+    g_assemblyGraph->clearAllBlastHitPointers();
 }
