@@ -87,6 +87,7 @@ public:
     void getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
                                                                 std::vector<QPointF> * blastHitLocation);
     void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
+    void fixEdgePaths(std::vector<GraphicsItemNode *> * nodes = 0);
 
 private:
     void exactPathHighlightNode(QPainter * painter);

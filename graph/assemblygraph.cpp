@@ -1883,6 +1883,7 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
 
     originalGraphicsItemNode->shiftPointsLeft();
     newGraphicsItemNode->shiftPointsRight();
+    originalGraphicsItemNode->fixEdgePaths();
 
     scene->addItem(newGraphicsItemNode);
 

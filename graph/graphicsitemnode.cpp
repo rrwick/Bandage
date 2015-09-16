@@ -483,15 +483,32 @@ void GraphicsItemNode::mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     }
     graphicsScene->possiblyExpandSceneRectangle(&nodesToMove);
 
-    //It is now necessary to remake the paths for each edge that is connected
-    //to a moved node.
+    fixEdgePaths(&nodesToMove);
+}
+
+
+//This function remakes edge paths.  If nodes is passed, it will remake the
+//edge paths for all of the nodes.  If nodes isn't passed, then it will just
+//do it for this node.
+void GraphicsItemNode::fixEdgePaths(std::vector<GraphicsItemNode *> * nodes)
+{
     std::set<DeBruijnEdge *> edgesToFix;
-    for (size_t i = 0; i < nodesToMove.size(); ++i)
+
+    if (nodes == 0)
     {
-        DeBruijnNode * node = nodesToMove[i]->m_deBruijnNode;
-        const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+        const std::vector<DeBruijnEdge *> * edges = m_deBruijnNode->getEdgesPointer();
         for (size_t j = 0; j < edges->size(); ++j)
             edgesToFix.insert((*edges)[j]);
+    }
+    else
+    {
+        for (size_t i = 0; i < nodes->size(); ++i)
+        {
+            DeBruijnNode * node = (*nodes)[i]->m_deBruijnNode;
+            const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+            for (size_t j = 0; j < edges->size(); ++j)
+                edgesToFix.insert((*edges)[j]);
+        }
     }
 
     for (std::set<DeBruijnEdge *>::iterator i = edgesToFix.begin(); i != edgesToFix.end(); ++i)
