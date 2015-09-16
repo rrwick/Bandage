@@ -109,7 +109,8 @@ public:
                               std::vector<QString> * sequences);
 
     int getDrawnNodeCount() const;
-
+    void deleteNodes(std::vector<DeBruijnNode *> * nodes);
+    void deleteEdges(std::vector<DeBruijnEdge *> * edges);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

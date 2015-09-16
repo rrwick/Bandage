@@ -63,6 +63,13 @@ void DeBruijnNode::addEdge(DeBruijnEdge * edge)
 }
 
 
+//This function deletes an edge from the node, if it exists.
+void DeBruijnNode::removeEdge(DeBruijnEdge * edge)
+{
+    m_edges.erase(std::remove(m_edges.begin(), m_edges.end(), edge), m_edges.end());
+}
+
+
 //This function resets the node to the state it would be in after a graph
 //file was loaded - no contiguity status and no OGDF nodes.
 void DeBruijnNode::resetNode()

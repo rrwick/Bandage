@@ -33,6 +33,7 @@
 class GraphicsViewZoom;
 class MyGraphicsScene;
 class DeBruijnNode;
+class DeBruijnEdge;
 class BlastSearchDialog;
 
 namespace Ui {
@@ -93,6 +94,8 @@ private:
     void setNodeDistanceWidgetVisibility(bool visible);
     void setReadDepthRangeWidgetVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
+    void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes);
+    void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges);
 
 private slots:
     void loadGraph(QString fullFileName = "");
@@ -116,7 +119,7 @@ private slots:
     void fontButtonPressed();
     void setNodeCustomColour();
     void setNodeCustomLabel();
-    void removeNodes();
+    void hideNodes();
     void openSettingsDialog();
     void openAboutDialog();
     void selectUserSpecifiedNodes();
@@ -145,6 +148,7 @@ private slots:
     void saveEntireGraphToFasta();
     void saveEntireGraphToFastaOnlyPositiveNodes();
     void webBlastSelectedNodes();
+    void removeSelection();
 
 protected:
       void showEvent(QShowEvent *ev);

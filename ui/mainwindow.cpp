@@ -144,7 +144,6 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
     connect(ui->setNodeCustomColourButton, SIGNAL(clicked()), this, SLOT(setNodeCustomColour()));
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
-    connect(ui->removeNodeButton, SIGNAL(clicked()), this, SLOT(removeNodes()));
     connect(ui->actionSettings, SIGNAL(triggered()), this, SLOT(openSettingsDialog()));
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
@@ -175,25 +174,10 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
     connect(ui->actionSave_entire_graph_to_FASTA_only_positive_nodes, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFastaOnlyPositiveNodes()));
     connect(ui->actionWeb_BLAST_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(webBlastSelectedNodes()));
+    connect(ui->actionHide_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(hideNodes()));
+    connect(ui->actionRemove_selection_from_graph, SIGNAL(triggered(bool)), this, SLOT(removeSelection()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
-
-    QShortcut *colourShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
-    connect(colourShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomColour()));
-    QShortcut *labelShortcut = new QShortcut(QKeySequence("Ctrl+L"), this);
-    connect(labelShortcut, SIGNAL(activated()), this, SLOT(setNodeCustomLabel()));
-    QShortcut *removeShortcut1 = new QShortcut(QKeySequence("Backspace"), this);
-    connect(removeShortcut1, SIGNAL(activated()), this, SLOT(removeNodes()));
-    QShortcut *removeShortcut2 = new QShortcut(QKeySequence("Delete"), this);
-    connect(removeShortcut2, SIGNAL(activated()), this, SLOT(removeNodes()));
-
-    //On the Mac, the shortcut keys will be using the command button, not the control button
-    //so change the tooltips to reflect this.
-#ifdef Q_OS_MAC
-    QString command(QChar(0x2318));
-    ui->setNodeCustomColourButton->setToolTip(command + 'O');
-    ui->setNodeCustomLabelButton->setToolTip(command + 'L');
-#endif
 }
 
 
@@ -444,14 +428,12 @@ void MainWindow::selectionChanged()
         if (selectedNodeCount == 1)
         {
             ui->selectedNodesTitleLabel->setText("Selected node");
-            ui->removeNodeButton->setText("Remove node");
             ui->selectedNodesLengthLabel->setText("Length: " + selectedNodeLengthText);
             ui->selectedNodesDepthLabel->setText("Read depth: " + selectedNodeDepthText);
         }
         else
         {
             ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
-            ui->removeNodeButton->setText("Remove nodes");
             ui->selectedNodesLengthLabel->setText("Total length: " + selectedNodeLengthText);
             ui->selectedNodesDepthLabel->setText("Mean read depth: " + selectedNodeDepthText);
         }
@@ -1357,45 +1339,6 @@ void MainWindow::setNodeCustomLabel()
 }
 
 
-void MainWindow::removeNodes()
-{
-    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    if (selectedNodes.size() == 0)
-        return;
-
-    for (size_t i = 0; i < selectedNodes.size(); ++i)
-    {
-        //First remove any edges connected to this node
-        removeAllGraphicsEdgesFromNode(selectedNodes[i]);
-
-        //If the graph is on single mode, then also try to remove any
-        //edges connected to the reverse complement node
-        if (!g_settings->doubleMode)
-            removeAllGraphicsEdgesFromNode(selectedNodes[i]->getReverseComplement());
-
-        //Now remove the node itself
-        GraphicsItemNode * graphicsItemNode = selectedNodes[i]->getGraphicsItemNode();
-        m_scene->removeItem(graphicsItemNode);
-        delete graphicsItemNode;
-        selectedNodes[i]->setGraphicsItemNode(0);
-    }
-}
-
-void MainWindow::removeAllGraphicsEdgesFromNode(DeBruijnNode * node)
-{
-    const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
-    for (size_t i = 0; i < edges->size(); ++i)
-    {
-        DeBruijnEdge * deBruijnEdge = (*edges)[i];
-        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->getGraphicsItemEdge();
-        if (graphicsItemEdge != 0)
-        {
-            m_scene->removeItem(graphicsItemEdge);
-            delete graphicsItemEdge;
-            deBruijnEdge->setGraphicsItemEdge(0);
-        }
-    }
-}
 
 
 
@@ -1754,11 +1697,6 @@ void MainWindow::setInfoTexts()
                                                "these buttons. They will only be visible when the colouring "
                                                "mode is set to 'Custom colours' and the 'Custom' label option "
                                                "is ticked.");
-    ui->removeNodesInfoText->setInfoText("Click this button to remove selected nodes from the drawn graph, along "
-                                         "with any edges that connect to those nodes. This makes no change to "
-                                         "the underlying assembly graph, just the visualisation.<br><br>"
-                                         "To see removed nodes again, you must redraw the graph by clicking "
-                                         "'Draw graph'.");
     ui->minReadDepthInfoText->setInfoText("This is the lower bound for the read depth range. Nodes with a read "
                                           "depth less than this value will not be drawn.");
     ui->maxReadDepthInfoText->setInfoText("This is the uper bound for the read depth range. Nodes with a read "
@@ -2296,4 +2234,77 @@ QByteArray MainWindow::makeStringUrlSafe(QByteArray s)
     s.replace("\t", "+");
 
     return s;
+}
+
+
+//This function removes nodes from the visualisation, but leaves them in the
+//actual graph.
+void MainWindow::hideNodes()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    removeGraphicsItemNodes(&selectedNodes);
+}
+
+
+void MainWindow::removeSelection()
+{
+    std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+
+    removeGraphicsItemEdges(&selectedEdges);
+    removeGraphicsItemNodes(&selectedNodes);
+
+    g_assemblyGraph->deleteEdges(&selectedEdges);
+    g_assemblyGraph->deleteNodes(&selectedNodes);
+
+    displayGraphDetails();
+}
+
+
+
+void MainWindow::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes)
+{
+    for (size_t i = 0; i < nodes->size(); ++i)
+    {
+        DeBruijnNode * node = (*nodes)[i];
+
+        //First remove any edges connected to this node
+        removeAllGraphicsEdgesFromNode(node);
+
+        //If the graph is on single mode, then also try to remove any
+        //edges connected to the reverse complement node
+        if (!g_settings->doubleMode)
+            removeAllGraphicsEdgesFromNode(node->getReverseComplement());
+
+        //Now remove the node itself
+        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
+        if (graphicsItemNode != 0)
+        {
+            m_scene->removeItem(graphicsItemNode);
+            delete graphicsItemNode;
+            node->setGraphicsItemNode(0);
+        }
+    }
+}
+
+
+void MainWindow::removeAllGraphicsEdgesFromNode(DeBruijnNode * node)
+{
+    const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+    removeGraphicsItemEdges(edges);
+}
+
+void MainWindow::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges)
+{
+    for (size_t i = 0; i < edges->size(); ++i)
+    {
+        DeBruijnEdge * deBruijnEdge = (*edges)[i];
+        GraphicsItemEdge * graphicsItemEdge = deBruijnEdge->getGraphicsItemEdge();
+        if (graphicsItemEdge != 0)
+        {
+            m_scene->removeItem(graphicsItemEdge);
+            delete graphicsItemEdge;
+            deBruijnEdge->setGraphicsItemEdge(0);
+        }
+    }
 }

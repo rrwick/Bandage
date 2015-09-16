@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>293</width>
-         <height>1063</height>
+         <width>247</width>
+         <height>1065</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1348,8 +1348,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>251</width>
-         <height>1063</height>
+         <width>221</width>
+         <height>1065</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1649,32 +1649,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="InfoTextWidget" name="removeNodesInfoText" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="2">
-            <widget class="QPushButton" name="removeNodeButton">
-             <property name="toolTip">
-              <string>Delete</string>
-             </property>
-             <property name="text">
-              <string>Remove nodes</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -1758,7 +1732,7 @@
      <x>0</x>
      <y>0</y>
      <width>1301</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1835,7 +1809,17 @@
     <addaction name="separator"/>
     <addaction name="actionWeb_BLAST_selected_nodes"/>
    </widget>
+   <widget class="QMenu" name="menuManipulate">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionHide_selected_nodes"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemove_selection_from_graph"/>
+    <addaction name="actionDuplicate_selected_nodes"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuManipulate"/>
    <addaction name="menuTools"/>
    <addaction name="menuView"/>
    <addaction name="menuSelection"/>
@@ -2117,6 +2101,27 @@
     <string>Web BLAST selected nodes</string>
    </property>
   </action>
+  <action name="actionHide_selected_nodes">
+   <property name="text">
+    <string>Hide selected nodes</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionRemove_selection_from_graph">
+   <property name="text">
+    <string>Remove selection from graph</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Del</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_selected_nodes">
+   <property name="text">
+    <string>Duplicate selected nodes</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -2164,7 +2169,6 @@
   <tabstop>selectedNodesTextEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
   <tabstop>setNodeCustomLabelButton</tabstop>
-  <tabstop>removeNodeButton</tabstop>
   <tabstop>selectedEdgesTextEdit</tabstop>
  </tabstops>
  <resources>

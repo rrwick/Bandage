@@ -96,6 +96,7 @@ public:
     void setCustomLabel(QString newLabel) {m_customLabel = newLabel;}
     void resetNode();
     void addEdge(DeBruijnEdge * edge);
+    void removeEdge(DeBruijnEdge * edge);
     void addToOgdfGraph(ogdf::Graph * ogdfGraph);
     void determineContiguity();
     void clearBlastHits() {m_blastHits.clear();}
