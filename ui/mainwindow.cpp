@@ -182,6 +182,9 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionWeb_BLAST_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(webBlastSelectedNodes()));
     connect(ui->actionHide_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(hideNodes()));
     connect(ui->actionRemove_selection_from_graph, SIGNAL(triggered(bool)), this, SLOT(removeSelection()));
+    connect(ui->actionDuplicate_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(duplicateSelectedNodes()));
+    connect(ui->actionMerge_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeSelectedNodes()));
+    connect(ui->actionMerge_all_possible_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeAllPossible()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -2336,4 +2339,42 @@ void MainWindow::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edg
         m_scene->removeItem(graphicsItemEdge);
         delete graphicsItemEdge;
     }
+}
+
+
+void MainWindow::duplicateSelectedNodes()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select one or more nodes before using the 'Mere selected nodes' function.");
+        return;
+    }
+
+    //Nodes are always duplicated in pairs (both positive and negative), so we
+    //want to compile a list of only positive nodes.
+    QList<DeBruijnNode *> nodesToDuplicate;
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        DeBruijnNode * node = selectedNodes[i];
+        if (node->isNegativeNode())
+            node = node->getReverseComplement();
+        if (!nodesToDuplicate.contains(node))
+            nodesToDuplicate.push_back(node);
+    }
+
+    for (int i = 0; i < nodesToDuplicate.size(); ++i)
+        g_assemblyGraph->duplicateNodePair(nodesToDuplicate[i]);
+
+    displayGraphDetails();
+}
+
+void MainWindow::mergeSelectedNodes()
+{
+
+}
+
+void MainWindow::mergeAllPossible()
+{
+
 }

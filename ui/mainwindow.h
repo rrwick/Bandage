@@ -149,6 +149,9 @@ private slots:
     void saveEntireGraphToFastaOnlyPositiveNodes();
     void webBlastSelectedNodes();
     void removeSelection();
+    void duplicateSelectedNodes();
+    void mergeSelectedNodes();
+    void mergeAllPossible();
 
 protected:
       void showEvent(QShowEvent *ev);

@@ -104,6 +104,7 @@ public:
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
     void setCsvData(QStringList csvData) {m_csvData = csvData;}
     void clearCsvData() {m_csvData.clear();}
+    void setReadDepth(double newReadDepth) {m_readDepth = newReadDepth;}
 
 private:
     QString m_name;

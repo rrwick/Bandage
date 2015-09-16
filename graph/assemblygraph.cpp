@@ -1793,3 +1793,60 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
 
     determineGraphInfo();
 }
+
+
+
+//This function assumes it is receiving a positive node.  It will duplicate both
+//the positive and negative node in the pair.  It divided their read depth in
+//two, giving half to each node.
+void AssemblyGraph::duplicateNodePair(DeBruijnNode * node)
+{
+    DeBruijnNode * originalPosNode = node;
+    DeBruijnNode * originalNegNode = node->getReverseComplement();
+
+    QString newNodeBaseName = getNewNodeName(originalPosNode->getName());
+    QString newPosNodeName = newNodeBaseName + "+";
+    QString newNegNodeName = newNodeBaseName + "-";
+
+    double newReadDepth = node->getReadDepth() / 2.0;
+
+    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, newReadDepth, originalPosNode->getSequence());
+    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, newReadDepth, originalNegNode->getSequence());
+
+    newPosNode->setReverseComplement(newNegNode);
+    newNegNode->setReverseComplement(newPosNode);
+
+    m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
+    m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
+
+    std::vector<DeBruijnNode *> downstreamNodes = originalPosNode->getDownstreamNodes();
+    for (size_t i = 0; i < downstreamNodes.size(); ++i)
+        createDeBruijnEdge(newPosNodeName, downstreamNodes[i]->getName());
+
+    std::vector<DeBruijnNode *> upstreamNodes = originalPosNode->getUpstreamNodes();
+    for (size_t i = 0; i < upstreamNodes.size(); ++i)
+        createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
+
+    originalPosNode->setReadDepth(newReadDepth);
+    originalNegNode->setReadDepth(newReadDepth);
+
+    determineGraphInfo();
+}
+
+QString AssemblyGraph::getNewNodeName(QString oldNodeName)
+{
+    oldNodeName.chop(1); //Remove trailing +/-
+
+    QString newNodeNameBase = oldNodeName + "_copy";
+    QString newNodeName = newNodeNameBase;
+
+    int suffix = 1;
+    while (m_deBruijnGraphNodes.contains(newNodeName + "+"))
+    {
+        ++suffix;
+        newNodeName = newNodeNameBase + QString::number(suffix);
+    }
+
+    return newNodeName;
+}
+
