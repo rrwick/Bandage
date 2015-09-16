@@ -1799,7 +1799,7 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
 //This function assumes it is receiving a positive node.  It will duplicate both
 //the positive and negative node in the pair.  It divided their read depth in
 //two, giving half to each node.
-void AssemblyGraph::duplicateNodePair(DeBruijnNode * node)
+void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene)
 {
     DeBruijnNode * originalPosNode = node;
     DeBruijnNode * originalNegNode = node->getReverseComplement();
@@ -1830,6 +1830,10 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node)
     originalPosNode->setReadDepth(newReadDepth);
     originalNegNode->setReadDepth(newReadDepth);
 
+    duplicateGraphicsNode(originalPosNode, newPosNode, scene);
+    duplicateGraphicsNode(originalNegNode, newNegNode, scene);
+
+
     determineGraphInfo();
 }
 
@@ -1850,3 +1854,21 @@ QString AssemblyGraph::getNewNodeName(QString oldNodeName)
     return newNodeName;
 }
 
+
+void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnNode * newNode, MyGraphicsScene * scene)
+{
+    GraphicsItemNode * originalGraphicsItemNode = originalNode->getGraphicsItemNode();
+    if (originalGraphicsItemNode == 0)
+        return;
+
+    GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNode);
+
+    newNode->setGraphicsItemNode(newGraphicsItemNode);
+    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
+    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
+
+    originalGraphicsItemNode->shiftPointsLeft();
+    newGraphicsItemNode->shiftPointsRight();
+
+    scene->addItem(newGraphicsItemNode);
+}

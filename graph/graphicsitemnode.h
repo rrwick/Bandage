@@ -39,6 +39,9 @@ public:
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
                      ogdf::GraphAttributes * graphAttributes,
                      QGraphicsItem * parent = 0);
+    GraphicsItemNode(DeBruijnNode * deBruijnNode,
+                     GraphicsItemNode * toCopy,
+                     QGraphicsItem * parent = 0);
 
     DeBruijnNode * m_deBruijnNode;
     double m_width;
@@ -78,6 +81,7 @@ public:
                                double readDepthEffectOnWidth,
                                double averageNodeWidth);
     void shiftPointsLeft();
+    void shiftPointsRight();
     void getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
                                              std::vector<QPointF> * blastHitLocation);
     void getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
@@ -91,6 +95,7 @@ private:
     void pathHighlightNode3(QPainter * painter, QPainterPath highlightPath);
     QPainterPath buildPartialHighlightPath(double startFraction, double endFraction, bool reverse);
     bool anyNodeDisplayText();
+    void shiftPointSideways(bool left);
 
 };
 

@@ -111,7 +111,7 @@ public:
     int getDrawnNodeCount() const;
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
     void deleteEdges(std::vector<DeBruijnEdge *> * edges);
-    void duplicateNodePair(DeBruijnNode * node);
+    void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
@@ -130,6 +130,7 @@ private:
     void clearAllCsvData();
     QString getNodeNameFromString(QString string);
     QString getNewNodeName(QString oldNodeName);
+    void duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnNode * newNode, MyGraphicsScene * scene);
 };
 
 #endif // ASSEMBLYGRAPH_H

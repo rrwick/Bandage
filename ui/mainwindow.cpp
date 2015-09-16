@@ -2364,7 +2364,7 @@ void MainWindow::duplicateSelectedNodes()
     }
 
     for (int i = 0; i < nodesToDuplicate.size(); ++i)
-        g_assemblyGraph->duplicateNodePair(nodesToDuplicate[i]);
+        g_assemblyGraph->duplicateNodePair(nodesToDuplicate[i], m_scene);
 
     displayGraphDetails();
 }

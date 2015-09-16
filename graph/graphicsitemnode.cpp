@@ -84,6 +84,18 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 }
 
 
+GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
+                                   GraphicsItemNode * toCopy,
+                                   QGraphicsItem * parent) :
+    QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
+    m_hasArrow(toCopy->m_hasArrow),
+    m_linePoints(toCopy->m_linePoints)
+{
+    setWidth();
+    remakePath();
+}
+
+
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     //This code lets me see the node's bounding box.
@@ -858,6 +870,18 @@ double GraphicsItemNode::getNodeWidth(double readDepthRelativeToMeanDrawnReadDep
 //directly on top of their complement nodes.
 void GraphicsItemNode::shiftPointsLeft()
 {
+    shiftPointSideways(true);
+}
+
+void GraphicsItemNode::shiftPointsRight()
+{
+    shiftPointSideways(false);
+}
+
+void GraphicsItemNode::shiftPointSideways(bool left)
+{
+    prepareGeometryChange();
+
     //The collection of line points should be at least
     //two large.  But just to be safe, quit now if it
     //is not.
@@ -898,12 +922,18 @@ void GraphicsItemNode::shiftPointsLeft()
 
         QLineF shiftLine = nodeDirection.normalVector().unitVector();
         shiftLine.setLength(shiftDistance);
-        QPointF shiftVector = shiftLine.p2() - shiftLine.p1();
+
+        QPointF shiftVector;
+        if (left)
+            shiftVector = shiftLine.p2() - shiftLine.p1();
+        else
+            shiftVector = shiftLine.p1() - shiftLine.p2();
         QPointF newPoint = point + shiftVector;
         m_linePoints[i] = newPoint;
     }
-}
 
+    remakePath();
+}
 
 
 void GraphicsItemNode::getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
