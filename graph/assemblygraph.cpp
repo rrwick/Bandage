@@ -1885,4 +1885,15 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
     newGraphicsItemNode->shiftPointsRight();
 
     scene->addItem(newGraphicsItemNode);
+
+    const std::vector<DeBruijnEdge *> * newEdges = newNode->getEdgesPointer();
+    for (size_t i = 0; i < newEdges->size(); ++i)
+    {
+        DeBruijnEdge * newEdge = (*newEdges)[i];
+        GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(newEdge);
+        graphicsItemEdge->setZValue(-1.0);
+        newEdge->setGraphicsItemEdge(graphicsItemEdge);
+        graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
+        scene->addItem(graphicsItemEdge);
+    }
 }
