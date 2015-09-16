@@ -1832,16 +1832,16 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
     originalNegNode->setReadDepth(newReadDepth);
 
     double meanDrawnReadDepth = getMeanReadDepth(true);
+    double readDepthRelativeToMeanDrawnReadDepth;
     if (meanDrawnReadDepth == 0)
-    {
-        originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
-        originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
-    }
+        readDepthRelativeToMeanDrawnReadDepth = 1.0;
     else
-    {
-        originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
-        originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
-    }
+        readDepthRelativeToMeanDrawnReadDepth = originalPosNode->getReadDepth() / meanDrawnReadDepth;
+
+    originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
 
     duplicateGraphicsNode(originalPosNode, newPosNode, scene);
     duplicateGraphicsNode(originalNegNode, newNegNode, scene);
@@ -1873,8 +1873,6 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
     if (originalGraphicsItemNode == 0)
         return;
 
-    originalGraphicsItemNode->setWidth();
-
     GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNode);
 
     newNode->setGraphicsItemNode(newGraphicsItemNode);
@@ -1887,6 +1885,8 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
 
     originalGraphicsItemNode->setNodeColour();
     newGraphicsItemNode->setNodeColour();
+
+    originalGraphicsItemNode->setWidth();
 
     scene->addItem(newGraphicsItemNode);
 
