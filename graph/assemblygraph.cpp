@@ -1827,12 +1827,24 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
     for (size_t i = 0; i < upstreamNodes.size(); ++i)
         createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
 
+
     originalPosNode->setReadDepth(newReadDepth);
     originalNegNode->setReadDepth(newReadDepth);
 
+    double meanDrawnReadDepth = getMeanReadDepth(true);
+    if (meanDrawnReadDepth == 0)
+    {
+        originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+        originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+    }
+    else
+    {
+        originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
+        originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
+    }
+
     duplicateGraphicsNode(originalPosNode, newPosNode, scene);
     duplicateGraphicsNode(originalNegNode, newNegNode, scene);
-
 
     determineGraphInfo();
 }
@@ -1860,6 +1872,8 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
     GraphicsItemNode * originalGraphicsItemNode = originalNode->getGraphicsItemNode();
     if (originalGraphicsItemNode == 0)
         return;
+
+    originalGraphicsItemNode->setWidth();
 
     GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNode);
 
