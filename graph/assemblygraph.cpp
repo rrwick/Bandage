@@ -1724,7 +1724,7 @@ void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
     }
 
     //Build a list of edges to delete.
-    QList<DeBruijnEdge *> edgesToDelete;
+    std::vector<DeBruijnEdge *> edgesToDelete;
     for (int i = 0; i < nodesToDelete.size(); ++i)
     {
         DeBruijnNode * node = nodesToDelete[i];
@@ -1732,7 +1732,8 @@ void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
         for (size_t j = 0; j < nodeEdges->size(); ++j)
         {
             DeBruijnEdge * edge = (*nodeEdges)[j];
-            if (!edgesToDelete.contains(edge))
+            bool alreadyAdded = std::find(edgesToDelete.begin(), edgesToDelete.end(), edge) != edgesToDelete.end();
+            if (!alreadyAdded)
                 edgesToDelete.push_back(edge);
         }
     }
@@ -1746,12 +1747,7 @@ void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
     }
 
     //Remove the edges from the graph,
-    for (int i = 0; i < edgesToDelete.size(); ++i)
-    {
-        DeBruijnEdge * edge = edgesToDelete[i];
-        m_deBruijnGraphEdges.erase(std::remove(m_deBruijnGraphEdges.begin(), m_deBruijnGraphEdges.end(), edge), m_deBruijnGraphEdges.end());
-        delete edge;
-    }
+    deleteEdges(&edgesToDelete);
 
     //Remove the nodes from the graph.
     for (int i = 0; i < nodesNamesToDelete.size(); ++i)
@@ -1775,7 +1771,7 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
     for (size_t i = 0; i < edges->size(); ++i)
     {
         DeBruijnEdge * edge = (*edges)[i];
-        DeBruijnEdge * rcEdge =edge->getReverseComplement();
+        DeBruijnEdge * rcEdge = edge->getReverseComplement();
 
         if (!edgesToDelete.contains(edge))
             edgesToDelete.push_back(edge);

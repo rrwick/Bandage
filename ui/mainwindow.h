@@ -72,7 +72,6 @@ private:
     void zoomToFitRect(QRectF rect);
     void zoomToFitScene();
     void setZoomSpinBoxStep();
-    void removeAllGraphicsEdgesFromNode(DeBruijnNode * node);
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText, QString &selectedNodeDepthText);
     QString getSelectedEdgeListText();
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
@@ -94,8 +93,9 @@ private:
     void setNodeDistanceWidgetVisibility(bool visible);
     void setReadDepthRangeWidgetVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
-    void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes);
-    void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges);
+    void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
+    void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
+    void removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement);
 
 private slots:
     void loadGraph(QString fullFileName = "");
