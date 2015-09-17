@@ -2182,7 +2182,7 @@ void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * 
                                             bool reverseComplement,
                                             MyGraphicsScene * scene)
 {
-    QList <GraphicsItemNode *> graphicsItemNodesToDelete;
+    QSet<GraphicsItemNode *> graphicsItemNodesToDelete;
     for (size_t i = 0; i < nodes->size(); ++i)
     {
         DeBruijnNode * node = (*nodes)[i];
@@ -2190,7 +2190,7 @@ void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * 
 
         GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
         if (graphicsItemNode != 0 && !graphicsItemNodesToDelete.contains(graphicsItemNode))
-            graphicsItemNodesToDelete.push_back(graphicsItemNode);
+            graphicsItemNodesToDelete.insert(graphicsItemNode);
         node->setGraphicsItemNode(0);
 
         if (reverseComplement)
@@ -2198,17 +2198,20 @@ void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * 
             DeBruijnNode * rcNode = node->getReverseComplement();
             GraphicsItemNode * rcGraphicsItemNode = rcNode->getGraphicsItemNode();
             if (rcGraphicsItemNode != 0 && !graphicsItemNodesToDelete.contains(rcGraphicsItemNode))
-                graphicsItemNodesToDelete.push_back(rcGraphicsItemNode);
+                graphicsItemNodesToDelete.insert(rcGraphicsItemNode);
             rcNode->setGraphicsItemNode(0);
         }
     }
 
-    for (int i = 0; i < graphicsItemNodesToDelete.size(); ++i)
+    scene->blockSignals(true);
+    QSetIterator<GraphicsItemNode *> i(graphicsItemNodesToDelete);
+    while (i.hasNext())
     {
-        GraphicsItemNode * graphicsItemNode = graphicsItemNodesToDelete[i];
+        GraphicsItemNode * graphicsItemNode = i.next();
         scene->removeItem(graphicsItemNode);
         delete graphicsItemNode;
     }
+    scene->blockSignals(false);
 }
 
 
@@ -2223,14 +2226,14 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
                                             bool reverseComplement,
                                             MyGraphicsScene * scene)
 {
-    QList <GraphicsItemEdge *> graphicsItemEdgesToDelete;
+    QSet<GraphicsItemEdge *> graphicsItemEdgesToDelete;
     for (size_t i = 0; i < edges->size(); ++i)
     {
         DeBruijnEdge * edge = (*edges)[i];
 
         GraphicsItemEdge * graphicsItemEdge = edge->getGraphicsItemEdge();
         if (graphicsItemEdge != 0 && !graphicsItemEdgesToDelete.contains(graphicsItemEdge))
-            graphicsItemEdgesToDelete.push_back(graphicsItemEdge);
+            graphicsItemEdgesToDelete.insert(graphicsItemEdge);
         edge->setGraphicsItemEdge(0);
 
         if (reverseComplement)
@@ -2238,17 +2241,20 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
             DeBruijnEdge * rcEdge = edge->getReverseComplement();
             GraphicsItemEdge * rcGraphicsItemEdge = rcEdge->getGraphicsItemEdge();
             if (rcGraphicsItemEdge != 0 && !graphicsItemEdgesToDelete.contains(rcGraphicsItemEdge))
-                graphicsItemEdgesToDelete.push_back(rcGraphicsItemEdge);
+                graphicsItemEdgesToDelete.insert(rcGraphicsItemEdge);
             rcEdge->setGraphicsItemEdge(0);
         }
     }
 
-    for (int i = 0; i < graphicsItemEdgesToDelete.size(); ++i)
+    scene->blockSignals(true);
+    QSetIterator<GraphicsItemEdge *> i(graphicsItemEdgesToDelete);
+    while (i.hasNext())
     {
-        GraphicsItemEdge * graphicsItemEdge = graphicsItemEdgesToDelete[i];
+        GraphicsItemEdge * graphicsItemEdge = i.next();
         scene->removeItem(graphicsItemEdge);
         delete graphicsItemEdge;
     }
+    scene->blockSignals(false);
 }
 
 
