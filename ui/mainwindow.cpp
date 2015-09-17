@@ -2251,7 +2251,7 @@ QByteArray MainWindow::makeStringUrlSafe(QByteArray s)
 void MainWindow::hideNodes()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    removeGraphicsItemNodes(&selectedNodes, false);
+    g_assemblyGraph->removeGraphicsItemNodes(&selectedNodes, false, m_scene);
 }
 
 
@@ -2261,8 +2261,8 @@ void MainWindow::removeSelection()
     std::vector<DeBruijnEdge *> selectedEdges = m_scene->getSelectedEdges();
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
 
-    removeGraphicsItemEdges(&selectedEdges, true);
-    removeGraphicsItemNodes(&selectedNodes, true);
+    g_assemblyGraph->removeGraphicsItemEdges(&selectedEdges, true, m_scene);
+    g_assemblyGraph->removeGraphicsItemNodes(&selectedNodes, true, m_scene);
 
     g_assemblyGraph->deleteEdges(&selectedEdges);
     g_assemblyGraph->deleteNodes(&selectedNodes);
@@ -2271,76 +2271,6 @@ void MainWindow::removeSelection()
     cleanUpAllBlast();
 }
 
-
-
-//If reverseComplement is true, this function will also remove the graphics items for reverse complements of the nodes.
-void MainWindow::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement)
-{
-    QList <GraphicsItemNode *> graphicsItemNodesToDelete;
-    for (size_t i = 0; i < nodes->size(); ++i)
-    {
-        DeBruijnNode * node = (*nodes)[i];
-        removeAllGraphicsEdgesFromNode(node, reverseComplement);
-
-        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
-        if (graphicsItemNode != 0 && !graphicsItemNodesToDelete.contains(graphicsItemNode))
-            graphicsItemNodesToDelete.push_back(graphicsItemNode);
-        node->setGraphicsItemNode(0);
-
-        if (reverseComplement)
-        {
-            DeBruijnNode * rcNode = node->getReverseComplement();
-            GraphicsItemNode * rcGraphicsItemNode = rcNode->getGraphicsItemNode();
-            if (rcGraphicsItemNode != 0 && !graphicsItemNodesToDelete.contains(rcGraphicsItemNode))
-                graphicsItemNodesToDelete.push_back(rcGraphicsItemNode);
-            rcNode->setGraphicsItemNode(0);
-        }
-    }
-
-    for (int i = 0; i < graphicsItemNodesToDelete.size(); ++i)
-    {
-        GraphicsItemNode * graphicsItemNode = graphicsItemNodesToDelete[i];
-        m_scene->removeItem(graphicsItemNode);
-        delete graphicsItemNode;
-    }
-}
-
-
-void MainWindow::removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement)
-{
-    const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
-    removeGraphicsItemEdges(edges, reverseComplement);
-}
-
-void MainWindow::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement)
-{
-    QList <GraphicsItemEdge *> graphicsItemEdgesToDelete;
-    for (size_t i = 0; i < edges->size(); ++i)
-    {
-        DeBruijnEdge * edge = (*edges)[i];
-
-        GraphicsItemEdge * graphicsItemEdge = edge->getGraphicsItemEdge();
-        if (graphicsItemEdge != 0 && !graphicsItemEdgesToDelete.contains(graphicsItemEdge))
-            graphicsItemEdgesToDelete.push_back(graphicsItemEdge);
-        edge->setGraphicsItemEdge(0);
-
-        if (reverseComplement)
-        {
-            DeBruijnEdge * rcEdge = edge->getReverseComplement();
-            GraphicsItemEdge * rcGraphicsItemEdge = rcEdge->getGraphicsItemEdge();
-            if (rcGraphicsItemEdge != 0 && !graphicsItemEdgesToDelete.contains(rcGraphicsItemEdge))
-                graphicsItemEdgesToDelete.push_back(rcGraphicsItemEdge);
-            rcEdge->setGraphicsItemEdge(0);
-        }
-    }
-
-    for (int i = 0; i < graphicsItemEdgesToDelete.size(); ++i)
-    {
-        GraphicsItemEdge * graphicsItemEdge = graphicsItemEdgesToDelete[i];
-        m_scene->removeItem(graphicsItemEdge);
-        delete graphicsItemEdge;
-    }
-}
 
 
 void MainWindow::duplicateSelectedNodes()
@@ -2393,7 +2323,7 @@ void MainWindow::mergeSelectedNodes()
     }
 
 
-    bool success = g_assemblyGraph->mergeNodes(nodesToMerge);
+    bool success = g_assemblyGraph->mergeNodes(nodesToMerge, m_scene);
 
     if (!success)
     {

@@ -113,7 +113,13 @@ public:
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
     void deleteEdges(std::vector<DeBruijnEdge *> * edges);
     void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
-    bool mergeNodes(QList<DeBruijnNode *> nodes);
+    bool mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene);
+    void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges,
+                                 bool reverseComplement,
+                                 MyGraphicsScene * scene);
+    void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
+                                 bool reverseComplement,
+                                 MyGraphicsScene * scene);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
@@ -140,6 +146,9 @@ private:
     QString getUniqueNodeName(QString baseName);
     void mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
                             DeBruijnNode * newNode, MyGraphicsScene * scene);
+    void removeAllGraphicsEdgesFromNode(DeBruijnNode * node,
+                                        bool reverseComplement,
+                                        MyGraphicsScene * scene);
 };
 
 #endif // ASSEMBLYGRAPH_H

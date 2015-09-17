@@ -103,10 +103,15 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    QList<GraphicsItemNode *> toCopy,
                                    QGraphicsItem * parent) :
     QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
-    m_hasArrow(toCopy->m_hasArrow)
+    m_hasArrow(false)
 {
+    if (toCopy.size() > 0)
+        m_hasArrow = toCopy[0]->m_hasArrow;
     for (int i = 0; i < toCopy.size(); ++i)
-        m_linePoints.append(toCopy[i]->m_linePoints);
+    {
+        for (size_t j = 0; j < toCopy[i]->m_linePoints.size(); ++j)
+            m_linePoints.push_back(toCopy[i]->m_linePoints[j]);
+    }
 
     setWidth();
     remakePath();
