@@ -354,3 +354,18 @@ bool DeBruijnEdge::testExactOverlap(int overlap) const
 }
 
 
+QByteArray DeBruijnEdge::getGfaLinkLine() const
+{
+    DeBruijnNode * startingNode = getStartingNode();
+    DeBruijnNode * endingNode = getEndingNode();
+
+    QByteArray gfaLinkLine = "L\t";
+    gfaLinkLine += startingNode->getNameWithoutSign() + "\t";
+    gfaLinkLine += startingNode->getSign() + "\t";
+    gfaLinkLine += endingNode->getNameWithoutSign() + "\t";
+    gfaLinkLine += endingNode->getSign() + "\t";
+    gfaLinkLine += QString::number(getOverlap()) + "M";
+
+    gfaLinkLine += "\n";
+    return gfaLinkLine;
+}

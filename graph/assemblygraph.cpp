@@ -532,25 +532,21 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 if (nodeName.isEmpty())
                     nodeName = "node";
 
-                //If the node name ends in a "+" or "-", then we leave it as is.
-                //If not, then we assume it's a positive node and add a "+".
-                QString lastChar = nodeName.right(1);
-                if (lastChar != "+" && lastChar != "-")
-                    nodeName += "+";
-
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
 
                 //If there is an attribute holding the read depth, we'll use
                 //that. If there isn't, then we'll use zero.
-                //We try to load 'KC' (k-mer count), 'RC' (read count), or 'FC'
-                //(fragment count), in that order of preference.
+                //We try to load 'RC' (read count), 'FC' (fragment count) or
+                //'KC' (k-mer count)in that order of preference.
                 double nodeReadDepth = 0.0;
-                QString kc, rc, fc;
+                QString kc, rc, fc, orientation;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
+                    if (part.left(3) == "OR:")
+                        orientation = part.right(part.length() - 5);
                     if (part.left(3) == "KC:")
                         kc = part.right(part.length() - 5);
                     if (part.left(3) == "RC:")
@@ -558,12 +554,33 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                     if (part.left(3) == "FC:")
                         fc = part.right(part.length() - 5);
                 }
-                if (!kc.isEmpty())
-                    nodeReadDepth = kc.toDouble();
-                else if (!rc.isEmpty())
+                if (!rc.isEmpty())
                     nodeReadDepth = rc.toDouble();
                 else if (!fc.isEmpty())
                     nodeReadDepth = fc.toDouble();
+                else if (!kc.isEmpty())
+                    nodeReadDepth = kc.toDouble();
+
+                //Since the value stored in the GFA file is really a read count,
+                //we need to divide by the sequence length to get the depth.
+                if (sequence.length() > 0)
+                    nodeReadDepth /= sequence.length();
+
+                //If the orientation was specified using the OR tag, then we use
+                //that.
+                if (orientation == "+" || orientation == "-")
+                    nodeName += orientation;
+
+                //Otherwise, we check to see if the node ended in a "+" or "-".
+                //If so, we assume that is giving the orientation and leave it.
+                //And if it doesn't end in a "+" or "-", we assume "+" and add
+                //that to the node name.
+                else
+                {
+                    QString lastChar = nodeName.right(1);
+                    if (lastChar != "+" && lastChar != "-")
+                        nodeName += "+";
+                }
 
                 DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence);
                 m_deBruijnGraphNodes.insert(nodeName, node);
@@ -1806,8 +1823,6 @@ void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
         DeBruijnNode * node = nodesToDelete[i];
         delete node;
     }
-
-    determineGraphInfo();
 }
 
 void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
@@ -1836,8 +1851,6 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
 
         delete edge;
     }
-
-    determineGraphInfo();
 }
 
 
@@ -1890,8 +1903,6 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
 
     duplicateGraphicsNode(originalPosNode, newPosNode, scene);
     duplicateGraphicsNode(originalNegNode, newNegNode, scene);
-
-    determineGraphInfo();
 }
 
 QString AssemblyGraph::getNewNodeName(QString oldNodeName)
@@ -2066,7 +2077,6 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
         nodesToDelete.push_back(orderedList[i]);
     deleteNodes(&nodesToDelete);
 
-    determineGraphInfo();
     return true;
 }
 

@@ -343,6 +343,20 @@ QByteArray DeBruijnNode::getFastaNoNewLinesInSequence() const
 }
 
 
+QByteArray DeBruijnNode::getGfaSegmentLine() const
+{
+    QByteArray gfaSegmentLine = "S\t";
+    gfaSegmentLine += getNameWithoutSign() + "\t";
+    gfaSegmentLine += getSequence() + "\t";
+    gfaSegmentLine += "OR:Z:" + getSign() + "\t";
+    gfaSegmentLine += "LN:i:" + QString::number(getLength()) + "\t";
+    gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * getLength() + 0.5));
+
+    gfaSegmentLine += "\n";
+    return gfaSegmentLine;
+}
+
+
 QString DeBruijnNode::getNodeNameForFasta() const
 {
     QString nodeNameForFasta;

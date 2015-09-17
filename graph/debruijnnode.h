@@ -40,12 +40,15 @@ public:
 
     //ACCESSORS
     QString getName() const {return m_name;}
+    QString getNameWithoutSign() const {return m_name.left(m_name.length() - 1);}
+    QString getSign() const {if (m_name.length() > 0) return m_name.right(1); else return "+";}
     double getReadDepth() const {return m_readDepth;}
     double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
     QByteArray getSequence() const {return m_sequence;}
     int getLength() const {return m_sequence.length();}
     QByteArray getFasta() const;
     QByteArray getFastaNoNewLinesInSequence() const;
+    QByteArray getGfaSegmentLine() const;
     char getBaseAt(int i) const {if (i >= 0 && i < m_sequence.length()) return m_sequence.at(i); else return '\0';}
     ContiguityStatus getContiguityStatus() const {return m_contiguityStatus;}
     DeBruijnNode * getReverseComplement() const {return m_reverseComplement;}

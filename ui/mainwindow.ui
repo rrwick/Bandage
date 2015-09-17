@@ -1804,11 +1804,11 @@
     <addaction name="actionSave_selected_node_path_to_FASTA"/>
     <addaction name="actionSpecify_exact_path_for_copy_save"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_entire_graph_to_FASTA"/>
-    <addaction name="actionSave_entire_graph_to_FASTA_only_positive_nodes"/>
-    <addaction name="separator"/>
     <addaction name="actionSave_entire_graph_to_GFA"/>
     <addaction name="actionSave_visible_graph_to_GFA"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_entire_graph_to_FASTA"/>
+    <addaction name="actionSave_entire_graph_to_FASTA_only_positive_nodes"/>
     <addaction name="separator"/>
     <addaction name="actionWeb_BLAST_selected_nodes"/>
    </widget>

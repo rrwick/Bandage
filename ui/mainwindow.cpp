@@ -2326,6 +2326,7 @@ void MainWindow::removeSelection()
     g_assemblyGraph->deleteEdges(&selectedEdges);
     g_assemblyGraph->deleteNodes(&selectedNodes);
 
+    g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
     cleanUpAllBlast();
 }
@@ -2356,6 +2357,7 @@ void MainWindow::duplicateSelectedNodes()
     for (int i = 0; i < nodesToDuplicate.size(); ++i)
         g_assemblyGraph->duplicateNodePair(nodesToDuplicate[i], m_scene);
 
+    g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
     cleanUpAllBlast();
 }
@@ -2396,6 +2398,7 @@ void MainWindow::mergeSelectedNodes()
         return;
     }
 
+    g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
     cleanUpAllBlast();
 }
@@ -2405,6 +2408,7 @@ void MainWindow::mergeAllPossible()
     int merges = g_assemblyGraph->mergeAllPossible(m_scene);
     if (merges > 0)
     {
+        g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
         cleanUpAllBlast();
     }

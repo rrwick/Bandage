@@ -50,6 +50,7 @@ public:
                          DeBruijnNode * target,
                          std::vector<DeBruijnNode *> pathSoFar,
                          bool includeReverseComplement) const;
+    QByteArray getGfaLinkLine() const;
 
     //MODIFERS
     void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}
