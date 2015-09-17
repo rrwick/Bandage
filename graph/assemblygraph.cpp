@@ -2102,6 +2102,8 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
     {
         GraphicsItemNode * originalGraphicsItemNode = (*originalNodes)[i]->getGraphicsItemNode();
         if (originalGraphicsItemNode == 0)
+            originalGraphicsItemNode = (*originalNodes)[i]->getGraphicsItemNode();
+        if (originalGraphicsItemNode == 0)
         {
             failed = true;
             break;
@@ -2109,28 +2111,29 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
         else
             originalGraphicsItemNodes.push_back(originalGraphicsItemNode);
     }
-    if (failed)
-        return;
 
-    GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNodes);
-
-    newNode->setGraphicsItemNode(newGraphicsItemNode);
-    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
-    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
-
-    newGraphicsItemNode->setNodeColour();
-
-    scene->addItem(newGraphicsItemNode);
-
-    const std::vector<DeBruijnEdge *> * newEdges = newNode->getEdgesPointer();
-    for (size_t i = 0; i < newEdges->size(); ++i)
+    if (!failed)
     {
-        DeBruijnEdge * newEdge = (*newEdges)[i];
-        GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(newEdge);
-        graphicsItemEdge->setZValue(-1.0);
-        newEdge->setGraphicsItemEdge(graphicsItemEdge);
-        graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
-        scene->addItem(graphicsItemEdge);
+        GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNodes);
+
+        newNode->setGraphicsItemNode(newGraphicsItemNode);
+        newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
+        newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
+
+        newGraphicsItemNode->setNodeColour();
+
+        scene->addItem(newGraphicsItemNode);
+
+        const std::vector<DeBruijnEdge *> * newEdges = newNode->getEdgesPointer();
+        for (size_t i = 0; i < newEdges->size(); ++i)
+        {
+            DeBruijnEdge * newEdge = (*newEdges)[i];
+            GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(newEdge);
+            graphicsItemEdge->setZValue(-1.0);
+            newEdge->setGraphicsItemEdge(graphicsItemEdge);
+            graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
+            scene->addItem(graphicsItemEdge);
+        }
     }
 
     std::vector<DeBruijnNode *> nodesToRemove;
