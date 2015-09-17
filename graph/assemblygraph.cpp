@@ -1847,7 +1847,6 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
     for (size_t i = 0; i < upstreamNodes.size(); ++i)
         createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
 
-
     originalPosNode->setReadDepth(newReadDepth);
     originalNegNode->setReadDepth(newReadDepth);
 
@@ -1994,14 +1993,69 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes)
     double mergedNodeReadDepth = getMeanReadDepth(orderedList);
 
     Path posPath = Path::makeFromOrderedNodes(orderedList, false);
-    QString mergedNodePosSequence = posPath.getPathSequence();
+    QByteArray mergedNodePosSequence = posPath.getPathSequence();
 
     QList<DeBruijnNode *> revCompOrderedList;
     for (int i = 0; i < orderedList.size(); ++i)
         revCompOrderedList.push_front(orderedList[i]->getReverseComplement());
 
     Path negPath = Path::makeFromOrderedNodes(revCompOrderedList, false);
-    QString mergedNodeNegSequence = negPath.getPathSequence();
+    QByteArray mergedNodeNegSequence = negPath.getPathSequence();
+
+    QString newNodeBaseName = getUniqueNodeName("merged");
+    QString newPosNodeName = newNodeBaseName + "+";
+    QString newNegNodeName = newNodeBaseName + "-";
+
+    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, mergedNodeReadDepth, mergedNodePosSequence);
+    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, mergedNodeReadDepth, mergedNodeNegSequence);
+
+    newPosNode->setReverseComplement(newNegNode);
+    newNegNode->setReverseComplement(newPosNode);
+
+    m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
+    m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
+
+    std::vector<DeBruijnNode *> downstreamNodes = orderedList.back()->getDownstreamNodes();
+    for (size_t i = 0; i < downstreamNodes.size(); ++i)
+        createDeBruijnEdge(newPosNodeName, downstreamNodes[i]->getName());
+
+    std::vector<DeBruijnNode *> upstreamNodes = orderedList.front()->getUpstreamNodes();
+    for (size_t i = 0; i < upstreamNodes.size(); ++i)
+        createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
+
+    double meanDrawnReadDepth = getMeanReadDepth(true);
+    double readDepthRelativeToMeanDrawnReadDepth;
+    if (meanDrawnReadDepth == 0)
+        readDepthRelativeToMeanDrawnReadDepth = 1.0;
+    else
+        readDepthRelativeToMeanDrawnReadDepth = newPosNode->getReadDepth() / meanDrawnReadDepth;
+
+    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+
+
+
+
+    //CREATE A NEW GRAPHICS ITEM FOR THE MERGED NODE HERE!
+
+
+
+
+
+
+
+
+
+
+
+
+    //DELETE THE OLD NODES HERE!
+
+
+
+
+
+
 
 
 
@@ -2033,4 +2087,57 @@ bool AssemblyGraph::canAddNodeToEndOfMergeList(QList<DeBruijnNode *> * mergeList
             edgesEnteringPotentialNode.size() == 1 &&
             edgesLeavingLastNode[0]->getEndingNode() == potentialNode &&
             edgesEnteringPotentialNode[0]->getStartingNode() == lastNode);
+}
+
+
+QString AssemblyGraph::getUniqueNodeName(QString baseName)
+{
+    //If the base name is untaken, then that's it!
+    if (!m_deBruijnGraphNodes.contains(baseName + "+"))
+        return baseName;
+
+    int suffix = 1;
+    while (true)
+    {
+        ++suffix;
+        QString potentialUniqueName = baseName + "_" + QString::number(suffix);
+        if (!m_deBruijnGraphNodes.contains(potentialUniqueName + "+"))
+            return potentialUniqueName;
+    }
+
+    //Code should never get here.
+    return baseName;
+}
+
+
+void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
+                                       DeBruijnNode * newNode,
+                                       MyGraphicsScene * scene)
+{
+    QList<GraphicsItemNode *> originalGraphicsItemNodes;
+    bool failed = false;
+    for (int i = 0; i < originalNodes.size(); ++i)
+    {
+        GraphicsItemNode * originalGraphicsItemNode = originalNodes[i]->getGraphicsItemNode();
+        if (originalGraphicsItemNode == 0)
+        {
+            failed = true;
+            break;
+        }
+        else
+            originalGraphicsItemNodes.push_back(originalGraphicsItemNode);
+    }
+    if (failed)
+        return;
+
+    GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNodes);
+
+    newNode->setGraphicsItemNode(newGraphicsItemNode);
+    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
+    newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsMovable);
+
+    newGraphicsItemNode->setNodeColour();
+
+
+
 }

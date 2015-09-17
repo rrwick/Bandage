@@ -84,6 +84,8 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 }
 
 
+//This constructor makes a new GraphicsItemNode by copying the line points of
+//the given node.
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    GraphicsItemNode * toCopy,
                                    QGraphicsItem * parent) :
@@ -94,6 +96,22 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
     setWidth();
     remakePath();
 }
+
+//This constructor makes a new GraphicsItemNode by copying the line points of
+//all the given nodes.  It is used when merging nodes.
+GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
+                                   QList<GraphicsItemNode *> toCopy,
+                                   QGraphicsItem * parent) :
+    QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
+    m_hasArrow(toCopy->m_hasArrow)
+{
+    for (int i = 0; i < toCopy.size(); ++i)
+        m_linePoints.append(toCopy[i]->m_linePoints);
+
+    setWidth();
+    remakePath();
+}
+
 
 
 void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)

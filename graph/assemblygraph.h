@@ -137,6 +137,9 @@ private:
                                       DeBruijnNode * potentialNode);
     bool canAddNodeToEndOfMergeList(QList<DeBruijnNode *> * mergeList,
                                     DeBruijnNode * potentialNode);
+    QString getUniqueNodeName(QString baseName);
+    void mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
+                            DeBruijnNode * newNode, MyGraphicsScene * scene);
 };
 
 #endif // ASSEMBLYGRAPH_H

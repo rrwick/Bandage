@@ -42,6 +42,9 @@ public:
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
                      GraphicsItemNode * toCopy,
                      QGraphicsItem * parent = 0);
+    GraphicsItemNode(DeBruijnNode * deBruijnNode,
+                     QList<GraphicsItemNode *> toCopy,
+                     QGraphicsItem * parent = 0);
 
     DeBruijnNode * m_deBruijnNode;
     double m_width;
