@@ -120,6 +120,7 @@ public:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
+    void mergeAllPossible(MyGraphicsScene * scene);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

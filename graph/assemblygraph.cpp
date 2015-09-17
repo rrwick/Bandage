@@ -2241,3 +2241,88 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
     }
 }
 
+
+
+void AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
+{
+    //Create a set of all nodes.
+    QSet<DeBruijnNode *> uncheckedNodes;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        uncheckedNodes.insert(i.value());
+    }
+
+    //Create a list of all merges to be done.
+    QList< QList<DeBruijnNode *> > allMerges;
+    QMapIterator<QString, DeBruijnNode*> j(m_deBruijnGraphNodes);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnNode * node = j.value();
+
+        //If the current node isn't checked, then we will find the longest
+        //possible mergable sequence containing this node.
+        if (uncheckedNodes.contains(node))
+        {
+            QList<DeBruijnNode *> nodesToMerge;
+            nodesToMerge.push_back(node);
+
+            //Extend forward as much as possible.
+            bool extended;
+            do
+            {
+                extended = false;
+                DeBruijnNode * last = nodesToMerge.back();
+                std::vector<DeBruijnEdge *> outgoingEdges = last->getLeavingEdges();
+                if (outgoingEdges.size() == 1)
+                {
+                    DeBruijnEdge * potentialEdge = outgoingEdges[0];
+                    DeBruijnNode * potentialNode = potentialEdge->getEndingNode();
+                    std::vector<DeBruijnEdge *> edgesEnteringPotentialNode = potentialNode->getEnteringEdges();
+                    if (edgesEnteringPotentialNode.size() == 1 &&
+                            edgesEnteringPotentialNode[0] == potentialEdge &&
+                            !nodesToMerge.contains(potentialNode))
+                    {
+                        nodesToMerge.push_back(potentialNode);
+                        extended = true;
+                    }
+                }
+            } while (extended);
+
+            //Extend backward as much as possible.
+            do
+            {
+                extended = false;
+                DeBruijnNode * first = nodesToMerge.front();
+                std::vector<DeBruijnEdge *> incomingEdges = first->getEnteringEdges();
+                if (incomingEdges.size() == 1)
+                {
+                    DeBruijnEdge * potentialEdge = incomingEdges[0];
+                    DeBruijnNode * potentialNode = potentialEdge->getStartingNode();
+                    std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
+                    if (edgesLeavingPotentialNode.size() == 1 &&
+                            edgesLeavingPotentialNode[0] == potentialEdge &&
+                            !nodesToMerge.contains(potentialNode))
+                    {
+                        nodesToMerge.push_front(potentialNode);
+                        extended = true;
+                    }
+                }
+            } while (extended);
+
+            for (int k = 0; k < nodesToMerge.size(); ++k)
+            {
+                uncheckedNodes.remove(nodesToMerge[k]);
+                uncheckedNodes.remove(nodesToMerge[k]->getReverseComplement());
+            }
+
+            if (nodesToMerge.size() > 1)
+                allMerges.push_back(nodesToMerge);
+        }
+    }
+
+    for (int i = 0; i < allMerges.size(); ++i)
+        mergeNodes(allMerges[i], scene);
+}

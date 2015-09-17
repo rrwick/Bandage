@@ -2322,7 +2322,6 @@ void MainWindow::mergeSelectedNodes()
             nodesToMerge.push_back(node);
     }
 
-
     bool success = g_assemblyGraph->mergeNodes(nodesToMerge, m_scene);
 
     if (!success)
@@ -2331,19 +2330,13 @@ void MainWindow::mergeSelectedNodes()
         return;
     }
 
-
-
     displayGraphDetails();
     cleanUpAllBlast();
 }
 
 void MainWindow::mergeAllPossible()
 {
-
-
-
-
-
+    g_assemblyGraph->mergeAllPossible(m_scene);
     displayGraphDetails();
     cleanUpAllBlast();
 }
