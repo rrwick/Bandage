@@ -2348,7 +2348,7 @@ void MainWindow::duplicateSelectedNodes()
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "No nodes selected", "You must first select one or more nodes before using the 'Mere selected nodes' function.");
+        QMessageBox::information(this, "No nodes selected", "You must first select one or more nodes before using the 'Duplicate selected nodes' function.");
         return;
     }
 
@@ -2373,7 +2373,33 @@ void MainWindow::duplicateSelectedNodes()
 
 void MainWindow::mergeSelectedNodes()
 {
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0)
+    {
+        QMessageBox::information(this, "No nodes selected", "You must first select one or more nodes before using the 'Merge selected nodes' function.");
+        return;
+    }
 
+    //Nodes are always merged in pairs (both positive and negative), so we
+    //want to compile a list of only positive nodes.
+    QList<DeBruijnNode *> nodesToMerge;
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        DeBruijnNode * node = selectedNodes[i];
+        if (node->isNegativeNode())
+            node = node->getReverseComplement();
+        if (!nodesToMerge.contains(node))
+            nodesToMerge.push_back(node);
+    }
+
+
+    bool success = g_assemblyGraph->mergeNodes(nodesToMerge);
+
+    if (!success)
+    {
+        QMessageBox::information(this, "Nodes cannot be merged", "You can only merge nodes that are in a single, unbranching path with no extra edges.");
+        return;
+    }
 
 
 

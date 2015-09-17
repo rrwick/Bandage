@@ -33,7 +33,7 @@
 #include <ogdf/energybased/FMMMLayout.h>
 #include "../program/graphlayoutworker.h"
 #include "../program/memory.h"
-
+#include "path.h"
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
@@ -245,7 +245,27 @@ double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         DeBruijnNode * node = nodes[i];
+        ++nodeCount;
+        totalLength += node->getLength();
+        readDepthSum += node->getLength() * node->getReadDepth();
+    }
 
+    if (totalLength == 0)
+        return 0.0;
+    else
+        return readDepthSum / totalLength;
+}
+
+
+double AssemblyGraph::getMeanReadDepth(QList<DeBruijnNode *> nodes)
+{
+    int nodeCount = 0;
+    long double readDepthSum = 0.0;
+    long long totalLength = 0;
+
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        DeBruijnNode * node = nodes[i];
         ++nodeCount;
         totalLength += node->getLength();
         readDepthSum += node->getLength() * node->getReadDepth();
@@ -1900,4 +1920,117 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
         graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
         scene->addItem(graphicsItemEdge);
     }
+}
+
+
+//This function will merge the given nodes, if possible.  Nodes can only be
+//merged if they are in a simple, unbranching path with no extra edges.  If the
+//merge is successful, it returns true, otherwise false.
+bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes)
+{
+    if (nodes.size() == 0)
+        return true;
+
+    //We now need to sort the nodes into merge order.
+    QList<DeBruijnNode *> orderedList;
+    orderedList.push_back(nodes[0]);
+    nodes.pop_front();
+
+    bool addedNode;
+    do
+    {
+        addedNode = false;
+        for (int i = 0; i < nodes.size(); ++i)
+        {
+            DeBruijnNode * potentialNextNode = nodes[i];
+
+            //Check if the node can be added to the end of the list.
+            if (canAddNodeToEndOfMergeList(&orderedList, potentialNextNode))
+            {
+                orderedList.push_back(potentialNextNode);
+                nodes.removeAt(i);
+                addedNode = true;
+                break;
+            }
+
+            //Check if the node can be added to the front of the list.
+            if (canAddNodeToStartOfMergeList(&orderedList, potentialNextNode))
+            {
+                orderedList.push_front(potentialNextNode);
+                nodes.removeAt(i);
+                addedNode = true;
+                break;
+            }
+
+            //If neither of those worked, then we should try the node's reverse
+            //complement.
+            DeBruijnNode * potentialNextNodeRevComp = potentialNextNode->getReverseComplement();
+            if (canAddNodeToEndOfMergeList(&orderedList, potentialNextNodeRevComp))
+            {
+                orderedList.push_back(potentialNextNodeRevComp);
+                nodes.removeAt(i);
+                addedNode = true;
+                break;
+            }
+            if (canAddNodeToStartOfMergeList(&orderedList, potentialNextNodeRevComp))
+            {
+                orderedList.push_front(potentialNextNodeRevComp);
+                nodes.removeAt(i);
+                addedNode = true;
+                break;
+            }
+        }
+
+        if (nodes.size() == 0)
+            break;
+
+    } while (addedNode);
+
+    //If there are still nodes left in the first list, then they don't form a
+    //nice simple path and the merge won't work.
+    if (nodes.size() > 0)
+        return false;
+
+    double mergedNodeReadDepth = getMeanReadDepth(orderedList);
+
+    Path posPath = Path::makeFromOrderedNodes(orderedList, false);
+    QString mergedNodePosSequence = posPath.getPathSequence();
+
+    QList<DeBruijnNode *> revCompOrderedList;
+    for (int i = 0; i < orderedList.size(); ++i)
+        revCompOrderedList.push_front(orderedList[i]->getReverseComplement());
+
+    Path negPath = Path::makeFromOrderedNodes(revCompOrderedList, false);
+    QString mergedNodeNegSequence = negPath.getPathSequence();
+
+
+
+
+    return true;
+}
+
+
+bool AssemblyGraph::canAddNodeToStartOfMergeList(QList<DeBruijnNode *> * mergeList,
+                                                 DeBruijnNode * potentialNode)
+{
+    DeBruijnNode * firstNode = mergeList->back();
+    std::vector<DeBruijnEdge *> edgesEnteringFirstNode = firstNode->getEnteringEdges();
+    std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
+    return (edgesEnteringFirstNode.size() == 1 &&
+            edgesLeavingPotentialNode.size() == 1 &&
+            edgesEnteringFirstNode[0]->getStartingNode() == potentialNode &&
+            edgesLeavingPotentialNode[0]->getEndingNode() == firstNode);
+}
+
+
+bool AssemblyGraph::canAddNodeToEndOfMergeList(QList<DeBruijnNode *> * mergeList,
+                                               DeBruijnNode * potentialNode)
+{
+    DeBruijnNode * lastNode = mergeList->back();
+    std::vector<DeBruijnEdge *> edgesLeavingLastNode = lastNode->getLeavingEdges();
+    std::vector<DeBruijnEdge *> edgesEnteringPotentialNode = potentialNode->getEnteringEdges();
+    return (edgesLeavingLastNode.size() == 1 &&
+            edgesEnteringPotentialNode.size() == 1 &&
+            edgesLeavingLastNode[0]->getEndingNode() == potentialNode &&
+            edgesEnteringPotentialNode[0]->getStartingNode() == lastNode);
 }

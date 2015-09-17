@@ -63,6 +63,7 @@ public:
     void resetEdges();
     double getMeanReadDepth(bool drawnNodesOnly = false);
     double getMeanReadDepth(std::vector<DeBruijnNode *> nodes);
+    double getMeanReadDepth(QList<DeBruijnNode *> nodes);
     void resetNodeContiguityStatus();
     void resetAllNodeColours();
     void clearAllBlastHitPointers();
@@ -112,6 +113,7 @@ public:
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
     void deleteEdges(std::vector<DeBruijnEdge *> * edges);
     void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
+    bool mergeNodes(QList<DeBruijnNode *> nodes);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
@@ -131,6 +133,10 @@ private:
     QString getNodeNameFromString(QString string);
     QString getNewNodeName(QString oldNodeName);
     void duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnNode * newNode, MyGraphicsScene * scene);
+    bool canAddNodeToStartOfMergeList(QList<DeBruijnNode *> * mergeList,
+                                      DeBruijnNode * potentialNode);
+    bool canAddNodeToEndOfMergeList(QList<DeBruijnNode *> * mergeList,
+                                    DeBruijnNode * potentialNode);
 };
 
 #endif // ASSEMBLYGRAPH_H
