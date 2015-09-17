@@ -2139,6 +2139,9 @@
    <property name="text">
     <string>Merge all possible nodes</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>

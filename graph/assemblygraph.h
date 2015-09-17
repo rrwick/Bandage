@@ -120,7 +120,7 @@ public:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
-    void mergeAllPossible(MyGraphicsScene * scene);
+    int mergeAllPossible(MyGraphicsScene * scene);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
@@ -146,7 +146,10 @@ private:
                                     DeBruijnNode * potentialNode);
     QString getUniqueNodeName(QString baseName);
     void mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
+                            QList<DeBruijnNode *> * revCompOriginalNodes,
                             DeBruijnNode * newNode, MyGraphicsScene * scene);
+    void mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
+                             DeBruijnNode * newNode, MyGraphicsScene * scene);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node,
                                         bool reverseComplement,
                                         MyGraphicsScene * scene);

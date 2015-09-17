@@ -2304,14 +2304,9 @@ void MainWindow::duplicateSelectedNodes()
 void MainWindow::mergeSelectedNodes()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    if (selectedNodes.size() == 0)
+    if (selectedNodes.size() < 2)
     {
-        QMessageBox::information(this, "No nodes selected", "You must first select two or more nodes before using the 'Merge selected nodes' function.");
-        return;
-    }
-    if (selectedNodes.size() == 1)
-    {
-        QMessageBox::information(this, "Only one node selected", "You must first select two or more nodes before using the 'Merge selected nodes' function.");
+        QMessageBox::information(this, "Not enough nodes selected", "You must first select two or more nodes before using the 'Merge selected nodes' function.");
         return;
     }
 
@@ -2325,6 +2320,13 @@ void MainWindow::mergeSelectedNodes()
             node = node->getReverseComplement();
         if (!nodesToMerge.contains(node))
             nodesToMerge.push_back(node);
+    }
+
+    if (nodesToMerge.size() < 2)
+    {
+        QMessageBox::information(this, "Not enough nodes selected", "You must first select two or more nodes before using the 'Merge selected nodes' function. "
+                                                                    "Note that two complementary nodes only count as a single node regarding a merge.");
+        return;
     }
 
     bool success = g_assemblyGraph->mergeNodes(nodesToMerge, m_scene);
@@ -2341,9 +2343,14 @@ void MainWindow::mergeSelectedNodes()
 
 void MainWindow::mergeAllPossible()
 {
-    g_assemblyGraph->mergeAllPossible(m_scene);
-    displayGraphDetails();
-    cleanUpAllBlast();
+    int merges = g_assemblyGraph->mergeAllPossible(m_scene);
+    if (merges > 0)
+    {
+        displayGraphDetails();
+        cleanUpAllBlast();
+    }
+    else
+        QMessageBox::information(this, "No possible merges", "The graph contains no nodes that can be merged.");
 }
 
 

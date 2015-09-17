@@ -2033,8 +2033,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
     newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
 
-    mergeGraphicsNodes(&orderedList, newPosNode, scene);
-    mergeGraphicsNodes(&revCompOrderedList, newNegNode, scene);
+    mergeGraphicsNodes(&orderedList, &revCompOrderedList, newPosNode, scene);
 
     std::vector<DeBruijnNode *> nodesToDelete;
     for (int i = 0; i < orderedList.size(); ++i)
@@ -2093,8 +2092,23 @@ QString AssemblyGraph::getUniqueNodeName(QString baseName)
 
 
 void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
+                                       QList<DeBruijnNode *> * revCompOriginalNodes,
                                        DeBruijnNode * newNode,
                                        MyGraphicsScene * scene)
+{
+    mergeGraphicsNodes2(originalNodes, newNode, scene);
+    mergeGraphicsNodes2(revCompOriginalNodes, newNode->getReverseComplement(), scene);
+
+    std::vector<DeBruijnNode *> nodesToRemove;
+    for (int i = 0; i < originalNodes->size(); ++i)
+        nodesToRemove.push_back((*originalNodes)[i]);
+    removeGraphicsItemNodes(&nodesToRemove, true, scene);
+}
+
+
+void AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
+                                        DeBruijnNode * newNode,
+                                        MyGraphicsScene * scene)
 {
     bool failed = false;
     std::vector<QPointF> linePoints;
@@ -2159,10 +2173,6 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
         }
     }
 
-    std::vector<DeBruijnNode *> nodesToRemove;
-    for (int i = 0; i < originalNodes->size(); ++i)
-        nodesToRemove.push_back((*originalNodes)[i]);
-    removeGraphicsItemNodes(&nodesToRemove, true, scene);
 }
 
 
@@ -2242,8 +2252,9 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
 }
 
 
-
-void AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
+//This function simplifies the graph by merging all possible nodes in a simple
+//line.  It returns the number of merges that it did.
+int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
 {
     //Create a set of all nodes.
     QSet<DeBruijnNode *> uncheckedNodes;
@@ -2325,4 +2336,6 @@ void AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
 
     for (int i = 0; i < allMerges.size(); ++i)
         mergeNodes(allMerges[i], scene);
+
+    return allMerges.size();
 }
