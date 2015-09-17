@@ -147,6 +147,8 @@ private slots:
     void nodeWidthChanged();
     void saveEntireGraphToFasta();
     void saveEntireGraphToFastaOnlyPositiveNodes();
+    void saveEntireGraphToGfa();
+    void saveVisibleGraphToGfa();
     void webBlastSelectedNodes();
     void removeSelection();
     void duplicateSelectedNodes();

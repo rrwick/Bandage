@@ -179,6 +179,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
     connect(ui->actionSave_entire_graph_to_FASTA_only_positive_nodes, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFastaOnlyPositiveNodes()));
+    connect(ui->actionSave_entire_graph_to_GFA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToGfa()));
+    connect(ui->actionSave_visible_graph_to_GFA, SIGNAL(triggered(bool)), this, SLOT(saveVisibleGraphToGfa()));
     connect(ui->actionWeb_BLAST_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(webBlastSelectedNodes()));
     connect(ui->actionHide_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(hideNodes()));
     connect(ui->actionRemove_selection_from_graph, SIGNAL(triggered(bool)), this, SLOT(removeSelection()));
@@ -2147,7 +2149,6 @@ void MainWindow::nodeWidthChanged()
 void MainWindow::saveEntireGraphToFasta()
 {
     QString defaultFileNameAndPath = g_memory->rememberedPath + "/all_graph_nodes.fasta";
-
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save entire graph", defaultFileNameAndPath, "FASTA (*.fasta)");
 
     if (fullFileName != "") //User did not hit cancel
@@ -2170,7 +2171,6 @@ void MainWindow::saveEntireGraphToFasta()
 void MainWindow::saveEntireGraphToFastaOnlyPositiveNodes()
 {
     QString defaultFileNameAndPath = g_memory->rememberedPath + "/all_positive_graph_nodes.fasta";
-
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save entire graph (only positive nodes)", defaultFileNameAndPath, "FASTA (*.fasta)");
 
     if (fullFileName != "") //User did not hit cancel
@@ -2192,6 +2192,64 @@ void MainWindow::saveEntireGraphToFastaOnlyPositiveNodes()
     }
 }
 
+
+void MainWindow::saveEntireGraphToGfa()
+{
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/graph.gfa";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save entire graph", defaultFileNameAndPath, "GFA (*.gfa)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            out << i.value()->getGfaSegmentLine();
+        }
+        for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+        {
+            DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
+            out << edge->getGfaLinkLine();
+        }
+    }
+}
+
+void MainWindow::saveVisibleGraphToGfa()
+{
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/graph.gfa";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save visible graph", defaultFileNameAndPath, "GFA (*.gfa)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream out(&file);
+
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            if (node->thisOrReverseComplementHasGraphicsItemNode())
+                out << node->getGfaSegmentLine();
+        }
+        for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+        {
+            DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
+            if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
+                    edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode())
+                out << edge->getGfaLinkLine();
+        }
+    }
+}
 
 
 void MainWindow::webBlastSelectedNodes()

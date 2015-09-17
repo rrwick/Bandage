@@ -1807,6 +1807,9 @@
     <addaction name="actionSave_entire_graph_to_FASTA"/>
     <addaction name="actionSave_entire_graph_to_FASTA_only_positive_nodes"/>
     <addaction name="separator"/>
+    <addaction name="actionSave_entire_graph_to_GFA"/>
+    <addaction name="actionSave_visible_graph_to_GFA"/>
+    <addaction name="separator"/>
     <addaction name="actionWeb_BLAST_selected_nodes"/>
    </widget>
    <widget class="QMenu" name="menuManipulate">
@@ -2141,6 +2144,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionSave_entire_graph_to_GFA">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save entire graph to GFA</string>
+   </property>
+  </action>
+  <action name="actionSave_visible_graph_to_GFA">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save visible graph to GFA</string>
    </property>
   </action>
  </widget>

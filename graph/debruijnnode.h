@@ -51,6 +51,7 @@ public:
     DeBruijnNode * getReverseComplement() const {return m_reverseComplement;}
     OgdfNode * getOgdfNode() const {return m_ogdfNode;}
     GraphicsItemNode * getGraphicsItemNode() const {return m_graphicsItemNode;}
+    bool thisOrReverseComplementHasGraphicsItemNode() const {return (m_graphicsItemNode != 0 || getReverseComplement()->m_graphicsItemNode != 0);}
     bool hasGraphicsItem() const {return m_graphicsItemNode != 0;}
     const std::vector<DeBruijnEdge *> * getEdgesPointer() const {return &m_edges;}
     std::vector<DeBruijnEdge *> getEnteringEdges() const;
