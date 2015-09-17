@@ -367,7 +367,10 @@ void AssemblyGraph::determineGraphInfo()
 
     //Set the auto base pairs per segment
     int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
-    g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
+    if (totalSegments > 0)
+        g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
+    else
+        g_settings->autoBasePairsPerSegment = 100;
 }
 
 double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index)
