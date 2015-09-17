@@ -2096,7 +2096,6 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
                                        DeBruijnNode * newNode,
                                        MyGraphicsScene * scene)
 {
-    QList<GraphicsItemNode *> originalGraphicsItemNodes;
     bool failed = false;
     std::vector<QPointF> linePoints;
 
