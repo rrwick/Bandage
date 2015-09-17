@@ -2036,23 +2036,12 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     mergeGraphicsNodes(&orderedList, newPosNode, scene);
     mergeGraphicsNodes(&revCompOrderedList, newNegNode, scene);
 
+    std::vector<DeBruijnNode *> nodesToDelete;
+    for (int i = 0; i < orderedList.size(); ++i)
+        nodesToDelete.push_back(orderedList[i]);
+    deleteNodes(&nodesToDelete);
 
-
-
-
-
-
-    //DELETE THE OLD NODES HERE!
-
-
-
-
-
-
-
-
-
-
+    determineGraphInfo();
     return true;
 }
 
@@ -2060,7 +2049,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
 bool AssemblyGraph::canAddNodeToStartOfMergeList(QList<DeBruijnNode *> * mergeList,
                                                  DeBruijnNode * potentialNode)
 {
-    DeBruijnNode * firstNode = mergeList->back();
+    DeBruijnNode * firstNode = mergeList->front();
     std::vector<DeBruijnEdge *> edgesEnteringFirstNode = firstNode->getEnteringEdges();
     std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
     return (edgesEnteringFirstNode.size() == 1 &&

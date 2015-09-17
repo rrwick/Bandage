@@ -2123,10 +2123,16 @@
    <property name="text">
     <string>Duplicate selected nodes</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="actionMerge_selected_nodes">
    <property name="text">
     <string>Merge selected nodes</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionMerge_all_possible_nodes">
