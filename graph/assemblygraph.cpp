@@ -2098,11 +2098,17 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
 {
     QList<GraphicsItemNode *> originalGraphicsItemNodes;
     bool failed = false;
+
     for (int i = 0; i < originalNodes->size(); ++i)
     {
-        GraphicsItemNode * originalGraphicsItemNode = (*originalNodes)[i]->getGraphicsItemNode();
-        if (originalGraphicsItemNode == 0)
-            originalGraphicsItemNode = (*originalNodes)[i]->getGraphicsItemNode();
+        DeBruijnNode * node = (*originalNodes)[i];
+
+        //If we are in single mode, then we should check for a GraphicsItemNode only
+        //in the positive nodes.
+        if (!g_settings->doubleMode && node->isNegativeNode())
+            node = node->getReverseComplement();
+
+        GraphicsItemNode * originalGraphicsItemNode = node->getGraphicsItemNode();
         if (originalGraphicsItemNode == 0)
         {
             failed = true;
