@@ -2280,6 +2280,9 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
             QList<DeBruijnNode *> nodesToMerge;
             nodesToMerge.push_back(node);
 
+            uncheckedNodes.remove(node);
+            uncheckedNodes.remove(node->getReverseComplement());
+
             //Extend forward as much as possible.
             bool extended;
             do
@@ -2294,9 +2297,12 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
                     std::vector<DeBruijnEdge *> edgesEnteringPotentialNode = potentialNode->getEnteringEdges();
                     if (edgesEnteringPotentialNode.size() == 1 &&
                             edgesEnteringPotentialNode[0] == potentialEdge &&
-                            !nodesToMerge.contains(potentialNode))
+                            !nodesToMerge.contains(potentialNode) &&
+                            uncheckedNodes.contains(potentialNode))
                     {
                         nodesToMerge.push_back(potentialNode);
+                        uncheckedNodes.remove(potentialNode);
+                        uncheckedNodes.remove(potentialNode->getReverseComplement());
                         extended = true;
                     }
                 }
@@ -2315,19 +2321,16 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
                     std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
                     if (edgesLeavingPotentialNode.size() == 1 &&
                             edgesLeavingPotentialNode[0] == potentialEdge &&
-                            !nodesToMerge.contains(potentialNode))
+                            !nodesToMerge.contains(potentialNode) &&
+                            uncheckedNodes.contains(potentialNode))
                     {
                         nodesToMerge.push_front(potentialNode);
+                        uncheckedNodes.remove(potentialNode);
+                        uncheckedNodes.remove(potentialNode->getReverseComplement());
                         extended = true;
                     }
                 }
             } while (extended);
-
-            for (int k = 0; k < nodesToMerge.size(); ++k)
-            {
-                uncheckedNodes.remove(nodesToMerge[k]);
-                uncheckedNodes.remove(nodesToMerge[k]->getReverseComplement());
-            }
 
             if (nodesToMerge.size() > 1)
                 allMerges.push_back(nodesToMerge);
