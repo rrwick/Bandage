@@ -2167,6 +2167,7 @@ void MainWindow::setSelectedNodesWidgetsVisibility(bool visible)
     ui->selectedNodesTextEdit->setVisible(visible);
     ui->selectedNodesModificationWidget->setVisible(visible);
     ui->selectedNodesLengthLabel->setVisible(visible);
+    ui->selectedNodesDepthLabel->setVisible(visible);
 
     if (visible)
         ui->selectedNodesSpacer->changeSize(20, 60);
