@@ -2098,6 +2098,7 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
 {
     QList<GraphicsItemNode *> originalGraphicsItemNodes;
     bool failed = false;
+    std::vector<QPointF> linePoints;
 
     for (int i = 0; i < originalNodes->size(); ++i)
     {
@@ -2105,8 +2106,12 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
 
         //If we are in single mode, then we should check for a GraphicsItemNode only
         //in the positive nodes.
+        bool opposite = false;
         if (!g_settings->doubleMode && node->isNegativeNode())
+        {
             node = node->getReverseComplement();
+            opposite = true;
+        }
 
         GraphicsItemNode * originalGraphicsItemNode = node->getGraphicsItemNode();
         if (originalGraphicsItemNode == 0)
@@ -2114,13 +2119,26 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
             failed = true;
             break;
         }
+
+        std::vector<QPointF> originalLinePoints = originalGraphicsItemNode->m_linePoints;
+
+        //Add the original line points to the new line point collection.  If we
+        //are working with an opposite node, then we need to reverse the order.
+        if (opposite)
+        {
+            for (size_t j = originalLinePoints.size(); j > 0; --j)
+                linePoints.push_back(originalLinePoints[j-1]);
+        }
         else
-            originalGraphicsItemNodes.push_back(originalGraphicsItemNode);
+        {
+            for (size_t j = 0; j < originalLinePoints.size(); ++j)
+                linePoints.push_back(originalLinePoints[j]);
+        }
     }
 
     if (!failed)
     {
-        GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, originalGraphicsItemNodes);
+        GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, linePoints);
 
         newNode->setGraphicsItemNode(newGraphicsItemNode);
         newGraphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);

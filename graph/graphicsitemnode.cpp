@@ -97,22 +97,15 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
     remakePath();
 }
 
-//This constructor makes a new GraphicsItemNode by copying the line points of
-//all the given nodes.  It is used when merging nodes.
+//This constructor makes a new GraphicsItemNode with a specific collection of
+//line points.
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
-                                   QList<GraphicsItemNode *> toCopy,
+                                   std::vector<QPointF> linePoints,
                                    QGraphicsItem * parent) :
     QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
-    m_hasArrow(false)
+    m_hasArrow(g_settings->doubleMode),
+    m_linePoints(linePoints)
 {
-    if (toCopy.size() > 0)
-        m_hasArrow = toCopy[0]->m_hasArrow;
-    for (int i = 0; i < toCopy.size(); ++i)
-    {
-        for (size_t j = 0; j < toCopy[i]->m_linePoints.size(); ++j)
-            m_linePoints.push_back(toCopy[i]->m_linePoints[j]);
-    }
-
     setWidth();
     remakePath();
 }
