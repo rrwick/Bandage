@@ -2306,7 +2306,12 @@ void MainWindow::mergeSelectedNodes()
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "No nodes selected", "You must first select one or more nodes before using the 'Merge selected nodes' function.");
+        QMessageBox::information(this, "No nodes selected", "You must first select two or more nodes before using the 'Merge selected nodes' function.");
+        return;
+    }
+    if (selectedNodes.size() == 1)
+    {
+        QMessageBox::information(this, "Only one node selected", "You must first select two or more nodes before using the 'Merge selected nodes' function.");
         return;
     }
 
