@@ -529,31 +529,44 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                     throw "load error";
 
                 QString nodeName = lineParts.at(1);
-                QString posNodeName = nodeName + "+";
-                QString negNodeName = nodeName + "-";
+                if (nodeName.isEmpty())
+                    nodeName = "node";
+
+                //If the node name ends in a "+" or "-", then we leave it as is.
+                //If not, then we assume it's a positive node and add a "+".
+                QString lastChar = nodeName.right(1);
+                if (lastChar != "+" && lastChar != "-")
+                    nodeName += "+";
 
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
-                QByteArray revCompSequence = getReverseComplement(sequence);
 
-                //If there is an attribute holding the read depth, we'll use that.
-                //If there isn't, then we'll use zero.
+                //If there is an attribute holding the read depth, we'll use
+                //that. If there isn't, then we'll use zero.
+                //We try to load 'KC' (k-mer count), 'RC' (read count), or 'FC'
+                //(fragment count), in that order of preference.
                 double nodeReadDepth = 0.0;
-
+                QString kc, rc, fc;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
-                    else if (part.left(5) == "KC:f:")
-                        nodeReadDepth = part.right(part.length() - 5).toDouble();
+                    if (part.left(3) == "KC:")
+                        kc = part.right(part.length() - 5);
+                    if (part.left(3) == "RC:")
+                        rc = part.right(part.length() - 5);
+                    if (part.left(3) == "FC:")
+                        fc = part.right(part.length() - 5);
                 }
+                if (!kc.isEmpty())
+                    nodeReadDepth = kc.toDouble();
+                else if (!rc.isEmpty())
+                    nodeReadDepth = rc.toDouble();
+                else if (!fc.isEmpty())
+                    nodeReadDepth = fc.toDouble();
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
-                node->setReverseComplement(reverseComplementNode);
-                reverseComplementNode->setReverseComplement(node);
-                m_deBruijnGraphNodes.insert(posNodeName, node);
-                m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence);
+                m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
             //Lines beginning with "L" are link (edge) lines
@@ -577,6 +590,16 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 edgeOverlaps.push_back(getLengthFromCigar(cigar));
             }
         }
+
+        //Pair up reverse complements, creating them if necessary.
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            makeReverseComplementNodeIfNecessary(node);
+        }
+        pointEachNodeToItsReverseComplement();
 
         //Create all of the edges
         for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
