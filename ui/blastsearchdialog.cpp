@@ -1046,5 +1046,5 @@ void BlastSearchDialog::openFiltersDialog()
 
 void BlastSearchDialog::setFilterText()
 {
-    ui->blastHitFiltersLabel2->setText(BlastHitFiltersDialog::getFilterText());
+    ui->blastHitFiltersLabel->setText("Current filters: " + BlastHitFiltersDialog::getFilterText());
 }
