@@ -137,7 +137,28 @@ void BlastSearch::findQueryPaths()
 QString BlastSearch::getNodeNameFromString(QString nodeString)
 {
     QStringList nodeStringParts = nodeString.split("_");
-    return nodeStringParts[1];
+
+    //The node string format should look like this:
+    //NODE_nodename_length_123_cov_1.23
+
+    if (nodeStringParts.size() < 6)
+        return "";
+
+    if (nodeStringParts.size() == 6)
+        return nodeStringParts[1];
+
+    //If the code got here, there are more than 6 parts.  This means there are
+    //underscores in the node name (happens a lot with Trinity graphs).  So we
+    //need to pull out the parts which consitute the name.
+    int underscoreCount = nodeStringParts.size() - 6;
+    QString nodeName = "";
+    for (int i = 0; i <= underscoreCount; ++i)
+    {
+        nodeName += nodeStringParts[1+i];
+        if (i < underscoreCount)
+            nodeName += "_";
+    }
+    return nodeName;
 }
 
 
