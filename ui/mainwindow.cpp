@@ -2421,4 +2421,10 @@ void MainWindow::cleanUpAllBlast()
 {
     g_blastSearch->cleanUp();
     g_assemblyGraph->clearAllBlastHitPointers();
+
+    if (m_blastSearchDialog != 0)
+    {
+        delete m_blastSearchDialog;
+        m_blastSearchDialog = 0;
+    }
 }
