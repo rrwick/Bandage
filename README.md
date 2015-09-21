@@ -73,6 +73,8 @@ Building Bandage in Windows is more challenging than in Linux or OS X, but it ca
 
 ## History
 
+Version 0.6.4 - improvements to BLAST and main GUI
+
 Version 0.6.3 - improvements to BLAST functionality
 
 Version 0.6.2 - new features for working with graph paths
