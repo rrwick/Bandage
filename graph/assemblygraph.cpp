@@ -1119,17 +1119,46 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
 
 //This function extracts a node name from a string.
-//It first assumes the string has this format: NODE_6+_length_50434_cov_42.3615
-//If that doesn't seem to work, it assumes the string is just the node name.
+//The string may be in this Bandage format:
+//        NODE_6+_length_50434_cov_42.3615
+//Or in a number of variations of that format.
 //If the node name it finds does not end in a '+' or '-', it will add '+'.
 QString AssemblyGraph::getNodeNameFromString(QString string)
 {
-    QString nodeName;
     QStringList parts = string.split("_");
-    if (parts.size() >= 2)
-        nodeName = parts[1];
-    else
+    if (parts.size() == 0)
+        return "";
+
+    if (parts[0] == "NODE")
+        parts.pop_front();
+    if (parts.size() == 0)
+        return "";
+
+    QString nodeName;
+
+    //This checks for the standard Bandage format where the node name does
+    //not have any underscores.
+    if (parts.size() == 5 && parts[1] == "length")
         nodeName = parts[0];
+
+    //This checks for the simple case of nothing but a node name.
+    else if (parts.size() == 1)
+        nodeName = parts[0];
+
+    //If the code got here, then it is likely that the node name contains
+    //underscores.  Grab everything in the string up until we encounter
+    //"length".
+    else
+    {
+        for (int i = 0; i < parts.size(); ++i)
+        {
+            if (parts[i] == "length")
+                break;
+            if (nodeName.length() > 0)
+                nodeName += "_";
+            nodeName += parts[i];
+        }
+    }
 
     int nameLength = nodeName.length();
     if (nameLength == 0)

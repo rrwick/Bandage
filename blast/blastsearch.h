@@ -50,7 +50,7 @@ public:
     void cleanUp();
     void buildHitsFromBlastOutput();
     void findQueryPaths();
-    QString getNodeNameFromString(QString nodeString);
+    static QString getNodeNameFromString(QString nodeString);
     bool findProgram(QString programName, QString * command);
     void clearSomeQueries(std::vector<BlastQuery *> queriesToRemove);
     void emptyTempDirectory();
