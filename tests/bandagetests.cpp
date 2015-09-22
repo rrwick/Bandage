@@ -36,10 +36,12 @@ class BandageTests : public QObject
 private slots:
     void loadFastg();
     void loadLastGraph();
+    void loadTrinity();
     void pathFunctionsOnLastGraph();
     void pathFunctionsOnFastg();
     void graphLocationFunctions();
     void loadCsvData();
+    void loadCsvDataTrinity();
     void blastSearch();
     void blastSearchFilters();
     void graphScope();
@@ -95,6 +97,26 @@ void BandageTests::loadLastGraph()
     QCOMPARE(node14->getLength(), 60);
 }
 
+
+
+void BandageTests::loadTrinity()
+{
+    createGlobals();
+    bool trinityLoaded = g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.Trinity.fasta");
+
+    //Check that the graph loaded properly.
+    QCOMPARE(trinityLoaded, true);
+
+    //Check that the appropriate number of nodes/edges are present.
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 1170);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 1056);
+
+    //Check the length of a couple nodes.
+    DeBruijnNode * node10241 = g_assemblyGraph->m_deBruijnGraphNodes["TR4|c4_10241+"];
+    DeBruijnNode * node3901 = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3901-"];
+    QCOMPARE(node10241->getLength(), 1186);
+    QCOMPARE(node3901->getLength(), 1);
+}
 
 
 //LastGraph files have no overlap in the edges, so these tests look at paths
@@ -288,6 +310,34 @@ void BandageTests::loadCsvData()
     QCOMPARE(node9Plus->getCsvLine(5), QString(""));
 }
 
+
+void BandageTests::loadCsvDataTrinity()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.Trinity.fasta");
+
+    QString errormsg;
+    QStringList columns;
+    g_assemblyGraph->loadCSV(getTestDirectory() + "test.Trinity.csv", &columns, &errormsg);
+
+    DeBruijnNode * node3912Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3912+"];
+    DeBruijnNode * node3912Minus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3912-"];
+    DeBruijnNode * node3914Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3914+"];
+    DeBruijnNode * node3915Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3915+"];
+    DeBruijnNode * node3923Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3923+"];
+    DeBruijnNode * node3924Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3924+"];
+    DeBruijnNode * node3940Plus = g_assemblyGraph->m_deBruijnGraphNodes["NODE_TR19|c0_3940+"];
+
+    QCOMPARE(columns.size(), 1);
+
+    QCOMPARE(node3912Plus->getCsvLine(0), QString("3912PLUS"));
+    QCOMPARE(node3912Minus->getCsvLine(0), QString("3912MINUS"));
+    QCOMPARE(node3914Plus->getCsvLine(0), QString("3914PLUS"));
+    QCOMPARE(node3915Plus->getCsvLine(0), QString("3915PLUS"));
+    QCOMPARE(node3923Plus->getCsvLine(0), QString("3923PLUS"));
+    QCOMPARE(node3924Plus->getCsvLine(0), QString("3924PLUS"));
+    QCOMPARE(node3940Plus->getCsvLine(0), QString("3940PLUS"));
+}
 
 void BandageTests::blastSearch()
 {
