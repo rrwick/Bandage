@@ -77,7 +77,8 @@ void AssemblyGraph::cleanUp()
 //This function makes a double edge: in one direction for the given nodes
 //and the opposite direction for their reverse complements.  It adds the
 //new edges to the vector here and to the nodes themselves.
-void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int overlap)
+void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name,
+                                       int overlap, EdgeOverlapType overlapType)
 {
     QString node1Opposite = getOppositeNodeName(node1Name);
     QString node2Opposite = getOppositeNodeName(node2Name);
@@ -120,6 +121,8 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name, int
 
     forwardEdge->setOverlap(overlap);
     backwardEdge->setOverlap(overlap);
+    forwardEdge->setOverlapType(overlapType);
+    backwardEdge->setOverlapType(overlapType);
 
     m_deBruijnGraphEdges.push_back(forwardEdge);
     if (!isOwnPair)
@@ -1907,13 +1910,23 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
     m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
     m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
 
-    std::vector<DeBruijnNode *> downstreamNodes = originalPosNode->getDownstreamNodes();
-    for (size_t i = 0; i < downstreamNodes.size(); ++i)
-        createDeBruijnEdge(newPosNodeName, downstreamNodes[i]->getName());
+    std::vector<DeBruijnEdge *> leavingEdges = originalPosNode->getLeavingEdges();
+    for (size_t i = 0; i < leavingEdges.size(); ++i)
+    {
+        DeBruijnEdge * edge = leavingEdges[i];
+        DeBruijnNode * downstreamNode = edge->getEndingNode();
+        createDeBruijnEdge(newPosNodeName, downstreamNode->getName(),
+                           edge->getOverlap(), edge->getOverlapType());
+    }
 
-    std::vector<DeBruijnNode *> upstreamNodes = originalPosNode->getUpstreamNodes();
-    for (size_t i = 0; i < upstreamNodes.size(); ++i)
-        createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
+    std::vector<DeBruijnEdge *> enteringEdges = originalPosNode->getEnteringEdges();
+    for (size_t i = 0; i < enteringEdges.size(); ++i)
+    {
+        DeBruijnEdge * edge = enteringEdges[i];
+        DeBruijnNode * upstreamNode = edge->getStartingNode();
+        createDeBruijnEdge(upstreamNode->getName(), newPosNodeName,
+                           edge->getOverlap(), edge->getOverlapType());
+    }
 
     originalPosNode->setReadDepth(newReadDepth);
     originalNegNode->setReadDepth(newReadDepth);
@@ -2268,15 +2281,21 @@ void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * 
         }
     }
 
-    scene->blockSignals(true);
+    if (scene != 0)
+        scene->blockSignals(true);
     QSetIterator<GraphicsItemNode *> i(graphicsItemNodesToDelete);
     while (i.hasNext())
     {
         GraphicsItemNode * graphicsItemNode = i.next();
-        scene->removeItem(graphicsItemNode);
-        delete graphicsItemNode;
+        if (graphicsItemNode != 0)
+        {
+            if (scene != 0)
+                scene->removeItem(graphicsItemNode);
+            delete graphicsItemNode;
+        }
     }
-    scene->blockSignals(false);
+    if (scene != 0)
+        scene->blockSignals(false);
 }
 
 
@@ -2311,15 +2330,21 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
         }
     }
 
-    scene->blockSignals(true);
+    if (scene != 0)
+        scene->blockSignals(true);
     QSetIterator<GraphicsItemEdge *> i(graphicsItemEdgesToDelete);
     while (i.hasNext())
     {
         GraphicsItemEdge * graphicsItemEdge = i.next();
-        scene->removeItem(graphicsItemEdge);
-        delete graphicsItemEdge;
+        if (graphicsItemEdge != 0)
+        {
+            if (scene != 0)
+                scene->removeItem(graphicsItemEdge);
+            delete graphicsItemEdge;
+        }
     }
-    scene->blockSignals(false);
+    if (scene != 0)
+        scene->blockSignals(false);
 }
 
 

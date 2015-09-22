@@ -57,7 +57,9 @@ public:
     bool m_contiguitySearchDone;
 
     void cleanUp();
-    void createDeBruijnEdge(QString node1Name, QString node2Name, int overlap = 0);
+    void createDeBruijnEdge(QString node1Name, QString node2Name,
+                            int overlap = 0,
+                            EdgeOverlapType overlapType = UNKNOWN_OVERLAP);
     void clearOgdfGraphAndResetNodes();
     QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
