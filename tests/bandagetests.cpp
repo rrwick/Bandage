@@ -26,6 +26,7 @@
 #include "../ui/mygraphicsview.h"
 #include "../program/memory.h"
 #include "../graph/debruijnnode.h"
+#include "../graph/debruijnedge.h"
 #include "../program/globals.h"
 #include "../command_line/commoncommandlinefunctions.h"
 
@@ -47,12 +48,15 @@ private slots:
     void graphScope();
     void commandLineSettings();
     void sciNotComparisons();
+    void graphEdits();
 
 private:
     void createGlobals();
     bool createBlastTempDirectory();
     void deleteBlastTempDirectory();
     QString getTestDirectory();
+    DeBruijnEdge * getEdgeFromNodeNames(QString startingNodeName,
+                                        QString endingNodeName);
 };
 
 
@@ -915,6 +919,36 @@ void BandageTests::sciNotComparisons()
 }
 
 
+void BandageTests::graphEdits()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 88);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 118);
+
+    g_assemblyGraph->duplicateNodePair(g_assemblyGraph->m_deBruijnGraphNodes["26+"], 0);
+
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 90);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 126);
+
+    std::vector<DeBruijnEdge *> edgesToRemove;
+    edgesToRemove.push_back(getEdgeFromNodeNames("26_copy+", "24+"));
+    edgesToRemove.push_back(getEdgeFromNodeNames("6+", "26+"));
+    edgesToRemove.push_back(getEdgeFromNodeNames("26+", "23+"));
+    edgesToRemove.push_back(getEdgeFromNodeNames("23+", "26_copy+"));
+    g_assemblyGraph->deleteEdges(&edgesToRemove);
+
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 90);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 118);
+
+    g_assemblyGraph->mergeAllPossible(0);
+
+    QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 82);
+    QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 110);
+}
+
+
 
 
 
@@ -979,5 +1013,22 @@ QString BandageTests::getTestDirectory()
 
     return "";
 }
+
+DeBruijnEdge * BandageTests::getEdgeFromNodeNames(QString startingNodeName,
+                                                  QString endingNodeName)
+{
+    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+    {
+        DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
+        if (edge->getStartingNode()->getName() == startingNodeName &&
+                edge->getEndingNode()->getName() == endingNodeName)
+            return edge;
+    }
+
+    return 0;
+}
+
+
+
 QTEST_MAIN(BandageTests)
 #include "bandagetests.moc"
