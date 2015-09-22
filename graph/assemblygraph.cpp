@@ -2175,7 +2175,8 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
                                        MyGraphicsScene * scene)
 {
     mergeGraphicsNodes2(originalNodes, newNode, scene);
-    mergeGraphicsNodes2(revCompOriginalNodes, newNode->getReverseComplement(), scene);
+    if (g_settings->doubleMode)
+        mergeGraphicsNodes2(revCompOriginalNodes, newNode->getReverseComplement(), scene);
 
     std::vector<DeBruijnNode *> nodesToRemove;
     for (int i = 0; i < originalNodes->size(); ++i)
