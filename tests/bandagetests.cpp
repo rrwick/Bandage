@@ -927,6 +927,12 @@ void BandageTests::graphEdits()
     QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 88);
     QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 118);
 
+    //Get the path sequence now to compare to the merged node sequence at the
+    //end.
+    QString pathStringFailure;
+    Path path = Path::makeFromString("6+, 26+, 23+, 26+, 24+", false, &pathStringFailure);
+    QByteArray pathSequence = path.getPathSequence();
+
     g_assemblyGraph->duplicateNodePair(g_assemblyGraph->m_deBruijnGraphNodes["26+"], 0);
 
     QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 90);
@@ -946,6 +952,9 @@ void BandageTests::graphEdits()
 
     QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 82);
     QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 110);
+
+    DeBruijnNode * mergedNode = g_assemblyGraph->m_deBruijnGraphNodes["merged+"];
+    QCOMPARE(pathSequence, mergedNode->getSequence());
 }
 
 
