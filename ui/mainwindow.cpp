@@ -2212,9 +2212,12 @@ void MainWindow::saveEntireGraphToGfa()
             i.next();
             out << i.value()->getGfaSegmentLine();
         }
-        for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+
+        QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(g_assemblyGraph->m_deBruijnGraphEdges);
+        while (j.hasNext())
         {
-            DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
+            j.next();
+            DeBruijnEdge * edge = j.value();
             out << edge->getGfaLinkLine();
         }
     }
@@ -2241,9 +2244,12 @@ void MainWindow::saveVisibleGraphToGfa()
             if (node->thisOrReverseComplementHasGraphicsItemNode())
                 out << node->getGfaSegmentLine();
         }
-        for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
+
+        QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(g_assemblyGraph->m_deBruijnGraphEdges);
+        while (j.hasNext())
         {
-            DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
+            j.next();
+            DeBruijnEdge * edge = j.value();
             if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
                     edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode())
                 out << edge->getGfaLinkLine();

@@ -37,8 +37,12 @@ public:
     AssemblyGraph();
     ~AssemblyGraph();
 
+    //Nodes are stored in a map with a key of the node's name.
     QMap<QString, DeBruijnNode*> m_deBruijnGraphNodes;
-    std::vector<DeBruijnEdge*> m_deBruijnGraphEdges;
+
+    //Edges are stored in a map with a key of the starting and ending node
+    //pointers.
+    QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_deBruijnGraphEdges;
 
     ogdf::Graph * m_ogdfGraph;
     ogdf::GraphAttributes * m_graphAttributes;
