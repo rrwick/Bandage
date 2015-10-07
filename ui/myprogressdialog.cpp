@@ -24,7 +24,8 @@ MyProgressDialog::MyProgressDialog(QWidget * parent, QString message, bool showC
                                    QString cancelButtonText, QString cancelMessage, QString cancelInfoText) :
     QDialog(parent),
     ui(new Ui::MyProgressDialog),
-    m_cancelMessage(cancelMessage)
+    m_cancelMessage(cancelMessage),
+    m_cancelled(false)
 {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
 
@@ -56,6 +57,7 @@ void MyProgressDialog::cancel()
 {
     ui->messageLabel->setText(m_cancelMessage);
     ui->cancelButton->setEnabled(false);
+    m_cancelled = true;
     emit halt();
 }
 

@@ -31,6 +31,7 @@
 
 class DeBruijnNode;
 class DeBruijnEdge;
+class MyProgressDialog;
 
 class AssemblyGraph : public QObject
 {
@@ -130,7 +131,8 @@ public:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
-    int mergeAllPossible(MyGraphicsScene * scene);
+    int mergeAllPossible(MyGraphicsScene * scene,
+                         MyProgressDialog * progressDialog);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

@@ -2413,7 +2413,10 @@ void MainWindow::mergeAllPossible()
 {
     int merges;
     {
-        MyProgressDialog progress(this, "Merging nodes", false);
+        MyProgressDialog progress(this, "Merging nodes", true, "Cancel merge", "Cancelling merge...",
+                                  "Clicking this button will stop the merging process. Merges that have already completed will remain "
+                                  "merged but no further merging will take place.");
+
         progress.setWindowModality(Qt::WindowModal);
         progress.setMaxValue(100);
         progress.show();
@@ -2421,7 +2424,7 @@ void MainWindow::mergeAllPossible()
         connect(g_assemblyGraph.data(), SIGNAL(setMergeTotalCount(int)), &progress, SLOT(setMaxValue(int)));
         connect(g_assemblyGraph.data(), SIGNAL(setMergeCompletedCount(int)), &progress, SLOT(setValue(int)));
 
-        merges = g_assemblyGraph->mergeAllPossible(m_scene);
+        merges = g_assemblyGraph->mergeAllPossible(m_scene, &progress);
     }
 
     if (merges > 0)

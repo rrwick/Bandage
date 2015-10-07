@@ -34,6 +34,7 @@
 #include "../program/graphlayoutworker.h"
 #include "../program/memory.h"
 #include "path.h"
+#include "../ui/myprogressdialog.h"
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
@@ -2390,7 +2391,10 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
 
 //This function simplifies the graph by merging all possible nodes in a simple
 //line.  It returns the number of merges that it did.
-int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
+//It gets a pointer to the progress dialog as well so it can check to see if the
+//user has cancelled the merge.
+int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
+                                    MyProgressDialog * progressDialog)
 {
     //Create a set of all nodes.
     QSet<DeBruijnNode *> uncheckedNodes;
@@ -2476,7 +2480,7 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
     //Now do the actual merges.
     QApplication::processEvents();
     emit setMergeTotalCount(allMerges.size());
-    for (int i = 0; i < allMerges.size(); ++i)
+    for (int i = 0; i < allMerges.size() && !progressDialog->wasCancelled(); ++i)
     {
         mergeNodes(allMerges[i], scene, false);
         emit setMergeCompletedCount(i+1);
