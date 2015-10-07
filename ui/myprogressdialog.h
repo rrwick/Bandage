@@ -35,6 +35,7 @@ public:
                               QString cancelButtonText = "", QString cancelMessage = "", QString cancelInfoText = "");
     ~MyProgressDialog();
 
+public slots:
     void setMaxValue(int max);
     void setValue(int value);
 

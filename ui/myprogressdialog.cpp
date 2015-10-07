@@ -38,7 +38,6 @@ MyProgressDialog::MyProgressDialog(QWidget * parent, QString message, bool showC
     ui->cancelWidget->setVisible(showCancelButton);
     ui->cancelButton->setText(cancelButtonText);
 
-
     setFixedHeight(sizeHint().height());
     setFixedWidth(sizeHint().width() * 1.2);
 

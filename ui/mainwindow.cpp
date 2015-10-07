@@ -2415,7 +2415,11 @@ void MainWindow::mergeAllPossible()
     {
         MyProgressDialog progress(this, "Merging nodes", false);
         progress.setWindowModality(Qt::WindowModal);
+        progress.setMaxValue(100);
         progress.show();
+
+        connect(g_assemblyGraph.data(), SIGNAL(setMergeTotalCount(int)), &progress, SLOT(setMaxValue(int)));
+        connect(g_assemblyGraph.data(), SIGNAL(setMergeCompletedCount(int)), &progress, SLOT(setValue(int)));
 
         merges = g_assemblyGraph->mergeAllPossible(m_scene);
     }

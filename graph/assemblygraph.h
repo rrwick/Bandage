@@ -19,6 +19,7 @@
 #ifndef ASSEMBLYGRAPH_H
 #define ASSEMBLYGRAPH_H
 
+#include <QObject>
 #include <vector>
 #include "ogdf/basic/Graph.h"
 #include "ogdf/basic/GraphAttributes.h"
@@ -31,8 +32,10 @@
 class DeBruijnNode;
 class DeBruijnEdge;
 
-class AssemblyGraph
+class AssemblyGraph : public QObject
 {
+    Q_OBJECT
+
 public:
     AssemblyGraph();
     ~AssemblyGraph();
@@ -160,6 +163,10 @@ private:
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node,
                                         bool reverseComplement,
                                         MyGraphicsScene * scene);
+
+signals:
+    void setMergeTotalCount(int totalCount);
+    void setMergeCompletedCount(int completedCount);
 };
 
 #endif // ASSEMBLYGRAPH_H

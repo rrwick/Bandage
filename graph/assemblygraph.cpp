@@ -2474,10 +2474,16 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
     }
 
     //Now do the actual merges.
+    QApplication::processEvents();
+    emit setMergeTotalCount(allMerges.size());
     for (int i = 0; i < allMerges.size(); ++i)
+    {
         mergeNodes(allMerges[i], scene, false);
+        emit setMergeCompletedCount(i+1);
+        QApplication::processEvents();
+    }
 
-    //Now we need to recalculate all of the node's widths.
+    //Now we need to recalculate all of the node widths.
     double meanDrawnReadDepth = getMeanReadDepth(true);
     QMapIterator<QString, DeBruijnNode*> k(m_deBruijnGraphNodes);
     while (k.hasNext())
