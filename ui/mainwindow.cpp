@@ -2396,7 +2396,7 @@ void MainWindow::mergeSelectedNodes()
         return;
     }
 
-    bool success = g_assemblyGraph->mergeNodes(nodesToMerge, m_scene);
+    bool success = g_assemblyGraph->mergeNodes(nodesToMerge, m_scene, true);
 
     if (!success)
     {

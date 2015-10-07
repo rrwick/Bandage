@@ -2034,7 +2034,8 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
 //This function will merge the given nodes, if possible.  Nodes can only be
 //merged if they are in a simple, unbranching path with no extra edges.  If the
 //merge is successful, it returns true, otherwise false.
-bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene)
+bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
+                               bool recalulateReadDepth)
 {
     if (nodes.size() == 0)
         return true;
@@ -2132,15 +2133,23 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     for (size_t i = 0; i < upstreamNodes.size(); ++i)
         createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
 
-    double meanDrawnReadDepth = getMeanReadDepth(true);
-    double readDepthRelativeToMeanDrawnReadDepth;
-    if (meanDrawnReadDepth == 0)
-        readDepthRelativeToMeanDrawnReadDepth = 1.0;
-    else
-        readDepthRelativeToMeanDrawnReadDepth = newPosNode->getReadDepth() / meanDrawnReadDepth;
+    if (recalulateReadDepth)
+    {
+        double meanDrawnReadDepth = getMeanReadDepth(true);
+        double readDepthRelativeToMeanDrawnReadDepth;
+        if (meanDrawnReadDepth == 0)
+            readDepthRelativeToMeanDrawnReadDepth = 1.0;
+        else
+            readDepthRelativeToMeanDrawnReadDepth = newPosNode->getReadDepth() / meanDrawnReadDepth;
 
-    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-    newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+        newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+        newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    }
+    else
+    {
+        newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+        newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+    }
 
     mergeGraphicsNodes(&orderedList, &revCompOrderedList, newPosNode, scene);
 
@@ -2464,8 +2473,27 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene)
         }
     }
 
+    //Now do the actual merges.
     for (int i = 0; i < allMerges.size(); ++i)
-        mergeNodes(allMerges[i], scene);
+        mergeNodes(allMerges[i], scene, false);
+
+    //Now we need to recalculate all of the node's widths.
+    double meanDrawnReadDepth = getMeanReadDepth(true);
+    QMapIterator<QString, DeBruijnNode*> k(m_deBruijnGraphNodes);
+    while (k.hasNext())
+    {
+        k.next();
+        DeBruijnNode * node = k.value();
+
+        double readDepthRelativeToMeanDrawnReadDepth;
+        if (meanDrawnReadDepth == 0)
+            readDepthRelativeToMeanDrawnReadDepth = 1.0;
+        else
+            readDepthRelativeToMeanDrawnReadDepth = node->getReadDepth() / meanDrawnReadDepth;
+
+        node->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    }
+    recalculateAllNodeWidths();
 
     return allMerges.size();
 }

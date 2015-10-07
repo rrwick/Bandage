@@ -119,7 +119,8 @@ public:
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
     void deleteEdges(std::vector<DeBruijnEdge *> * edges);
     void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
-    bool mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene);
+    bool mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
+                    bool recalulateReadDepth);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
