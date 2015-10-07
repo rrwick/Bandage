@@ -83,6 +83,11 @@ bool DeBruijnEdge::isPositiveEdge() const
     if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode())
         return false;
 
+    //Edges that are their own reverse complement are considered positive (but
+    //will not have a negative counterpart).
+    if (isOwnReverseComplement())
+        return true;
+
     //If the code got here, then one node is positive and the other
     //negative.  In this case, just choose the one with the first name
     //alphabetically - an arbitrary choice, but at least it is
@@ -381,7 +386,7 @@ QByteArray DeBruijnEdge::getGfaLinkLine() const
     //When Velvet graphs are saved to GFA, the sequences are extended to include
     //the overlap.  So even though this edge might have no overlap, the GFA link
     //line should.
-    if (g_assemblyGraph->m_graphFileType == VELVET)
+    if (g_assemblyGraph->m_graphFileType == LAST_GRAPH)
         gfaLinkLine += QString::number(g_assemblyGraph->m_kmer - 1) + "M";
     else
         gfaLinkLine += QString::number(getOverlap()) + "M";

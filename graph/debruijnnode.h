@@ -130,6 +130,7 @@ private:
     std::vector<BlastHit *> m_blastHits;
     QStringList m_csvData;
     QString getNodeNameForFasta() const;
+    QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
 
     int getBasePairsPerSegment() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,

@@ -362,7 +362,7 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 //extend the sequence using either the reverse complement or upstream nodes.
 QByteArray DeBruijnNode::getFullSequence() const
 {
-    if (!full || g_assemblyGraph->m_graphFileType != LAST_GRAPH)
+    if (g_assemblyGraph->m_graphFileType != LAST_GRAPH)
         return getSequence();
 
     //If the code got here, then we are getting a full sequence from a Velvet
@@ -384,19 +384,57 @@ QByteArray DeBruijnNode::getFullSequence() const
     else
     {
         QByteArray extension = getUpstreamSequence(extensionLength);
+        if (extension.length() < extensionLength)
+        {
+            int additionalBases = extensionLength - extension.length();
+            QByteArray n;
+            n.fill('N', additionalBases);
+            extension = n + extension;
+        }
         return extension + getSequence();
     }
 }
 
 
+QByteArray DeBruijnNode::getUpstreamSequence(int upstreamSequenceLength) const
+{
+    std::vector<DeBruijnNode*> upstreamNodes = getUpstreamNodes();
+
+    for (size_t i = 0; i < upstreamNodes.size(); ++i)
+    {
+        DeBruijnNode * upstreamNode = upstreamNodes[i];
+        QByteArray upstreamNodeFullSequence = upstreamNode->getSequence();
+        QByteArray upstreamNodeSequence;
+
+        //If the upstream node has enough sequence, great!
+        if (upstreamNodeFullSequence.length() >= upstreamSequenceLength)
+            upstreamNodeSequence = upstreamNodeFullSequence.right(upstreamSequenceLength);
+
+        //If the upstream node does not have enough sequence, then we need to
+        //look even further upstream.
+        else
+            upstreamNodeSequence = upstreamNode->getUpstreamSequence(upstreamSequenceLength - upstreamNodeFullSequence.length()) + upstreamNodeFullSequence;
+
+        //If we now have enough sequence, then we can return it.
+        if (upstreamNodeSequence.length() == upstreamSequenceLength)
+            return upstreamNodeSequence;
+
+        //If we don't have enough sequence, then we need to try the next
+        //upstream node.
+    }
+
+    //If the code got here, that means that not enough upstream sequence was
+    //found in any path!
+    return QByteArray();
+}
 
 
 int DeBruijnNode::getFullLength() const
 {
-    if (!full || g_assemblyGraph->m_graphFileType != LAST_GRAPH)
+    if (g_assemblyGraph->m_graphFileType != LAST_GRAPH)
         return getLength();
     else
-        return getLength + g_assemblyGraph->m_kmer - 1;
+        return getLength() + g_assemblyGraph->m_kmer - 1;
 }
 
 

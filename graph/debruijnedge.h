@@ -54,6 +54,7 @@ public:
     QByteArray getGfaLinkLine() const;
     bool isPositiveEdge() const;
     bool isNegativeEdge() const {return !isPositiveEdge();}
+    bool isOwnReverseComplement() const {return this == getReverseComplement();}
 
     //MODIFERS
     void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}

@@ -359,10 +359,9 @@ void AssemblyGraph::determineGraphInfo()
     {
         j.next();
         DeBruijnEdge * edge = j.value();
-        if (edge != edge->getReverseComplement())
+        if (edge->isPositiveEdge() && !edge->isOwnReverseComplement())
             ++edgeCount;
     }
-    edgeCount /= 2;
 
     m_nodeCount = nodeCount;
     m_edgeCount = edgeCount;
