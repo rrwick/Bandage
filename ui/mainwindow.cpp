@@ -2424,7 +2424,10 @@ void MainWindow::mergeAllPossible()
         connect(g_assemblyGraph.data(), SIGNAL(setMergeTotalCount(int)), &progress, SLOT(setMaxValue(int)));
         connect(g_assemblyGraph.data(), SIGNAL(setMergeCompletedCount(int)), &progress, SLOT(setValue(int)));
 
+
+        g_graphicsView->viewport()->setUpdatesEnabled(false);
         merges = g_assemblyGraph->mergeAllPossible(m_scene, &progress);
+        g_graphicsView->viewport()->setUpdatesEnabled(true);
     }
 
     if (merges > 0)
