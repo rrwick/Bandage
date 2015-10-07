@@ -59,3 +59,14 @@ void MyProgressDialog::cancel()
     ui->cancelButton->setEnabled(false);
     emit halt();
 }
+
+
+void MyProgressDialog::setMaxValue(int max)
+{
+    ui->progressBar->setMaximum(max);
+}
+
+void MyProgressDialog::setValue(int value)
+{
+    ui->progressBar->setValue(value);
+}

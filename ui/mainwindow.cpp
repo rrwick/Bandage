@@ -2411,7 +2411,15 @@ void MainWindow::mergeSelectedNodes()
 
 void MainWindow::mergeAllPossible()
 {
-    int merges = g_assemblyGraph->mergeAllPossible(m_scene);
+    int merges;
+    {
+        MyProgressDialog progress(this, "Merging nodes", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        merges = g_assemblyGraph->mergeAllPossible(m_scene);
+    }
+
     if (merges > 0)
     {
         g_assemblyGraph->determineGraphInfo();
