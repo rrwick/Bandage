@@ -46,6 +46,8 @@ public:
     double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
     QByteArray getSequence() const {return m_sequence;}
     int getLength() const {return m_sequence.length();}
+    QByteArray getFullSequence() const;
+    int getFullLength() const;
     QByteArray getFasta() const;
     QByteArray getFastaNoNewLinesInSequence() const;
     QByteArray getGfaSegmentLine() const;

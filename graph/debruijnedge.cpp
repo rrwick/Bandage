@@ -21,6 +21,9 @@
 #include "../program/settings.h"
 #include "ogdfnode.h"
 #include <QApplication>
+#include "../program/settings.h"
+#include "../program/globals.h"
+#include "assemblygraph.h"
 
 DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode) :
     m_startingNode(startingNode), m_endingNode(endingNode), m_graphicsItemEdge(0),
@@ -59,22 +62,32 @@ bool DeBruijnEdge::edgeIsVisible() const
             return false;
 
         //But it is also necessary to avoid drawing both an edge and its
-        //reverse complement edge, so some choices are made to ensure
-        //that only one is drawn.
-
-        //If both nodes have a positive number, show this edge, and not
-        //the reverse complement where both nodes are negative.
-        if (m_startingNode->isPositiveNode() && m_endingNode->isPositiveNode())
-            return true;
-        if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode())
-            return false;
-
-        //If the code got here, then one node is positive and the other
-        //negative.  In this case, just choose the one with the first name
-        //alphabetically - an arbitrary choice, but at least it is
-        //consistent.
-        return (m_startingNode->getName() > m_reverseComplement->m_startingNode->getName());
+        //reverse complement edge.
+        return isPositiveEdge();
     }
+}
+
+
+
+//This function says whether an edge is 'positive'.  This is used to distinguish
+//an edge from its reverse complement - i.e. half of the graph edges are
+//positive and their reverse complements are negative.
+//When one node in the edge is positive and the other is negative, then the
+//choice is somewhat arbitrary.
+bool DeBruijnEdge::isPositiveEdge() const
+{
+    //If both nodes have a positive number, show this edge, and not
+    //the reverse complement where both nodes are negative.
+    if (m_startingNode->isPositiveNode() && m_endingNode->isPositiveNode())
+        return true;
+    if (m_startingNode->isNegativeNode() && m_endingNode->isNegativeNode())
+        return false;
+
+    //If the code got here, then one node is positive and the other
+    //negative.  In this case, just choose the one with the first name
+    //alphabetically - an arbitrary choice, but at least it is
+    //consistent.
+    return (m_startingNode->getName() > m_reverseComplement->m_startingNode->getName());
 }
 
 
@@ -364,7 +377,14 @@ QByteArray DeBruijnEdge::getGfaLinkLine() const
     gfaLinkLine += startingNode->getSign() + "\t";
     gfaLinkLine += endingNode->getNameWithoutSign() + "\t";
     gfaLinkLine += endingNode->getSign() + "\t";
-    gfaLinkLine += QString::number(getOverlap()) + "M";
+
+    //When Velvet graphs are saved to GFA, the sequences are extended to include
+    //the overlap.  So even though this edge might have no overlap, the GFA link
+    //line should.
+    if (g_assemblyGraph->m_graphFileType == VELVET)
+        gfaLinkLine += QString::number(g_assemblyGraph->m_kmer - 1) + "M";
+    else
+        gfaLinkLine += QString::number(getOverlap()) + "M";
 
     gfaLinkLine += "\n";
     return gfaLinkLine;

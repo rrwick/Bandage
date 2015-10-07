@@ -347,13 +347,56 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 {
     QByteArray gfaSegmentLine = "S\t";
     gfaSegmentLine += getNameWithoutSign() + "\t";
-    gfaSegmentLine += getSequence() + "\t";
-    gfaSegmentLine += "OR:Z:" + getSign() + "\t";
-    gfaSegmentLine += "LN:i:" + QString::number(getLength()) + "\t";
+    gfaSegmentLine += getFullSequence() + "\t";
+    gfaSegmentLine += "LN:i:" + QString::number(getFullLength()) + "\t";
     gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * getLength() + 0.5));
 
     gfaSegmentLine += "\n";
     return gfaSegmentLine;
+}
+
+
+//This function gets the node's sequence.  The full parameter only has an effect
+//for Velvet LastGraph files where the sequences are shifted from their reverse
+//complement.  If full is true and the graph is from Velvet, this function will
+//extend the sequence using either the reverse complement or upstream nodes.
+QByteArray DeBruijnNode::getFullSequence() const
+{
+    if (!full || g_assemblyGraph->m_graphFileType != LAST_GRAPH)
+        return getSequence();
+
+    //If the code got here, then we are getting a full sequence from a Velvet
+    //LastGraph graph, so we need to extend the beginning of the sequence.
+    int extensionLength = g_assemblyGraph->m_kmer - 1;
+
+    //If the node is at least k-1 in length, then the necessary sequence can be
+    //deduced from the reverse complement node.
+    if (getLength() >= extensionLength)
+    {
+        QByteArray revCompSeq = getReverseComplement()->getSequence();
+        QByteArray endOfRevCompSeq = revCompSeq.right(extensionLength);
+        QByteArray extension = AssemblyGraph::getReverseComplement(endOfRevCompSeq);
+        return extension + getSequence();
+    }
+
+    //If the node is not long enough, then we must look in upstream nodes for
+    //the rest of the sequence.
+    else
+    {
+        QByteArray extension = getUpstreamSequence(extensionLength);
+        return extension + getSequence();
+    }
+}
+
+
+
+
+int DeBruijnNode::getFullLength() const
+{
+    if (!full || g_assemblyGraph->m_graphFileType != LAST_GRAPH)
+        return getLength();
+    else
+        return getLength + g_assemblyGraph->m_kmer - 1;
 }
 
 

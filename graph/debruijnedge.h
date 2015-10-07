@@ -52,6 +52,8 @@ public:
                          std::vector<DeBruijnNode *> pathSoFar,
                          bool includeReverseComplement) const;
     QByteArray getGfaLinkLine() const;
+    bool isPositiveEdge() const;
+    bool isNegativeEdge() const {return !isPositiveEdge();}
 
     //MODIFERS
     void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}

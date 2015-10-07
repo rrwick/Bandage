@@ -69,7 +69,7 @@ public:
                             int overlap = 0,
                             EdgeOverlapType overlapType = UNKNOWN_OVERLAP);
     void clearOgdfGraphAndResetNodes();
-    QByteArray getReverseComplement(QByteArray forwardSequence);
+    static QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
     double getMeanReadDepth(bool drawnNodesOnly = false);
     double getMeanReadDepth(std::vector<DeBruijnNode *> nodes);
