@@ -2113,7 +2113,14 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     Path negPath = Path::makeFromOrderedNodes(revCompOrderedList, false);
     QByteArray mergedNodeNegSequence = negPath.getPathSequence();
 
-    QString newNodeBaseName = getUniqueNodeName("merged");
+    QString newNodeBaseName;
+    for (int i = 0; i < orderedList.size(); ++i)
+    {
+        newNodeBaseName += orderedList[i]->getNameWithoutSign();
+        if (i < orderedList.size() - 1)
+            newNodeBaseName += "_";
+    }
+    newNodeBaseName = getUniqueNodeName(newNodeBaseName);
     QString newPosNodeName = newNodeBaseName + "+";
     QString newNegNodeName = newNodeBaseName + "-";
 
