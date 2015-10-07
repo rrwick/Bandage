@@ -469,7 +469,6 @@ void MainWindow::selectionChanged()
 
         ui->selectedEdgesTextEdit->setPlainText(getSelectedEdgeListText());
     }
-
 }
 
 
@@ -2117,12 +2116,7 @@ void MainWindow::setSelectedNodesWidgetsVisibility(bool visible)
     ui->selectedNodesModificationWidget->setVisible(visible);
     ui->selectedNodesLengthLabel->setVisible(visible);
     ui->selectedNodesDepthLabel->setVisible(visible);
-
-    if (visible)
-        ui->selectedNodesSpacer->changeSize(20, 60);
-    else
-        ui->selectedNodesSpacer->changeSize(20, 0);
-
+    ui->selectedNodesSpacerWidget->setVisible(visible);
 }
 
 void MainWindow::setSelectedEdgesWidgetsVisibility(bool visible)
@@ -2130,11 +2124,7 @@ void MainWindow::setSelectedEdgesWidgetsVisibility(bool visible)
     ui->selectedEdgesTitleLabel->setVisible(visible);
     ui->selectedEdgesTextEdit->setVisible(visible);
     ui->selectedEdgesLine->setVisible(visible);
-
-    if (visible)
-        ui->selectedEdgesSpacer->changeSize(20, 60);
-    else
-        ui->selectedEdgesSpacer->changeSize(20, 0);
+    ui->selectedEdgesSpacerWidget->setVisible(visible);
 }
 
 
