@@ -950,12 +950,12 @@ void BandageTests::graphEdits()
     QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 90);
     QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 118);
 
-    g_assemblyGraph->mergeAllPossible(0);
+    g_assemblyGraph->mergeAllPossible();
 
     QCOMPARE(g_assemblyGraph->m_deBruijnGraphNodes.size(), 82);
     QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 110);
 
-    DeBruijnNode * mergedNode = g_assemblyGraph->m_deBruijnGraphNodes["merged+"];
+    DeBruijnNode * mergedNode = g_assemblyGraph->m_deBruijnGraphNodes["6_26_copy_23_26_24+"];
     QCOMPARE(pathSequence, mergedNode->getSequence());
 }
 
@@ -964,15 +964,52 @@ void BandageTests::graphEdits()
 //must be filled in.  This function tests aspects of that process.
 void BandageTests::velvetToGfa()
 {
+    //First load the graph as a LastGraph and pull out some information and a
+    //circular path sequence.
     createGlobals();
     g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "big_test.LastGraph");
 
+    int lastGraphNodeCount = g_assemblyGraph->m_nodeCount;
+    int lastGraphEdgeCount= g_assemblyGraph->m_edgeCount;
+    long long lastGraphTotalLength = g_assemblyGraph->m_totalLength;
+    long long lastGraphShortestContig = g_assemblyGraph->m_shortestContig;
+    long long lastGraphLongestContig = g_assemblyGraph->m_longestContig;
 
+    QString pathStringFailure;
+    Path lastGraphTestPath1 = Path::makeFromString("3176-, 3176+, 4125+, 3178-, 3283+, 3180+, 3177-", true, &pathStringFailure);
+    Path lastGraphTestPath2 = Path::makeFromString("3368+, 3369+, 3230+, 3231+, 3370-, 3143+, 3144+, 3145+, 3240+, 3241+, 3788-, 3787-, 3231+, 3252+, 3241-, 3240-, 3145-, 4164-, 4220+, 3368-, 3367+", true, &pathStringFailure);
+    QByteArray lastGraphTestPath1Sequence = lastGraphTestPath1.getPathSequence();
+    QByteArray lastGraphTestPath2Sequence = lastGraphTestPath2.getPathSequence();
 
+    //Now save the graph as a GFA and reload it and grab the same information.
+    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "big_test.gfa");
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "big_test.gfa");
 
+    int gfaNodeCount = g_assemblyGraph->m_nodeCount;
+    int gfaEdgeCount= g_assemblyGraph->m_edgeCount;
+    long long gfaTotalLength = g_assemblyGraph->m_totalLength;
+    long long gfaShortestContig = g_assemblyGraph->m_shortestContig;
+    long long gfaLongestContig = g_assemblyGraph->m_longestContig;
 
+    Path gfaTestPath1 = Path::makeFromString("3176-, 3176+, 4125+, 3178-, 3283+, 3180+, 3177-", true, &pathStringFailure);
+    Path gfaTestPath2 = Path::makeFromString("3368+, 3369+, 3230+, 3231+, 3370-, 3143+, 3144+, 3145+, 3240+, 3241+, 3788-, 3787-, 3231+, 3252+, 3241-, 3240-, 3145-, 4164-, 4220+, 3368-, 3367+", true, &pathStringFailure);
+    QByteArray gfaTestPath1Sequence = gfaTestPath1.getPathSequence();
+    QByteArray gfaTestPath2Sequence = gfaTestPath2.getPathSequence();
 
+    //Now we compare the LastGraph info to the GFA info to make sure they are
+    //the same (or appropriately different).  The k-mer size for this graph is
+    //51, so we expect each node to get 50 base pairs longer.
+    QCOMPARE(lastGraphNodeCount, gfaNodeCount);
+    QCOMPARE(lastGraphEdgeCount, gfaEdgeCount);
+    QCOMPARE(lastGraphTotalLength + 50 * lastGraphNodeCount, gfaTotalLength);
+    QCOMPARE(lastGraphShortestContig + 50, gfaShortestContig);
+    QCOMPARE(lastGraphLongestContig + 50, gfaLongestContig);
+    QCOMPARE(lastGraphTestPath1Sequence, gfaTestPath1Sequence);
+    QCOMPARE(lastGraphTestPath2Sequence, gfaTestPath2Sequence);
 
+    //Finally, delete the gfa file.
+    QFile::remove(getTestDirectory() + "big_test.gfa");
 }
 
 
@@ -1042,15 +1079,15 @@ QString BandageTests::getTestDirectory()
 DeBruijnEdge * BandageTests::getEdgeFromNodeNames(QString startingNodeName,
                                                   QString endingNodeName)
 {
-    for (size_t i = 0; i < g_assemblyGraph->m_deBruijnGraphEdges.size(); ++i)
-    {
-        DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[i];
-        if (edge->getStartingNode()->getName() == startingNodeName &&
-                edge->getEndingNode()->getName() == endingNodeName)
-            return edge;
-    }
+    DeBruijnNode * startingNode = g_assemblyGraph->m_deBruijnGraphNodes[startingNodeName];
+    DeBruijnNode * endingNode = g_assemblyGraph->m_deBruijnGraphNodes[endingNodeName];
 
-    return 0;
+    QPair<DeBruijnNode*, DeBruijnNode*> nodePair(startingNode, endingNode);
+
+    if (g_assemblyGraph->m_deBruijnGraphEdges.contains(nodePair))
+        return g_assemblyGraph->m_deBruijnGraphEdges[nodePair];
+    else
+        return 0;
 }
 
 

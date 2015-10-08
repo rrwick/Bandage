@@ -131,8 +131,8 @@ public:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
-    int mergeAllPossible(MyGraphicsScene * scene,
-                         MyProgressDialog * progressDialog);
+    int mergeAllPossible(MyGraphicsScene * scene = 0,
+                         MyProgressDialog * progressDialog = 0);
 
     void saveEntireGraphToFasta(QString filename);
     void saveEntireGraphToFastaOnlyPositiveNodes(QString filename);

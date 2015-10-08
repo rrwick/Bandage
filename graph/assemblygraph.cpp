@@ -2476,8 +2476,11 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
     //Now do the actual merges.
     QApplication::processEvents();
     emit setMergeTotalCount(allMerges.size());
-    for (int i = 0; i < allMerges.size() && !progressDialog->wasCancelled(); ++i)
+    for (int i = 0; i < allMerges.size(); ++i)
     {
+        if (progressDialog != 0 && progressDialog->wasCancelled())
+            break;
+
         mergeNodes(allMerges[i], scene, false);
         emit setMergeCompletedCount(i+1);
         QApplication::processEvents();
