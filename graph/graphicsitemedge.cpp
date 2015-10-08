@@ -91,7 +91,8 @@ void GraphicsItemEdge::calculateAndSetPath()
     //required, otherwise the edge will be mostly hidden underneath
     //the node.
     DeBruijnNode * startingNode = m_deBruijnEdge->getStartingNode();
-    if (startingNode == m_deBruijnEdge->getEndingNode())
+    DeBruijnNode * endingNode = m_deBruijnEdge->getEndingNode();
+    if (startingNode == endingNode)
     {
         GraphicsItemNode * graphicsItemNode = startingNode->getGraphicsItemNode();
         if (graphicsItemNode == 0)
@@ -101,6 +102,15 @@ void GraphicsItemEdge::calculateAndSetPath()
             makeSpecialPathConnectingNodeToSelf();
             return;
         }
+    }
+
+    //If we are in single mode and the edge connects a node to its reverse
+    //complement, then we need a special path to make it visible.
+    if (startingNode == endingNode->getReverseComplement() &&
+            !g_settings->doubleMode)
+    {
+        makeSpecialPathConnectingNodeToReverseComplement();
+        return;
     }
 
     //Otherwise, the path is just a single cubic Bezier curve.
@@ -154,6 +164,29 @@ void GraphicsItemEdge::makeSpecialPathConnectingNodeToSelf()
 
     path.cubicTo(m_controlPoint1, m_controlPoint1 + perpendicularShift, nodeMidPoint + perpendicularShift);
     path.cubicTo(m_controlPoint2 + perpendicularShift, m_controlPoint2, m_endingLocation);
+
+    setPath(path);
+}
+
+//This function handles the special case of an edge that connects a node to its
+//reverse complement and is displayed in single mode.
+void GraphicsItemEdge::makeSpecialPathConnectingNodeToReverseComplement()
+{
+    double extensionLength = g_settings->segmentLength / 4.0;
+    m_controlPoint1 = extendLine(m_beforeStartingLocation, m_startingLocation, extensionLength);
+    m_controlPoint2 = extendLine(m_afterEndingLocation, m_endingLocation, extensionLength);
+
+    QPointF startToControl = m_controlPoint1 - m_startingLocation;
+    QPointF pathMidPoint = m_startingLocation + startToControl * 3.0;
+
+    QLineF normalLine = QLineF(m_controlPoint1, m_startingLocation).normalVector();
+    QPointF perpendicularShift = normalLine.p2() - normalLine.p1();
+
+    QPainterPath path;
+    path.moveTo(m_startingLocation);
+
+    path.cubicTo(m_controlPoint1, pathMidPoint + perpendicularShift, pathMidPoint);
+    path.cubicTo(pathMidPoint - perpendicularShift, m_controlPoint2, m_endingLocation);
 
     setPath(path);
 }

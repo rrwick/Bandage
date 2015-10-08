@@ -351,15 +351,15 @@ void AssemblyGraph::determineGraphInfo()
         nodeReadDepths.push_back(i.value()->getReadDepth());
     }
 
-    //Count up the edges.  Edges that are their own pairs will
-    //not be counted, as these won't show up in single mode.
+    //Count up the edges that will be shown in single mode (i.e. positive
+    //edges).
     int edgeCount = 0;
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
     while (j.hasNext())
     {
         j.next();
         DeBruijnEdge * edge = j.value();
-        if (edge->isPositiveEdge() && !edge->isOwnReverseComplement())
+        if (edge->isPositiveEdge())
             ++edgeCount;
     }
 

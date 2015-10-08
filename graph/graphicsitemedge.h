@@ -50,6 +50,7 @@ public:
     void setStartingPoints(QPointF startingLocation, QPointF beforeStartingLocation) {m_startingLocation = startingLocation; m_beforeStartingLocation = beforeStartingLocation;}
     void setEndingPoints(QPointF endingLocation, QPointF afterEndingLocation) {m_endingLocation = endingLocation; m_afterEndingLocation = afterEndingLocation;}
     void makeSpecialPathConnectingNodeToSelf();
+    void makeSpecialPathConnectingNodeToReverseComplement();
 };
 
 #endif // GRAPHICSITEMEDGE_H
