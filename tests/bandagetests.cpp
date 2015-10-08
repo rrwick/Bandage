@@ -50,6 +50,7 @@ private slots:
     void sciNotComparisons();
     void graphEdits();
     void velvetToGfa();
+    void spadesToGfa();
 
 
 private:
@@ -1013,6 +1014,55 @@ void BandageTests::velvetToGfa()
 }
 
 
+void BandageTests::spadesToGfa()
+{
+    //First load the graph as a FASTG and pull out some information and a
+    //path sequence.
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+
+    int fastgNodeCount = g_assemblyGraph->m_nodeCount;
+    int fastgEdgeCount= g_assemblyGraph->m_edgeCount;
+    long long fastgTotalLength = g_assemblyGraph->m_totalLength;
+    long long fastgShortestContig = g_assemblyGraph->m_shortestContig;
+    long long fastgLongestContig = g_assemblyGraph->m_longestContig;
+
+    QString pathStringFailure;
+    Path fastgTestPath1 = Path::makeFromString("24+, 14+, 39-, 43-, 42-, 2-, 4+, 33+, 35-, 31-, 44-, 27+, 9-, 28-, 44+, 31+, 36+", false, &pathStringFailure);
+    Path fastgTestPath2 = Path::makeFromString("16+, 7+, 13+, 37+, 41-, 40-, 42+, 43+, 39+, 14-, 22-, 20+, 7-, 25-, 32-, 38+, 3-", false, &pathStringFailure);
+    QByteArray fastgTestPath1Sequence = fastgTestPath1.getPathSequence();
+    QByteArray fastgTestPath2Sequence = fastgTestPath2.getPathSequence();
+
+    //Now save the graph as a GFA and reload it and grab the same information.
+    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "test.gfa");
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.gfa");
+
+    int gfaNodeCount = g_assemblyGraph->m_nodeCount;
+    int gfaEdgeCount= g_assemblyGraph->m_edgeCount;
+    long long gfaTotalLength = g_assemblyGraph->m_totalLength;
+    long long gfaShortestContig = g_assemblyGraph->m_shortestContig;
+    long long gfaLongestContig = g_assemblyGraph->m_longestContig;
+
+    Path gfaTestPath1 = Path::makeFromString("24+, 14+, 39-, 43-, 42-, 2-, 4+, 33+, 35-, 31-, 44-, 27+, 9-, 28-, 44+, 31+, 36+", false, &pathStringFailure);
+    Path gfaTestPath2 = Path::makeFromString("16+, 7+, 13+, 37+, 41-, 40-, 42+, 43+, 39+, 14-, 22-, 20+, 7-, 25-, 32-, 38+, 3-", false, &pathStringFailure);
+    QByteArray gfaTestPath1Sequence = gfaTestPath1.getPathSequence();
+    QByteArray gfaTestPath2Sequence = gfaTestPath2.getPathSequence();
+
+    //Now we compare the LastGraph info to the GFA info to make sure they are
+    //the same (or appropriately different).  The k-mer size for this graph is
+    //51, so we expect each node to get 50 base pairs longer.
+    QCOMPARE(fastgNodeCount, gfaNodeCount);
+    QCOMPARE(fastgEdgeCount, gfaEdgeCount);
+    QCOMPARE(fastgTotalLength, gfaTotalLength);
+    QCOMPARE(fastgShortestContig, gfaShortestContig);
+    QCOMPARE(fastgLongestContig, gfaLongestContig);
+    QCOMPARE(fastgTestPath1Sequence, gfaTestPath1Sequence);
+    QCOMPARE(fastgTestPath2Sequence, gfaTestPath2Sequence);
+
+    //Finally, delete the gfa file.
+    QFile::remove(getTestDirectory() + "test.gfa");
+}
 
 
 
