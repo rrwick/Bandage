@@ -134,6 +134,11 @@ public:
     int mergeAllPossible(MyGraphicsScene * scene,
                          MyProgressDialog * progressDialog);
 
+    void saveEntireGraphToFasta(QString filename);
+    void saveEntireGraphToFastaOnlyPositiveNodes(QString filename);
+    void saveEntireGraphToGfa(QString filename);
+    void saveVisibleGraphToGfa(QString filename);
+
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
     QString convertNormalNumberStringToBandageNodeName(QString number);

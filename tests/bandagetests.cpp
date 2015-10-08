@@ -49,6 +49,8 @@ private slots:
     void commandLineSettings();
     void sciNotComparisons();
     void graphEdits();
+    void velvetToGfa();
+
 
 private:
     void createGlobals();
@@ -958,6 +960,20 @@ void BandageTests::graphEdits()
 }
 
 
+//Saving a Velvet graph to GFA is a bit complex because the node sequence offset
+//must be filled in.  This function tests aspects of that process.
+void BandageTests::velvetToGfa()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "big_test.LastGraph");
+
+
+
+
+
+
+
+}
 
 
 

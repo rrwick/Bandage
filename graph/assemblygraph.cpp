@@ -2503,3 +2503,85 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
 
     return allMerges.size();
 }
+
+void AssemblyGraph::saveEntireGraphToFasta(QString filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        out << i.value()->getFasta();
+    }
+}
+
+void AssemblyGraph::saveEntireGraphToFastaOnlyPositiveNodes(QString filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+            out << node->getFasta();
+    }
+}
+
+void AssemblyGraph::saveEntireGraphToGfa(QString filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+            out << node->getGfaSegmentLine();
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnEdge * edge = j.value();
+        if (edge->isPositiveEdge())
+            out << edge->getGfaLinkLine();
+    }
+}
+
+void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->thisOrReverseComplementHasGraphicsItemNode() && node->isPositiveNode())
+            out << node->getGfaSegmentLine();
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnEdge * edge = j.value();
+        if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
+                edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
+                edge->isPositiveEdge())
+            out << edge->getGfaLinkLine();
+    }
+}

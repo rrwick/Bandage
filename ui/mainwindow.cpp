@@ -2143,18 +2143,8 @@ void MainWindow::saveEntireGraphToFasta()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile file(fullFileName);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-            out << i.value()->getFasta();
-        }
+        g_assemblyGraph->saveEntireGraphToFasta(fullFileName);
     }
 }
 
@@ -2165,20 +2155,8 @@ void MainWindow::saveEntireGraphToFastaOnlyPositiveNodes()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile file(fullFileName);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-            DeBruijnNode * node = i.value();
-            if (node->isPositiveNode())
-                out << node->getFasta();
-        }
+        g_assemblyGraph->saveEntireGraphToFastaOnlyPositiveNodes(fullFileName);
     }
 }
 
@@ -2190,29 +2168,8 @@ void MainWindow::saveEntireGraphToGfa()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile file(fullFileName);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-            DeBruijnNode * node = i.value();
-            if (node->isPositiveNode())
-                out << node->getGfaSegmentLine();
-        }
-
-        QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(g_assemblyGraph->m_deBruijnGraphEdges);
-        while (j.hasNext())
-        {
-            j.next();
-            DeBruijnEdge * edge = j.value();
-            if (edge->isPositiveEdge())
-                out << edge->getGfaLinkLine();
-        }
+        g_assemblyGraph->saveEntireGraphToGfa(fullFileName);
     }
 }
 
@@ -2223,31 +2180,8 @@ void MainWindow::saveVisibleGraphToGfa()
 
     if (fullFileName != "") //User did not hit cancel
     {
-        QFile file(fullFileName);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        QTextStream out(&file);
-
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-
-        QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-            DeBruijnNode * node = i.value();
-            if (node->thisOrReverseComplementHasGraphicsItemNode() && node->isPositiveNode())
-                out << node->getGfaSegmentLine();
-        }
-
-        QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(g_assemblyGraph->m_deBruijnGraphEdges);
-        while (j.hasNext())
-        {
-            j.next();
-            DeBruijnEdge * edge = j.value();
-            if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
-                    edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
-                    edge->isPositiveEdge())
-                out << edge->getGfaLinkLine();
-        }
+        g_assemblyGraph->saveVisibleGraphToGfa(fullFileName);
     }
 }
 
