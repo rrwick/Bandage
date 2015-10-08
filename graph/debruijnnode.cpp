@@ -400,6 +400,8 @@ QByteArray DeBruijnNode::getUpstreamSequence(int upstreamSequenceLength) const
 {
     std::vector<DeBruijnNode*> upstreamNodes = getUpstreamNodes();
 
+    QByteArray bestUpstreamNodeSequence;
+
     for (size_t i = 0; i < upstreamNodes.size(); ++i)
     {
         DeBruijnNode * upstreamNode = upstreamNodes[i];
@@ -420,12 +422,15 @@ QByteArray DeBruijnNode::getUpstreamSequence(int upstreamSequenceLength) const
             return upstreamNodeSequence;
 
         //If we don't have enough sequence, then we need to try the next
-        //upstream node.
+        //upstream node.  If our current one is the best so far, save that in
+        //case no complete sequence is found.
+        if (upstreamNodeSequence.length() > bestUpstreamNodeSequence.length())
+            bestUpstreamNodeSequence = upstreamNodeSequence;
     }
 
     //If the code got here, that means that not enough upstream sequence was
-    //found in any path!
-    return QByteArray();
+    //found in any path!  Return what we have managed to get so far.
+    return bestUpstreamNodeSequence;
 }
 
 
