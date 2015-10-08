@@ -55,6 +55,7 @@ public:
     bool isPositiveEdge() const;
     bool isNegativeEdge() const {return !isPositiveEdge();}
     bool isOwnReverseComplement() const {return this == getReverseComplement();}
+    static bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b);
 
     //MODIFERS
     void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}

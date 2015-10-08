@@ -394,3 +394,42 @@ QByteArray DeBruijnEdge::getGfaLinkLine() const
     gfaLinkLine += "\n";
     return gfaLinkLine;
 }
+
+bool DeBruijnEdge::compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b)
+{
+    QString aStart = a->getStartingNode()->getName();
+    QString bStart = b->getStartingNode()->getName();
+    QString aStartNoSign = aStart;
+    aStartNoSign.chop(1);
+    QString bStartNoSign = bStart;
+    bStartNoSign.chop(1);
+    bool ok1;
+    long long aStartNumber = aStartNoSign.toLongLong(&ok1);
+    bool ok2;
+    long long bStartNumber = bStartNoSign.toLongLong(&ok2);
+
+    QString aEnd = a->getEndingNode()->getName();
+    QString bEnd = b->getEndingNode()->getName();
+    QString aEndNoSign = aEnd;
+    aEndNoSign.chop(1);
+    QString bEndNoSign = bEnd;
+    bEndNoSign.chop(1);
+    bool ok3;
+    long long aEndNumber = aEndNoSign.toLongLong(&ok3);
+    bool ok4;
+    long long bEndNumber = bEndNoSign.toLongLong(&ok4);
+
+
+    //If the node names are essentially numbers, then sort them as numbers.
+    if (ok1 && ok2 && ok3 && ok4)
+    {
+        if (aStartNumber != bStartNumber)
+            return aStartNumber < bStartNumber;
+
+        if (aStartNumber == bStartNumber)
+            return aEndNumber < bEndNumber;
+    }
+
+    //If the node names are strings, then just sort them as strings.
+    return aStart < bStart;
+}

@@ -2552,14 +2552,20 @@ void AssemblyGraph::saveEntireGraphToGfa(QString filename)
             out << node->getGfaSegmentLine();
     }
 
+    QList<DeBruijnEdge*> edgesToSave;
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
     while (j.hasNext())
     {
         j.next();
         DeBruijnEdge * edge = j.value();
         if (edge->isPositiveEdge())
-            out << edge->getGfaLinkLine();
+            edgesToSave.push_back(edge);
     }
+
+    std::sort(edgesToSave.begin(), edgesToSave.end(), DeBruijnEdge::compareEdgePointers);
+
+    for (int i = 0; i < edgesToSave.size(); ++i)
+        out << edgesToSave[i]->getGfaLinkLine();
 }
 
 void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
@@ -2577,6 +2583,7 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
             out << node->getGfaSegmentLine();
     }
 
+    QList<DeBruijnEdge*> edgesToSave;
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
     while (j.hasNext())
     {
@@ -2585,6 +2592,11 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
         if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
                 edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
                 edge->isPositiveEdge())
-            out << edge->getGfaLinkLine();
+            edgesToSave.push_back(edge);
     }
+
+    std::sort(edgesToSave.begin(), edgesToSave.end(), DeBruijnEdge::compareEdgePointers);
+
+    for (int i = 0; i < edgesToSave.size(); ++i)
+        out << edgesToSave[i]->getGfaLinkLine();
 }
