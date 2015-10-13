@@ -988,7 +988,8 @@ bool AssemblyGraph::checkFileIsLastGraph(QString fullFileName)
 //Cursory look to see if file appears to be a FASTG file.
 bool AssemblyGraph::checkFileIsFastG(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, ">NODE");
+    return checkFirstLineOfFile(fullFileName, ">NODE") ||
+            checkFirstLineOfFile(fullFileName, ">EDGE");
 }
 
 //Cursory look to see if file appears to be a GFA file.
