@@ -51,6 +51,7 @@ private slots:
     void graphEdits();
     void velvetToGfa();
     void spadesToGfa();
+    void mergeNodesOnGfa();
 
 
 private:
@@ -60,6 +61,7 @@ private:
     QString getTestDirectory();
     DeBruijnEdge * getEdgeFromNodeNames(QString startingNodeName,
                                         QString endingNodeName);
+    bool doCircularSequencesMatch(QByteArray s1, QByteArray s2);
 };
 
 
@@ -983,9 +985,9 @@ void BandageTests::velvetToGfa()
     QByteArray lastGraphTestPath2Sequence = lastGraphTestPath2.getPathSequence();
 
     //Now save the graph as a GFA and reload it and grab the same information.
-    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "big_test.gfa");
+    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "big_test_temp.gfa");
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "big_test.gfa");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "big_test_temp.gfa");
 
     int gfaNodeCount = g_assemblyGraph->m_nodeCount;
     int gfaEdgeCount= g_assemblyGraph->m_edgeCount;
@@ -1010,7 +1012,7 @@ void BandageTests::velvetToGfa()
     QCOMPARE(lastGraphTestPath2Sequence, gfaTestPath2Sequence);
 
     //Finally, delete the gfa file.
-    QFile::remove(getTestDirectory() + "big_test.gfa");
+    QFile::remove(getTestDirectory() + "big_test_temp.gfa");
 }
 
 
@@ -1034,9 +1036,9 @@ void BandageTests::spadesToGfa()
     QByteArray fastgTestPath2Sequence = fastgTestPath2.getPathSequence();
 
     //Now save the graph as a GFA and reload it and grab the same information.
-    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "test.gfa");
+    g_assemblyGraph->saveEntireGraphToGfa(getTestDirectory() + "test_temp.gfa");
     createGlobals();
-    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.gfa");
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test_temp.gfa");
 
     int gfaNodeCount = g_assemblyGraph->m_nodeCount;
     int gfaEdgeCount= g_assemblyGraph->m_edgeCount;
@@ -1061,8 +1063,67 @@ void BandageTests::spadesToGfa()
     QCOMPARE(fastgTestPath2Sequence, gfaTestPath2Sequence);
 
     //Finally, delete the gfa file.
-    QFile::remove(getTestDirectory() + "test.gfa");
+    QFile::remove(getTestDirectory() + "test_temp.gfa");
 }
+
+
+void BandageTests::mergeNodesOnGfa()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test_plasmids.gfa");
+
+    DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
+    DeBruijnNode * node280Plus = g_assemblyGraph->m_deBruijnGraphNodes["280+"];
+    DeBruijnNode * node232Minus = g_assemblyGraph->m_deBruijnGraphNodes["232-"];
+    DeBruijnNode * node333Plus = g_assemblyGraph->m_deBruijnGraphNodes["333+"];
+    DeBruijnNode * node289Plus = g_assemblyGraph->m_deBruijnGraphNodes["289+"];
+    DeBruijnNode * node283Plus = g_assemblyGraph->m_deBruijnGraphNodes["283+"];
+    DeBruijnNode * node277Plus = g_assemblyGraph->m_deBruijnGraphNodes["277+"];
+    DeBruijnNode * node297Plus = g_assemblyGraph->m_deBruijnGraphNodes["297+"];
+    DeBruijnNode * node282Plus = g_assemblyGraph->m_deBruijnGraphNodes["282+"];
+
+    //Create a path before merging the nodes.
+    QString pathStringFailure;
+    Path testPath1 = Path::makeFromString("6+, 280+, 232-, 333+, 289+, 283+", true, &pathStringFailure);
+    QByteArray path1Sequence = testPath1.getPathSequence();
+
+    int path1Length = testPath1.getLength();
+    int nodeTotalLength = node6Plus->getLength() + node280Plus->getLength() + node232Minus->getLength() +
+            node333Plus->getLength() + node289Plus->getLength() + node283Plus->getLength();
+
+    //The k-mer size in this test is 81, so the path should remove all of those overlaps.
+    QCOMPARE(path1Length, nodeTotalLength - 6 * 81);
+
+    //Now remove excess nodes.
+    std::vector<DeBruijnNode*> nodesToDelete;
+    nodesToDelete.push_back(node277Plus);
+    nodesToDelete.push_back(node297Plus);
+    nodesToDelete.push_back(node282Plus);
+    g_assemblyGraph->deleteNodes(&nodesToDelete);
+
+    //There should now be six nodes in the graph (plus complements).
+    QCOMPARE(12, g_assemblyGraph->m_deBruijnGraphNodes.size());
+
+    //After a merge, there should be only one node (and its complement).
+    g_assemblyGraph->mergeAllPossible();
+    QCOMPARE(2, g_assemblyGraph->m_deBruijnGraphNodes.size());
+
+    //That last node should have a length of its six constituent nodes, minus
+    //the overlaps.
+    DeBruijnNode * lastNode = g_assemblyGraph->m_deBruijnGraphNodes.first();
+    QCOMPARE(lastNode->getLength(), nodeTotalLength - 5 * 81);
+
+    //If we make a circular path with this node, its length should be equal to
+    //the length of the path made before.
+    Path testPath2 = Path::makeFromString(lastNode->getName(), true, &pathStringFailure);
+    QCOMPARE(path1Length, testPath2.getLength());
+
+    //The sequence of this second path should also match the sequence of the
+    //first path.
+    QByteArray path2Sequence = testPath2.getPathSequence();
+    QCOMPARE(doCircularSequencesMatch(path1Sequence, path2Sequence), true);
+}
+
 
 
 
@@ -1138,6 +1199,31 @@ DeBruijnEdge * BandageTests::getEdgeFromNodeNames(QString startingNodeName,
         return g_assemblyGraph->m_deBruijnGraphEdges[nodePair];
     else
         return 0;
+}
+
+
+//This function checks to see if two circular sequences match.  It needs to
+//check each possible rotation, as well as reverse complements.
+bool BandageTests::doCircularSequencesMatch(QByteArray s1, QByteArray s2)
+{
+    for (int i = 0; i < s1.length() - 1; ++i)
+    {
+        QByteArray rotatedS1 = s1.right(s1.length() - i) + s1.left(i);
+        if (rotatedS1 == s2)
+            return true;
+    }
+
+    //If the code got here, then all possible rotations of s1 failed to match
+    //s2.  Now we try the reverse complement.
+    QByteArray s1Rc = AssemblyGraph::getReverseComplement(s1);
+    for (int i = 0; i < s1Rc.length() - 1; ++i)
+    {
+        QByteArray rotatedS1Rc = s1Rc.right(s1Rc.length() - i) + s1Rc.left(i);
+        if (rotatedS1Rc == s2)
+            return true;
+    }
+
+    return false;
 }
 
 
