@@ -2335,6 +2335,7 @@ void MainWindow::cleanUpAllBlast()
 {
     g_blastSearch->cleanUp();
     g_assemblyGraph->clearAllBlastHitPointers();
+    ui->blastQueryComboBox->clear();
 
     if (m_blastSearchDialog != 0)
     {
