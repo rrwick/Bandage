@@ -2206,7 +2206,7 @@ QByteArray MainWindow::makeStringUrlSafe(QByteArray s)
 void MainWindow::hideNodes()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    g_assemblyGraph->removeGraphicsItemNodes(&selectedNodes, false, m_scene);
+    g_assemblyGraph->removeGraphicsItemNodes(&selectedNodes, !g_settings->doubleMode, m_scene);
 }
 
 
