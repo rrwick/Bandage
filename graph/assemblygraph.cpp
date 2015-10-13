@@ -627,7 +627,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
             QString node1Name = edgeStartingNodeNames[i];
             QString node2Name = edgeEndingNodeNames[i];
             int overlap = edgeOverlaps[i];
-            createDeBruijnEdge(node1Name, node2Name, overlap);
+            createDeBruijnEdge(node1Name, node2Name, overlap, EXACT_OVERLAP);
         }
     }
 
