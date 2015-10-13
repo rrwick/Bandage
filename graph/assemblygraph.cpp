@@ -2131,7 +2131,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
                            leavingEdge->getOverlapType());
     }
 
-    std::vector<DeBruijnEdge *> enteringEdges = orderedList.back()->getEnteringEdges();
+    std::vector<DeBruijnEdge *> enteringEdges = orderedList.front()->getEnteringEdges();
     for (size_t i = 0; i < enteringEdges.size(); ++i)
     {
         DeBruijnEdge * enteringEdge = enteringEdges[i];
