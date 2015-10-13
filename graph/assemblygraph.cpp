@@ -2123,13 +2123,21 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
     m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
 
-    std::vector<DeBruijnNode *> downstreamNodes = orderedList.back()->getDownstreamNodes();
-    for (size_t i = 0; i < downstreamNodes.size(); ++i)
-        createDeBruijnEdge(newPosNodeName, downstreamNodes[i]->getName());
+    std::vector<DeBruijnEdge *> leavingEdges = orderedList.back()->getLeavingEdges();
+    for (size_t i = 0; i < leavingEdges.size(); ++i)
+    {
+        DeBruijnEdge * leavingEdge = leavingEdges[i];
+        createDeBruijnEdge(newPosNodeName, leavingEdge->getEndingNode()->getName(), leavingEdge->getOverlap(),
+                           leavingEdge->getOverlapType());
+    }
 
-    std::vector<DeBruijnNode *> upstreamNodes = orderedList.front()->getUpstreamNodes();
-    for (size_t i = 0; i < upstreamNodes.size(); ++i)
-        createDeBruijnEdge(upstreamNodes[i]->getName(), newPosNodeName);
+    std::vector<DeBruijnEdge *> enteringEdges = orderedList.back()->getEnteringEdges();
+    for (size_t i = 0; i < enteringEdges.size(); ++i)
+    {
+        DeBruijnEdge * enteringEdge = enteringEdges[i];
+        createDeBruijnEdge(enteringEdge->getStartingNode()->getName(), newPosNodeName, enteringEdge->getOverlap(),
+                           enteringEdge->getOverlapType());
+    }
 
     if (recalulateReadDepth)
     {
