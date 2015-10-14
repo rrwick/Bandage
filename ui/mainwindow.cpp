@@ -2366,6 +2366,7 @@ void MainWindow::changeNodeName()
     {
         g_assemblyGraph->changeNodeName(oldName, changeNodeNameDialog.getNewName());
         selectionChanged();
+        cleanUpAllBlast();
     }
 }
 
