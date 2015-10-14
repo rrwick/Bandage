@@ -73,37 +73,39 @@ Building Bandage in Windows is more challenging than in Linux or OS X, but it ca
 
 ## History
 
-Version 0.6.4 - improvements to BLAST and main GUI
+v0.7.0 - graph editing capabilities
 
-Version 0.6.3 - improvements to BLAST functionality
+v0.6.4 - improvements to BLAST and main GUI
 
-Version 0.6.2 - new features for working with graph paths
+v0.6.3 - improvements to BLAST functionality
 
-Version 0.6.1 - improvements to BLAST functionality
+v0.6.2 - new features for working with graph paths
 
-Version 0.6.0 - new features, including command line functionality
+v0.6.1 - improvements to BLAST functionality
 
-Version 0.5.6 - bug fixes
+v0.6.0 - new features, including command line functionality
 
-Version 0.5.5 - bug fixes
+v0.5.6 - bug fixes
 
-Version 0.5.4 - bug fixes
+v0.5.5 - bug fixes
 
-Version 0.5.3 - bug fixes
+v0.5.4 - bug fixes
 
-Version 0.5.2 - performance improvements
+v0.5.3 - bug fixes
 
-Version 0.5.1 - bug fixes
+v0.5.2 - performance improvements
 
-Version 0.5.0 - new features, including Trinity support
+v0.5.1 - bug fixes
 
-Version 0.4.2 - bug fixes
+v0.5.0 - new features, including Trinity support
 
-Version 0.4.1 - bug fixes
+v0.4.2 - bug fixes
 
-Version 0.4.0 - new features, including BLAST integration
+v0.4.1 - bug fixes
 
-Version 0.3.0 – initial release on GitHub
+v0.4.0 - new features, including BLAST integration
+
+v0.3.0 – initial release on GitHub
 
 ## Contributing
 
