@@ -2609,3 +2609,55 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
     for (int i = 0; i < edgesToSave.size(); ++i)
         out << edgesToSave[i]->getGfaLinkLine();
 }
+
+
+
+
+//This function changes the name of a node pair.  The new and old names are
+//both assumed to not include the +/- at the end.
+void AssemblyGraph::changeNodeName(QString oldName, QString newName)
+{
+    if (checkNodeNameValidity(newName) != NODE_NAME_OKAY)
+        return;
+
+    QString posOldNodeName = oldName + "+";
+    QString negOldNodeName = oldName + "-";
+
+    if (!m_deBruijnGraphNodes.contains(posOldNodeName))
+        return;
+    if (!m_deBruijnGraphNodes.contains(negOldNodeName))
+        return;
+
+    DeBruijnNode * posNode = m_deBruijnGraphNodes[posOldNodeName];
+    DeBruijnNode * negNode = m_deBruijnGraphNodes[negOldNodeName];
+
+    m_deBruijnGraphNodes.remove(posOldNodeName);
+    m_deBruijnGraphNodes.remove(negOldNodeName);
+
+    QString posNewNodeName = newName + "+";
+    QString negNewNodeName = newName + "-";
+
+    posNode->setName(posNewNodeName);
+    negNode->setName(negNewNodeName);
+
+    m_deBruijnGraphNodes.insert(posNewNodeName, posNode);
+    m_deBruijnGraphNodes.insert(negNewNodeName, negNode);
+}
+
+
+
+//This function checks whether a new node name is okay.  It takes a node name
+//without a +/- at the end.
+NodeNameStatus AssemblyGraph::checkNodeNameValidity(QString nodeName)
+{
+    if (nodeName.contains('\t'))
+        return NODE_NAME_CONTAINS_TAB;
+    if (nodeName.contains('\n'))
+        return NODE_NAME_CONTAINS_NEWLINE;
+    if (nodeName.contains(','))
+        return NODE_NAME_CONTAINS_COMMA;
+    if (m_deBruijnGraphNodes.contains(nodeName + "+"))
+        return NODE_NAME_TAKEN;
+
+    return NODE_NAME_OKAY;
+}

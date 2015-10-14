@@ -155,6 +155,8 @@ private slots:
     void mergeSelectedNodes();
     void mergeAllPossible();
     void cleanUpAllBlast();
+    void changeNodeName();
+    void changeNodeReadDepth();
 
 protected:
       void showEvent(QShowEvent *ev);

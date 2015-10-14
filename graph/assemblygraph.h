@@ -138,6 +138,8 @@ public:
     void saveEntireGraphToFastaOnlyPositiveNodes(QString filename);
     void saveEntireGraphToGfa(QString filename);
     void saveVisibleGraphToGfa(QString filename);
+    void changeNodeName(QString oldName, QString newName);
+    NodeNameStatus checkNodeNameValidity(QString nodeName);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

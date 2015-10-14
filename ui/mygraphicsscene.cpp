@@ -123,6 +123,43 @@ DeBruijnEdge * MyGraphicsScene::getOneSelectedEdge()
         return selectedEdges[0];
 }
 
+//This function, like getOneSelectedNode, returns a single selected node from
+//graph and a 0 if it can't be done.  However, it will always return the
+//positive node in the pair, and if two complementary nodes are selected, it
+//will still work.
+DeBruijnNode * MyGraphicsScene::getOnePositiveSelectedNode()
+{
+    std::vector<DeBruijnNode *> selectedNodes = getSelectedNodes();
+    if (selectedNodes.size() == 0)
+        return 0;
+
+    else if (selectedNodes.size() == 1)
+    {
+        DeBruijnNode * selectedNode = selectedNodes[0];
+        if (selectedNode->isPositiveNode())
+            return selectedNode;
+        else
+            return selectedNode->getReverseComplement();
+    }
+
+    else if (selectedNodes.size() == 2)
+    {
+        DeBruijnNode * selectedNode1 = selectedNodes[0];
+        DeBruijnNode * selectedNode2 = selectedNodes[1];
+        if (selectedNode1->getReverseComplement() == selectedNode2)
+        {
+            if (selectedNode1->isPositiveNode())
+                return selectedNode1;
+            else
+                return selectedNode2;
+        }
+        else
+            return 0;
+    }
+
+    return 0;
+}
+
 double MyGraphicsScene::getTopZValue()
 {
     double topZ = 0.0;

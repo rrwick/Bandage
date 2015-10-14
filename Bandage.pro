@@ -75,7 +75,8 @@ SOURCES += \
     ui/querypathsdialog.cpp \
     blast/blastquerypath.cpp \
     ui/blasthitfiltersdialog.cpp \
-    program/scinot.cpp
+    program/scinot.cpp \
+    ui/changenodenamedialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -125,7 +126,8 @@ HEADERS  += \
     ui/querypathsdialog.h \
     blast/blastquerypath.h \
     ui/blasthitfiltersdialog.h \
-    program/scinot.h
+    program/scinot.h \
+    ui/changenodenamedialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -136,7 +138,8 @@ FORMS    += \
     ui/myprogressdialog.ui \
     ui/pathspecifydialog.ui \
     ui/querypathsdialog.ui \
-    ui/blasthitfiltersdialog.ui
+    ui/blasthitfiltersdialog.ui \
+    ui/changenodenamedialog.ui
 
 
 # These includes are configured assuming that the OGDF

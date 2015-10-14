@@ -36,6 +36,7 @@ public:
     std::vector<DeBruijnEdge *> getSelectedEdges();
     DeBruijnNode * getOneSelectedNode();
     DeBruijnEdge * getOneSelectedEdge();
+    DeBruijnNode * getOnePositiveSelectedNode();
     double getTopZValue();
     void setSceneRectangle();
     void possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes);

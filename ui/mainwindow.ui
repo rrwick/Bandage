@@ -1858,6 +1858,9 @@
     <addaction name="actionDuplicate_selected_nodes"/>
     <addaction name="actionMerge_selected_nodes"/>
     <addaction name="actionMerge_all_possible_nodes"/>
+    <addaction name="separator"/>
+    <addaction name="actionChange_node_name"/>
+    <addaction name="actionChange_node_read_depth"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuManipulate"/>
@@ -2204,6 +2207,16 @@
    </property>
    <property name="text">
     <string>Save visible graph to GFA</string>
+   </property>
+  </action>
+  <action name="actionChange_node_name">
+   <property name="text">
+    <string>Change node name</string>
+   </property>
+  </action>
+  <action name="actionChange_node_read_depth">
+   <property name="text">
+    <string>Change node read depth</string>
    </property>
   </action>
  </widget>

@@ -63,6 +63,7 @@
 #include "../graph/path.h"
 #include "pathspecifydialog.h"
 #include "../program/memory.h"
+#include "changenodenamedialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -187,6 +188,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionDuplicate_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(duplicateSelectedNodes()));
     connect(ui->actionMerge_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeSelectedNodes()));
     connect(ui->actionMerge_all_possible_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeAllPossible()));
+    connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
+    connect(ui->actionChange_node_read_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeReadDepth()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -2342,4 +2345,37 @@ void MainWindow::cleanUpAllBlast()
         delete m_blastSearchDialog;
         m_blastSearchDialog = 0;
     }
+}
+
+
+
+void MainWindow::changeNodeName()
+{
+    DeBruijnNode * selectedNode = m_scene->getOnePositiveSelectedNode();
+    if (selectedNode == 0)
+    {
+        QMessageBox::information(this, "Improper selection", "You must select exactly one node in the graph before using this function.");
+        return;
+    }
+
+    QString oldName = selectedNode->getNameWithoutSign();
+    ChangeNodeNameDialog changeNodeNameDialog(this, oldName);
+
+    if (changeNodeNameDialog.exec()) //The user clicked OK
+    {
+        g_assemblyGraph->changeNodeName(oldName, changeNodeNameDialog.getNewName());
+        selectionChanged();
+    }
+}
+
+void MainWindow::changeNodeReadDepth()
+{
+    DeBruijnNode * selectedNode = m_scene->getOnePositiveSelectedNode();
+    if (selectedNode == 0)
+    {
+        QMessageBox::information(this, "Improper selection", "You must select exactly one node in the graph before using this function.");
+        return;
+    }
+
+
 }

@@ -52,6 +52,8 @@ enum CommandLineCommand {NO_COMMAND, BANDAGE_LOAD, BANDAGE_IMAGE,
                          BANDAGE_DISTANCE};
 enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
                       AUTO_DETERMINED_EXACT_OVERLAP};
+enum NodeNameStatus {NODE_NAME_OKAY, NODE_NAME_TAKEN, NODE_NAME_CONTAINS_TAB,
+                     NODE_NAME_CONTAINS_NEWLINE, NODE_NAME_CONTAINS_COMMA};
 
 
 //Some of the program's common components are made global so they don't have

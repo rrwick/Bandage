@@ -111,6 +111,7 @@ public:
     void setCsvData(QStringList csvData) {m_csvData = csvData;}
     void clearCsvData() {m_csvData.clear();}
     void setReadDepth(double newReadDepth) {m_readDepth = newReadDepth;}
+    void setName(QString newName) {m_name = newName;}
 
 private:
     QString m_name;
