@@ -64,6 +64,7 @@
 #include "pathspecifydialog.h"
 #include "../program/memory.h"
 #include "changenodenamedialog.h"
+#include "changenodereaddepthdialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -2370,12 +2371,25 @@ void MainWindow::changeNodeName()
 
 void MainWindow::changeNodeReadDepth()
 {
-    DeBruijnNode * selectedNode = m_scene->getOnePositiveSelectedNode();
-    if (selectedNode == 0)
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedPositiveNodes();
+    if (selectedNodes.size() == 0)
     {
-        QMessageBox::information(this, "Improper selection", "You must select exactly one node in the graph before using this function.");
+        QMessageBox::information(this, "Improper selection", "You must select at least one node in the graph before using this function.");
         return;
     }
 
+    double oldDepth = g_assemblyGraph->getMeanReadDepth(selectedNodes);
+    ChangeNodeReadDepthDialog changeNodeReadDepthDialog(this,
+                                                        &selectedNodes,
+                                                        oldDepth);
 
+    if (changeNodeReadDepthDialog.exec()) //The user clicked OK
+    {
+        g_assemblyGraph->changeNodeReadDepth(&selectedNodes,
+                                             changeNodeReadDepthDialog.getNewDepth());
+        selectionChanged();
+        g_assemblyGraph->recalculateAllReadDepthsRelativeToDrawnMean();
+        g_assemblyGraph->recalculateAllNodeWidths();
+        g_graphicsView->viewport()->update();
+    }
 }

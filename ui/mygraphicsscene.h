@@ -32,6 +32,7 @@ class MyGraphicsScene : public QGraphicsScene
 public:
     explicit MyGraphicsScene(QObject *parent = 0);
     std::vector<DeBruijnNode *> getSelectedNodes();
+    std::vector<DeBruijnNode *> getSelectedPositiveNodes();
     std::vector<GraphicsItemNode *> getSelectedGraphicsItemNodes();
     std::vector<DeBruijnEdge *> getSelectedEdges();
     DeBruijnNode * getOneSelectedNode();

@@ -83,6 +83,7 @@ public:
     void buildDeBruijnGraphFromGfa(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
+    void recalculateAllReadDepthsRelativeToDrawnMean();
     void recalculateAllNodeWidths();
 
     GraphFileType getGraphFileTypeFromFile(QString fullFileName);
@@ -140,6 +141,8 @@ public:
     void saveVisibleGraphToGfa(QString filename);
     void changeNodeName(QString oldName, QString newName);
     NodeNameStatus checkNodeNameValidity(QString nodeName);
+    void changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
+                             double newReadDepth);
 
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);

@@ -1778,6 +1778,25 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
 }
 
 
+void AssemblyGraph::recalculateAllReadDepthsRelativeToDrawnMean()
+{
+    double meanDrawnReadDepth = getMeanReadDepth(true);
+    QMapIterator<QString, DeBruijnNode*> k(m_deBruijnGraphNodes);
+    while (k.hasNext())
+    {
+        k.next();
+        DeBruijnNode * node = k.value();
+
+        double readDepthRelativeToMeanDrawnReadDepth;
+        if (meanDrawnReadDepth == 0)
+            readDepthRelativeToMeanDrawnReadDepth = 1.0;
+        else
+            readDepthRelativeToMeanDrawnReadDepth = node->getReadDepth() / meanDrawnReadDepth;
+
+        node->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    }
+}
+
 
 void AssemblyGraph::recalculateAllNodeWidths()
 {
@@ -2495,22 +2514,7 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
         QApplication::processEvents();
     }
 
-    //Now we need to recalculate all of the node widths.
-    double meanDrawnReadDepth = getMeanReadDepth(true);
-    QMapIterator<QString, DeBruijnNode*> k(m_deBruijnGraphNodes);
-    while (k.hasNext())
-    {
-        k.next();
-        DeBruijnNode * node = k.value();
-
-        double readDepthRelativeToMeanDrawnReadDepth;
-        if (meanDrawnReadDepth == 0)
-            readDepthRelativeToMeanDrawnReadDepth = 1.0;
-        else
-            readDepthRelativeToMeanDrawnReadDepth = node->getReadDepth() / meanDrawnReadDepth;
-
-        node->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-    }
+    recalculateAllReadDepthsRelativeToDrawnMean();
     recalculateAllNodeWidths();
 
     return allMerges.size();
@@ -2660,4 +2664,19 @@ NodeNameStatus AssemblyGraph::checkNodeNameValidity(QString nodeName)
         return NODE_NAME_TAKEN;
 
     return NODE_NAME_OKAY;
+}
+
+
+
+void AssemblyGraph::changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
+                                        double newReadDepth)
+{
+    if (nodes->size() == 0)
+        return;
+
+    for (size_t i = 0; i < nodes->size(); ++i)
+    {
+        (*nodes)[i]->setReadDepth(newReadDepth);
+        (*nodes)[i]->getReverseComplement()->setReadDepth(newReadDepth);
+    }
 }

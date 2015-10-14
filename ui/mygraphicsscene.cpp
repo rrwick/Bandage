@@ -21,6 +21,7 @@
 #include "../graph/debruijnedge.h"
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
+#include "../graph/debruijnnode.h"
 
 MyGraphicsScene::MyGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -67,6 +68,41 @@ std::vector<DeBruijnNode *> MyGraphicsScene::getSelectedNodes()
     std::sort(returnVector.begin(), returnVector.end(), compareNodePointers);
 
     return returnVector;
+}
+
+
+//This function works like getSelectedNodes, but only positive nodes are
+//returned.  If a negative node is selected, its positive complement is in the
+//results.  If both nodes in a pair are selected, then only the positive node
+//of the pair is in the results.
+std::vector<DeBruijnNode *> MyGraphicsScene::getSelectedPositiveNodes()
+{
+    std::vector<DeBruijnNode *> selectedNodes = getSelectedNodes();
+
+    //First turn all of the nodes to positive nodes.
+    std::vector<DeBruijnNode *> allPositive;
+    for (size_t i = 0; i < selectedNodes.size(); ++i)
+    {
+        DeBruijnNode * node = selectedNodes[i];
+        if (node->isNegativeNode())
+            node = node->getReverseComplement();
+        allPositive.push_back(node);
+    }
+
+    //Now remove duplicates.  Since the nodes are sorted, all duplicates should
+    //be adjacent to each other.
+    std::vector<DeBruijnNode *> uniquePositive;
+    for (size_t i = 0; i < allPositive.size(); ++i)
+    {
+        DeBruijnNode * node = allPositive[i];
+        DeBruijnNode * previousNode = 0;
+        if (i > 0)
+            previousNode = allPositive[i-1];
+        if (node != previousNode)
+            uniquePositive.push_back(node);
+    }
+
+    return uniquePositive;
 }
 
 //This function returns all of the selected graphics item nodes, unsorted.
