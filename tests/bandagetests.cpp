@@ -52,6 +52,8 @@ private slots:
     void velvetToGfa();
     void spadesToGfa();
     void mergeNodesOnGfa();
+    void changeNodeNames();
+    void changeNodeReadDepths();
 
 
 private:
@@ -1126,6 +1128,52 @@ void BandageTests::mergeNodesOnGfa()
 
 
 
+void BandageTests::changeNodeNames()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+
+    DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
+    DeBruijnNode * node6Minus = g_assemblyGraph->m_deBruijnGraphNodes["6-"];
+    int nodeCountBefore = g_assemblyGraph->m_deBruijnGraphNodes.size();
+
+    g_assemblyGraph->changeNodeName("6", "12345");
+
+    DeBruijnNode * node12345Plus = g_assemblyGraph->m_deBruijnGraphNodes["12345+"];
+    DeBruijnNode * node12345Minus = g_assemblyGraph->m_deBruijnGraphNodes["12345-"];
+    int nodeCountAfter = g_assemblyGraph->m_deBruijnGraphNodes.size();
+
+    QCOMPARE(node6Plus, node12345Plus);
+    QCOMPARE(node6Minus, node12345Minus);
+    QCOMPARE(nodeCountBefore, nodeCountAfter);
+}
+
+void BandageTests::changeNodeReadDepths()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+
+    DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
+    DeBruijnNode * node6Minus = g_assemblyGraph->m_deBruijnGraphNodes["6-"];
+    DeBruijnNode * node7Plus = g_assemblyGraph->m_deBruijnGraphNodes["7+"];
+    DeBruijnNode * node7Minus = g_assemblyGraph->m_deBruijnGraphNodes["7-"];
+
+    std::vector<DeBruijnNode *> nodes;
+    nodes.push_back(node6Plus);
+    nodes.push_back(node7Plus);
+
+    //Complementary pairs should have the same read depth.
+    QCOMPARE(node6Plus->getReadDepth(), node6Minus->getReadDepth());
+    QCOMPARE(node7Plus->getReadDepth(), node7Minus->getReadDepth());
+
+    g_assemblyGraph->changeNodeReadDepth(&nodes, 0.5);
+
+    //Check to make sure the change worked.
+    QCOMPARE(0.5, node6Plus->getReadDepth());
+    QCOMPARE(0.5, node6Minus->getReadDepth());
+    QCOMPARE(0.5, node7Plus->getReadDepth());
+    QCOMPARE(0.5, node7Minus->getReadDepth());
+}
 
 
 
