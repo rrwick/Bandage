@@ -299,6 +299,8 @@ void AssemblyGraph::resetNodeContiguityStatus()
         i.value()->resetContiguityStatus();
     }
     m_contiguitySearchDone = false;
+
+    resetAllNodeColours();
 }
 
 void AssemblyGraph::resetAllNodeColours()

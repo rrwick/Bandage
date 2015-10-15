@@ -1030,7 +1030,6 @@ void MainWindow::switchColourScheme()
 void MainWindow::determineContiguityFromSelectedNode()
 {
     g_assemblyGraph->resetNodeContiguityStatus();
-    g_assemblyGraph->resetAllNodeColours();
 
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
     if (selectedNodes.size() > 0)
