@@ -381,7 +381,11 @@ void AssemblyGraph::determineGraphInfo()
     //Set the auto base pairs per segment
     int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
     if (totalSegments > 0)
+    {
         g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
+        if (g_settings->autoBasePairsPerSegment < 1)
+            g_settings->autoBasePairsPerSegment = 1;
+    }
     else
         g_settings->autoBasePairsPerSegment = 100;
 }
