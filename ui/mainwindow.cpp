@@ -2228,7 +2228,11 @@ void MainWindow::removeSelection()
 
     g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
+
+    //Now that the graph has changed, we have to reset BLAST and contiguity
+    //stuff, as they may no longer apply.
     cleanUpAllBlast();
+    g_assemblyGraph->resetNodeContiguityStatus();
 }
 
 
@@ -2259,7 +2263,11 @@ void MainWindow::duplicateSelectedNodes()
 
     g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
+
+    //Now that the graph has changed, we have to reset BLAST and contiguity
+    //stuff, as they may no longer apply.
     cleanUpAllBlast();
+    g_assemblyGraph->resetNodeContiguityStatus();
 }
 
 void MainWindow::mergeSelectedNodes()
@@ -2300,7 +2308,11 @@ void MainWindow::mergeSelectedNodes()
 
     g_assemblyGraph->determineGraphInfo();
     displayGraphDetails();
+
+    //Now that the graph has changed, we have to reset BLAST and contiguity
+    //stuff, as they may no longer apply.
     cleanUpAllBlast();
+    g_assemblyGraph->resetNodeContiguityStatus();
 }
 
 void MainWindow::mergeAllPossible()
@@ -2328,7 +2340,11 @@ void MainWindow::mergeAllPossible()
     {
         g_assemblyGraph->determineGraphInfo();
         displayGraphDetails();
+
+        //Now that the graph has changed, we have to reset BLAST and contiguity
+        //stuff, as they may no longer apply.
         cleanUpAllBlast();
+        g_assemblyGraph->resetNodeContiguityStatus();
     }
     else
         QMessageBox::information(this, "No possible merges", "The graph contains no nodes that can be merged.");
