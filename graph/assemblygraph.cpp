@@ -1945,11 +1945,19 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
 
     double newReadDepth = node->getReadDepth() / 2.0;
 
+    //Create the new nodes.
     DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, newReadDepth, originalPosNode->getSequence());
     DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, newReadDepth, originalNegNode->getSequence());
-
     newPosNode->setReverseComplement(newNegNode);
     newNegNode->setReverseComplement(newPosNode);
+
+    //Copy over additional stuff from the original nodes.
+    newPosNode->setCustomColour(originalPosNode->getCustomColour());
+    newNegNode->setCustomColour(originalNegNode->getCustomColour());
+    newPosNode->setCustomLabel(originalPosNode->getCustomLabel());
+    newNegNode->setCustomLabel(originalNegNode->getCustomLabel());
+    newPosNode->setCsvData(originalPosNode->getAllCsvData());
+    newNegNode->setCsvData(originalNegNode->getAllCsvData());
 
     m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
     m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
