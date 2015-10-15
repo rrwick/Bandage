@@ -31,10 +31,19 @@ ChangeNodeReadDepthDialog::ChangeNodeReadDepthDialog(QWidget * parent,
     if (int(nodes->size()) > numNodeNames)
         nodeNames += "...";
 
+    //Set the dialog text to be either singular or plural as appropriate.
     if (nodes->size() == 1)
+    {
         ui->nodeNameLabel1->setText("Node:");
+        ui->currentReadDepthLabel1->setText("Current read depth:");
+        ui->infoLabel->setText("Enter a new read depth. Both the node and its reverse complement will have their read depth set to the new value.");
+    }
     else
-        ui->nodeNameLabel1->setText("Nodes:");
+    {
+        ui->nodeNameLabel1->setText("Nodes (" + formatIntForDisplay(int(nodes->size())) + "):");
+        ui->currentReadDepthLabel1->setText("Current mean read depth:");
+        ui->infoLabel->setText("Enter a new read depth. The nodes and their reverse complements will have their read depths set to the new value.");
+    }
 
     ui->nodeNameLabel2->setText(nodeNames);
 
