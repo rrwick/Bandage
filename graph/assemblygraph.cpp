@@ -381,7 +381,11 @@ void AssemblyGraph::determineGraphInfo()
     //Set the auto base pairs per segment
     int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
     if (totalSegments > 0)
+    {
         g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
+        if (g_settings->autoBasePairsPerSegment < 1)
+            g_settings->autoBasePairsPerSegment = 1;
+    }
     else
         g_settings->autoBasePairsPerSegment = 100;
 }
@@ -2656,10 +2660,16 @@ NodeNameStatus AssemblyGraph::checkNodeNameValidity(QString nodeName)
 {
     if (nodeName.contains('\t'))
         return NODE_NAME_CONTAINS_TAB;
+
     if (nodeName.contains('\n'))
         return NODE_NAME_CONTAINS_NEWLINE;
+
     if (nodeName.contains(','))
         return NODE_NAME_CONTAINS_COMMA;
+
+    if (nodeName.contains(' '))
+        return NODE_NAME_CONTAINS_SPACE;
+
     if (m_deBruijnGraphNodes.contains(nodeName + "+"))
         return NODE_NAME_TAKEN;
 

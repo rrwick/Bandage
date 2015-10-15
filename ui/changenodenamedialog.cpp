@@ -88,6 +88,13 @@ void ChangeNodeNameDialog::checkNodeNameValidity()
         return;
     }
 
+    else if (nodeNameStatus == NODE_NAME_CONTAINS_SPACE)
+    {
+        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+        ui->errorLabel->setText("Space not allowed");
+        return;
+    }
+
     //Catch any other error cases (shouldn't happen, but just in case)
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     ui->errorLabel->setText("");

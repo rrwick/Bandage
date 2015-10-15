@@ -2085,10 +2085,10 @@
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
-    <string>Copy selected node path sequence to clipboard</string>
+    <string>Copy selected path sequence to clipboard</string>
    </property>
    <property name="toolTip">
-    <string>Copy selected node path sequence to clipboard</string>
+    <string>Copy selected path sequence to clipboard</string>
    </property>
   </action>
   <action name="actionSave_selected_node_path_to_FASTA">
@@ -2097,10 +2097,10 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save selected node path sequence to FASTA</string>
+    <string>Save selected path sequence to FASTA</string>
    </property>
    <property name="toolTip">
-    <string>Save selected node path sequence to FASTA</string>
+    <string>Save selected path sequence to FASTA</string>
    </property>
   </action>
   <action name="actionSpecify_exact_path_for_copy_save">
