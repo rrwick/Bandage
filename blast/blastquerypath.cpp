@@ -129,6 +129,23 @@ double BlastQueryPath::getRelativeLengthDiscrepancy() const
 }
 
 
+//This function gets the length of the path relative to the how long it should
+//be.  A value of 1 means a perfect match; less than 1 means it is too short;
+//more than 1 means it is too long.
+double BlastQueryPath::getRelativePathLength() const
+{
+    return m_path.getLength() / getHitQueryLength();
+}
+
+
+//This function gets the difference between how long the path is vs how long it
+//should be.  A value of 0 means a perfect match; less than 0 means it is too
+//short; more than 0 means it is too long.
+int BlastQueryPath::getAbsolutePathLengthDifference() const
+{
+    return m_path.getLength() - getHitQueryLength();
+}
+
 
 //This function returns the fraction of the query that is covered by the entire
 //path.

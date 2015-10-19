@@ -139,15 +139,26 @@ void BlastQuery::findQueryPaths()
             partialQueryLength -= pathStart;
             partialQueryLength -= queryLength - pathEnd;
 
-            //TO DO: Make this determine a min and max length using both the relative and the absolute settings.
-            int minLength = 1;
-            int maxLength = 1000000;
+            //Determine the minimum and maximum lengths allowed for the path.
+            int minLength;
+            if (g_settings->minLengthPercentageOn && g_settings->minLengthBaseDiscrepancyOn) //both on
+                minLength = std::max(int(partialQueryLength * g_settings->minLengthPercentage + 0.5), partialQueryLength + g_settings->minLengthBaseDiscrepancy);
+            else if (g_settings->minLengthPercentageOn && !g_settings->minLengthBaseDiscrepancyOn) //just relative
+                minLength = int(partialQueryLength * g_settings->minLengthPercentage + 0.5);
+            else if (!g_settings->minLengthPercentageOn && g_settings->minLengthBaseDiscrepancyOn) //just absolute
+                minLength = partialQueryLength + g_settings->minLengthBaseDiscrepancy;
+            else //neither are on
+                minLength = 1;
 
-//            int allowedDiscrepancy = int(partialQueryLength * g_settings->maxLengthDiscrepancy) + 1;
-
-//            int minLength = partialQueryLength - allowedDiscrepancy;
-//            int maxLength = partialQueryLength + allowedDiscrepancy;
-
+            int maxLength;
+            if (g_settings->maxLengthPercentageOn && g_settings->maxLengthBaseDiscrepancyOn) //both on
+                maxLength = std::min(int(partialQueryLength * g_settings->maxLengthPercentage + 0.5), partialQueryLength + g_settings->maxLengthBaseDiscrepancy);
+            else if (g_settings->maxLengthPercentageOn && !g_settings->maxLengthBaseDiscrepancyOn) //just relative
+                maxLength = int(partialQueryLength * g_settings->maxLengthPercentage + 0.5);
+            else if (!g_settings->maxLengthPercentageOn && g_settings->maxLengthBaseDiscrepancyOn) //just absolute
+                maxLength = partialQueryLength + g_settings->maxLengthBaseDiscrepancy;
+            else //neither are on
+                maxLength = std::numeric_limits<int>::max();
 
             possiblePaths.append(Path::getAllPossiblePaths(startLocation,
                                                            endLocation,
@@ -169,14 +180,24 @@ void BlastQuery::findQueryPaths()
     QList<BlastQueryPath> sufficientCoveragePaths;
     for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
-        //TO DO: Make this check each filter (and whether or not the filter is on)
+        if (blastQueryPaths[i].getPathQueryCoverage() < g_settings->minQueryCoveredByPath)
+            continue;
+        if (g_settings->minQueryCoveredByHitsOn && blastQueryPaths[i].getHitsQueryCoverage() < g_settings->minQueryCoveredByHits)
+            continue;
+        if (g_settings->maxEValueProductOn && blastQueryPaths[i].getEvalueProduct() > g_settings->maxEValueProduct)
+            continue;
+        if (g_settings->minMeanHitIdentityOn && blastQueryPaths[i].getMeanHitPercIdentity() < 100.0 * g_settings->minMeanHitIdentity)
+            continue;
+        if (g_settings->minLengthPercentageOn && blastQueryPaths[i].getRelativePathLength() < g_settings->minLengthPercentage)
+            continue;
+        if (g_settings->maxLengthPercentageOn && blastQueryPaths[i].getRelativePathLength() > g_settings->maxLengthPercentage)
+            continue;
+        if (g_settings->minLengthBaseDiscrepancyOn && blastQueryPaths[i].getAbsolutePathLengthDifference() < g_settings->minLengthBaseDiscrepancy)
+            continue;
+        if (g_settings->maxLengthBaseDiscrepancyOn && blastQueryPaths[i].getAbsolutePathLengthDifference() > g_settings->maxLengthBaseDiscrepancy)
+            continue;
 
-//        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->minQueryCoveredByHits &&
-//                blastQueryPaths[i].getPathQueryCoverage() >= g_settings->minQueryCoveredByPath &&
-//                blastQueryPaths[i].getEvalueProduct() <= g_settings->maxEValueProduct &&
-//                blastQueryPaths[i].getMeanHitPercIdentity() >= 100.0 * g_settings->minMeanHitIdentity &&
-//                fabs(blastQueryPaths[i].getRelativeLengthDiscrepancy()) <= g_settings->maxLengthDiscrepancy)
-            sufficientCoveragePaths.push_back(blastQueryPaths[i]);
+        sufficientCoveragePaths.push_back(blastQueryPaths[i]);
     }
 
     //We now want to throw out any paths which are sub-paths of other, larger

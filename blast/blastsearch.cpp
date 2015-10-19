@@ -172,7 +172,7 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 
     QProcess find;
 
-    //On Mac, it's necessary to do some stuff with the PATH variable in order
+    //On Mac, it's necessary to adjust the PATH variable in order
     //for which to work.
 #ifdef Q_OS_MAC
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();

@@ -39,6 +39,8 @@ public:
     SciNot getEvalueProduct() const;
     double getMeanHitPercIdentity() const;
     double getRelativeLengthDiscrepancy() const;
+    double getRelativePathLength() const;
+    int getAbsolutePathLengthDifference() const;
     double getPathQueryCoverage() const;
     double getHitsQueryCoverage() const;
     int getTotalHitMismatches() const;

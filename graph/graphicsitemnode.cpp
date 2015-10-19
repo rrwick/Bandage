@@ -1092,7 +1092,7 @@ QPainterPath GraphicsItemNode::buildPartialHighlightPath(double startFraction,
 
     QPainterPathStroker stroker;
 
-    //If the node has an arrow, we need to do a path intersection with the
+    //If the node has an arrow, we need a path intersection with the
     //shape to make sure the arrowhead is part of the path.  Adding a bit
     //to the width seems to help with the intersection.
     if (m_hasArrow)

@@ -52,6 +52,7 @@ private slots:
     void updateNodeWidthVisualAid();
     void colourSliderChanged();
     void colourSpinBoxChanged();
+    void checkBoxesChanged();
 
 public slots:
     void accept();
