@@ -865,19 +865,66 @@ void BandageTests::commandLineSettings()
     commandLineSettings = QString("--minhitcov 0.654").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->minQueryCoveredByHits, 0.654);
+    QCOMPARE(g_settings->minQueryCoveredByHitsOn, true);
+
+    commandLineSettings = QString("--minhitcov off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minQueryCoveredByHitsOn, false);
 
     commandLineSettings = QString("--minmeanid 0.765").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->minMeanHitIdentity, 0.765);
+    QCOMPARE(g_settings->minMeanHitIdentityOn, true);
 
-    commandLineSettings = QString("--maxlendis 0.03").split(" ");
+    commandLineSettings = QString("--minmeanid off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxLengthDiscrepancy, 0.03);
+    QCOMPARE(g_settings->minMeanHitIdentityOn, false);
+
+    commandLineSettings = QString("--minpatlen 0.97").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minLengthPercentage, 0.97);
+    QCOMPARE(g_settings->minLengthPercentageOn, true);
+
+    commandLineSettings = QString("--minpatlen off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minLengthPercentageOn, false);
+
+    commandLineSettings = QString("--maxpatlen 1.03").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxLengthPercentage, 1.03);
+    QCOMPARE(g_settings->maxLengthPercentageOn, true);
+
+    commandLineSettings = QString("--maxpatlen off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxLengthPercentageOn, false);
+
+    commandLineSettings = QString("--minlendis -1234").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancy, -1234);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancyOn, true);
+
+    commandLineSettings = QString("--minlendis off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancyOn, false);
+
+    commandLineSettings = QString("--maxlendis 4321").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancy, 4321);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancyOn, true);
+
+    commandLineSettings = QString("--maxlendis off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancyOn, false);
 
     commandLineSettings = QString("--maxevprod 4e-500").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->maxEValueProduct.getCoefficient(), 4.0);
     QCOMPARE(g_settings->maxEValueProduct.getExponent(), -500);
+    QCOMPARE(g_settings->maxEValueProductOn, true);
+
+    commandLineSettings = QString("--maxevprod off").split(" ");
+    parseSettings(commandLineSettings);
+    QCOMPARE(g_settings->maxEValueProductOn, false);
 }
 
 
