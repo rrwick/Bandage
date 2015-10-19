@@ -79,6 +79,11 @@
      </column>
      <column>
       <property name="text">
+       <string>Relative length</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Length discrepancy</string>
       </property>
      </column>
@@ -103,15 +108,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MyTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header>mytablewidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>InfoTextWidget</class>
    <extends>QWidget</extends>
    <header>infotextwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MyTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>mytablewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

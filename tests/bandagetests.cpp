@@ -1227,27 +1227,134 @@ void BandageTests::blastQueryPaths()
 {
     createGlobals();
     g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test_query_paths.gfa");
+
+    Settings defaultSettings;
     g_settings->blastQueryFilename = getTestDirectory() + "test_query_paths.fasta";
+    defaultSettings.blastQueryFilename = getTestDirectory() + "test_query_paths.fasta";
+
     createBlastTempDirectory();
 
     //Now filter by e-value to get only strong hits and do the BLAST search.
     g_settings->blastEValueFilterOn = true;
     g_settings->blastEValueFilterValue = SciNot(1.0, -5);
+
+    QList<BlastQueryPath> query1Paths;
+    QList<BlastQueryPath> query2Paths;
+    QList<BlastQueryPath> query3Paths;
+    QList<BlastQueryPath> query4Paths;
+    QList<BlastQueryPath> query5Paths;
+    QList<BlastQueryPath> query6Paths;
+    QList<BlastQueryPath> query7Paths;
+
+    //With the default settings, queries 1 to 5 should each have one path and
+    //queries 6 and 7 should have 0 (because of their large inserts).
     g_blastSearch->doAutoBlastSearch();
-
-    //With the default settings, each of the queries should have a single query
-    //path.
-    QList<BlastQueryPath> query1Paths = g_blastSearch->m_blastQueries.m_queries[0]->getPaths();
-    QList<BlastQueryPath> query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
-    QList<BlastQueryPath> query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
-    QList<BlastQueryPath> query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
-    QList<BlastQueryPath> query5Paths = g_blastSearch->m_blastQueries.m_queries[4]->getPaths();
-
+    query1Paths = g_blastSearch->m_blastQueries.m_queries[0]->getPaths();
+    query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
+    query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
+    query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
+    query5Paths = g_blastSearch->m_blastQueries.m_queries[4]->getPaths();
+    query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();
+    query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
     QCOMPARE(query1Paths.size(), 1);
     QCOMPARE(query2Paths.size(), 1);
     QCOMPARE(query3Paths.size(), 1);
     QCOMPARE(query4Paths.size(), 1);
     QCOMPARE(query5Paths.size(), 1);
+    QCOMPARE(query6Paths.size(), 0);
+    QCOMPARE(query7Paths.size(), 0);
+
+    //query2 has a mean hit identity of 0.98.
+    g_settings->minMeanHitIdentityOn = true;
+    g_settings->minMeanHitIdentity = 0.979;
+    g_blastSearch->doAutoBlastSearch();
+    query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
+    QCOMPARE(query2Paths.size(), 1);
+    g_settings->minMeanHitIdentity = 0.981;
+    g_blastSearch->doAutoBlastSearch();
+    query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
+    QCOMPARE(query2Paths.size(), 0);
+
+    //Turning the filter off should make the path return.
+    g_settings->minMeanHitIdentityOn = false;
+    g_blastSearch->doAutoBlastSearch();
+    query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
+    QCOMPARE(query2Paths.size(), 1);
+    *g_settings = defaultSettings;
+
+    //query3 has a length discrepancy of -20.
+    g_settings->minLengthBaseDiscrepancyOn = true;
+    g_settings->minLengthBaseDiscrepancy = -20;
+    g_blastSearch->doAutoBlastSearch();
+    query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
+    QCOMPARE(query3Paths.size(), 1);
+    g_settings->minLengthBaseDiscrepancy = -19;
+    g_blastSearch->doAutoBlastSearch();
+    query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
+    QCOMPARE(query3Paths.size(), 0);
+
+    //Turning the filter off should make the path return.
+    g_settings->minLengthBaseDiscrepancyOn = false;
+    g_blastSearch->doAutoBlastSearch();
+    query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
+    QCOMPARE(query3Paths.size(), 1);
+    *g_settings = defaultSettings;
+
+    //query4 has a length discrepancy of +20.
+    g_settings->maxLengthBaseDiscrepancyOn = true;
+    g_settings->maxLengthBaseDiscrepancy = 20;
+    g_blastSearch->doAutoBlastSearch();
+    query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
+    QCOMPARE(query4Paths.size(), 1);
+    g_settings->maxLengthBaseDiscrepancy = 19;
+    g_blastSearch->doAutoBlastSearch();
+    query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
+    QCOMPARE(query4Paths.size(), 0);
+
+    //Turning the filter off should make the path return.
+    g_settings->maxLengthBaseDiscrepancyOn = false;
+    g_blastSearch->doAutoBlastSearch();
+    query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
+    QCOMPARE(query4Paths.size(), 1);
+    *g_settings = defaultSettings;
+
+    //query5 has a path through 4 nodes.
+    g_settings->maxQueryPathNodes = 4;
+    g_blastSearch->doAutoBlastSearch();
+    query5Paths = g_blastSearch->m_blastQueries.m_queries[4]->getPaths();
+    QCOMPARE(query5Paths.size(), 1);
+    g_settings->maxQueryPathNodes = 3;
+    g_blastSearch->doAutoBlastSearch();
+    query5Paths = g_blastSearch->m_blastQueries.m_queries[4]->getPaths();
+    QCOMPARE(query5Paths.size(), 0);
+    *g_settings = defaultSettings;
+
+    //By turning off length restrictions, queries 6 and 7 should get path with
+    //a large insert in the middle.
+    g_settings->minLengthPercentageOn = false;
+    g_settings->maxLengthPercentageOn = false;
+    g_settings->minLengthBaseDiscrepancyOn = false;
+    g_settings->maxLengthBaseDiscrepancyOn = false;
+    g_blastSearch->doAutoBlastSearch();
+    query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();
+    query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
+    QCOMPARE(query6Paths.size(), 1);
+    QCOMPARE(query7Paths.size(), 1);
+
+    //Turning on the max length restriction.
+    g_settings->maxLengthBaseDiscrepancyOn = true;
+    g_settings->maxLengthBaseDiscrepancy = 1999;
+    g_blastSearch->doAutoBlastSearch();
+    query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();
+    query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
+    QCOMPARE(query6Paths.size(), 1);
+    QCOMPARE(query7Paths.size(), 0);
+    g_settings->maxLengthBaseDiscrepancy = 2000;
+    g_blastSearch->doAutoBlastSearch();
+    query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();
+    query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
+    QCOMPARE(query6Paths.size(), 1);
+    QCOMPARE(query7Paths.size(), 1);
 }
 
 

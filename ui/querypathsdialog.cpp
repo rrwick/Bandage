@@ -41,7 +41,7 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 
     ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Path" << "Length\n(bp)" << "Query\ncovered\nby path" <<
                                                "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
-                                               "Total\nhit gap\nopens" << "Length\ndiscre-\npancy" << "E-value\nproduct");
+                                               "Total\nhit gap\nopens" << "Relative\nlength" << "Length\ndiscre-\npancy" << "E-value\nproduct");
 
     QString queryDescription = "Query name: " + query->getName();
     queryDescription += "      type: " + query->getTypeString();
@@ -95,11 +95,15 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         TableWidgetItemInt * pathGapOpens = new TableWidgetItemInt(formatIntForDisplay(gapOpens), gapOpens);
         pathGapOpens->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-        double lengthDisc = queryPath->getRelativeLengthDiscrepancy();
+        double relativeLength = queryPath->getRelativePathLength();
+        TableWidgetItemDouble * pathRelativeLength = new TableWidgetItemDouble(formatDoubleForDisplay(100.0 * relativeLength, 2) + "%", relativeLength);
+        pathRelativeLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+        int lengthDisc = queryPath->getAbsolutePathLengthDifference();
         QString lengthDiscSign = "";
-        if (lengthDisc > 0.0)
+        if (lengthDisc > 0)
             lengthDiscSign = "+";
-        TableWidgetItemDouble * pathLengthDisc = new TableWidgetItemDouble(lengthDiscSign + formatDoubleForDisplay(100.0 * lengthDisc, 2) + "%", lengthDisc);
+        TableWidgetItemInt * pathLengthDisc = new TableWidgetItemInt(lengthDiscSign + formatIntForDisplay(lengthDisc), lengthDisc);
         pathLengthDisc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         SciNot evalueProduct = queryPath->getEvalueProduct();
@@ -113,8 +117,9 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         ui->tableWidget->setItem(i, 4, pathPercIdentity);
         ui->tableWidget->setItem(i, 5, pathMismatches);
         ui->tableWidget->setItem(i, 6, pathGapOpens);
-        ui->tableWidget->setItem(i, 7, pathLengthDisc);
-        ui->tableWidget->setItem(i, 8, pathEvalueProduct);
+        ui->tableWidget->setItem(i, 7, pathRelativeLength);
+        ui->tableWidget->setItem(i, 8, pathLengthDisc);
+        ui->tableWidget->setItem(i, 9, pathEvalueProduct);
     }
 
     ui->tableWidget->resizeColumns();
