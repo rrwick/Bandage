@@ -24,6 +24,7 @@
 #include <QTextStream>
 #include "../command_line/load.h"
 #include "../command_line/image.h"
+#include "../command_line/querypaths.h"
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
@@ -41,6 +42,7 @@ void printUsage(QTextStream * out, bool all)
     *out << "Command: <blank>      launch Bandage GUI" << endl;
     *out << "         load         launch Bandage GUI and load a graph file" << endl;
     *out << "         image        generate an image file of a graph" << endl;
+    *out << "         querypaths   output graph paths for BLAST queries" << endl;
 //    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
     *out << endl;
     *out << "Options: --help       view this help message" << endl;
@@ -57,7 +59,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.7.0");
+    QApplication::setApplicationVersion("0.7.1");
 
     QTextStream out(stdout);
     QTextStream err(stderr);
@@ -93,6 +95,12 @@ int main(int argc, char *argv[])
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_IMAGE;
             return bandageImage(arguments);
+        }
+        else if (first == "querypaths")
+        {
+            arguments.pop_front();
+            g_memory->commandLineCommand = BANDAGE_QUERY_PATHS;
+            return bandageQueryPaths(arguments);
         }
 //        else if (first == "contiguous")
 //        {

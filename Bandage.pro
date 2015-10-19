@@ -78,7 +78,8 @@ SOURCES += \
     program/scinot.cpp \
     ui/changenodenamedialog.cpp \
     ui/changenodereaddepthdialog.cpp \
-    ui/querypathsequencecopybutton.cpp
+    ui/querypathsequencecopybutton.cpp \
+    command_line/querypaths.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -131,7 +132,8 @@ HEADERS  += \
     program/scinot.h \
     ui/changenodenamedialog.h \
     ui/changenodereaddepthdialog.h \
-    ui/querypathsequencecopybutton.h
+    ui/querypathsequencecopybutton.h \
+    command_line/querypaths.h
 
 FORMS    += \
     ui/mainwindow.ui \

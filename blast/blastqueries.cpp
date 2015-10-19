@@ -170,6 +170,28 @@ int BlastQueries::getQueryCount()
     return int(m_queries.size());
 }
 
+int BlastQueries::getQueryCountWithAtLeastOnePath()
+{
+    int count = 0;
+
+    for (size_t i = 0; i < m_queries.size(); ++i)
+    {
+        if (m_queries[i]->getPathCount() > 0)
+            ++count;
+    }
+
+    return count;
+}
+
+int BlastQueries::getQueryPathCount()
+{
+    int count = 0;
+
+    for (size_t i = 0; i < m_queries.size(); ++i)
+        count += m_queries[i]->getPathCount();
+    return count;
+}
+
 int BlastQueries::getQueryCount(SequenceType sequenceType)
 {
     int count = 0;

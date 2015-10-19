@@ -50,6 +50,8 @@ public:
     void searchOccurred();
     void clearSearchResults();
     int getQueryCount();
+    int getQueryCountWithAtLeastOnePath();
+    int getQueryPathCount();
     int getQueryCount(SequenceType sequenceType);
     bool isQueryPresent(BlastQuery * query);
     void findQueryPaths();
