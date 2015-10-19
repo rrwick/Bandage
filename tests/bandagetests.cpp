@@ -54,6 +54,7 @@ private slots:
     void mergeNodesOnGfa();
     void changeNodeNames();
     void changeNodeReadDepths();
+    void blastQueryPaths();
 
 
 private:
@@ -1221,6 +1222,37 @@ void BandageTests::changeNodeReadDepths()
     QCOMPARE(0.5, node7Plus->getReadDepth());
     QCOMPARE(0.5, node7Minus->getReadDepth());
 }
+
+void BandageTests::blastQueryPaths()
+{
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test_query_paths.gfa");
+    g_settings->blastQueryFilename = getTestDirectory() + "test_query_paths.fasta";
+    createBlastTempDirectory();
+
+    //Now filter by e-value to get only strong hits and do the BLAST search.
+    g_settings->blastEValueFilterOn = true;
+    g_settings->blastEValueFilterValue = SciNot(1.0, -5);
+    g_blastSearch->doAutoBlastSearch();
+
+    //With the default settings, each of the queries should have a single query
+    //path.
+    QList<BlastQueryPath> query1Paths = g_blastSearch->m_blastQueries.m_queries[0]->getPaths();
+    QList<BlastQueryPath> query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
+    QList<BlastQueryPath> query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
+    QList<BlastQueryPath> query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
+    QList<BlastQueryPath> query5Paths = g_blastSearch->m_blastQueries.m_queries[4]->getPaths();
+
+    QCOMPARE(query1Paths.size(), 1);
+    QCOMPARE(query2Paths.size(), 1);
+    QCOMPARE(query3Paths.size(), 1);
+    QCOMPARE(query4Paths.size(), 1);
+    QCOMPARE(query5Paths.size(), 1);
+}
+
+
+
+
 
 
 

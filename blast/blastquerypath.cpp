@@ -134,7 +134,7 @@ double BlastQueryPath::getRelativeLengthDiscrepancy() const
 //more than 1 means it is too long.
 double BlastQueryPath::getRelativePathLength() const
 {
-    return m_path.getLength() / getHitQueryLength();
+    return double(m_path.getLength()) / getHitQueryLength();
 }
 
 
