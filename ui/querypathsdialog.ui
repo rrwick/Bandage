@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>852</width>
+    <width>1069</width>
     <height>417</height>
    </rect>
   </property>
@@ -90,6 +90,11 @@
      <column>
       <property name="text">
        <string>E-value product</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Copy sequence to clipboard</string>
       </property>
      </column>
     </widget>

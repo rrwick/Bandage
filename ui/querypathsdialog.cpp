@@ -25,6 +25,8 @@
 #include "tablewidgetitemdouble.h"
 #include "../program/globals.h"
 #include "../program/memory.h"
+#include <QTableWidgetItem>
+#include "querypathsequencecopybutton.h"
 
 QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
     QDialog(parent),
@@ -41,7 +43,8 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 
     ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Path" << "Length\n(bp)" << "Query\ncovered\nby path" <<
                                                "Query\ncovered\nby hits" << "Mean hit\nidentity"  << "Total\nhit mis-\nmatches" <<
-                                               "Total\nhit gap\nopens" << "Relative\nlength" << "Length\ndiscre-\npancy" << "E-value\nproduct");
+                                               "Total\nhit gap\nopens" << "Relative\nlength" << "Length\ndiscre-\npancy" <<
+                                               "E-value\nproduct" << "Copy sequence\nto clipboard");
 
     QString queryDescription = "Query name: " + query->getName();
     queryDescription += "      type: " + query->getTypeString();
@@ -110,6 +113,16 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         TableWidgetItemDouble * pathEvalueProduct = new TableWidgetItemDouble(evalueProduct.asString(false), evalueProduct.toDouble());
         pathEvalueProduct->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
+        QByteArray pathSequence = queryPath->getPath().getPathSequence();
+        QString pathStart;
+        if (pathSequence.length() <= 8)
+            pathStart = pathSequence;
+        else
+            pathStart = pathSequence.left(8) + "...";
+
+        QTableWidgetItem * sequenceCopy = new QTableWidgetItem(pathStart);
+        QueryPathSequenceCopyButton * sequenceCopyButton = new QueryPathSequenceCopyButton(pathSequence, pathStart);
+
         ui->tableWidget->setItem(i, 0, pathString);
         ui->tableWidget->setItem(i, 1, pathLength);
         ui->tableWidget->setItem(i, 2, pathQueryCoveragePath);
@@ -120,6 +133,8 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         ui->tableWidget->setItem(i, 7, pathRelativeLength);
         ui->tableWidget->setItem(i, 8, pathLengthDisc);
         ui->tableWidget->setItem(i, 9, pathEvalueProduct);
+        ui->tableWidget->setItem(i, 10, sequenceCopy);
+        ui->tableWidget->setCellWidget(i, 10, sequenceCopyButton);
     }
 
     ui->tableWidget->resizeColumns();
