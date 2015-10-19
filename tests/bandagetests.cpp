@@ -1341,7 +1341,8 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query6Paths.size(), 1);
     QCOMPARE(query7Paths.size(), 1);
 
-    //Turning on the max length restriction.
+    //Adjusting on the max length restriction can allow query 6 to get a path
+    //and then query 7.
     g_settings->maxLengthBaseDiscrepancyOn = true;
     g_settings->maxLengthBaseDiscrepancy = 1999;
     g_blastSearch->doAutoBlastSearch();
