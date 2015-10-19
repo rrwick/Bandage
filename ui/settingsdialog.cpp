@@ -85,15 +85,16 @@ SettingsDialog::~SettingsDialog()
 //These functions either set a widget to a value or set the value to the widget.  Pointers to
 //these functions will be passed to loadOrSaveSettingsToOrFromWidgets, so that one function can
 //take care of both save and load functionality.
-void setOneSettingFromWidget(double * setting, QDoubleSpinBox * widget, bool percentage) {*setting = widget->value() / (percentage ? 100.0 : 1.0);}
-void setOneSettingFromWidget(int * setting, QSpinBox * widget) {*setting = widget->value();}
-void setOneSettingFromWidget(QColor * setting, ColourButton * widget) {*setting = widget->m_colour;}
-void setOneSettingFromWidget(SciNot * setting, QDoubleSpinBox * coefficientWidget, QSpinBox * exponentWidget) {*setting = SciNot(coefficientWidget->value(), exponentWidget->value());}
-void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * widget, bool percentage) {widget->setValue(*setting * (percentage ? 100.0 : 1.0));}
-void setOneWidgetFromSetting(int * setting, QSpinBox * widget) {widget->setValue(*setting);}
-void setOneWidgetFromSetting(QColor * setting, ColourButton * widget) {widget->setColour(*setting);}
-void setOneWidgetFromSetting(SciNot * setting, QDoubleSpinBox * coefficientWidget, QSpinBox * exponentWidget) {coefficientWidget->setValue(setting->getCoefficient()); exponentWidget->setValue(setting->getExponent());}
-
+void setOneSettingFromWidget(double * setting, QDoubleSpinBox * spinBox, bool percentage) {*setting = spinBox->value() / (percentage ? 100.0 : 1.0);}
+void setOneSettingFromWidget(int * setting, QSpinBox * spinBox) {*setting = spinBox->value();}
+void setOneSettingFromWidget(QColor * setting, ColourButton * button) {*setting = button->m_colour;}
+void setOneSettingFromWidget(SciNot * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox) {*setting = SciNot(coefficientSpinBox->value(), exponentSpinBox->value());}
+void setOneSettingFromWidget(bool * setting, QCheckBox * checkBox) {*setting = checkBox->isChecked();}
+void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * spinBox, bool percentage) {spinBox->setValue(*setting * (percentage ? 100.0 : 1.0));}
+void setOneWidgetFromSetting(int * setting, QSpinBox * spinBox) {spinBox->setValue(*setting);}
+void setOneWidgetFromSetting(QColor * setting, ColourButton * button) {button->setColour(*setting);}
+void setOneWidgetFromSetting(SciNot * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox) {coefficientSpinBox->setValue(setting->getCoefficient()); exponentSpinBox->setValue(setting->getExponent());}
+void setOneWidgetFromSetting(bool * setting, QCheckBox * checkBox) {checkBox->setChecked(*setting);}
 
 
 void SettingsDialog::setWidgetsFromSettings()
@@ -121,6 +122,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     void (*intFunctionPointer)(int *, QSpinBox *);
     void (*colourFunctionPointer)(QColor *, ColourButton *);
     void (*sciNotFunctionPointer)(SciNot *, QDoubleSpinBox *, QSpinBox *);
+    void (*checkBoxFunctionPointer)(bool *, QCheckBox *);
 
     if (setWidgets)
     {
@@ -128,6 +130,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         intFunctionPointer = setOneWidgetFromSetting;
         colourFunctionPointer = setOneWidgetFromSetting;
         sciNotFunctionPointer = setOneWidgetFromSetting;
+        checkBoxFunctionPointer = setOneWidgetFromSetting;
     }
     else
     {
@@ -135,6 +138,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         intFunctionPointer = setOneSettingFromWidget;
         colourFunctionPointer = setOneSettingFromWidget;
         sciNotFunctionPointer = setOneSettingFromWidget;
+        checkBoxFunctionPointer = setOneSettingFromWidget;
     }
 
     intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
@@ -170,13 +174,23 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
     intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
     doubleFunctionPointer(&settings->minQueryCoveredByPath, ui->minQueryCoveredByPathSpinBox, true);
+    checkBoxFunctionPointer(&settings->minQueryCoveredByHitsOn, ui->minQueryCoveredByHitsCheckBox);
     doubleFunctionPointer(&settings->minQueryCoveredByHits, ui->minQueryCoveredByHitsSpinBox, true);
+    checkBoxFunctionPointer(&settings->minMeanHitIdentityOn, ui->minMeanHitIdentityCheckBox);
     doubleFunctionPointer(&settings->minMeanHitIdentity, ui->minMeanHitIdentitySpinBox, true);
-    doubleFunctionPointer(&settings->maxLengthDiscrepancy, ui->maxLengthDiscrepancySpinBox, true);
+    checkBoxFunctionPointer(&settings->maxEValueProductOn, ui->maxEValueProductCheckBox);
     sciNotFunctionPointer(&settings->maxEValueProduct, ui->maxEValueCoefficientSpinBox, ui->maxEValueExponentSpinBox);
+    checkBoxFunctionPointer(&settings->minLengthPercentageOn, ui->minLengthPercentageCheckBox);
+    doubleFunctionPointer(&settings->minLengthPercentage, ui->minLengthPercentageSpinBox, true);
+    checkBoxFunctionPointer(&settings->maxLengthPercentageOn, ui->maxLengthPercentageCheckBox);
+    doubleFunctionPointer(&settings->maxLengthPercentage, ui->maxLengthPercentageSpinBox, true);
+    checkBoxFunctionPointer(&settings->minLengthBaseDiscrepancyOn, ui->minLengthBaseDiscrepancyCheckBox);
+    intFunctionPointer(&settings->minLengthBaseDiscrepancy, ui->minLengthBaseDiscrepancySpinBox);
+    checkBoxFunctionPointer(&settings->maxLengthBaseDiscrepancyOn, ui->maxLengthBaseDiscrepancyCheckBox);
+    intFunctionPointer(&settings->maxLengthBaseDiscrepancy, ui->maxLengthBaseDiscrepancySpinBox);
 
-    //A couple of settings are not in a spin box, so they
-    //have to be done manually, not with those function pointers.
+    //A couple of settings are not in a spin box, check box or colour button, so
+    //they have to be done manually, not with those function pointers.
     if (setWidgets)
     {
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
@@ -364,16 +378,30 @@ void SettingsDialog::setInfoTexts()
                                                 "a mean hit percent identity less than this setting will not be included "
                                                 "in the query's paths.<br><br>"
                                                 "Set to a higher value to make BLAST query paths more stringent.");
-    ui->maxLengthDiscrepancyInfoText->setInfoText("This is a maximum value for the length discrepancy between a BLAST "
-                                                  "query and its path in the graph. Paths with a length discrepancy "
-                                                  "greater than this setting will not be included in the query's "
-                                                  "paths.<br><br>"
-                                                  "Set to a lower value to make BLAST query paths more stringent.");
     ui->maxEvalueProductInfoText->setInfoText("This is a maximum value for the product of the e-values of all the "
                                               "hits in a BLAST query path. Paths with an e-value product greater "
                                               "than this setting will not be included in the query's paths.<br><br>"
                                               "Set to a lower value to make BLAST query paths more stringent.");
-
+    ui->minLengthPercentageInfoText->setInfoText("This is a minimum value for the relative length between a BLAST "
+                                                 "query and its path in the graph. Paths with a relative length "
+                                                 "less than this setting will not be included in the query's "
+                                                 "paths.<br><br>"
+                                                 "Set to a value closer to 100% to make BLAST query paths more stringent.");
+    ui->maxLengthPercentageInfoText->setInfoText("This is a maximum value for the relative length between a BLAST "
+                                                 "query and its path in the graph. Paths with a relative length "
+                                                 "greater than this setting will not be included in the query's "
+                                                 "paths.<br><br>"
+                                                 "Set to a value closer to 100% to make BLAST query paths more stringent.");
+    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the minimum length difference (in bases) between a BLAST "
+                                                      "query and its path in the graph.  Paths with a length difference "
+                                                      "less than this setting will not be included in the query's "
+                                                      "paths.<br><br>"
+                                                      "Set to a value closer to 0 to make BLAST query paths more stringent.");
+    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the maximum length difference (in bases) between a BLAST "
+                                                      "query and its path in the graph.  Paths with a length difference "
+                                                      "greater than this setting will not be included in the query's "
+                                                      "paths.<br><br>"
+                                                      "Set to a value closer to 0 to make BLAST query paths more stringent.");
 }
 
 

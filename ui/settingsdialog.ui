@@ -38,9 +38,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-1573</y>
-        <width>395</width>
-        <height>2905</height>
+        <y>-2247</y>
+        <width>400</width>
+        <height>3031</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -3056,22 +3056,6 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="InfoTextWidget" name="maxLengthDiscrepancyInfoText" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>16</width>
-              <height>16</height>
-             </size>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="1">
            <widget class="InfoTextWidget" name="minMeanHitIdentityInfoText" native="true">
             <property name="sizePolicy">
@@ -3120,38 +3104,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
-           <widget class="QLabel" name="label_49">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Min mean hit identity:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="4">
-           <widget class="QSpinBox" name="maxEValueExponentSpinBox">
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-            <property name="prefix">
-             <string>e</string>
-            </property>
-            <property name="minimum">
-             <number>-999</number>
-            </property>
-            <property name="maximum">
-             <number>1</number>
-            </property>
-            <property name="value">
-             <number>-10</number>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="2">
            <widget class="QLabel" name="label_35">
             <property name="sizePolicy">
@@ -3162,19 +3114,6 @@
             </property>
             <property name="text">
              <string>Max path nodes:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_31">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Min query path coverage:</string>
             </property>
            </widget>
           </item>
@@ -3194,42 +3133,22 @@
             </property>
            </spacer>
           </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_33">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="5" column="4">
+           <widget class="QSpinBox" name="maxEValueExponentSpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
-            <property name="text">
-             <string>Min query path hit coverage:</string>
+            <property name="prefix">
+             <string>e</string>
             </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QLabel" name="label_50">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+            <property name="minimum">
+             <number>-999</number>
             </property>
-            <property name="text">
-             <string>Max length discrepancy:</string>
+            <property name="maximum">
+             <number>1</number>
             </property>
-           </widget>
-          </item>
-          <item row="5" column="2">
-           <widget class="QLabel" name="label_51">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Max e-value product:</string>
+            <property name="value">
+             <number>-10</number>
             </property>
            </widget>
           </item>
@@ -3259,22 +3178,6 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="3" colspan="2">
-           <widget class="QDoubleSpinBox" name="maxLengthDiscrepancySpinBox">
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>50.000000000000000</double>
-            </property>
-           </widget>
-          </item>
           <item row="3" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="minMeanHitIdentitySpinBox">
             <property name="alignment">
@@ -3285,25 +3188,6 @@
             </property>
             <property name="decimals">
              <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3" colspan="2">
-           <widget class="QDoubleSpinBox" name="minQueryCoveredByHitsSpinBox">
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-            <property name="suffix">
-             <string>%</string>
-            </property>
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>30.000000000000000</double>
             </property>
             <property name="maximum">
              <double>100.000000000000000</double>
@@ -3326,6 +3210,25 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="3" colspan="2">
+           <widget class="QDoubleSpinBox" name="minQueryCoveredByHitsSpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>30.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="3" colspan="2">
            <widget class="QSpinBox" name="maxPathNodesSpinBox">
             <property name="alignment">
@@ -3336,6 +3239,197 @@
             </property>
             <property name="maximum">
              <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QCheckBox" name="minMeanHitIdentityCheckBox">
+            <property name="text">
+             <string>Min mean hit identity:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QCheckBox" name="minQueryCoveredByHitsCheckBox">
+            <property name="text">
+             <string>Min query path hit coverage:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="2">
+           <widget class="QCheckBox" name="maxLengthBaseDiscrepancyCheckBox">
+            <property name="text">
+             <string>Maximum length
+discrepancy (bases):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QCheckBox" name="maxEValueProductCheckBox">
+            <property name="text">
+             <string>Max e-value product:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QCheckBox" name="maxLengthPercentageCheckBox">
+            <property name="text">
+             <string>Maximum path
+length (percentage):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="minQueryCoveredByPathLabel">
+            <property name="text">
+             <string>Min query path coverage:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QCheckBox" name="minLengthPercentageCheckBox">
+            <property name="text">
+             <string>Minimum path
+length (percentage):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="QCheckBox" name="minLengthBaseDiscrepancyCheckBox">
+            <property name="text">
+             <string>Minimum length
+discrepancy (bases):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3" colspan="2">
+           <widget class="QDoubleSpinBox" name="minLengthPercentageSpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>95.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="3" colspan="2">
+           <widget class="QDoubleSpinBox" name="maxLengthPercentageSpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>1000000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>105.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="3" colspan="2">
+           <widget class="QSpinBox" name="minLengthBaseDiscrepancySpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="minimum">
+             <number>-1000000</number>
+            </property>
+            <property name="maximum">
+             <number>1000000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="3" colspan="2">
+           <widget class="QSpinBox" name="maxLengthBaseDiscrepancySpinBox">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="minimum">
+             <number>-1000000</number>
+            </property>
+            <property name="maximum">
+             <number>1000000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="InfoTextWidget" name="minLengthPercentageInfoText" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="InfoTextWidget" name="maxLengthPercentageInfoText" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="InfoTextWidget" name="minLengthBaseDiscrepancyInfoText" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="InfoTextWidget" name="maxLengthBaseDiscrepancyInfoText" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
             </property>
            </widget>
           </item>

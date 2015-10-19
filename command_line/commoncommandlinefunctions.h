@@ -29,21 +29,28 @@ bool checkForHelp(QStringList arguments);
 bool checkForHelpAll(QStringList arguments);
 bool checkForVersion(QStringList arguments);
 
-QString checkOptionForInt(QString option, QStringList * arguments, int min, int max);
-QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max);
-QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min, SciNot max);
+QString checkOptionForInt(QString option, QStringList * arguments, int min,
+                          int max, bool offOkay);
+QString checkOptionForFloat(QString option, QStringList * arguments, double min,
+                            double max, bool offOkay);
+QString checkOptionForSciNot(QString option, QStringList * arguments,
+                             SciNot min, SciNot max, bool offOkay);
 QString checkOptionForString(QString option, QStringList * arguments,
-                             QStringList validOptionsList, QString validDescription = "");
+                             QStringList validOptionsList,
+                             QString validDescription = "");
 QString checkOptionForColour(QString option, QStringList * arguments);
 QString checkOptionForFile(QString option, QStringList * arguments);
 bool checkIfFileExists(QString filename);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
-QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
-                                 double min1, double max1, double min2, double max2,
+QString checkTwoOptionsForFloats(QString option1, QString option2,
+                                 QStringList * arguments,
+                                 double min1, double max1,
+                                 double min2, double max2,
                                  bool secondMustBeEqualOrLarger = false);
 
 bool isOptionPresent(QString option, QStringList * arguments);
-bool isOptionAndValuePresent(QString option, QString value, QStringList * arguments);
+bool isOptionAndValuePresent(QString option, QString value,
+                             QStringList * arguments);
 
 int getIntOption(QString option, QStringList * arguments);
 double getFloatOption(QString option, QStringList * arguments);

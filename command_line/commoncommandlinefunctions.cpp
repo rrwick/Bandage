@@ -171,19 +171,65 @@ void printSettingsUsage(QTextStream * out)
     *out << "          conducting a BLAST search." << endl;
     *out << "          --pathnodes <int>   The number of allowed nodes in a BLAST query path" << endl;
     *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
+
     *out << "          --minpatcov <float> Minimum fraction of a BLAST query which must be" << endl;
     *out << "                              covered by a query path (0.3 to 1.0, default:" << endl;
     *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+
     *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
     *out << "                              covered by BLAST hits in a query path (0.3 to" << endl;
-    *out << "                              1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
+    *out << "                              1.0, default: ";
+    if (g_settings->minQueryCoveredByHitsOn)
+        *out << QString::number(g_settings->minQueryCoveredByHits) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
     *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
-    *out << "                              path (0.0 to 1.0, default: " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
-    *out << "          --maxlendis <float> Maximum allowed relative length discrepancy" << endl;
-    *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (0.0 to 0.5, default: " << QString::number(g_settings->maxLengthDiscrepancy) + ")" << endl;
+    *out << "                              path (0.0 to 1.0, default: ";
+    if (g_settings->minMeanHitIdentityOn)
+        *out << QString::number(g_settings->minMeanHitIdentity) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
     *out << "          --maxevprod <sci>   Maximum e-value product for all BLAST hits in a" << endl;
-    *out << "                              query path, (1e-999 to 9.9e1, default: " << g_settings->maxEValueProduct.asString(true) + ")" << endl;
+    *out << "                              query path, (1e-999 to 9.9e1, default: ";
+    if (g_settings->maxEValueProductOn)
+        *out << g_settings->maxEValueProduct.asString(true) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
+    *out << "          --minpatlen <float> Minimum allowed relative path length as compared" << endl;
+    *out << "                              to the query." << endl;
+    *out << "                              (0 to 10000, default: ";
+    if (g_settings->minLengthPercentageOn)
+        *out << QString::number(g_settings->minLengthPercentage) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
+    *out << "          --maxpatlen <float> Maximum allowed relative path length as compared" << endl;
+    *out << "                              to the query." << endl;
+    *out << "                              (0 to 10000, default: ";
+    if (g_settings->maxLengthPercentageOn)
+        *out << QString::number(g_settings->maxLengthPercentage) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
+    *out << "          --minlendis <int>   Minimum allowed length discrepancy (in bases)" << endl;
+    *out << "                              between a BLAST query and its path in the graph" << endl;
+    *out << "                              (-1000000 to 1000000, default: ";
+    if (g_settings->minLengthBaseDiscrepancyOn)
+        *out << QString::number(g_settings->minLengthBaseDiscrepancy) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
+    *out << "          --maxlendis <int>   Maximum allowed length discrepancy (in bases)" << endl;
+    *out << "                              between a BLAST query and its path in the graph" << endl;
+    *out << "                              (-1000000 to 1000000, default: ";
+    if (g_settings->maxLengthBaseDiscrepancyOn)
+        *out << QString::number(g_settings->maxLengthBaseDiscrepancy) + ")" << endl;
+    else
+        *out << "off)" << endl;
+
     *out << endl;
 }
 
@@ -204,12 +250,12 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     checkOptionWithoutValue("--partial", arguments);
 
-    error = checkOptionForInt("--distance", arguments, 0, 100);
+    error = checkOptionForInt("--distance", arguments, 0, 100, false);
     if (error.length() > 0) return error;
 
-    error = checkOptionForFloat("--mindepth", arguments, 0.0, 1000000.0);
+    error = checkOptionForFloat("--mindepth", arguments, 0.0, 1000000.0, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--maxdepth", arguments, 0.0, 1000000.0);
+    error = checkOptionForFloat("--maxdepth", arguments, 0.0, 1000000.0, false);
     if (error.length() > 0) return error;
 
     //Make sure that the min read depth is less than or equal to the max read
@@ -232,30 +278,30 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
 
     checkOptionWithoutValue("--double", arguments);
-    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max());
+    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max(), false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--quality", arguments, 1, 5);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000.0);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--deppower", arguments, 0.1, 1.0);
+    error = checkOptionForInt("--quality", arguments, 1, 5, false);
     if (error.length() > 0) return error;
 
-    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0);
+    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000.0, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0);
+    error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0, false);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--deppower", arguments, 0.1, 1.0, false);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0, false);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0, false);
     if (error.length() > 0) return error;
 
     checkOptionWithoutValue("--names", arguments);
     checkOptionWithoutValue("--lengths", arguments);
     checkOptionWithoutValue("--readdepth", arguments);
     checkOptionWithoutValue("--blasthits", arguments);
-    error = checkOptionForInt("--fontsize", arguments, 1, 100);
+    error = checkOptionForInt("--fontsize", arguments, 1, 100, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0);
+    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0, false);
     if (error.length() > 0) return error;
     checkOptionWithoutValue("--centre", arguments);
 
@@ -276,17 +322,17 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForString("--colour", arguments, validColourOptions);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("--ransatpos", arguments, 0, 255);
+    error = checkOptionForInt("--ransatpos", arguments, 0, 255, false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--ransatneg", arguments, 0, 255);
+    error = checkOptionForInt("--ransatneg", arguments, 0, 255, false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligpos", arguments, 0, 255);
+    error = checkOptionForInt("--ranligpos", arguments, 0, 255, false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligneg", arguments, 0, 255);
+    error = checkOptionForInt("--ranligneg", arguments, 0, 255, false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopapos", arguments, 0, 255);
+    error = checkOptionForInt("--ranopapos", arguments, 0, 255, false);
     if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopaneg", arguments, 0, 255);
+    error = checkOptionForInt("--ranopaneg", arguments, 0, 255, false);
     if (error.length() > 0) return error;
 
     error = checkOptionForColour("--unicolpos", arguments);
@@ -304,28 +350,34 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("--pathnodes", arguments, 1, 50);
+    error = checkOptionForInt("--pathnodes", arguments, 1, 50, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minpatcov", arguments, 0.3, 1.0);
+    error = checkOptionForFloat("--minpatcov", arguments, 0.3, 1.0, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minhitcov", arguments, 0.3, 1.0);
+    error = checkOptionForFloat("--minhitcov", arguments, 0.3, 1.0, true);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minmeanid", arguments, 0.0, 1.0);
+    error = checkOptionForFloat("--minmeanid", arguments, 0.0, 1.0, true);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--maxlendis", arguments, 0.0, 0.5);
+    error = checkOptionForSciNot("--maxevprod", arguments, SciNot(1.0, -999), SciNot(9.9, 1), true);
     if (error.length() > 0) return error;
-    error = checkOptionForSciNot("--maxevprod", arguments, SciNot(1.0, -999), SciNot(9.9, 1));
+    error = checkOptionForFloat("--minpatlen", arguments, 0.0, 10000.0, true);
+    if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxpatlen", arguments, 0.0, 10000.0, true);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--minlendis", arguments, -1000000, 1000000, true);
+    if (error.length() > 0) return error;
+    error = checkOptionForInt("--maxlendis", arguments, -1000000, 1000000, true);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("--alfilter", arguments, 0, 1000000);
+    error = checkOptionForInt("--alfilter", arguments, 0, 1000000, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--qcfilter", arguments, 0.0, 100.0);
+    error = checkOptionForFloat("--qcfilter", arguments, 0.0, 100.0, false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--ifilter", arguments, 0.0, 100.0);
+    error = checkOptionForFloat("--ifilter", arguments, 0.0, 100.0, false);
     if (error.length() > 0) return error;
-    error = checkOptionForSciNot("--evfilter", arguments, SciNot(1.0, -999), SciNot(9.9, 1));
+    error = checkOptionForSciNot("--evfilter", arguments, SciNot(1.0, -999), SciNot(9.9, 1), false);
     if (error.length() > 0) return error;
-    error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0);
+    error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0, false);
     if (error.length() > 0) return error;
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
@@ -480,13 +532,82 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--minpatcov", &arguments))
         g_settings->minQueryCoveredByPath = getFloatOption("--minpatcov", &arguments);
     if (isOptionPresent("--minhitcov", &arguments))
-        g_settings->minQueryCoveredByHits = getFloatOption("--minhitcov", &arguments);
+    {
+        QString optionString = getStringOption("--minhitcov", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->minQueryCoveredByHitsOn = false;
+        else
+        {
+            g_settings->minQueryCoveredByHitsOn = true;
+            g_settings->minQueryCoveredByHits = getFloatOption("--minhitcov", &arguments);
+        }
+    }
     if (isOptionPresent("--minmeanid", &arguments))
-        g_settings->minMeanHitIdentity = getFloatOption("--minmeanid", &arguments);
-    if (isOptionPresent("--maxlendis", &arguments))
-        g_settings->maxLengthDiscrepancy = getFloatOption("--maxlendis", &arguments);
+    {
+        QString optionString = getStringOption("--minmeanid", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->minMeanHitIdentityOn = false;
+        else
+        {
+            g_settings->minMeanHitIdentityOn = true;
+            g_settings->minMeanHitIdentity = getFloatOption("--minmeanid", &arguments);
+        }
+    }
     if (isOptionPresent("--maxevprod", &arguments))
-        g_settings->maxEValueProduct = getSciNotOption("--maxevprod", &arguments);
+    {
+        QString optionString = getStringOption("--maxevprod", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->maxEValueProductOn = false;
+        else
+        {
+            g_settings->maxEValueProductOn = true;
+            g_settings->maxEValueProduct = getSciNotOption("--maxevprod", &arguments);
+        }
+    }
+    if (isOptionPresent("--minpatlen", &arguments))
+    {
+        QString optionString = getStringOption("--minpatlen", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->minLengthPercentageOn = false;
+        else
+        {
+            g_settings->minLengthPercentageOn = true;
+            g_settings->minLengthPercentage = getFloatOption("--minpatlen", &arguments);
+        }
+    }
+    if (isOptionPresent("--maxpatlen", &arguments))
+    {
+        QString optionString = getStringOption("--maxpatlen", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->maxLengthPercentageOn = false;
+        else
+        {
+            g_settings->maxLengthPercentageOn = true;
+            g_settings->maxLengthPercentage = getFloatOption("--maxpatlen", &arguments);
+        }
+    }
+    if (isOptionPresent("--minlendis", &arguments))
+    {
+        QString optionString = getStringOption("--minlendis", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->minLengthBaseDiscrepancyOn = false;
+        else
+        {
+            g_settings->minLengthBaseDiscrepancyOn = true;
+            g_settings->minLengthBaseDiscrepancy = getIntOption("--minlendis", &arguments);
+        }
+    }
+    if (isOptionPresent("--maxlendis", &arguments))
+    {
+        QString optionString = getStringOption("--maxlendis", &arguments);
+        if (optionString.toLower() == "off")
+            g_settings->maxLengthBaseDiscrepancyOn = false;
+        else
+        {
+            g_settings->maxLengthBaseDiscrepancyOn = true;
+            g_settings->maxLengthBaseDiscrepancy = getIntOption("--maxlendis", &arguments);
+        }
+    }
 
     if (isOptionPresent("--alfilter", &arguments))
     {
@@ -542,11 +663,13 @@ bool checkForVersion(QStringList arguments)
 
 
 
-
-//Returns empty string if everything is okay and an error
-//message if there's a problem.  If everything is okay, it
-//also removes the option and its value from arguments.
-QString checkOptionForInt(QString option, QStringList * arguments, int min, int max)
+//This function checks the value for an integer-accepting command line option.
+//If offOkay is true, then it will also accept "off" as a valid argument.
+//Returns empty string if everything is okay and an error message if there's a
+//problem.  If everything is okay, it also removes the option and its value from
+//arguments.
+QString checkOptionForInt(QString option, QStringList * arguments, int min,
+                          int max, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -563,14 +686,20 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min, int 
     //If the thing following the option isn't an integer, that's a problem.
     bool optionIsInt;
     int optionInt = arguments->at(integerIndex).toInt(&optionIsInt);
-    if (!optionIsInt)
+    bool optionIsOff = arguments->at(integerIndex).toLower() == "off";
+    if (offOkay && !(optionIsInt || optionIsOff))
+        return option + " must be followed by an integer or \"off\"";
+    if (!offOkay && !optionIsInt)
         return option + " must be followed by an integer";
 
     //Check the range of the option.
-    if (optionInt < min || optionInt > max)
-        return "Value of " + option + " must be between "
-                + QString::number(min) + " and " + QString::number(max) +
-                " (inclusive)";
+    if (optionIsInt)
+    {
+        if (optionInt < min || optionInt > max)
+            return "Value of " + option + " must be between "
+                    + QString::number(min) + " and " + QString::number(max) +
+                    " (inclusive)";
+    }
 
     //If the code got here, the option and its integer are okay.
     //Remove them from the arguments.
@@ -581,10 +710,13 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min, int 
 }
 
 
-//Returns empty string if everything is okay and an error
-//message if there's a problem.  If everything is okay, it
-//also removes the option and its value from arguments.
-QString checkOptionForFloat(QString option, QStringList * arguments, double min, double max)
+//This function checks the value for a float-accepting command line option.
+//If offOkay is true, then it will also accept "off" as a valid argument.
+//Returns empty string if everything is okay and an error message if there's a
+//problem.  If everything is okay, it also removes the option and its value from
+//arguments.
+QString checkOptionForFloat(QString option, QStringList * arguments, double min,
+                            double max, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -601,14 +733,20 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
     //If the thing following the option isn't a number, that's a problem.
     bool optionIsFloat;
     double optionFloat = arguments->at(floatIndex).toDouble(&optionIsFloat);
-    if (!optionIsFloat)
+    bool optionIsOff = arguments->at(floatIndex).toLower() == "off";
+    if (offOkay && !(optionIsFloat || optionIsOff))
+        return option + " must be followed by a number or \"off\"";
+    if (!offOkay && !optionIsFloat)
         return option + " must be followed by a number";
 
     //Check the range of the option.
-    if (optionFloat < min || optionFloat > max)
-        return "Value of " + option + " must be between "
-                + QString::number(min) + " and " + QString::number(max) +
-                " (inclusive)";
+    if (optionIsFloat)
+    {
+        if (optionFloat < min || optionFloat > max)
+            return "Value of " + option + " must be between "
+                    + QString::number(min) + " and " + QString::number(max) +
+                    " (inclusive)";
+    }
 
     //If the code got here, the option and its number are okay.
     //Remove them from the arguments.
@@ -618,10 +756,15 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
     return "";
 }
 
-//Returns empty string if everything is okay and an error
-//message if there's a problem.  If everything is okay, it
-//also removes the option and its value from arguments.
-QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min, SciNot max)
+
+//This function checks the value for a scientific notation-accepting command
+//line option.  If offOkay is true, then it will also accept "off" as a valid
+//argument.
+//Returns empty string if everything is okay and an error message if there's a
+//problem.  If everything is okay, it also removes the option and its value from
+//arguments.
+QString checkOptionForSciNot(QString option, QStringList * arguments,
+                             SciNot min, SciNot max, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -635,18 +778,25 @@ QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min
     if (sciNotIndex >= arguments->size())
         return option + " must be followed by a number in scientific notation";
 
-    //If the thing following the option isn't a number in scientific notation,
-    //that's a problem.
-    if (!SciNot::isValidSciNotString(arguments->at(sciNotIndex)))
+    //If the thing following the option isn't a number in scientific notation or
+    //"off", that's a problem.
+    bool optionIsSciNot = SciNot::isValidSciNotString(arguments->at(sciNotIndex));
+    bool optionIsOff = arguments->at(sciNotIndex).toLower() == "off";
+    if (offOkay && !(optionIsSciNot || optionIsOff))
+        return option + " must be followed by a number in scientific notation or \"off\"";
+    if (!offOkay && !optionIsSciNot)
         return option + " must be followed by a number in scientific notation";
 
     SciNot optionSciNot = SciNot(arguments->at(sciNotIndex));
 
     //Check the range of the option.
-    if (optionSciNot < min || optionSciNot > max)
-        return "Value of " + option + " must be between "
-                + min.asString(true) + " and " + max.asString(true) +
-                " (inclusive)";
+    if (optionIsSciNot)
+    {
+        if (optionSciNot < min || optionSciNot > max)
+            return "Value of " + option + " must be between "
+                    + min.asString(true) + " and " + max.asString(true) +
+                    " (inclusive)";
+    }
 
     //If the code got here, the option and its number are okay.
     //Remove them from the arguments.
@@ -655,7 +805,6 @@ QString checkOptionForSciNot(QString option, QStringList * arguments, SciNot min
 
     return "";
 }
-
 
 
 //Returns empty string if everything is okay and an error
@@ -758,6 +907,7 @@ QString checkOptionForFile(QString option, QStringList * arguments)
     return "";
 }
 
+
 bool checkIfFileExists(QString filename)
 {
     QFileInfo checkFile(filename);
@@ -789,10 +939,10 @@ QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList *
 {
     //First check each option independently
     QStringList argumentsCopy = *arguments;
-    QString option1Error = checkOptionForFloat(option1, &argumentsCopy, min1, max1);
+    QString option1Error = checkOptionForFloat(option1, &argumentsCopy, min1, max1, false);
     if (option1Error != "")
         return option1Error;
-    QString option2Error = checkOptionForFloat(option2, &argumentsCopy, min2, max2);
+    QString option2Error = checkOptionForFloat(option2, &argumentsCopy, min2, max2, false);
     if (option2Error != "")
         return option2Error;
 
@@ -807,8 +957,8 @@ QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList *
     }
 
     //Now remove the options from the arguments before finishing.
-    checkOptionForFloat(option1, arguments, min1, max1);
-    checkOptionForFloat(option2, arguments, min2, max2);
+    checkOptionForFloat(option1, arguments, min1, max1, false);
+    checkOptionForFloat(option2, arguments, min2, max2, false);
     return "";
 }
 

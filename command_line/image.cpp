@@ -217,10 +217,10 @@ void printImageUsage(QTextStream * out, bool all)
 
 QString checkForInvalidImageOptions(QStringList arguments)
 {
-    QString error = checkOptionForInt("--height", &arguments, 1, 32767);
+    QString error = checkOptionForInt("--height", &arguments, 1, 32767, false);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("--width", &arguments, 1, 32767);
+    error = checkOptionForInt("--width", &arguments, 1, 32767, false);
     if (error.length() > 0) return error;
 
     return checkForInvalidOrExcessSettings(&arguments);

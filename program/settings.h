@@ -123,13 +123,24 @@ public:
     int maxAutoFindEdgeOverlap;
 
     //These control how Bandage finds the best path in the graph to represent
-    //each BLAST query.
+    //each BLAST query.  Some of these settings can be turned on and off and
+    //therefore have a corresponding bool value.
     int maxQueryPathNodes;
     double minQueryCoveredByPath;
+    bool minQueryCoveredByHitsOn;
     double minQueryCoveredByHits;
+    bool minMeanHitIdentityOn;
     double minMeanHitIdentity;
-    double maxLengthDiscrepancy;
+    bool maxEValueProductOn;
     SciNot maxEValueProduct;
+    bool minLengthPercentageOn;
+    double minLengthPercentage;
+    bool maxLengthPercentageOn;
+    double maxLengthPercentage;
+    bool minLengthBaseDiscrepancyOn;
+    int minLengthBaseDiscrepancy;
+    bool maxLengthBaseDiscrepancyOn;
+    int maxLengthBaseDiscrepancy;
 
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.

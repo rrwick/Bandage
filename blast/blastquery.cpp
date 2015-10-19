@@ -139,10 +139,15 @@ void BlastQuery::findQueryPaths()
             partialQueryLength -= pathStart;
             partialQueryLength -= queryLength - pathEnd;
 
-            int allowedDiscrepancy = int(partialQueryLength * g_settings->maxLengthDiscrepancy) + 1;
+            //TO DO: Make this determine a min and max length using both the relative and the absolute settings.
+            int minLength = 1;
+            int maxLength = 1000000;
 
-            int minLength = partialQueryLength - allowedDiscrepancy;
-            int maxLength = partialQueryLength + allowedDiscrepancy;
+//            int allowedDiscrepancy = int(partialQueryLength * g_settings->maxLengthDiscrepancy) + 1;
+
+//            int minLength = partialQueryLength - allowedDiscrepancy;
+//            int maxLength = partialQueryLength + allowedDiscrepancy;
+
 
             possiblePaths.append(Path::getAllPossiblePaths(startLocation,
                                                            endLocation,
@@ -164,11 +169,13 @@ void BlastQuery::findQueryPaths()
     QList<BlastQueryPath> sufficientCoveragePaths;
     for (int i = 0; i < blastQueryPaths.size(); ++i)
     {
-        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->minQueryCoveredByHits &&
-                blastQueryPaths[i].getPathQueryCoverage() >= g_settings->minQueryCoveredByPath &&
-                blastQueryPaths[i].getEvalueProduct() <= g_settings->maxEValueProduct &&
-                blastQueryPaths[i].getMeanHitPercIdentity() >= 100.0 * g_settings->minMeanHitIdentity &&
-                fabs(blastQueryPaths[i].getRelativeLengthDiscrepancy()) <= g_settings->maxLengthDiscrepancy)
+        //TO DO: Make this check each filter (and whether or not the filter is on)
+
+//        if (blastQueryPaths[i].getHitsQueryCoverage() >= g_settings->minQueryCoveredByHits &&
+//                blastQueryPaths[i].getPathQueryCoverage() >= g_settings->minQueryCoveredByPath &&
+//                blastQueryPaths[i].getEvalueProduct() <= g_settings->maxEValueProduct &&
+//                blastQueryPaths[i].getMeanHitPercIdentity() >= 100.0 * g_settings->minMeanHitIdentity &&
+//                fabs(blastQueryPaths[i].getRelativeLengthDiscrepancy()) <= g_settings->maxLengthDiscrepancy)
             sufficientCoveragePaths.push_back(blastQueryPaths[i]);
     }
 

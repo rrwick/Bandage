@@ -110,10 +110,20 @@ Settings::Settings()
 
     maxQueryPathNodes = 6;
     minQueryCoveredByPath = 0.9;
+    minQueryCoveredByHitsOn = true;
     minQueryCoveredByHits = 0.9;
+    minMeanHitIdentityOn = true;
     minMeanHitIdentity = 0.5;
-    maxLengthDiscrepancy = 0.05;
+    maxEValueProductOn = true;
     maxEValueProduct = SciNot(1.0, -10);
+    minLengthPercentageOn = true;
+    minLengthPercentage = 0.95;
+    maxLengthPercentageOn = true;
+    maxLengthPercentage = 1.05;
+    minLengthBaseDiscrepancyOn = false;
+    minLengthBaseDiscrepancy = -100;
+    maxLengthBaseDiscrepancyOn = false;
+    maxLengthBaseDiscrepancy = 100;
 
     blastSearchParameters = "";
 
