@@ -128,3 +128,11 @@ GraphLocation BlastHit::getHitEnd() const
 {
     return GraphLocation(m_node, m_nodeEnd);
 }
+
+
+//This function returns the node sequence for this hit.
+QByteArray BlastHit::getNodeSequence() const
+{
+    int nodeSequenceLength = m_nodeEnd - m_nodeStart + 1;
+    return m_node->getSequence().mid(m_nodeStart-1, nodeSequenceLength);
+}

@@ -41,6 +41,7 @@ public:
     double getRelativeLengthDiscrepancy() const;
     double getRelativePathLength() const;
     int getAbsolutePathLengthDifference() const;
+    QString getAbsolutePathLengthDifferenceString(bool commas) const;
     double getPathQueryCoverage() const;
     double getHitsQueryCoverage() const;
     int getTotalHitMismatches() const;

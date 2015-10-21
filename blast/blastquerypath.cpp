@@ -147,6 +147,19 @@ int BlastQueryPath::getAbsolutePathLengthDifference() const
 }
 
 
+QString BlastQueryPath::getAbsolutePathLengthDifferenceString(bool commas) const
+{
+    int lengthDisc = getAbsolutePathLengthDifference();
+    QString lengthDiscSign = "";
+    if (lengthDisc > 0)
+        lengthDiscSign = "+";
+    if (commas)
+        return lengthDiscSign + formatIntForDisplay(lengthDisc);
+    else
+        return lengthDiscSign + QString::number(lengthDisc);
+}
+
+
 //This function returns the fraction of the query that is covered by the entire
 //path.
 double BlastQueryPath::getPathQueryCoverage() const

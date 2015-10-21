@@ -144,6 +144,8 @@ public:
     void changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
                              double newReadDepth);
 
+    static QByteArray addNewlinesToSequence(QByteArray sequence, int interval = 70);
+
 private:
     double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index);
     QString convertNormalNumberStringToBandageNodeName(QString number);

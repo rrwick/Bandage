@@ -66,6 +66,7 @@ public:
     double getQueryCoverageFraction();
     GraphLocation getHitStart() const;
     GraphLocation getHitEnd() const;
+    QByteArray getNodeSequence() const;
 };
 
 #endif // BLASTHIT_H

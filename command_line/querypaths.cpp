@@ -71,7 +71,7 @@ int bandageQueryPaths(QStringList arguments)
     }
 
     QString outputPrefix = arguments.at(0);
-    QString tableFilename = outputPrefix + ".csv";
+    QString tableFilename = outputPrefix + ".tsv";
     QString pathFastaFilename = outputPrefix + "_paths.fasta";
     QString hitsFastaFilename = outputPrefix + "_hits.fasta";
     arguments.pop_front();
@@ -86,6 +86,26 @@ int bandageQueryPaths(QStringList arguments)
     bool pathFasta = false;
     bool hitsFasta = false;
     parseQueryPathsOptions(arguments, &pathFasta, &hitsFasta);
+
+    //Check to make sure the output files don't already exist.
+    QFile tableFile(tableFilename);
+    QFile pathsFile(pathFastaFilename);
+    QFile hitsFile(hitsFastaFilename);
+    if (tableFile.exists())
+    {
+        err << "Bandage error: " << tableFilename << " already exists." << endl;
+        return 1;
+    }
+    if (pathFasta && pathsFile.exists())
+    {
+        err << "Bandage error: " << pathFastaFilename << " already exists." << endl;
+        return 1;
+    }
+    if (hitsFasta && hitsFile.exists())
+    {
+        err << "Bandage error: " << hitsFastaFilename << " already exists." << endl;
+        return 1;
+    }
 
     out << endl << "Loading graph...        ";
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
@@ -107,29 +127,123 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
     out << "done" << endl;
-
-
     out << "Saving results...       ";
 
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
-    //TO DO: Write the query path output code here!!!
+    //Create the table file.
+    tableFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream tableOut(&tableFile);
+
+    //Write the TSV header line.
+    tableOut << "Query\t"
+                "Path\t"
+                "Length\t"
+                "Query covered by path\t"
+                "Query covered by hits\t"
+                "Mean hit identity\t"
+                "Total hit mismatches\t"
+                "Total hit gap opens\t"
+                "Relative length\t"
+                "Length discrepancy\t"
+                "E-value product\t";
+
+    //If the user asked for a separate path sequence file, then the last column
+    //will be a reference to that sequence ID.  If not, the sequence will go in
+    //the table.
+    if (pathFasta)
+        tableOut << "Sequence ID\n";
+    else
+        tableOut << "Sequence\n";
+
+    //If a path sequence FASTA file is used, these will store the sequences
+    //that will go there.
+    QList<QString> pathSequenceIDs;
+    QList<QByteArray> pathSequences;
+
+    //If a hits sequence FASTA file is used, these will store the sequences
+    //that will go there.
+    QList<QString> hitSequenceIDs;
+    QList<QByteArray> hitSequences;
+
+    for (size_t i = 0; i < g_blastSearch->m_blastQueries.m_queries.size(); ++i)
+    {
+        BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[i];
+        QList<BlastQueryPath> queryPaths = query->getPaths();
+
+        for (int j = 0; j < queryPaths.size(); ++j)
+        {
+            BlastQueryPath queryPath = queryPaths[j];
+            Path path = queryPath.getPath();
+
+            tableOut << query->getName() << "\t";
+            tableOut << path.getString(true) << "\t";
+            tableOut << QString::number(path.getLength()) << "\t";
+            tableOut << QString::number(100.0 * queryPath.getPathQueryCoverage()) << "%\t";
+            tableOut << QString::number(100.0 * queryPath.getHitsQueryCoverage()) << "%\t";
+            tableOut << QString::number(queryPath.getMeanHitPercIdentity()) << "%\t";
+            tableOut << QString::number(queryPath.getTotalHitMismatches()) << "\t";
+            tableOut << QString::number(queryPath.getTotalHitGapOpens()) << "\t";
+            tableOut << QString::number(100.0 * queryPath.getRelativePathLength()) << "%\t";
+            tableOut << queryPath.getAbsolutePathLengthDifferenceString(false) << "\t";
+            tableOut << queryPath.getEvalueProduct().asString(false) << "\t";
+
+            //If we are using a separate file for the path sequences, save the
+            //sequence along with its ID to save later, and store the ID here.
+            //Otherwise, just include the sequence in this table.
+            QByteArray sequence = path.getPathSequence();
+            QString pathSequenceID = query->getName() + "_" + QString::number(j+1);
+            if (pathFasta)
+            {
+                pathSequenceIDs.push_back(pathSequenceID);
+                pathSequences.push_back(sequence);
+                tableOut << pathSequenceID << "\n";
+            }
+            else
+                tableOut << sequence << "\n";
+
+            //If we are also saving the hit sequences, save the hit sequence
+            //along with its ID to save later.
+            if (hitsFasta)
+            {
+                QList<BlastHit *> hits = queryPath.getHits();
+                for (int k = 0; k < hits.size(); ++k)
+                {
+                    BlastHit * hit = hits[k];
+                    QString hitSequenceID = pathSequenceID + "_" + QString::number(k+1);
+                    QByteArray hitSequence = hit->getNodeSequence();
+                    hitSequenceIDs.push_back(hitSequenceID);
+                    hitSequences.push_back(hitSequence);
+                }
+            }
+        }
+    }
+
+    //Write the path sequence FASTA file, if appropriate.
+    if (pathFasta)
+    {
+        pathsFile.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream pathsOut(&pathsFile);
+
+        for (int i = 0; i < pathSequenceIDs.size(); ++i)
+        {
+            pathsOut << ">" + pathSequenceIDs[i] + "\n";
+            pathsOut << AssemblyGraph::addNewlinesToSequence(pathSequences[i]);
+        }
+    }
+
+    //Write the hits sequence FASTA file, if appropriate.
+    if (hitsFasta)
+    {
+        hitsFile.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream hitsOut(&hitsFile);
+
+        for (int i = 0; i < hitSequenceIDs.size(); ++i)
+        {
+            hitsOut << ">" << hitSequenceIDs[i] << "\n";
+            hitsOut << AssemblyGraph::addNewlinesToSequence(hitSequences[i]);
+        }
+    }
 
     out << "done" << endl;
-
 
     out << endl << "Results: " + tableFilename << endl;
     if (pathFasta)
@@ -152,7 +266,7 @@ void printQueryPathsUsage(QTextStream * out, bool all)
     *out << "Usage:    Bandage querypaths <graph> <queries> <output_prefix> [options]" << endl;
     *out << endl;
     *out << "Options:  --pathfasta         put all query path sequences in a multi-FASTA" << endl;
-    *out << "                              file, not in the CSV file" << endl;
+    *out << "                              file, not in the TSV file" << endl;
     *out << "          --hitsfasta         produce a multi-FASTA file of all BLAST hits in" << endl;
     *out << "                              the query paths" << endl;
     *out << endl;

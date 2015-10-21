@@ -103,10 +103,8 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
         pathRelativeLength->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         int lengthDisc = queryPath->getAbsolutePathLengthDifference();
-        QString lengthDiscSign = "";
-        if (lengthDisc > 0)
-            lengthDiscSign = "+";
-        TableWidgetItemInt * pathLengthDisc = new TableWidgetItemInt(lengthDiscSign + formatIntForDisplay(lengthDisc), lengthDisc);
+        QString lengthDiscString = queryPath->getAbsolutePathLengthDifferenceString(true);
+        TableWidgetItemInt * pathLengthDisc = new TableWidgetItemInt(lengthDiscString, lengthDisc);
         pathLengthDisc->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
         SciNot evalueProduct = queryPath->getEvalueProduct();

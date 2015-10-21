@@ -310,22 +310,9 @@ bool DeBruijnNode::isNotOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 QByteArray DeBruijnNode::getFasta() const
 {
     QByteArray fasta = ">";
-
     fasta += getNodeNameForFasta();
     fasta += "\n";
-
-    int charactersRemaining = m_sequence.length();
-    int currentIndex = 0;
-    while (charactersRemaining > 70)
-    {
-        fasta += m_sequence.mid(currentIndex, 70);
-        fasta += "\n";
-        charactersRemaining -= 70;
-        currentIndex += 70;
-    }
-    fasta += m_sequence.mid(currentIndex);
-    fasta += "\n";
-
+    fasta += AssemblyGraph::addNewlinesToSequence(m_sequence);
     return fasta;
 }
 

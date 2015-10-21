@@ -2700,3 +2700,29 @@ void AssemblyGraph::changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
         (*nodes)[i]->getReverseComplement()->setReadDepth(newReadDepth);
     }
 }
+
+
+
+//This function is used when making FASTA outputs - it breaks a sequence into
+//separate lines.  The default interval is 70, as that seems to be what NCBI
+//uses.
+//The returned string always ends in a newline.
+QByteArray AssemblyGraph::addNewlinesToSequence(QByteArray sequence,
+                                                int interval)
+{
+    QByteArray output;
+
+    int charactersRemaining = sequence.length();
+    int currentIndex = 0;
+    while (charactersRemaining > interval)
+    {
+        output += sequence.mid(currentIndex, interval);
+        output += "\n";
+        charactersRemaining -= interval;
+        currentIndex += interval;
+    }
+    output += sequence.mid(currentIndex);
+    output += "\n";
+
+    return output;
+}
