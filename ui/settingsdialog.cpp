@@ -81,6 +81,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     connect(ui->maxLengthPercentageCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
     connect(ui->minLengthBaseDiscrepancyCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
     connect(ui->maxLengthBaseDiscrepancyCheckBox, SIGNAL(toggled(bool)), this, SLOT(checkBoxesChanged()));
+    connect(ui->minLengthBaseDiscrepancySpinBox, SIGNAL(valueChanged(int)), this, SLOT(lengthDiscrepancySpinBoxChanged()));
+    connect(ui->maxLengthBaseDiscrepancySpinBox, SIGNAL(valueChanged(int)), this, SLOT(lengthDiscrepancySpinBoxChanged()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -110,6 +112,7 @@ void SettingsDialog::setWidgetsFromSettings()
 
     enableDisableReadDepthWidgets();
     checkBoxesChanged();
+    lengthDiscrepancySpinBoxChanged();
 }
 
 
@@ -478,4 +481,19 @@ void SettingsDialog::checkBoxesChanged()
     ui->maxLengthPercentageSpinBox->setEnabled(ui->maxLengthPercentageCheckBox->isChecked());
     ui->minLengthBaseDiscrepancySpinBox->setEnabled(ui->minLengthBaseDiscrepancyCheckBox->isChecked());
     ui->maxLengthBaseDiscrepancySpinBox->setEnabled(ui->maxLengthBaseDiscrepancyCheckBox->isChecked());
+}
+
+//This function adds or removes the '+' prefix from the length discrepancy
+//spin boxes, based on whether or not they hold a positive value.
+void SettingsDialog::lengthDiscrepancySpinBoxChanged()
+{
+    if (ui->minLengthBaseDiscrepancySpinBox->value() > 0)
+        ui->minLengthBaseDiscrepancySpinBox->setPrefix("+");
+    else
+        ui->minLengthBaseDiscrepancySpinBox->setPrefix("");
+
+    if (ui->maxLengthBaseDiscrepancySpinBox->value() > 0)
+        ui->maxLengthBaseDiscrepancySpinBox->setPrefix("+");
+    else
+        ui->maxLengthBaseDiscrepancySpinBox->setPrefix("");
 }

@@ -178,21 +178,22 @@ void printSettingsUsage(QTextStream * out)
 
     *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
     *out << "                              covered by BLAST hits in a query path (0.3 to" << endl;
-    *out << "                              1.0, default: ";
+    *out << "                              1.0 or off, default: ";
     if (g_settings->minQueryCoveredByHitsOn)
         *out << QString::number(g_settings->minQueryCoveredByHits) + ")" << endl;
     else
         *out << "off)" << endl;
 
     *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
-    *out << "                              path (0.0 to 1.0, default: ";
+    *out << "                              path (0.0 to 1.0 or off, default: ";
     if (g_settings->minMeanHitIdentityOn)
         *out << QString::number(g_settings->minMeanHitIdentity) + ")" << endl;
     else
         *out << "off)" << endl;
 
     *out << "          --maxevprod <sci>   Maximum e-value product for all BLAST hits in a" << endl;
-    *out << "                              query path, (1e-999 to 9.9e1, default: ";
+    *out << "                              query path, (1e-999 to 9.9e1 or off, default:" << endl;
+    *out << "                              ";
     if (g_settings->maxEValueProductOn)
         *out << g_settings->maxEValueProduct.asString(true) + ")" << endl;
     else
@@ -200,7 +201,7 @@ void printSettingsUsage(QTextStream * out)
 
     *out << "          --minpatlen <float> Minimum allowed relative path length as compared" << endl;
     *out << "                              to the query." << endl;
-    *out << "                              (0 to 10000, default: ";
+    *out << "                              (0 to 10000 or off, default: ";
     if (g_settings->minLengthPercentageOn)
         *out << QString::number(g_settings->minLengthPercentage) + ")" << endl;
     else
@@ -208,7 +209,7 @@ void printSettingsUsage(QTextStream * out)
 
     *out << "          --maxpatlen <float> Maximum allowed relative path length as compared" << endl;
     *out << "                              to the query." << endl;
-    *out << "                              (0 to 10000, default: ";
+    *out << "                              (0 to 10000 or off, default: ";
     if (g_settings->maxLengthPercentageOn)
         *out << QString::number(g_settings->maxLengthPercentage) + ")" << endl;
     else
@@ -216,7 +217,7 @@ void printSettingsUsage(QTextStream * out)
 
     *out << "          --minlendis <int>   Minimum allowed length discrepancy (in bases)" << endl;
     *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (-1000000 to 1000000, default: ";
+    *out << "                              (-1000000 to 1000000 or off, default: ";
     if (g_settings->minLengthBaseDiscrepancyOn)
         *out << QString::number(g_settings->minLengthBaseDiscrepancy) + ")" << endl;
     else
@@ -224,7 +225,7 @@ void printSettingsUsage(QTextStream * out)
 
     *out << "          --maxlendis <int>   Maximum allowed length discrepancy (in bases)" << endl;
     *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (-1000000 to 1000000, default: ";
+    *out << "                              (-1000000 to 1000000 or off, default: ";
     if (g_settings->maxLengthBaseDiscrepancyOn)
         *out << QString::number(g_settings->maxLengthBaseDiscrepancy) + ")" << endl;
     else

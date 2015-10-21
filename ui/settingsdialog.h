@@ -53,6 +53,7 @@ private slots:
     void colourSliderChanged();
     void colourSpinBoxChanged();
     void checkBoxesChanged();
+    void lengthDiscrepancySpinBoxChanged();
 
 public slots:
     void accept();
