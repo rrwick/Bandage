@@ -429,6 +429,21 @@ void SettingsDialog::accept()
 {
     if (ui->lowReadDepthValueSpinBox->value() > ui->highReadDepthValueSpinBox->value())
         QMessageBox::warning(this, "Read depth value error", "The low read depth value cannot be greater than the high read depth value.");
+
+    else if (ui->minLengthPercentageCheckBox->isChecked() &&
+             ui->maxLengthPercentageCheckBox->isChecked() &&
+             ui->minLengthPercentageSpinBox->value() > ui->maxLengthPercentageSpinBox->value())
+        QMessageBox::warning(this, "BLAST query path length value error", "In the 'BLAST query paths' section, the minimum "
+                                                                          "path length value cannot be larger than "
+                                                                           "the maximum path length value.");
+
+    else if (ui->minLengthBaseDiscrepancyCheckBox->isChecked() &&
+             ui->maxLengthBaseDiscrepancyCheckBox->isChecked() &&
+             ui->minLengthBaseDiscrepancySpinBox->value() > ui->maxLengthBaseDiscrepancySpinBox->value())
+        QMessageBox::warning(this, "BLAST query length discrepancy value error", "In the 'BLAST query paths' section, the minimum "
+                                                                                 "length discrepancy value cannot be larger than "
+                                                                                 "the maximum length discrepancy value.");
+
     else
         QDialog::accept();
 }
