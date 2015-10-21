@@ -110,7 +110,8 @@ int bandageQueryPaths(QStringList arguments)
 
     QDateTime startTime = QDateTime::currentDateTime();
 
-    out << endl << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Loading graph...        ";
+    out << endl << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Loading graph...        " << flush;
+
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
         return 1;
@@ -122,7 +123,7 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
 
-    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Running BLAST search... ";
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Running BLAST search... " << flush;
     QString blastError = g_blastSearch->doAutoBlastSearch();
     if (blastError != "")
     {
@@ -130,7 +131,7 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
     out << "done" << endl;
-    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Saving results...       ";
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Saving results...       " << flush;
 
     //Create the table file.
     tableFile.open(QIODevice::WriteOnly | QIODevice::Text);
