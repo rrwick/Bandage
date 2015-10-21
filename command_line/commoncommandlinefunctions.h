@@ -24,6 +24,7 @@
 #include <QColor>
 #include <QTextStream>
 #include "../program/scinot.h"
+#include <QDateTime>
 
 bool checkForHelp(QStringList arguments);
 bool checkForHelpAll(QStringList arguments);
@@ -72,6 +73,8 @@ QString getColourName(QColor colour);
 
 bool createBlastTempDirectory();
 void deleteBlastTempDirectory();
+
+QString getElapsedTime(QDateTime start, QDateTime end);
 
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

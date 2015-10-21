@@ -21,6 +21,7 @@
 #include "../program/settings.h"
 #include "../graph/assemblygraph.h"
 #include "../blast/blastsearch.h"
+#include <QDateTime>
 
 int bandageQueryPaths(QStringList arguments)
 {
@@ -107,7 +108,9 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
 
-    out << endl << "Loading graph...        ";
+    QDateTime startTime = QDateTime::currentDateTime();
+
+    out << endl << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Loading graph...        ";
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
         return 1;
@@ -119,7 +122,7 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
 
-    out << "Running BLAST search... ";
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Running BLAST search... ";
     QString blastError = g_blastSearch->doAutoBlastSearch();
     if (blastError != "")
     {
@@ -127,7 +130,7 @@ int bandageQueryPaths(QStringList arguments)
         return 1;
     }
     out << "done" << endl;
-    out << "Saving results...       ";
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Saving results...       ";
 
     //Create the table file.
     tableFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -245,15 +248,17 @@ int bandageQueryPaths(QStringList arguments)
 
     out << "done" << endl;
 
-    out << endl << "Results: " + tableFilename << endl;
+    out << endl << "Results:      " + tableFilename << endl;
     if (pathFasta)
-        out << "         " + pathFastaFilename << endl;
+        out << "              " + pathFastaFilename << endl;
     if (hitsFasta)
-        out << "         " + hitsFastaFilename << endl;
+        out << "              " + hitsFastaFilename << endl;
 
-    out << endl << "Summary: Total BLAST queries:      " << g_blastSearch->m_blastQueries.getQueryCount() << endl;
-    out << "         Queries with found paths: " << g_blastSearch->m_blastQueries.getQueryCountWithAtLeastOnePath() << endl;
-    out << "         Total query paths:        " << g_blastSearch->m_blastQueries.getQueryPathCount() << endl;
+    out << endl << "Summary: Total BLAST queries:           " << g_blastSearch->m_blastQueries.getQueryCount() << endl;
+    out << "         Queries with found paths:      " << g_blastSearch->m_blastQueries.getQueryCountWithAtLeastOnePath() << endl;
+    out << "         Total query paths:             " << g_blastSearch->m_blastQueries.getQueryPathCount() << endl;
+
+    out << endl << "Elapsed time: " << getElapsedTime(startTime, QDateTime::currentDateTime()) << endl;
 
     deleteBlastTempDirectory();
     return 0;

@@ -1377,3 +1377,23 @@ void deleteBlastTempDirectory()
             QDir(g_blastSearch->m_tempDirectory).dirName().contains("bandage_temp"))
         QDir(g_blastSearch->m_tempDirectory).removeRecursively();
 }
+
+
+
+QString getElapsedTime(QDateTime start, QDateTime end)
+{
+    int msecElapsed = start.msecsTo(end);
+    int secElapsed = msecElapsed / 1000;
+    msecElapsed = msecElapsed % 1000;
+    int minElapsed = secElapsed / 60;
+    secElapsed = secElapsed % 60;
+    int hoursElapsed = minElapsed / 60;
+    minElapsed = minElapsed % 60;
+
+    QString msecString = QString("%1").arg(msecElapsed, 2, 10, QChar('0'));
+    QString secString = QString("%1").arg(secElapsed, 2, 10, QChar('0'));
+    QString minString = QString("%1").arg(minElapsed, 2, 10, QChar('0'));
+    QString hourString = QString("%1").arg(hoursElapsed, 2, 10, QChar('0'));
+
+    return hourString + ":" + minString + ":" + secString + "." + msecString;
+}
