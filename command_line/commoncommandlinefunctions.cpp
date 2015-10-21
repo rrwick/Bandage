@@ -259,17 +259,6 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForFloat("--maxdepth", arguments, 0.0, 1000000.0, false);
     if (error.length() > 0) return error;
 
-    //Make sure that the min read depth is less than or equal to the max read
-    //depth.
-    double minReadDepth = g_settings->minReadDepthRange;
-    double maxReadDepth = g_settings->maxReadDepthRange;
-    if (isOptionPresent("--mindepth", &argumentsCopy))
-        minReadDepth = getFloatOption("--mindepth", &argumentsCopy);
-    if (isOptionPresent("--maxdepth", &argumentsCopy))
-        maxReadDepth = getFloatOption("--maxdepth", &argumentsCopy);
-    if (minReadDepth > maxReadDepth)
-        return "the maximum read depth must be greater than or equal to the minimum read depth";
-
     if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND)
         return "The --query option can only be used with Bandage load and Bandage image";
 
@@ -380,6 +369,81 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (error.length() > 0) return error;
     error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0, false);
     if (error.length() > 0) return error;
+
+    //Make sure that the min read depth is less than or equal to the max read
+    //depth.
+    double minReadDepth = g_settings->minReadDepthRange;
+    double maxReadDepth = g_settings->maxReadDepthRange;
+    if (isOptionPresent("--mindepth", &argumentsCopy))
+        minReadDepth = getFloatOption("--mindepth", &argumentsCopy);
+    if (isOptionPresent("--maxdepth", &argumentsCopy))
+        maxReadDepth = getFloatOption("--maxdepth", &argumentsCopy);
+    if (minReadDepth > maxReadDepth)
+        return "the maximum read depth must be greater than or equal to the minimum read depth.";
+
+    //Make sure that the min path length is less than or equal to the max path
+    //length.
+    bool minLengthPercentageOn = g_settings->minLengthPercentageOn;
+    bool maxLengthPercentageOn = g_settings->maxLengthPercentageOn;
+    double minLengthPercentage = g_settings->minLengthPercentage;
+    double maxLengthPercentage = g_settings->maxLengthPercentage;
+    if (isOptionPresent("--minpatlen", &argumentsCopy))
+    {
+        QString optionString = getStringOption("--minpatlen", &argumentsCopy);
+        if (optionString.toLower() == "off")
+            minLengthPercentageOn = false;
+        else
+        {
+            minLengthPercentageOn = true;
+            minLengthPercentage = getFloatOption("--minpatlen", &argumentsCopy);
+        }
+    }
+    if (isOptionPresent("--maxpatlen", &argumentsCopy))
+    {
+        QString optionString = getStringOption("--maxpatlen", &argumentsCopy);
+        if (optionString.toLower() == "off")
+            maxLengthPercentageOn = false;
+        else
+        {
+            maxLengthPercentageOn = true;
+            maxLengthPercentage = getFloatOption("--maxpatlen", &argumentsCopy);
+        }
+    }
+    if (minLengthPercentageOn && maxLengthPercentageOn &&
+            minLengthPercentage > maxLengthPercentage)
+        return "the maximum BLAST query path length discrepancy must be greater than or equal to the minimum length discrepancy.";
+
+    //Make sure that the min length discrepancy is less than or equal to the max
+    //length discrepancy.
+    bool minLengthBaseDiscrepancyOn = g_settings->minLengthBaseDiscrepancyOn;
+    bool maxLengthBaseDiscrepancyOn = g_settings->maxLengthBaseDiscrepancyOn;
+    int minLengthBaseDiscrepancy = g_settings->minLengthBaseDiscrepancy;
+    int maxLengthBaseDiscrepancy = g_settings->maxLengthBaseDiscrepancy;
+    if (isOptionPresent("--minlendis", &argumentsCopy))
+    {
+        QString optionString = getStringOption("--minlendis", &argumentsCopy);
+        if (optionString.toLower() == "off")
+            minLengthBaseDiscrepancyOn = false;
+        else
+        {
+            minLengthBaseDiscrepancyOn = true;
+            minLengthBaseDiscrepancy = getIntOption("--minlendis", &argumentsCopy);
+        }
+    }
+    if (isOptionPresent("--maxlendis", &argumentsCopy))
+    {
+        QString optionString = getStringOption("--maxlendis", &argumentsCopy);
+        if (optionString.toLower() == "off")
+            g_settings->maxLengthBaseDiscrepancyOn = false;
+        else
+        {
+            maxLengthBaseDiscrepancyOn = true;
+            maxLengthBaseDiscrepancy = getIntOption("--maxlendis", &argumentsCopy);
+        }
+    }
+    if (minLengthBaseDiscrepancyOn && maxLengthBaseDiscrepancyOn &&
+            minLengthBaseDiscrepancy > maxLengthBaseDiscrepancy)
+        return "the maximum BLAST query path length discrepancy must be greater than or equal to the minimum length discrepancy.";
 
     bool blastScope = isOptionAndValuePresent("--scope", "aroundblast", &argumentsCopy);
     bool queryFile = isOptionPresent("--query", &argumentsCopy);
