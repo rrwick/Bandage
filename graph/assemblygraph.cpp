@@ -860,6 +860,8 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
     for (size_t i = 0; i < names.size(); ++i)
     {
+        QApplication::processEvents();
+
         QString name = names[i];
         QString sequence = sequences[i];
 
@@ -971,6 +973,55 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 }
 
 
+
+void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
+{
+    m_graphFileType = PLAIN_FASTA;
+
+    std::vector<QString> names;
+    std::vector<QString> sequences;
+    readFastaFile(fullFileName, &names, &sequences);
+
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        QApplication::processEvents();
+
+        QString name = names[i];
+        QByteArray sequence = sequences[i].toLocal8Bit();
+
+        //We only use the part of the name up to the first space.
+        QStringList nameParts = name.split(" ");
+        if (nameParts.size() > 0)
+            name = nameParts[0];
+
+        name = cleanNodeName(name);
+        name = getUniqueNodeName(name) + "+";
+
+        if (name.length() < 1)
+            throw "load error";
+
+        DeBruijnNode * node = new DeBruijnNode(name, 1.0, sequence);
+        m_deBruijnGraphNodes.insert(name, node);
+        makeReverseComplementNodeIfNecessary(node);
+    }
+    pointEachNodeToItsReverseComplement();
+}
+
+
+
+//This function adjusts a node name to make sure it is valid for use in Bandage.
+QString AssemblyGraph::cleanNodeName(QString name)
+{
+    //Replace whitespace with underscores
+    name = name.replace(QRegExp("\\s"), "_");
+
+    //Remove any commas.
+    name = name.replace(",", "");
+
+    return name;
+}
+
+
 GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
 {
     if (checkFileIsLastGraph(fullFileName))
@@ -981,6 +1032,8 @@ GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
         return GFA;
     if (checkFileIsTrinityFasta(fullFileName))
         return TRINITY;
+    if (checkFileIsFasta(fullFileName))
+        return PLAIN_FASTA;
     return UNKNOWN_FILE_TYPE;
 }
 
@@ -994,9 +1047,15 @@ bool AssemblyGraph::checkFileIsLastGraph(QString fullFileName)
 //Cursory look to see if file appears to be a FASTG file.
 bool AssemblyGraph::checkFileIsFastG(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, ">NODE") ||
-            checkFirstLineOfFile(fullFileName, ">EDGE");
+    return checkFirstLineOfFile(fullFileName, "^>(NODE|EDGE).*;");
 }
+
+//Cursory look to see if file appears to be a FASTA file.
+bool AssemblyGraph::checkFileIsFasta(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "^>");
+}
+
 
 //Cursory look to see if file appears to be a GFA file.
 bool AssemblyGraph::checkFileIsGfa(QString fullFileName)
@@ -1199,6 +1258,8 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
             buildDeBruijnGraphFromGfa(filename);
         if (graphFileType == TRINITY)
             buildDeBruijnGraphFromTrinityFasta(filename);
+        if (graphFileType == PLAIN_FASTA)
+            buildDeBruijnGraphFromPlainFasta(filename);
     }
 
     catch (...)

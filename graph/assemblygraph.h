@@ -83,12 +83,14 @@ public:
     void buildDeBruijnGraphFromGfa(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
+    void buildDeBruijnGraphFromPlainFasta(QString fullFileName);
     void recalculateAllReadDepthsRelativeToDrawnMean();
     void recalculateAllNodeWidths();
 
     GraphFileType getGraphFileTypeFromFile(QString fullFileName);
     bool checkFileIsLastGraph(QString fullFileName);
     bool checkFileIsFastG(QString fullFileName);
+    bool checkFileIsFasta(QString fullFileName);
     bool checkFileIsGfa(QString fullFileName);
     bool checkFileIsTrinityFasta(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
@@ -177,6 +179,7 @@ private:
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node,
                                         bool reverseComplement,
                                         MyGraphicsScene * scene);
+    QString cleanNodeName(QString name);
 
 signals:
     void setMergeTotalCount(int totalCount);

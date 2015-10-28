@@ -307,7 +307,7 @@ void MainWindow::loadGraph(QString fullFileName)
     QString selectedFilter = "Any supported graph (*)";
     if (fullFileName == "")
         fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_memory->rememberedPath,
-                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta)",
+                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta);;Plain FASTA (*.fasta)",
                                                     &selectedFilter);
 
     if (fullFileName != "") //User did not hit cancel
@@ -323,6 +323,8 @@ void MainWindow::loadGraph(QString fullFileName)
             selectedFileType = GFA;
         else if (selectedFilter == "Trinity.fasta (*.fasta)")
             selectedFileType = TRINITY;
+        else if (selectedFilter == "Plain FASTA (*.fasta)")
+            selectedFileType = PLAIN_FASTA;
 
         if (selectedFileType == ANY_FILE_TYPE)
         {
@@ -377,6 +379,8 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
             g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName);
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);
+        else if (graphFileType == PLAIN_FASTA)
+            g_assemblyGraph->buildDeBruijnGraphFromPlainFasta(fullFileName);
 
         setUiState(GRAPH_LOADED);
         setWindowTitle("Bandage - " + fullFileName);
@@ -2065,6 +2069,7 @@ QString MainWindow::convertGraphFileTypeToString(GraphFileType graphFileType)
     case FASTG: graphFileTypeString = "FASTG"; break;
     case GFA: graphFileTypeString = "GFA"; break;
     case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
+    case PLAIN_FASTA: graphFileTypeString = "FASTA"; break;
     case ANY_FILE_TYPE: graphFileTypeString = "any"; break;
     case UNKNOWN_FILE_TYPE: graphFileTypeString = "unknown"; break;
     }
