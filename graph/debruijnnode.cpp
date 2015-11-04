@@ -28,11 +28,15 @@
 #include <set>
 #include <QApplication>
 
-DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence) :
+
+//The length parameter is optional.  If it is set, then the node will use that
+//for its length.  If not set, it will just use the sequence length.
+DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length) :
     m_name(name),
     m_readDepth(readDepth),
     m_readDepthRelativeToMeanDrawnReadDepth(1.0),
     m_sequence(sequence),
+    m_length(sequence.length()),
     m_contiguityStatus(NOT_CONTIGUOUS),
     m_reverseComplement(0),
     m_ogdfNode(0),
@@ -43,6 +47,8 @@ DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence) 
     m_customColour(QColor(190, 190, 190)),
     m_csvData()
 {
+    if (length > 0)
+        m_length = length;
 }
 
 

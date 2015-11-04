@@ -35,7 +35,7 @@ class DeBruijnNode
 {
 public:
     //CREATORS
-    DeBruijnNode(QString name, double readDepth, QByteArray sequence);
+    DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length = 0);
     ~DeBruijnNode();
 
     //ACCESSORS
@@ -45,7 +45,7 @@ public:
     double getReadDepth() const {return m_readDepth;}
     double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
     QByteArray getSequence() const {return m_sequence;}
-    int getLength() const {return m_sequence.length();}
+    int getLength() const {return m_length;}
     QByteArray getFullSequence() const;
     int getFullLength() const;
     QByteArray getFasta() const;
@@ -118,6 +118,7 @@ private:
     double m_readDepth;
     double m_readDepthRelativeToMeanDrawnReadDepth;
     QByteArray m_sequence;
+    int m_length;
     ContiguityStatus m_contiguityStatus;
     DeBruijnNode * m_reverseComplement;
     OgdfNode * m_ogdfNode;

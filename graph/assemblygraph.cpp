@@ -558,7 +558,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 //We try to load 'RC' (read count), 'FC' (fragment count) or
                 //'KC' (k-mer count)in that order of preference.
                 double nodeReadDepth = 0.0;
-                QString kc, rc, fc;
+                QString kc, rc, fc, ln;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
@@ -570,6 +570,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                         rc = part.right(part.length() - 5);
                     if (part.left(3) == "FC:")
                         fc = part.right(part.length() - 5);
+                    if (part.left(3) == "LN:")
+                        ln = part.right(part.length() - 5);
                 }
                 if (!rc.isEmpty())
                     nodeReadDepth = rc.toDouble();
@@ -578,10 +580,16 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 else if (!kc.isEmpty())
                     nodeReadDepth = kc.toDouble();
 
+                int length;
+                if (!ln.isEmpty())
+                    length = ln.toInt();
+                else
+                    length = sequence.length();
+
                 //Since the value stored in the GFA file is really a read count,
                 //we need to divide by the sequence length to get the depth.
-                if (sequence.length() > 0)
-                    nodeReadDepth /= sequence.length();
+                if (length > 0)
+                    nodeReadDepth /= double(length);
 
                 //We check to see if the node ended in a "+" or "-".
                 //If so, we assume that is giving the orientation and leave it.
@@ -591,7 +599,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 if (lastChar != "+" && lastChar != "-")
                     nodeName += "+";
 
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
