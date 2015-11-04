@@ -340,7 +340,7 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 {
     QByteArray gfaSegmentLine = "S\t";
     gfaSegmentLine += getNameWithoutSign() + "\t";
-    gfaSegmentLine += getFullSequence() + "\t";
+    gfaSegmentLine += getSequenceForGfa() + "\t";
     gfaSegmentLine += "LN:i:" + QString::number(getFullLength()) + "\t";
     gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * getLength() + 0.5));
 
@@ -349,12 +349,15 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 }
 
 
-//This function gets the node's sequence.  The full parameter only has an effect
-//for Velvet LastGraph files where the sequences are shifted from their reverse
-//complement.  If full is true and the graph is from Velvet, this function will
-//extend the sequence using either the reverse complement or upstream nodes.
-QByteArray DeBruijnNode::getFullSequence() const
+//This function gets the node's sequence for a GFA file.  It has two main
+//differences from getSequence:
+//  -If the graph is from Velvet, it will extend the node sequences
+//  -If the sequence is missing, it will just give "*"
+QByteArray DeBruijnNode::getSequenceForGfa() const
 {
+    if (sequenceIsMissing())
+        return QByteArray("*");
+
     if (g_assemblyGraph->m_graphFileType != LAST_GRAPH)
         return getSequence();
 
