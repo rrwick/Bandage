@@ -593,11 +593,18 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 else if (!kc.isEmpty())
                     nodeReadDepth = kc.toDouble();
 
-                int length;
-                if (!ln.isEmpty())
-                    length = ln.toInt();
-                else
-                    length = sequence.length();
+                int length = sequence.length();
+
+                //GFA can use * to indicate that the sequence is not in the
+                //file.  In this case, try to use the LN tag for length.  If
+                //that's not available, use a length of 0.
+                if (sequence == "*" || sequence == "")
+                {
+                    if (!ln.isEmpty())
+                        length = ln.toInt();
+                    else
+                        length = 0;
+                }
 
                 //Since the value stored in the GFA file is really a read count,
                 //we need to divide by the sequence length to get the depth.

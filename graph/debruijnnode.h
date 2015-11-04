@@ -44,7 +44,7 @@ public:
     QString getSign() const {if (m_name.length() > 0) return m_name.right(1); else return "+";}
     double getReadDepth() const {return m_readDepth;}
     double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
-    QByteArray getSequence() const {return m_sequence;}
+    QByteArray getSequence() const;
     int getLength() const {return m_length;}
     QByteArray getFullSequence() const;
     int getFullLength() const;
@@ -86,6 +86,7 @@ public:
     QStringList getAllCsvData() const {return m_csvData;}
     QString getCsvLine(int i) const {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
     bool isInReadDepthRange(double min, double max) const;
+    bool sequenceIsMissing() const;
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}

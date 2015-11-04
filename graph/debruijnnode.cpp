@@ -646,3 +646,20 @@ bool DeBruijnNode::isInReadDepthRange(double min, double max) const
 {
     return m_readDepth >= min && m_readDepth <= max;
 }
+
+
+bool DeBruijnNode::sequenceIsMissing() const
+{
+    return m_sequence == "*" || (m_sequence == "" && m_length > 0);
+}
+
+
+QByteArray DeBruijnNode::getSequence() const
+{
+    if (!sequenceIsMissing())
+        return m_sequence;
+
+    //If the sequence is missing, return a string of Ns equal to the sequence
+    //length.
+    return QByteArray(m_length, 'N');
+}
