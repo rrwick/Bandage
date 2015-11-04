@@ -250,6 +250,12 @@ double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
 
 double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
 {
+    if (nodes.size() == 0)
+        return 0.0;
+
+    if (nodes.size() == 1)
+        return nodes[0]->getReadDepth();
+
     int nodeCount = 0;
     long double readDepthSum = 0.0;
     long long totalLength = 0;
@@ -262,10 +268,17 @@ double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
         readDepthSum += node->getLength() * node->getReadDepth();
     }
 
+    //If the total length is zero, that means all nodes have a length of zero.
+    //In this case, just return the average node read depth.
     if (totalLength == 0)
-        return 0.0;
-    else
-        return readDepthSum / totalLength;
+    {
+        long double readDepthSum = 0.0;
+        for (size_t i = 0; i < nodes.size(); ++i)
+            readDepthSum += nodes[i]->getReadDepth();
+        return readDepthSum / nodes.size();
+    }
+
+    return readDepthSum / totalLength;
 }
 
 
