@@ -65,6 +65,7 @@
 #include "../program/memory.h"
 #include "changenodenamedialog.h"
 #include "changenodereaddepthdialog.h"
+#include <limits>
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),

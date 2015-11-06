@@ -20,6 +20,7 @@
 
 #include "blastquery.h"
 #include "../graph/debruijnnode.h"
+#include <limits>
 
 BlastQueryPath::BlastQueryPath(Path path, BlastQuery * query) :
     m_path(path), m_query(query)

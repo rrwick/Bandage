@@ -35,6 +35,7 @@
 #include "../program/memory.h"
 #include "path.h"
 #include "../ui/myprogressdialog.h"
+#include <limits>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)

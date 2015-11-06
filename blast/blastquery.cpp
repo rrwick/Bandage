@@ -20,6 +20,7 @@
 #include "../program/settings.h"
 #include "../graph/path.h"
 #include "../graph/debruijnnode.h"
+#include <limits>
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
     m_name(name), m_sequence(sequence), m_searchedFor(false), m_shown(true)

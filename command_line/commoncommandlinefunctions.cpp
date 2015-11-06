@@ -24,6 +24,7 @@
 #include <QCoreApplication>
 #include "../program/memory.h"
 #include <QStringList>
+#include <limits>
 
 
 void printSettingsUsage(QTextStream * out)
