@@ -14,9 +14,11 @@ Bandage help is also built into the program. Throughout the UI, you will find th
 
 ## Building from source
 
-Compiled 64-bit binaries for Linux, OS X and Windows are available in the GitHub <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">'Releases' section</a> and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
+Compiled 64-bit binaries for Ubuntu Linux, OS X and Windows are available in the GitHub <a href="https://github.com/rrwick/Bandage/releases/" target="_blank">'Releases' section</a> and from the <a href="http://rrwick.github.io/Bandage/" target="_blank">Bandage website</a>.
 
-### <img src="http://rrwick.github.io/Bandage/images/OS/linux.png" alt="" width="34" height="40" align="middle"> Linux
+If the compiled binaries do not work for you, the instructions below should help you build Bandage on most common OSs.  If you are having difficulties building Bandage for your OS, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
+
+### <img src="http://rrwick.github.io/Bandage/images/OS/ubuntu.png" alt="" width="34" height="40" align="middle"> Ubuntu Linux
 
 The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04:
 
@@ -37,6 +39,10 @@ The following instructions successfully build Bandage on a fresh installation of
 11. Optionally, copy the program into /usr/local/bin: `sudo make install`. The Bandage build directory can then be deleted.
 12. Optionally, delete the OGDF directory.
 
+### <img src="http://rrwick.github.io/Bandage/images/OS/linux.png" alt="" width="34" height="40" align="middle"> Other Linux distributions
+
+If your Linux distribution is sufficiently similar to Ubuntu (e.g. Linux Mint), I recommend trying the Ubuntu build instructions above.  Otherwise, try the 'Using Qt Creator' instructions below.
+
 ### <img src="http://rrwick.github.io/Bandage/images/OS/apple.png" alt="" width="34" height="40" align="middle"> Mac
 
 If you download and run the Mac binary, you may receive a warning stating that Bandage 'can't be opened because it is from an unidentified developer.'  Right click on the file and select 'Open' to override this warning.
@@ -46,7 +52,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 1. Install Xcode, along with the Xcode Command Line Tools.
 2. Install Qt 5
   * For OS X 10.8 and later this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>. Install the Qt 5 package with this command: `brew install qt5`
-  * For OS X 10.7 (or if the Homebrew install fails), it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>. The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
+  * For OS X 10.7 (or if the Homebrew install fails), it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>. The disk space required can be reduced by unticking the iOS and Android options in the Qt installer.
 3. Prepare the OGDF library:
   1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/doku.php/tech:versions" target="_blank">www.ogdf.net</a> and unzip.
   2. In the OGDF directory, edit the makeMakefile.config file. In the 'VERSIONS' section, add `-DOGDF_MEMORY_MALLOC_TS` to both the debug and release lines so they look like this:
@@ -67,9 +73,31 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 10. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
 11. Optionally, delete the OGDF directory.
 
-### <img src="http://rrwick.github.io/Bandage/images/OS/windows.png" alt="" width="34" height="40" align="middle"> Windows
+### <img src="http://rrwick.github.io/Bandage/images/OS/qt.png" alt="" width="34" height="40" align="middle"> Using Qt Creator
 
-Building Bandage in Windows is more challenging than in Linux or OS X, but it can be done. If you would like to, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
+For Windows and some Linux distributions, the easiest way to build Bandage from source is by using Qt Creator, the Qt IDE.  I successfully used this procedure has been used on Windows and on CentOS 6.7.  It should also work for Ubuntu Linux and OS X.
+
+1. Set up a compiler.
+  * For Windows, I recommend installing Visual Studio 2013 (a.k.a. Visual Studio 12.0) which has the MSVC2013 compiler.
+  * For CentOS, this can be done quickly using the yum package manager: `yum install gcc-c++`
+2. Install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>. The disk space required can be reduced by unticking the iOS and Android options in the Qt installer.
+3. Prepare the OGDF library:
+  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/doku.php/tech:versions" target="_blank">www.ogdf.net</a> and unzip.
+  2. In the OGDF directory, edit the makeMakefile.config file. In the 'VERSIONS' section, add `-DOGDF_MEMORY_MALLOC_TS` to both the debug and release lines so they look like this:
+    * `debug = -g3 -O0 -DOGDF_DEBUG -DOGDF_MEMORY_MALLOC_TS`
+    * `release = -O2 -DOGDF_MEMORY_MALLOC_TS`
+  3. Open a terminal in the OGDF directory.
+  4. Create the Makefile: `./makeMakefile.sh`
+  5. Compile the library: `make`
+4. Download the Bandage code from GitHub:
+  * Either clone using: `git clone https://github.com/rrwick/Bandage.git`
+  * Or download from here: <a href="https://github.com/rrwick/Bandage/archive/master.zip" target="_blank">https://github.com/rrwick/Bandage/archive/master.zip</a>
+5. Ensure that the Bandage directory and the OGDF directory are stored in the same parent directory.
+6. Open the Qt Creator program and load the `Bandage.pro` file which is in the Bandage directory.  Since this is the first time the project has been loaded, it will ask you to configure the project.  The defaults should be okay, so click 'Configure Project'.
+7. Change the build configuration to release by clicking where it says 'Debug' in the bottom left area of Qt Creator and select 'Release'.
+8. Build and run Bandage by clicking the green arrow in the bottom left area of Qt Creator.  Bandage should open when the build has finished.
+9. You will find the executable file in a new folder that begins with 'build-Bandage-Desktop'.
+
 
 ## History
 
