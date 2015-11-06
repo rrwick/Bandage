@@ -75,7 +75,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
 
 ### <img src="http://rrwick.github.io/Bandage/images/OS/qt.png" alt="" width="34" height="40" align="middle"> Using Qt Creator
 
-For Windows and some Linux distributions, the easiest way to build Bandage from source is by using Qt Creator, the Qt IDE.  I successfully used this procedure has been used on Windows and on CentOS 6.7.
+For Windows and some Linux distributions, the easiest way to build Bandage from source is by using Qt Creator, the Qt IDE.  I successfully used this procedure has been used on Windows and on CentOS 6.7.  It should also work for Ubuntu Linux and OS X.
 
 1. Set up a compiler.
   * For Windows, I recommend installing Visual Studio 2013 (a.k.a. Visual Studio 12.0) which has the MSVC2013 compiler.
