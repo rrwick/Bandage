@@ -23,7 +23,7 @@ The following instructions successfully build Bandage on a fresh installation of
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
 2. Install prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev`
 3. Prepare the OGDF library:
-  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
+  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/doku.php/tech:versions" target="_blank">www.ogdf.net</a> and unzip.
   2. Open a terminal in the OGDF directory.
   3. Create the Makefile: `./makeMakefile.sh`
   4. Compile the library: `make`
@@ -48,7 +48,7 @@ The following instructions successfully build Bandage on OS X 10.7 (Lion), 10.8 
   * For OS X 10.8 and later this is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>. Install the Qt 5 package with this command: `brew install qt5`
   * For OS X 10.7 (or if the Homebrew install fails), it will be necessary to instead download and install the Qt SDK: <a href="http://www.qt.io/download-open-source/" target="_blank">www.qt.io/download-open-source</a>. The disk space required can be greatly reduced by unticking the iOS and Android options in the Qt installer.
 3. Prepare the OGDF library:
-  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/" target="_blank">www.ogdf.net</a> and unzip.
+  1. Download the OGDF code (2012.07 Sakura release) from <a href="http://www.ogdf.net/doku.php/tech:versions" target="_blank">www.ogdf.net</a> and unzip.
   2. In the OGDF directory, edit the makeMakefile.config file. In the 'VERSIONS' section, add `-DOGDF_MEMORY_MALLOC_TS` to both the debug and release lines so they look like this:
     * `debug = -g3 -O0 -DOGDF_DEBUG -DOGDF_MEMORY_MALLOC_TS`
     * `release = -O2 -DOGDF_MEMORY_MALLOC_TS`
