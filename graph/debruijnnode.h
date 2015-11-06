@@ -90,7 +90,7 @@ public:
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}
-    void appendToSequence(QByteArray additionalSeq) {m_sequence.append(additionalSeq);}
+    void appendToSequence(QByteArray additionalSeq) {m_sequence.append(additionalSeq); m_length = m_sequence.length();}
     void upgradeContiguityStatus(ContiguityStatus newStatus);
     void resetContiguityStatus() {m_contiguityStatus = NOT_CONTIGUOUS;}
     void setReverseComplement(DeBruijnNode * rc) {m_reverseComplement = rc;}
