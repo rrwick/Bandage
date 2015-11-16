@@ -25,6 +25,8 @@
 #include "assemblygraph.h"
 #include <QStringList>
 #include <QApplication>
+#include <limits>
+
 
 
 //These will try to produce a path using the given nodes.
