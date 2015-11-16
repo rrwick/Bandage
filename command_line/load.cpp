@@ -19,7 +19,7 @@
 #include "load.h"
 #include "commoncommandlinefunctions.h"
 
-int bandageLoad(QApplication * a, QStringList arguments)
+int bandageLoad(QCoreApplication * a, QStringList arguments)
 {
     QTextStream out(stdout);
     QTextStream err(stderr);

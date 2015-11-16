@@ -57,46 +57,59 @@ void printUsage(QTextStream * out, bool all)
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.7.1");
+    QStringList arguments = getArgumentList(argc, argv);
 
-    QTextStream out(stdout);
-    QTextStream err(stderr);
+    QString first;
+    if (arguments.size() > 0)
+        first = arguments[0];
 
     //Create the important global objects.
     g_settings.reset(new Settings());
     g_memory.reset(new Memory());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
-    g_graphicsView = new MyGraphicsView();
 
-    QStringList arguments = QCoreApplication::arguments();
-    arguments.pop_front();
-
-    if (checkForVersion(arguments))
+    //Create the application.  If the user is running regular Bandage or Bandage
+    //load, then we need to make a GUI application (QApplication).  Otherwise,
+    //we make a command line application (QCoreApplication).
+    QCoreApplication * a;
+    if (first == "" || first.toLower() == "load")
     {
-        out << "Version: " << QApplication::applicationVersion() << endl;
-        return 0;
+        a = new QApplication(argc, argv);
+        g_graphicsView = new MyGraphicsView();
     }
+    else
+        a = new QCoreApplication(argc, argv);
+
+    QCoreApplication::setApplicationName("Bandage");
+    QCoreApplication::setApplicationVersion("0.7.1");
+
+    QTextStream out(stdout);
+    QTextStream err(stderr);
+
 
     //If the first argument was a recognised command, move to that command's function.
     if (arguments.size() > 0)
     {
-        QString first = arguments.at(0);
-        if (first == "load")
+        if (checkForVersion(arguments))
+        {
+            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            return 0;
+        }
+
+        if (first.toLower() == "load")
         {
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_LOAD;
-            return bandageLoad(&a, arguments);
+            return bandageLoad(a, arguments);
         }
-        else if (first == "image")
+        else if (first.toLower() == "image")
         {
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_IMAGE;
             return bandageImage(arguments);
         }
-        else if (first == "querypaths")
+        else if (first.toLower() == "querypaths")
         {
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_QUERY_PATHS;
@@ -107,25 +120,25 @@ int main(int argc, char *argv[])
 //            arguments.pop_front();
 //            return bandageContiguous(arguments);
 //        }
-    }
 
-    //Since a recognised command was not seen, we now check to see if the user
-    //was looking for help information.
-    if (checkForHelp(arguments))
-    {
-        out << "" << endl;
-        out << "Program: Bandage" << endl;
-        out << "Version: " << QApplication::applicationVersion() << endl;
-        printUsage(&out, false);
-        return 0;
-    }
-    if (checkForHelpAll(arguments))
-    {
-        out << "" << endl;
-        out << "Program: Bandage" << endl;
-        out << "Version: " << QApplication::applicationVersion() << endl;
-        printUsage(&out, true);
-        return 0;
+        //Since a recognised command was not seen, we now check to see if the user
+        //was looking for help information.
+        else if (checkForHelp(arguments))
+        {
+            out << "" << endl;
+            out << "Program: Bandage" << endl;
+            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            printUsage(&out, false);
+            return 0;
+        }
+        else if (checkForHelpAll(arguments))
+        {
+            out << "" << endl;
+            out << "Program: Bandage" << endl;
+            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            printUsage(&out, true);
+            return 0;
+        }
     }
 
     //If the code got here, we assume the user is simply launching Bandage,
@@ -145,5 +158,5 @@ int main(int argc, char *argv[])
     parseSettings(arguments);
     MainWindow w;
     w.show();
-    return a.exec();
+    return a->exec();
 }

@@ -21,10 +21,13 @@
 
 #include "../program/globals.h"
 #include <QString>
+#include <QStringList>
 #include <QColor>
 #include <QTextStream>
 #include "../program/scinot.h"
 #include <QDateTime>
+
+QStringList getArgumentList(int argc, char *argv[]);
 
 bool checkForHelp(QStringList arguments);
 bool checkForHelpAll(QStringList arguments);

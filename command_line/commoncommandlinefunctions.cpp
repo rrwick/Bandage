@@ -23,8 +23,20 @@
 #include "../blast/blastsearch.h"
 #include <QCoreApplication>
 #include "../program/memory.h"
-#include <QStringList>
 #include <limits>
+
+
+QStringList getArgumentList(int argc, char *argv[])
+{
+    QStringList arguments;
+    for (int i = 1; i < argc; ++i)
+    {
+        QString argument = argv[i];
+        arguments.push_back(argument);
+    }
+    return arguments;
+}
+
 
 
 void printSettingsUsage(QTextStream * out)
