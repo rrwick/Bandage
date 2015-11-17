@@ -62,27 +62,21 @@ int main(int argc, char *argv[])
     QString first;
     if (arguments.size() > 0)
         first = arguments[0];
+    //Create the application.
+    bool guiNeeded = first == "" || first.toLower() == "load";
+    if (!guiNeeded)
+        qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("minimal"));
+    QApplication * a = new QApplication(argc, argv);
 
     //Create the important global objects.
     g_settings.reset(new Settings());
     g_memory.reset(new Memory());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
+    g_graphicsView = new MyGraphicsView();
 
-    //Create the application.  If the user is running regular Bandage or Bandage
-    //load, then we need to make a GUI application (QApplication).  Otherwise,
-    //we make a command line application (QCoreApplication).
-    QCoreApplication * a;
-    if (first == "" || first.toLower() == "load")
-    {
-        a = new QApplication(argc, argv);
-        g_graphicsView = new MyGraphicsView();
-    }
-    else
-        a = new QCoreApplication(argc, argv);
-
-    QCoreApplication::setApplicationName("Bandage");
-    QCoreApplication::setApplicationVersion("0.7.1");
+    QApplication::setApplicationName("Bandage");
+    QApplication::setApplicationVersion("0.7.1");
 
     QTextStream out(stdout);
     QTextStream err(stderr);
@@ -93,7 +87,7 @@ int main(int argc, char *argv[])
     {
         if (checkForVersion(arguments))
         {
-            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion() << endl;
             return 0;
         }
 
@@ -127,7 +121,7 @@ int main(int argc, char *argv[])
         {
             out << "" << endl;
             out << "Program: Bandage" << endl;
-            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion() << endl;
             printUsage(&out, false);
             return 0;
         }
@@ -135,7 +129,7 @@ int main(int argc, char *argv[])
         {
             out << "" << endl;
             out << "Program: Bandage" << endl;
-            out << "Version: " << QCoreApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion() << endl;
             printUsage(&out, true);
             return 0;
         }

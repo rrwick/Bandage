@@ -21,7 +21,7 @@
 #include "../program/settings.h"
 #include <QDir>
 #include "../blast/blastsearch.h"
-#include <QCoreApplication>
+#include <QApplication>
 #include "../program/memory.h"
 #include <limits>
 
@@ -1374,7 +1374,7 @@ bool createBlastTempDirectory()
 {
     //Running from the command line, it makes more sense to put the temp
     //directory in the current directory.
-    g_blastSearch->m_tempDirectory = "bandage_temp-" + QString::number(QCoreApplication::applicationPid()) + "/";
+    g_blastSearch->m_tempDirectory = "bandage_temp-" + QString::number(QApplication::applicationPid()) + "/";
 
     if (!QDir().mkdir(g_blastSearch->m_tempDirectory))
         return false;
