@@ -170,5 +170,13 @@ win32:RC_FILE = images/myapp.rc
 macx:ICON = images/application.icns
 macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
+
+# Each target platform needs the native platform as well as Qt's minimal
+# platform.
+win32: QTPLUGIN.platforms += qwindows qminimal
+unix:!macx: QTPLUGIN.platforms += qxcb qminimal
+macx: QTPLUGIN.platforms += qcocoa qminimal
+
+
 RESOURCES += \
     images/images.qrc
