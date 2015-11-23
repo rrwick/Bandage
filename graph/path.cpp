@@ -234,9 +234,9 @@ void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
     if (nodes.isEmpty())
         return;
 
-    //Loop through the nodes, trying to add them to the Path.  If node can be
-    //added, then we fail and make an empty Path.  If one can be added, we quit
-    //the loop and try again with the remaining nodes.
+    //Loop through the nodes, trying to add them to the Path.  If a node can't
+    //be added, then we fail and make an empty Path.  If one can be added, we
+    //quit the loop and try again with the remaining nodes.
     while (nodes.size() > 0)
     {
         bool addSuccess = false;
@@ -289,6 +289,13 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
         m_nodes.push_back(newNode);
         m_startLocation = GraphLocation::startOfNode(newNode);
         m_endLocation = GraphLocation::endOfNode(newNode);
+
+        //If there is an edge connecting the node to itself, then add that too
+        //to make a circular path.
+        DeBruijnEdge * selfLoopingEdge = newNode->getSelfLoopingEdge();
+        if (selfLoopingEdge != 0)
+            m_edges.push_back(selfLoopingEdge);
+
         return true;
     }
 

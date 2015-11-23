@@ -666,3 +666,19 @@ QByteArray DeBruijnNode::getSequence() const
     //length.
     return QByteArray(m_length, 'N');
 }
+
+
+
+//If the node has an edge which leads to itself (creating a loop), this function
+//will return it.  Otherwise, it returns 0.
+DeBruijnEdge * DeBruijnNode::getSelfLoopingEdge() const
+{
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        if (edge->getStartingNode() == this && edge->getEndingNode() == this)
+            return edge;
+    }
+
+    return 0;
+}

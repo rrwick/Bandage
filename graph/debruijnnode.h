@@ -87,6 +87,7 @@ public:
     QString getCsvLine(int i) const {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
     bool isInReadDepthRange(double min, double max) const;
     bool sequenceIsMissing() const;
+    DeBruijnEdge *getSelfLoopingEdge() const;
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}
