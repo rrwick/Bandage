@@ -61,8 +61,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent * event)
     //If the user drags the right mouse button while holding control,
     //the view rotates.
     bool rightButtonDown = event->buttons() & Qt::RightButton;
-    if (event->modifiers() == Qt::CTRL &&
-            rightButtonDown)
+    if (event->modifiers() == Qt::CTRL && rightButtonDown)
     {
         QPointF viewCentre(width() / 2.0, height() / 2.0);
         double angle = angleBetweenTwoLines(viewCentre, m_previousPos, viewCentre, event->pos());
@@ -72,9 +71,13 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent * event)
         m_rotation += angle;
 
         m_previousPos = event->pos();
+
+        g_settings->nodeDragging = NO_DRAGGING;
     }
     else
+    {
         QGraphicsView::mouseMoveEvent(event);
+    }
 }
 
 

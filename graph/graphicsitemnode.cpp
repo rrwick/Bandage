@@ -553,11 +553,15 @@ void GraphicsItemNode::shiftPoints(QPointF difference)
 {
     prepareGeometryChange();
 
-    if (isSelected()) //Move all pieces for selected nodes
+    if (g_settings->nodeDragging == NO_DRAGGING)
+        return;
+
+    else if (isSelected()) //Move all pieces for selected nodes
     {
         for (size_t i = 0; i < m_linePoints.size(); ++i)
             m_linePoints[i] += difference;
     }
+
     else if (g_settings->nodeDragging == ONE_PIECE)
         m_linePoints[m_grabIndex] += difference;
 
