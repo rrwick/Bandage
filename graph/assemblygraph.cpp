@@ -894,15 +894,17 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QString name = names[i];
         QString sequence = sequences[i];
 
-        //The header can come in a couple of different formats:
+        //The header can come in a few different formats:
         // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
+        // TRINITY_DN31_c1_g1_i1 len=301 path=[279:0-300] [-1, 279, -2]
         // GG1|c0_g1_i1 len=302 path=[1:0-301]
         // comp0_c0_seq1 len=286 path=[6:0-285]
         // c0_g1_i1 len=363 path=[119:0-185 43:186-244 43:245-303 43:304-362]
 
         //The node names will begin with a string that contains everything
         //up to the component number (e.g. "c0"), in the same format as it is
-        //in the Trinity.fasta file.
+        //in the Trinity.fasta file.  If the node name begins with "TRINITY_DN"
+        //or "TRINITY_GG", "TR" or "GG", then that will be trimmed off.
 
         if (name.length() < 4)
             throw "load error";
@@ -914,6 +916,10 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
             throw "load error";
 
         QString component = name.left(componentEndIndex);
+        if (component.startsWith("TRINITY_DN") || component.startsWith("TRINITY_GG"))
+            component = component.remove(0, 10);
+        else if (component.startsWith("TR") || component.startsWith("GG"))
+            component = component.remove(0, 2);
 
         if (component.length() < 2)
             throw "load error";
