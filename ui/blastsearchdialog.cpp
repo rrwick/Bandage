@@ -529,8 +529,7 @@ void BlastSearchDialog::clearSelectedQueries()
     g_blastSearch->clearSomeQueries(queriesToRemove);
 
     fillQueriesTable();
-    if (g_blastSearch->m_allHits.size() > 0)
-        fillHitsTable();
+    fillHitsTable();
     emit blastChanged();
 }
 
