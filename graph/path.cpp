@@ -242,7 +242,7 @@ void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
         bool addSuccess = false;
         for (int i = 0; i < nodes.size(); ++i)
         {
-            addSuccess = addNode(nodes.at(i), strandSpecific);
+            addSuccess = addNode(nodes.at(i), strandSpecific, true);
             if (addSuccess)
             {
                 nodes.removeAt(i);
@@ -281,7 +281,7 @@ void Path::buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
 //to add the node on one of the path's ends.
 //It can, however, add a node that connects the end to both ends,
 //making a circular Path.
-bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
+bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific, bool makeCircularIfPossible)
 {
     //If the Path is empty, then this function always succeeds.
     if (m_nodes.isEmpty())
@@ -290,11 +290,14 @@ bool Path::addNode(DeBruijnNode * newNode, bool strandSpecific)
         m_startLocation = GraphLocation::startOfNode(newNode);
         m_endLocation = GraphLocation::endOfNode(newNode);
 
-        //If there is an edge connecting the node to itself, then add that too
-        //to make a circular path.
-        DeBruijnEdge * selfLoopingEdge = newNode->getSelfLoopingEdge();
-        if (selfLoopingEdge != 0)
-            m_edges.push_back(selfLoopingEdge);
+        if (makeCircularIfPossible)
+        {
+            //If there is an edge connecting the node to itself, then add that
+            //too to make a circular path.
+            DeBruijnEdge * selfLoopingEdge = newNode->getSelfLoopingEdge();
+            if (selfLoopingEdge != 0)
+                m_edges.push_back(selfLoopingEdge);
+        }
 
         return true;
     }
@@ -658,7 +661,7 @@ QList<Path> Path::getAllPossiblePaths(GraphLocation startLocation,
     QList<Path> unfinishedPaths;
 
     Path startPath;
-    startPath.addNode(startLocation.getNode(), true);
+    startPath.addNode(startLocation.getNode(), true, false);
     startPath.m_startLocation = startLocation;
     startPath.m_endLocation = GraphLocation::endOfNode(startLocation.getNode());
     unfinishedPaths.push_back(startPath);

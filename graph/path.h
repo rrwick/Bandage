@@ -73,7 +73,7 @@ public:
     bool operator==(Path const &other) const;
 
     //MODIFERS
-    bool addNode(DeBruijnNode * newNode, bool strandSpecific);
+    bool addNode(DeBruijnNode * newNode, bool strandSpecific, bool makeCircularIfPossible);
     void extendPathToIncludeEntirityOfNodes();
 
     //STATIC
