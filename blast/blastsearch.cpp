@@ -106,7 +106,8 @@ void BlastSearch::buildHitsFromBlastOutput()
             continue;
         if (g_settings->blastQueryCoverageFilterOn)
         {
-            if (100.0 * hit->getQueryCoverageFraction() <= g_settings->blastQueryCoverageFilterValue)
+            double hitCoveragePercentage = 100.0 * hit->getQueryCoverageFraction();
+            if (hitCoveragePercentage < g_settings->blastQueryCoverageFilterValue)
                 continue;
         }
         if (g_settings->blastIdentityFilterOn &&
