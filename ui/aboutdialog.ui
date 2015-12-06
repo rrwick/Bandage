@@ -83,13 +83,6 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QLabel" name="titleLabel">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
          <property name="text">
           <string>Bandage</string>
          </property>
@@ -149,12 +142,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Bandage is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-Bandage is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details:
-http://www.gnu.org/licenses/gpl.txt</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bandage is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Bandage is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;See the GNU General Public License for more details:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.txt&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.gnu.org/licenses/gpl.txt&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

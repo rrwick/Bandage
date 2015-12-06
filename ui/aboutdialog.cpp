@@ -26,6 +26,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //Make the word 'Bandage' a larger font size.
+    QFont font;
+    font.setPointSize(font.pointSize() * 2);
+    ui->titleLabel->setFont(font);
+
     QString versionCopyrightText = "<html><head/><body><p>Version: " + QApplication::applicationVersion() + "</p><p>Copyright 2015 Ryan Wick</p><p><a href=\"http://rrwick.github.io/Bandage/\"><span style=\" text-decoration: underline; color:#0000ff;\">http://rrwick.github.io/Bandage/</span></a></p></body></html>";
     ui->versionCopyrightLabel->setText(versionCopyrightText);
 
