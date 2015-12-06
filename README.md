@@ -101,6 +101,8 @@ For Windows and some Linux distributions, the easiest way to build Bandage from 
 
 ## History
 
+v0.7.1 - bug fixes
+
 v0.7.0 - graph editing capabilities
 
 v0.6.4 - improvements to BLAST and main GUI
