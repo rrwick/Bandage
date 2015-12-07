@@ -124,8 +124,8 @@ void BandageTests::loadTrinity()
     QCOMPARE(int(g_assemblyGraph->m_deBruijnGraphEdges.size()), 1056);
 
     //Check the length of a couple nodes.
-    DeBruijnNode * node10241 = g_assemblyGraph->m_deBruijnGraphNodes["TR4|c4_10241+"];
-    DeBruijnNode * node3901 = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3901-"];
+    DeBruijnNode * node10241 = g_assemblyGraph->m_deBruijnGraphNodes["4|c4_10241+"];
+    DeBruijnNode * node3901 = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3901-"];
     QCOMPARE(node10241->getLength(), 1186);
     QCOMPARE(node3901->getLength(), 1);
 }
@@ -332,13 +332,13 @@ void BandageTests::loadCsvDataTrinity()
     QStringList columns;
     g_assemblyGraph->loadCSV(getTestDirectory() + "test.Trinity.csv", &columns, &errormsg);
 
-    DeBruijnNode * node3912Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3912+"];
-    DeBruijnNode * node3912Minus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3912-"];
-    DeBruijnNode * node3914Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3914+"];
-    DeBruijnNode * node3915Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3915+"];
-    DeBruijnNode * node3923Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3923+"];
-    DeBruijnNode * node3924Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3924+"];
-    DeBruijnNode * node3940Plus = g_assemblyGraph->m_deBruijnGraphNodes["TR19|c0_3940+"];
+    DeBruijnNode * node3912Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3912+"];
+    DeBruijnNode * node3912Minus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3912-"];
+    DeBruijnNode * node3914Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3914+"];
+    DeBruijnNode * node3915Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3915+"];
+    DeBruijnNode * node3923Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3923+"];
+    DeBruijnNode * node3924Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3924+"];
+    DeBruijnNode * node3940Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3940+"];
 
     QCOMPARE(columns.size(), 1);
 
