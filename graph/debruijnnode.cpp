@@ -682,3 +682,21 @@ DeBruijnEdge * DeBruijnNode::getSelfLoopingEdge() const
 
     return 0;
 }
+
+
+//This function returns either 0, 1 or 2.  A node with connections on both ends
+//(i.e. has both incoming and outgoing edges) returns 0.  A node with no edges
+//returns 2.  A node with either incoming or outgoing edges returns 1.
+int DeBruijnNode::getDeadEndCount() const
+{
+    if (m_edges.size() == 0)
+        return 2;
+
+    std::vector<DeBruijnEdge *> enteringEdges = getEnteringEdges();
+    std::vector<DeBruijnEdge *> leavingEdges = getLeavingEdges();
+
+    if (enteringEdges.size() > 0 && leavingEdges.size() > 0)
+        return 0;
+    else
+        return 1;
+}

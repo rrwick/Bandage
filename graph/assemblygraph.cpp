@@ -406,7 +406,7 @@ void AssemblyGraph::determineGraphInfo()
         g_settings->autoBasePairsPerSegment = 100;
 }
 
-double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index)
+double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index) const
 {
     if (doubleVector->size() == 0)
         return 0.0;
@@ -424,6 +424,28 @@ double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleV
 
     double piece1 = (*doubleVector)[wholePart];
     double piece2 = (*doubleVector)[wholePart+1];
+
+    return piece1 * (1.0 - fractionalPart) + piece2 * fractionalPart;
+}
+
+double AssemblyGraph::getValueUsingFractionalIndex(std::vector<int> * intVector, double index) const
+{
+    if (intVector->size() == 0)
+        return 0.0;
+    if (intVector->size() == 1)
+        return (*intVector)[0];
+
+    int wholePart = floor(index);
+
+    if (wholePart < 0)
+        return (*intVector)[0];
+    if (wholePart >= int(intVector->size()) - 1)
+        return (*intVector)[intVector->size() - 1];
+
+    double fractionalPart = index - wholePart;
+
+    double piece1 = (*intVector)[wholePart];
+    double piece2 = (*intVector)[wholePart+1];
 
     return piece1 * (1.0 - fractionalPart) + piece2 * fractionalPart;
 }
@@ -2821,4 +2843,73 @@ QByteArray AssemblyGraph::addNewlinesToSequence(QByteArray sequence,
     output += "\n";
 
     return output;
+}
+
+
+
+
+//This function returns the number of dead ends in the graph.
+//It looks only at positive nodes, which can have 0, 1 or 2 dead ends each.
+//This value therefore varies between zero and twice the node count (specifically
+//the positive node count).
+int AssemblyGraph::getDeadEndCount() const
+{
+    int deadEndCount = 0;
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+            deadEndCount += node->getDeadEndCount();
+    }
+
+    return deadEndCount;
+}
+
+
+
+void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const
+{
+    if (m_totalLength == 0.0)
+        return;
+
+    std::vector<int> nodeLengths;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+            nodeLengths.push_back(node->getLength());
+    }
+
+    if (nodeLengths.size() == 0)
+        return;
+
+    std::sort(nodeLengths.begin(), nodeLengths.end());
+
+    *shortestNode = nodeLengths.front();
+    *longestNode = nodeLengths.back();
+
+    double firstQuartileIndex = nodeLengths.size() / 4.0;
+    double medianIndex = nodeLengths.size() / 2.0;
+    double thirdQuartileIndex = nodeLengths.size() * 3.0 / 4.0;
+
+    *firstQuartile = getValueUsingFractionalIndex(&nodeLengths, firstQuartileIndex);
+    *median = getValueUsingFractionalIndex(&nodeLengths, medianIndex);
+    *thirdQuartile = getValueUsingFractionalIndex(&nodeLengths, thirdQuartileIndex);
+
+    double halfTotalLength = m_totalLength / 2.0;
+    long long totalSoFar = 0;
+    for (int i = nodeLengths.size() - 1; i >= 0 ; --i)
+    {
+        totalSoFar += nodeLengths[i];
+        if (totalSoFar >= halfTotalLength)
+        {
+            *n50 = nodeLengths[i];
+            break;
+        }
+    }
 }

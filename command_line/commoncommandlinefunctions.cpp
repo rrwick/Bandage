@@ -65,9 +65,9 @@ void printSettingsUsage(QTextStream * out)
     *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
     *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
     *out << "          --mindepth <float>  The minimum allowed read depth for the depthrange" << endl;
-    *out << "                              scopes (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
+    *out << "                              scope (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
     *out << "          --maxdepth <float>  The maximum allowed read depth for the depthrange" << endl;
-    *out << "                              scopes (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
+    *out << "                              scope (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
     *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;

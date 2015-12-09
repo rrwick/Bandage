@@ -79,7 +79,8 @@ SOURCES += \
     ui/changenodenamedialog.cpp \
     ui/changenodereaddepthdialog.cpp \
     ui/querypathsequencecopybutton.cpp \
-    command_line/querypaths.cpp
+    command_line/querypaths.cpp \
+    command_line/info.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -133,7 +134,8 @@ HEADERS  += \
     ui/changenodenamedialog.h \
     ui/changenodereaddepthdialog.h \
     ui/querypathsequencecopybutton.h \
-    command_line/querypaths.h
+    command_line/querypaths.h \
+    command_line/info.h
 
 FORMS    += \
     ui/mainwindow.ui \
