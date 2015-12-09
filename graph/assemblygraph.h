@@ -151,8 +151,7 @@ public:
     void getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const;
 
 private:
-    double getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index) const;
-    double getValueUsingFractionalIndex(std::vector<int> * intVector, double index) const;
+    template<typename T> double getValueUsingFractionalIndex(std::vector<T> * v, double index) const;
     QString convertNormalNumberStringToBandageNodeName(QString number);
     void makeReverseComplementNodeIfNecessary(DeBruijnNode * node);
     void pointEachNodeToItsReverseComplement();

@@ -406,49 +406,29 @@ void AssemblyGraph::determineGraphInfo()
         g_settings->autoBasePairsPerSegment = 100;
 }
 
-double AssemblyGraph::getValueUsingFractionalIndex(std::vector<double> * doubleVector, double index) const
+template<typename T> double AssemblyGraph::getValueUsingFractionalIndex(std::vector<T> * v, double index) const
 {
-    if (doubleVector->size() == 0)
+    if (v->size() == 0)
         return 0.0;
-    if (doubleVector->size() == 1)
-        return (*doubleVector)[0];
+    if (v->size() == 1)
+        return double((*v)[0]);
 
     int wholePart = floor(index);
 
     if (wholePart < 0)
-        return (*doubleVector)[0];
-    if (wholePart >= int(doubleVector->size()) - 1)
-        return (*doubleVector)[doubleVector->size() - 1];
+        return double((*v)[0]);
+    if (wholePart >= int(v->size()) - 1)
+        return double((*v)[v->size() - 1]);
 
     double fractionalPart = index - wholePart;
 
-    double piece1 = (*doubleVector)[wholePart];
-    double piece2 = (*doubleVector)[wholePart+1];
+    double piece1 = double((*v)[wholePart]);
+    double piece2 = double((*v)[wholePart+1]);
 
     return piece1 * (1.0 - fractionalPart) + piece2 * fractionalPart;
 }
 
-double AssemblyGraph::getValueUsingFractionalIndex(std::vector<int> * intVector, double index) const
-{
-    if (intVector->size() == 0)
-        return 0.0;
-    if (intVector->size() == 1)
-        return (*intVector)[0];
 
-    int wholePart = floor(index);
-
-    if (wholePart < 0)
-        return (*intVector)[0];
-    if (wholePart >= int(intVector->size()) - 1)
-        return (*intVector)[intVector->size() - 1];
-
-    double fractionalPart = index - wholePart;
-
-    double piece1 = (*intVector)[wholePart];
-    double piece2 = (*intVector)[wholePart+1];
-
-    return piece1 * (1.0 - fractionalPart) + piece2 * fractionalPart;
-}
 
 void AssemblyGraph::clearGraphInfo()
 {
