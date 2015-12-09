@@ -2850,7 +2850,7 @@ int AssemblyGraph::getDeadEndCount() const
 
 
 
-void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const
+void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, double * firstQuartile, double * median, double * thirdQuartile, int * longestNode) const
 {
     if (m_totalLength == 0.0)
         return;
