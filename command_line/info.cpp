@@ -67,9 +67,9 @@ int bandageInfo(QStringList arguments)
 
     int n50 = 0;
     int shortestNode = 0;
-    double firstQuartile = 0.0;
-    double median = 0.0;
-    double thirdQuartile = 0.0;
+    int firstQuartile = 0;
+    int median = 0;
+    int thirdQuartile = 0;
     int longestNode = 0;
     g_assemblyGraph->getNodeStats(&n50, &shortestNode, &firstQuartile, &median, &thirdQuartile, &longestNode);
 

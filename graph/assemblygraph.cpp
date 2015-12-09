@@ -386,9 +386,9 @@ void AssemblyGraph::determineGraphInfo()
 
     std::sort(nodeReadDepths.begin(), nodeReadDepths.end());
 
-    double firstQuartileIndex = nodeReadDepths.size() / 4.0;
-    double medianIndex = nodeReadDepths.size() / 2.0;
-    double thirdQuartileIndex = nodeReadDepths.size() * 3.0 / 4.0;
+    double firstQuartileIndex = (nodeReadDepths.size() - 1) / 4.0;
+    double medianIndex = (nodeReadDepths.size() - 1) / 2.0;
+    double thirdQuartileIndex = (nodeReadDepths.size() - 1) * 3.0 / 4.0;
 
     m_firstQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, firstQuartileIndex);
     m_medianReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, medianIndex);
@@ -2850,7 +2850,7 @@ int AssemblyGraph::getDeadEndCount() const
 
 
 
-void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, double * firstQuartile, double * median, double * thirdQuartile, int * longestNode) const
+void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const
 {
     if (m_totalLength == 0.0)
         return;
@@ -2873,13 +2873,13 @@ void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, double * firstQu
     *shortestNode = nodeLengths.front();
     *longestNode = nodeLengths.back();
 
-    double firstQuartileIndex = nodeLengths.size() / 4.0;
-    double medianIndex = nodeLengths.size() / 2.0;
-    double thirdQuartileIndex = nodeLengths.size() * 3.0 / 4.0;
+    double firstQuartileIndex = (nodeLengths.size() - 1) / 4.0;
+    double medianIndex = (nodeLengths.size() - 1) / 2.0;
+    double thirdQuartileIndex = (nodeLengths.size() - 1) * 3.0 / 4.0;
 
-    *firstQuartile = getValueUsingFractionalIndex(&nodeLengths, firstQuartileIndex);
-    *median = getValueUsingFractionalIndex(&nodeLengths, medianIndex);
-    *thirdQuartile = getValueUsingFractionalIndex(&nodeLengths, thirdQuartileIndex);
+    *firstQuartile = round(getValueUsingFractionalIndex(&nodeLengths, firstQuartileIndex));
+    *median = round(getValueUsingFractionalIndex(&nodeLengths, medianIndex));
+    *thirdQuartile = round(getValueUsingFractionalIndex(&nodeLengths, thirdQuartileIndex));
 
     double halfTotalLength = m_totalLength / 2.0;
     long long totalSoFar = 0;
