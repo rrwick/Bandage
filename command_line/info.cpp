@@ -84,7 +84,7 @@ int bandageInfo(QStringList arguments)
     out << "Percentage dead ends:     " << percentageDeadEnds << "%\n";
     out << "Connected components:     " << componentCount << "\n";
     out << "Largest component (bp):   " << largestComponentLength << "\n";
-    out << "N50 node (bp):            " << n50 << "\n";
+    out << "N50 (bp):            " << n50 << "\n";
     out << "Shortest node (bp):       " << shortestNode << "\n";
     out << "Lower quartile node (bp): " << firstQuartile << "\n";
     out << "Median node (bp):         " << median << "\n";
@@ -116,8 +116,8 @@ void printInfoUsage(QTextStream * out, bool all)
     *out << "        disconnected from each other." << endl;
     *out << "  * Largest component: The total number of base pairs in the largest connected" << endl;
     *out << "        component." << endl;
-    *out << "  * N50 node: Nodes that are this length or greater will collectively add up to" << endl;
-    *out << "        at least half of the total length." << endl;
+    *out << "  * N50: Nodes that are this length or greater will collectively add up to at" << endl;
+    *out << "        least half of the total length." << endl;
     *out << "  * Shortest node: The length of the shortest node in the graph." << endl;
     *out << "  * Lower quartile node: The median node length for the shorter half of the" << endl;
     *out << "        nodes." << endl;
