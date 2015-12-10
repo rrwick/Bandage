@@ -468,6 +468,12 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (nodesScope && !nodesList)
         return "A list of starting nodes must be given with the --nodes option\nwhen the aroundnodes scope is used.";
 
+    bool readDepthScope = isOptionAndValuePresent("--scope", "depthrange", &argumentsCopy);
+    bool minDepth = isOptionPresent("--mindepth", &argumentsCopy);
+    bool maxDepth = isOptionPresent("--maxdepth", &argumentsCopy);
+    if (readDepthScope && !(minDepth && maxDepth))
+        return "A read depth range must be given with the --mindepth and\n--maxdepth options when the aroundnodes scope is used.";
+
     return checkForExcessArguments(*arguments);
 }
 

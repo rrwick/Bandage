@@ -66,7 +66,7 @@ int bandageReduce(QStringList arguments)
     if (!outputFilename.endsWith(".gfa"))
         outputFilename += ".gfa";
 
-    QString error = checkForInvalidOrExcessSettings(&arguments);
+    QString error = checkForInvalidReduceOptions(arguments);
     if (error.length() > 0)
     {
         err << "Bandage error: " << error << endl;
@@ -79,6 +79,8 @@ int bandageReduce(QStringList arguments)
         err << "Bandage error: could not load " << inputFilename << endl;
         return 1;
     }
+
+    parseSettings(arguments);
 
     bool blastUsed = isOptionPresent("--query", &arguments);
     if (blastUsed)
@@ -138,3 +140,11 @@ void printReduceUsage(QTextStream * out, bool all)
     *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
     *out << endl;
 }
+
+
+
+QString checkForInvalidReduceOptions(QStringList arguments)
+{
+    return checkForInvalidOrExcessSettings(&arguments);
+}
+
