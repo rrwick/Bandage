@@ -2901,6 +2901,9 @@ void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuart
 //This function uses an algorithm adapted from: http://math.hws.edu/eck/cs327_s04/chapter9.pdf
 void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const
 {
+    *componentCount = 0;
+    *largestComponentLength = 0;
+
     QSet<DeBruijnNode *> visitedNodes;
     QList< QList<DeBruijnNode *> > connectedComponents;
     

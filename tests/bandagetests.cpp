@@ -55,6 +55,7 @@ private slots:
     void changeNodeNames();
     void changeNodeReadDepths();
     void blastQueryPaths();
+    void bandageInfo();
 
 
 private:
@@ -1356,6 +1357,56 @@ void BandageTests::blastQueryPaths()
     query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
     QCOMPARE(query6Paths.size(), 1);
     QCOMPARE(query7Paths.size(), 1);
+}
+
+
+void BandageTests::bandageInfo()
+{
+    int n50 = 0;
+    int shortestNode = 0;
+    int firstQuartile = 0;
+    int median = 0;
+    int thirdQuartile = 0;
+    int longestNode = 0;
+    int componentCount = 0;
+    int largestComponentLength = 0;
+
+
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.LastGraph");
+    g_assemblyGraph->getNodeStats(&n50, &shortestNode, &firstQuartile, &median, &thirdQuartile, &longestNode);
+    g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+    QCOMPARE(17, g_assemblyGraph->m_nodeCount);
+    QCOMPARE(16, g_assemblyGraph->m_edgeCount);
+    QCOMPARE(29939, g_assemblyGraph->m_totalLength);
+    QCOMPARE(10, g_assemblyGraph->getDeadEndCount());
+    QCOMPARE(2000, n50);
+    QCOMPARE(59, shortestNode);
+    QCOMPARE(2000, longestNode);
+    QCOMPARE(1, componentCount);
+    QCOMPARE(29939, largestComponentLength);
+
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
+    g_assemblyGraph->getNodeStats(&n50, &shortestNode, &firstQuartile, &median, &thirdQuartile, &longestNode);
+    g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+    QCOMPARE(44, g_assemblyGraph->m_nodeCount);
+    QCOMPARE(59, g_assemblyGraph->m_edgeCount);
+    QCOMPARE(214441, g_assemblyGraph->m_totalLength);
+    QCOMPARE(0, g_assemblyGraph->getDeadEndCount());
+    QCOMPARE(35628, n50);
+    QCOMPARE(78, shortestNode);
+    QCOMPARE(52213, longestNode);
+    QCOMPARE(1, componentCount);
+    QCOMPARE(214441, largestComponentLength);
+
+    createGlobals();
+    g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.Trinity.fasta");
+    g_assemblyGraph->getNodeStats(&n50, &shortestNode, &firstQuartile, &median, &thirdQuartile, &longestNode);
+    g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+    QCOMPARE(149, g_assemblyGraph->getDeadEndCount());
+    QCOMPARE(66, componentCount);
+    QCOMPARE(9398, largestComponentLength);
 }
 
 
