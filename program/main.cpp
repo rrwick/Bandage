@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     g_graphicsView = new MyGraphicsView();
 
     QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.7.1");
+    QApplication::setApplicationVersion("0.7.2");
 
     QTextStream out(stdout);
     QTextStream err(stderr);
