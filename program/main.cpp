@@ -26,6 +26,7 @@
 #include "../command_line/info.h"
 #include "../command_line/image.h"
 #include "../command_line/querypaths.h"
+#include "../command_line/reduce.h"
 #include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
@@ -45,6 +46,7 @@ void printUsage(QTextStream * out, bool all)
     *out << "         info         display information about a graph" << endl;
     *out << "         image        generate an image file of a graph" << endl;
     *out << "         querypaths   output graph paths for BLAST queries" << endl;
+    *out << "         reduce       save a subgraphof a larger graph" << endl;
 //    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
     *out << endl;
     *out << "Options: --help       view this help message" << endl;
@@ -116,6 +118,12 @@ int main(int argc, char *argv[])
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_QUERY_PATHS;
             return bandageQueryPaths(arguments);
+        }
+        else if (first.toLower() == "reduce")
+        {
+            arguments.pop_front();
+            g_memory->commandLineCommand = BANDAGE_REDUCE;
+            return bandageReduce(arguments);
         }
 //        else if (first == "contiguous")
 //        {

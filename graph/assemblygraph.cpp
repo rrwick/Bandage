@@ -2664,10 +2664,13 @@ void AssemblyGraph::saveEntireGraphToFastaOnlyPositiveNodes(QString filename)
     }
 }
 
-void AssemblyGraph::saveEntireGraphToGfa(QString filename)
+bool AssemblyGraph::saveEntireGraphToGfa(QString filename)
 {
     QFile file(filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    bool success = file.open(QIODevice::WriteOnly | QIODevice::Text);
+    if (!success)
+        return false;
+
     QTextStream out(&file);
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -2693,12 +2696,17 @@ void AssemblyGraph::saveEntireGraphToGfa(QString filename)
 
     for (int i = 0; i < edgesToSave.size(); ++i)
         out << edgesToSave[i]->getGfaLinkLine();
+
+    return true;
 }
 
-void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
+bool AssemblyGraph::saveVisibleGraphToGfa(QString filename)
 {
     QFile file(filename);
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    bool success = file.open(QIODevice::WriteOnly | QIODevice::Text);
+    if (!success)
+        return false;
+
     QTextStream out(&file);
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -2706,7 +2714,7 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
     {
         i.next();
         DeBruijnNode * node = i.value();
-        if (node->thisOrReverseComplementHasGraphicsItemNode() && node->isPositiveNode())
+        if (node->thisNodeOrReverseComplementIsDrawn() && node->isPositiveNode())
             out << node->getGfaSegmentLine();
     }
 
@@ -2716,8 +2724,8 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
     {
         j.next();
         DeBruijnEdge * edge = j.value();
-        if (edge->getStartingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
-                edge->getEndingNode()->thisOrReverseComplementHasGraphicsItemNode() &&
+        if (edge->getStartingNode()->thisNodeOrReverseComplementIsDrawn() &&
+                edge->getEndingNode()->thisNodeOrReverseComplementIsDrawn() &&
                 edge->isPositiveEdge())
             edgesToSave.push_back(edge);
     }
@@ -2726,6 +2734,8 @@ void AssemblyGraph::saveVisibleGraphToGfa(QString filename)
 
     for (int i = 0; i < edgesToSave.size(); ++i)
         out << edgesToSave[i]->getGfaLinkLine();
+
+    return true;
 }
 
 

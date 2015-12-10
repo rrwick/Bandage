@@ -80,7 +80,8 @@ SOURCES += \
     ui/changenodereaddepthdialog.cpp \
     ui/querypathsequencecopybutton.cpp \
     command_line/querypaths.cpp \
-    command_line/info.cpp
+    command_line/info.cpp \
+    command_line/reduce.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -135,7 +136,8 @@ HEADERS  += \
     ui/changenodereaddepthdialog.h \
     ui/querypathsequencecopybutton.h \
     command_line/querypaths.h \
-    command_line/info.h
+    command_line/info.h \
+    command_line/reduce.h
 
 FORMS    += \
     ui/mainwindow.ui \

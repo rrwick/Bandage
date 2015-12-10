@@ -66,6 +66,7 @@ public:
     std::vector<DeBruijnNode *> getAllConnectedPositiveNodes() const;
     bool isSpecialNode() const {return m_specialNode;}
     bool isDrawn() const {return m_drawn;}
+    bool thisNodeOrReverseComplementIsDrawn() const {return isDrawn() || getReverseComplement()->isDrawn();}
     bool isNotDrawn() const {return !m_drawn;}
     QColor getCustomColour() const {return m_customColour;}
     QString getCustomLabel() const {return m_customLabel;}

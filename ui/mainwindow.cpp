@@ -2140,7 +2140,9 @@ void MainWindow::saveEntireGraphToGfa()
     if (fullFileName != "") //User did not hit cancel
     {
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-        g_assemblyGraph->saveEntireGraphToGfa(fullFileName);
+        bool success = g_assemblyGraph->saveEntireGraphToGfa(fullFileName);
+        if (!success)
+            QMessageBox::warning(this, "Error saving file", "Bandage was unable to save the graph file.");
     }
 }
 
@@ -2152,7 +2154,9 @@ void MainWindow::saveVisibleGraphToGfa()
     if (fullFileName != "") //User did not hit cancel
     {
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
-        g_assemblyGraph->saveVisibleGraphToGfa(fullFileName);
+        bool success = g_assemblyGraph->saveVisibleGraphToGfa(fullFileName);
+        if (!success)
+            QMessageBox::warning(this, "Error saving file", "Bandage was unable to save the graph file.");
     }
 }
 

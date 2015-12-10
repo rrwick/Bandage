@@ -139,8 +139,8 @@ public:
 
     void saveEntireGraphToFasta(QString filename);
     void saveEntireGraphToFastaOnlyPositiveNodes(QString filename);
-    void saveEntireGraphToGfa(QString filename);
-    void saveVisibleGraphToGfa(QString filename);
+    bool saveEntireGraphToGfa(QString filename);
+    bool saveVisibleGraphToGfa(QString filename);
     void changeNodeName(QString oldName, QString newName);
     NodeNameStatus checkNodeNameValidity(QString nodeName);
     void changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
