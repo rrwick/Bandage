@@ -73,11 +73,17 @@ int bandageInfo(QStringList arguments)
     int longestNode = 0;
     g_assemblyGraph->getNodeStats(&n50, &shortestNode, &firstQuartile, &median, &thirdQuartile, &longestNode);
 
+    int componentCount = 0;
+    int largestComponentLength = 0;
+    g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+
     out << "Node count:               " << nodeCount << "\n";
     out << "Edge count:               " << edgeCount << "\n";
+    out << "Total length (bp):        " << totalLength << "\n";
     out << "Dead ends:                " << deadEnds << "\n";
     out << "Percentage dead ends:     " << percentageDeadEnds << "%\n";
-    out << "Total length (bp):        " << totalLength << "\n";
+    out << "Connected components:     " << componentCount << "\n";
+    out << "Largest component (bp):   " << largestComponentLength << "\n";
     out << "N50 node (bp):            " << n50 << "\n";
     out << "Shortest node (bp):       " << shortestNode << "\n";
     out << "Lower quartile node (bp): " << firstQuartile << "\n";

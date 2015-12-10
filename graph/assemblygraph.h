@@ -149,6 +149,7 @@ public:
     static QByteArray addNewlinesToSequence(QByteArray sequence, int interval = 70);
     int getDeadEndCount() const;
     void getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const;
+    void getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const;
 
 private:
     template<typename T> double getValueUsingFractionalIndex(std::vector<T> * v, double index) const;

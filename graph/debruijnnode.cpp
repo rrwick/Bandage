@@ -27,6 +27,7 @@
 #include "assemblygraph.h"
 #include <set>
 #include <QApplication>
+#include <QSet>
 
 
 //The length parameter is optional.  If it is set, then the node will use that
@@ -699,4 +700,31 @@ int DeBruijnNode::getDeadEndCount() const
         return 0;
     else
         return 1;
+}
+
+
+
+
+//This function returns all of the positive nodes that this node (or its
+//reverse complement) are connected to.
+std::vector<DeBruijnNode *> DeBruijnNode::getAllConnectedPositiveNodes() const
+{
+    QSet<DeBruijnNode *> connectedPositiveNodesSet;
+
+    for (size_t i = 0; i < m_edges.size(); ++i)
+    {
+        DeBruijnEdge * edge = m_edges[i];
+        DeBruijnNode * connectedNode = edge->getOtherNode(this);
+        if (connectedNode->isNegativeNode())
+            connectedNode = connectedNode->getReverseComplement();
+
+        connectedPositiveNodesSet.insert(connectedNode);
+    }
+
+    std::vector<DeBruijnNode *> connectedPositiveNodesVector;
+    QSetIterator<DeBruijnNode *> i(connectedPositiveNodesSet);
+    while (i.hasNext())
+        connectedPositiveNodesVector.push_back(i.next());
+
+    return connectedPositiveNodesVector;
 }

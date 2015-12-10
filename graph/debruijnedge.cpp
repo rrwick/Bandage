@@ -35,7 +35,7 @@ DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode)
 
 //This function assumes that the parameter node pointer is one of the two nodes
 //in this edge, and it returns the other one.
-DeBruijnNode * DeBruijnEdge::getOtherNode(DeBruijnNode * node) const
+DeBruijnNode * DeBruijnEdge::getOtherNode(const DeBruijnNode * node) const
 {
     if (node == m_startingNode)
         return m_endingNode;

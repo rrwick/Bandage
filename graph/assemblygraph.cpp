@@ -36,6 +36,8 @@
 #include "path.h"
 #include "../ui/myprogressdialog.h"
 #include <limits>
+#include <QSet>
+#include <QQueue>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
@@ -2891,5 +2893,66 @@ void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuart
             *n50 = nodeLengths[i];
             break;
         }
+    }
+}
+
+
+
+//This function uses an algorithm adapted from: http://math.hws.edu/eck/cs327_s04/chapter9.pdf
+void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const
+{
+    QSet<DeBruijnNode *> visitedNodes;
+    QList< QList<DeBruijnNode *> > connectedComponents;
+    
+    //Loop through all positive nodes.
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * v = i.value();
+        if (v->isNegativeNode())
+            continue;
+        
+        //If the node has not yet been visited, then it must be the start of a new connected component.
+        if (!visitedNodes.contains(v))
+        {
+            QList<DeBruijnNode *> connectedComponent;
+            
+            QQueue<DeBruijnNode *> q;
+            q.enqueue(v);
+            visitedNodes.insert(v);
+
+            while (!q.isEmpty())
+            {
+                DeBruijnNode * w = q.dequeue();
+                connectedComponent.push_back(w);
+
+                std::vector<DeBruijnNode *> connectedNodes = w->getAllConnectedPositiveNodes();
+                for (size_t j = 0; j < connectedNodes.size(); ++j)
+                {
+                    DeBruijnNode * k = connectedNodes[j];
+                    if (!visitedNodes.contains(k))
+                    {
+                        visitedNodes.insert(k);
+                        q.enqueue(k);
+                    }
+                }
+            }
+
+            connectedComponents.push_back(connectedComponent);
+        }  
+    }
+    
+    //Now that the list of connected components is built, we look for the
+    //largest one (as measured by total node length).
+    *componentCount = connectedComponents.size();
+    for (int i = 0; i < *componentCount; ++i)
+    {
+        int componentLength = 0;
+        for (int j = 0; j < connectedComponents[i].size(); ++j)
+            componentLength += connectedComponents[i][j]->getLength();
+
+        if (componentLength > *largestComponentLength)
+            *largestComponentLength = componentLength;
     }
 }

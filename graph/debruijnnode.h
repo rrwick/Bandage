@@ -63,6 +63,7 @@ public:
     std::vector<DeBruijnEdge *> getLeavingEdges() const;
     std::vector<DeBruijnNode *> getDownstreamNodes() const;
     std::vector<DeBruijnNode *> getUpstreamNodes() const;
+    std::vector<DeBruijnNode *> getAllConnectedPositiveNodes() const;
     bool isSpecialNode() const {return m_specialNode;}
     bool isDrawn() const {return m_drawn;}
     bool isNotDrawn() const {return !m_drawn;}

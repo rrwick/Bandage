@@ -39,7 +39,7 @@ public:
     bool isDrawn() const {return m_drawn;}
     int getOverlap() const {return m_overlap;}
     EdgeOverlapType getOverlapType() const {return m_overlapType;}
-    DeBruijnNode * getOtherNode(DeBruijnNode * node) const;
+    DeBruijnNode * getOtherNode(const DeBruijnNode * node) const;
     bool testExactOverlap(int overlap) const;
     void tracePaths(bool forward,
                     int stepsRemaining,
