@@ -46,11 +46,23 @@ int bandageInfo(QStringList arguments)
     }
 
     QString graphFilename = arguments.at(0);
+    arguments.pop_front();
+
     if (!checkIfFileExists(graphFilename))
     {
         err << "Bandage error: " << graphFilename << " does not exist." << endl;
         return 1;
     }
+
+    QString error = checkForInvalidInfoOptions(arguments);
+    if (error.length() > 0)
+    {
+        err << "Bandage error: " << error << endl;
+        return 1;
+    }
+
+    bool csv;
+    parseInfoOptions(arguments, &csv);
 
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
@@ -77,19 +89,39 @@ int bandageInfo(QStringList arguments)
     int largestComponentLength = 0;
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
 
-    out << "Node count:               " << nodeCount << "\n";
-    out << "Edge count:               " << edgeCount << "\n";
-    out << "Total length (bp):        " << totalLength << "\n";
-    out << "Dead ends:                " << deadEnds << "\n";
-    out << "Percentage dead ends:     " << percentageDeadEnds << "%\n";
-    out << "Connected components:     " << componentCount << "\n";
-    out << "Largest component (bp):   " << largestComponentLength << "\n";
-    out << "N50 (bp):            " << n50 << "\n";
-    out << "Shortest node (bp):       " << shortestNode << "\n";
-    out << "Lower quartile node (bp): " << firstQuartile << "\n";
-    out << "Median node (bp):         " << median << "\n";
-    out << "Upper quartile node (bp): " << thirdQuartile << "\n";
-    out << "Longest node (bp):        " << longestNode << "\n";
+    if (csv)
+    {
+        out << graphFilename << ",";
+        out << nodeCount << ",";
+        out << edgeCount << ",";
+        out << totalLength << ",";
+        out << deadEnds << ",";
+        out << percentageDeadEnds << "%,";
+        out << componentCount << ",";
+        out << largestComponentLength << ",";
+        out << n50 << ",";
+        out << shortestNode << ",";
+        out << firstQuartile << ",";
+        out << median << ",";
+        out << thirdQuartile << ",";
+        out << longestNode << "\n";
+    }
+    else
+    {
+        out << "Node count:               " << nodeCount << "\n";
+        out << "Edge count:               " << edgeCount << "\n";
+        out << "Total length (bp):        " << totalLength << "\n";
+        out << "Dead ends:                " << deadEnds << "\n";
+        out << "Percentage dead ends:     " << percentageDeadEnds << "%\n";
+        out << "Connected components:     " << componentCount << "\n";
+        out << "Largest component (bp):   " << largestComponentLength << "\n";
+        out << "N50 (bp):            " << n50 << "\n";
+        out << "Shortest node (bp):       " << shortestNode << "\n";
+        out << "Lower quartile node (bp): " << firstQuartile << "\n";
+        out << "Median node (bp):         " << median << "\n";
+        out << "Upper quartile node (bp): " << thirdQuartile << "\n";
+        out << "Longest node (bp):        " << longestNode << "\n";
+    }
 
     return 0;
 }
@@ -126,9 +158,35 @@ void printInfoUsage(QTextStream * out, bool all)
     *out << "        nodes." << endl;
     *out << "  * Longest node: The length of the longest node in the graph." << endl;
     *out << endl;
-    *out << "Usage:    Bandage info <graphfile>" << endl;
+    *out << "Usage:    Bandage info <graphfile> [options]" << endl;
+    *out << endl;
+    *out << "Positional parameters:" << endl;
+    *out << "          <graphfile>         A graph file of any type supported by Bandage." << endl;
+    *out << endl;
+    *out << "Options:  --csv               Output the information in a single comma-delimited" << endl;
+    *out << "                              line starting with the graph file." << endl;
     *out << endl;
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);
+}
+
+
+
+QString checkForInvalidInfoOptions(QStringList arguments)
+{
+    checkOptionWithoutValue("--csv", &arguments);
+
+    QString error = checkForInvalidOrExcessSettings(&arguments);
+    if (error.length() > 0) return error;
+
+    return checkForInvalidOrExcessSettings(&arguments);
+}
+
+
+
+void parseInfoOptions(QStringList arguments, bool * csv)
+{
+    int csvIndex = arguments.indexOf("--csv");
+    *csv = (csvIndex > -1);
 }

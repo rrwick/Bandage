@@ -269,6 +269,9 @@ int bandageQueryPaths(QStringList arguments)
 void printQueryPathsUsage(QTextStream * out, bool all)
 {
     *out << endl;
+    *out << "Bandage querypaths searches for queries in the graph using BLAST and outputs" << endl;
+    *out << "the results to file." << endl;
+    *out << endl;
     *out << "Usage:    Bandage querypaths <graph> <queries> <output_prefix> [options]" << endl;
     *out << endl;
     *out << "Options:  --pathfasta         put all query path sequences in a multi-FASTA" << endl;

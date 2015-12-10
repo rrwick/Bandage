@@ -200,7 +200,15 @@ int bandageImage(QStringList arguments)
 void printImageUsage(QTextStream * out, bool all)
 {
     *out << endl;
+    *out << "Bandage image will generate an image file of the graph visualisation without" << endl;
+    *out << "opening the GUI." << endl;
+    *out << endl;
     *out << "Usage:    Bandage image <graphfile> <outputfile> [options]" << endl;
+    *out << endl;
+    *out << "Positional parameters:" << endl;
+    *out << "          <graphfile>         A graph file of any type supported by Bandage." << endl;
+    *out << "          <outputfile>        The image file to be created. Must end in 'jpg'," << endl;
+    *out << "                              'png' or 'svg'." << endl;
     *out << endl;
     *out << "Options:  --height <int>      image height (default: 1000)" << endl;
     *out << "          --width <int>       image width (default: not set)" << endl;

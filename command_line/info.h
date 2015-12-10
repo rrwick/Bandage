@@ -26,7 +26,6 @@
 int bandageInfo(QStringList arguments);
 void printInfoUsage(QTextStream * out, bool all);
 QString checkForInvalidInfoOptions(QStringList arguments);
-void parseInfoOptions(QStringList arguments, bool * allQueryPaths,
-                          bool * sequences);
+void parseInfoOptions(QStringList arguments, bool * csv);
 
 #endif // INFO_H
