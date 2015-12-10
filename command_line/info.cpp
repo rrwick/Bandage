@@ -99,8 +99,32 @@ int bandageInfo(QStringList arguments)
 void printInfoUsage(QTextStream * out, bool all)
 {
     *out << endl;
-    *out << "Bandage info takes a graph file as input and outputs some statistics about the" << endl;
-    *out << "graph." << endl;
+    *out << "Bandage info takes a graph file as input and outputs the following statistics" << endl;
+    *out << "about the graph:" << endl;
+    *out << "  * Node count: The number of nodes in the graph. Only positive nodes are" << endl;
+    *out << "        counted (i.e. each complementary pair counts as one)." << endl;
+    *out << "  * Edge count: The number of edges in the graph. Only one edge in each" << endl;
+    *out << "        complementary pair is counted." << endl;
+    *out << "  * Total length: The total number of base pairs in the graph." << endl;
+    *out << "  * Dead ends: The number of instances where an end of a node does not connect" << endl;
+    *out << "        to any other nodes." << endl;
+    *out << "  * Percentage dead ends: The proportion of possible dead ends. The maximum" << endl;
+    *out << "        number of dead ends is twice the number of nodes (occurs when there are" << endl;
+    *out << "        no edges), so this value is the number of dead ends divided by twice the" << endl;
+    *out << "        node count." << endl;
+    *out << "  * Connected components: The number of regions of the graph which are" << endl;
+    *out << "        disconnected from each other." << endl;
+    *out << "  * Largest component: The total number of base pairs in the largest connected" << endl;
+    *out << "        component." << endl;
+    *out << "  * N50 node: Nodes that are this length or greater will collectively add up to" << endl;
+    *out << "        at least half of the total length." << endl;
+    *out << "  * Shortest node: The length of the shortest node in the graph." << endl;
+    *out << "  * Lower quartile node: The median node length for the shorter half of the" << endl;
+    *out << "        nodes." << endl;
+    *out << "  * Median node: The median node length for the graph." << endl;
+    *out << "  * Upper quartile node: The median node length for the longer half of the" << endl;
+    *out << "        nodes." << endl;
+    *out << "  * Longest node: The length of the longest node in the graph." << endl;
     *out << endl;
     *out << "Usage:    Bandage info <graphfile>" << endl;
     *out << endl;
