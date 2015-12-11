@@ -38,6 +38,7 @@
 #include <limits>
 #include <QSet>
 #include <QQueue>
+#include <QList>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
@@ -2968,4 +2969,70 @@ void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componen
         if (componentLength > *largestComponentLength)
             *largestComponentLength = componentLength;
     }
+}
+
+bool compareNodeReadDepth(DeBruijnNode * a, DeBruijnNode * b) {return (a->getReadDepth() < b->getReadDepth());}
+
+
+
+double AssemblyGraph::getMedianReadDepthByBase() const
+{
+    if (m_totalLength == 0)
+        return 0.0;
+
+    //Make a list of all nodes.
+    long long totalLength = 0;
+    QList<DeBruijnNode *> nodeList;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+        {
+            nodeList.push_back(node);
+            totalLength += node->getLength();
+        }
+    }
+
+    //If there is only one node, then its read depth is the median.
+    if (nodeList.size() == 1)
+        return nodeList[0]->getReadDepth();
+
+    //Sort the node list from low to high read depth.
+    std::sort(nodeList.begin(), nodeList.end(), compareNodeReadDepth);
+
+    if (totalLength % 2 == 0) //Even total length
+    {
+        long long medianIndex2 = totalLength / 2;
+        long long medianIndex1 = medianIndex2 - 1;
+        double readDepth1 = findReadDepthAtIndex(&nodeList, medianIndex1);
+        double readDepth2 = findReadDepthAtIndex(&nodeList, medianIndex2);
+        return (readDepth1 + readDepth2) / 2.0;
+    }
+    else //Odd total length
+    {
+        long long medianIndex = (totalLength - 1) / 2;
+        return findReadDepthAtIndex(&nodeList, medianIndex);
+    }
+}
+
+
+
+//This function takes a node list sorted by read depth and a target index (in terms of
+//the whole sequence length).  It returns the read depth at that index.
+double AssemblyGraph::findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const
+{
+    long long lengthSoFar = 0;
+    for (int i = 0; i < nodeList->size(); ++i)
+    {
+        DeBruijnNode * node = (*nodeList)[i];
+
+        lengthSoFar += node->getLength();
+        long long currentIndex = lengthSoFar - 1;
+
+        if (currentIndex >= targetIndex)
+            return node->getReadDepth();
+    }
+    return 0.0;
 }

@@ -150,6 +150,7 @@ public:
     int getDeadEndCount() const;
     void getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const;
     void getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const;
+    double getMedianReadDepthByBase() const;
 
 private:
     template<typename T> double getValueUsingFractionalIndex(std::vector<T> * v, double index) const;
@@ -183,6 +184,7 @@ private:
                                         bool reverseComplement,
                                         MyGraphicsScene * scene);
     QString cleanNodeName(QString name);
+    double findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
 
 signals:
     void setMergeTotalCount(int totalCount);

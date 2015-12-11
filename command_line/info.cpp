@@ -89,6 +89,8 @@ int bandageInfo(QStringList arguments)
     int largestComponentLength = 0;
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
 
+    double medianReadDepthByBase = g_assemblyGraph->getMedianReadDepthByBase();
+
     if (tsv)
     {
         out << graphFilename << "\t";
@@ -104,7 +106,8 @@ int bandageInfo(QStringList arguments)
         out << firstQuartile << "\t";
         out << median << "\t";
         out << thirdQuartile << "\t";
-        out << longestNode << "\n";
+        out << longestNode << "\t";
+        out << medianReadDepthByBase << "\n";
     }
     else
     {
@@ -121,6 +124,7 @@ int bandageInfo(QStringList arguments)
         out << "Median node (bp):         " << median << "\n";
         out << "Upper quartile node (bp): " << thirdQuartile << "\n";
         out << "Longest node (bp):        " << longestNode << "\n";
+        out << "Median read depth:        " << medianReadDepthByBase << "\n";
     }
 
     return 0;
@@ -157,6 +161,7 @@ void printInfoUsage(QTextStream * out, bool all)
     *out << "  * Upper quartile node: The median node length for the longer half of the" << endl;
     *out << "        nodes." << endl;
     *out << "  * Longest node: The length of the longest node in the graph." << endl;
+    *out << "  * Median read depth: The median read depth of the graph, by base." << endl;
     *out << endl;
     *out << "Usage:    Bandage info <graph> [options]" << endl;
     *out << endl;
