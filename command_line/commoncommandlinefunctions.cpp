@@ -55,19 +55,8 @@ void printSettingsUsage(QTextStream * out)
     *out << "          These settings control the graph scope.  If the aroundnodes scope is" << endl;
     *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
     *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
-    *out << "          --scope <scope>     Graph scope, from one of the following options:" << endl;
-    *out << "                              entire, aroundnodes, aroundblast, depthrange" << endl;
-    *out << "                              (default: entire)" << endl;
-    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
-    *out << "                              aroundnodes scope (default: none)" << endl;
-    *out << "          --partial           Use partial node name matching (default: exact" << endl;
-    *out << "                              node name matching)" << endl;
-    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
-    *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
-    *out << "          --mindepth <float>  The minimum allowed read depth for the depthrange" << endl;
-    *out << "                              scope (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
-    *out << "          --maxdepth <float>  The maximum allowed read depth for the depthrange" << endl;
-    *out << "                              scope (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
+    *out << "          ";
+    printGraphScopeOptions(out);
     *out << endl;
     *out << "          Graph layout" << endl;
     *out << "          ---------------------------------------------------------------------" << endl;
@@ -245,6 +234,27 @@ void printSettingsUsage(QTextStream * out)
         *out << "off)" << endl;
 
     *out << endl;
+}
+
+
+
+//This is in a separate function because the command line tool Bandage reduce
+//also displays these.
+void printGraphScopeOptions(QTextStream * out)
+{
+    *out << "--scope <scope>     Graph scope, from one of the following options:" << endl;
+    *out << "                              entire, aroundnodes, aroundblast, depthrange" << endl;
+    *out << "                              (default: entire)" << endl;
+    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
+    *out << "                              aroundnodes scope (default: none)" << endl;
+    *out << "          --partial           Use partial node name matching (default: exact" << endl;
+    *out << "                              node name matching)" << endl;
+    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
+    *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
+    *out << "          --mindepth <float>  The minimum allowed read depth for the depthrange" << endl;
+    *out << "                              scope (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
+    *out << "          --maxdepth <float>  The maximum allowed read depth for the depthrange" << endl;
+    *out << "                              scope (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
 }
 
 

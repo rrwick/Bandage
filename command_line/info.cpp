@@ -158,10 +158,10 @@ void printInfoUsage(QTextStream * out, bool all)
     *out << "        nodes." << endl;
     *out << "  * Longest node: The length of the longest node in the graph." << endl;
     *out << endl;
-    *out << "Usage:    Bandage info <graphfile> [options]" << endl;
+    *out << "Usage:    Bandage info <graph> [options]" << endl;
     *out << endl;
     *out << "Positional parameters:" << endl;
-    *out << "          <graphfile>         A graph file of any type supported by Bandage." << endl;
+    *out << "          <graph>             A graph file of any type supported by Bandage." << endl;
     *out << endl;
     *out << "Options:  --tsv               Output the information in a single tab-delimited" << endl;
     *out << "                              line starting with the graph file." << endl;

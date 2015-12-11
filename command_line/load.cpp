@@ -70,7 +70,13 @@ int bandageLoad(QApplication * a, QStringList arguments)
 void printLoadUsage(QTextStream * out, bool all)
 {
     *out << endl;
+    *out << "Bandage load will open the Bandage GUI and immediately load the specified graph" << endl;
+    *out << "file." << endl;
+    *out << endl;
     *out << "Usage:    Bandage load <graph> [options]" << endl;
+    *out << endl;
+    *out << "Positional parameters:" << endl;
+    *out << "          <graph>             A graph file of any type supported by Bandage." << endl;
     *out << endl;
     *out << "Options:  --draw              draw graph after loading" << endl;
     *out << endl;

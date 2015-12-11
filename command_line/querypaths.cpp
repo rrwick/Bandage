@@ -270,9 +270,16 @@ void printQueryPathsUsage(QTextStream * out, bool all)
 {
     *out << endl;
     *out << "Bandage querypaths searches for queries in the graph using BLAST and outputs" << endl;
-    *out << "the results to file." << endl;
+    *out << "the results to a tab-delimited file." << endl;
     *out << endl;
     *out << "Usage:    Bandage querypaths <graph> <queries> <output_prefix> [options]" << endl;
+    *out << endl;
+    *out << "Positional parameters:" << endl;
+    *out << "          <graph>             A graph file of any type supported by Bandage." << endl;
+    *out << "          <queries>           A FASTA file of one or more BLAST queries." << endl;
+    *out << "          <output_prefix>     The output file prefix.  This will be used to" << endl;
+    *out << "                              create the '.tsv' output file (and possibly FASTA" << endl;
+    *out << "                              files as well, depending on options)." << endl;
     *out << endl;
     *out << "Options:  --pathfasta         put all query path sequences in a multi-FASTA" << endl;
     *out << "                              file, not in the TSV file" << endl;

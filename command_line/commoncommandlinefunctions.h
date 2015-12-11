@@ -79,5 +79,7 @@ void deleteBlastTempDirectory();
 
 QString getElapsedTime(QDateTime start, QDateTime end);
 
+void printGraphScopeOptions(QTextStream * out);
+
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

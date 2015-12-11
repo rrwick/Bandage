@@ -134,6 +134,15 @@ void printReduceUsage(QTextStream * out, bool all)
     *out << endl;
     *out << "Usage:    Bandage reduce <inputgraph> <outputgraph> [options]" << endl;
     *out << endl;
+    *out << "Positional parameters:" << endl;
+    *out << "          <inputgraph>        A graph file of any type supported by Bandage." << endl;
+    *out << "          <outputgraph>       The filename for the GFA graph to be made. If it" << endl;
+    *out << "                              does not end in '.gfa', that extension will be" << endl;
+    *out << "                              added to the filename." << endl;
+    *out << endl;
+    *out << "Options:  ";
+    printGraphScopeOptions(out);
+    *out << endl;
     printCommonHelp(out);
     if (all)
         printSettingsUsage(out);
