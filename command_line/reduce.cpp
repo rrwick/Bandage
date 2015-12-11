@@ -130,20 +130,30 @@ void printReduceUsage(QTextStream * out, bool all)
 {
     *out << endl;
     *out << "Bandage reduce takes an input graph and saves a reduced subgraph using the graph" << endl;
-    *out << "scope options. The saved graph will be in GFA format." << endl;
+    *out << "scope settings. The saved graph will be in GFA format." << endl;
+    *out << endl;
+    *out << "If a graph scope is not specified, then the 'entire' scope will be used, in" << endl;
+    *out << "which case this will simply convert the input graph to GFA format." << endl;
     *out << endl;
     *out << "Usage:    Bandage reduce <inputgraph> <outputgraph> [options]" << endl;
     *out << endl;
     *out << "Positional parameters:" << endl;
-    *out << "          <inputgraph>        A graph file of any type supported by Bandage." << endl;
-    *out << "          <outputgraph>       The filename for the GFA graph to be made. If it" << endl;
+    *out << "          <inputgraph>        A graph file of any type supported by Bandage" << endl;
+    *out << "          <outputgraph>       The filename for the GFA graph to be made (if it" << endl;
     *out << "                              does not end in '.gfa', that extension will be" << endl;
-    *out << "                              added to the filename." << endl;
+    *out << "                              added)" << endl;
     *out << endl;
+
     *out << "Options:  ";
-    printGraphScopeOptions(out);
-    *out << endl;
-    printCommonHelp(out);
+    printCommonHelp(out, false);
+
+    if (!all)
+    {
+        *out << "Settings: ";
+        printGraphScopeOptions(out);
+        *out << endl;
+    }
+
     if (all)
         printSettingsUsage(out);
     *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;

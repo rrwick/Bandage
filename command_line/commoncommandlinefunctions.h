@@ -69,7 +69,7 @@ QString checkForExcessArguments(QStringList arguments);
 
 void parseSettings(QStringList arguments);
 
-void printCommonHelp(QTextStream * out);
+void printCommonHelp(QTextStream * out, bool spacesAtStart = true);
 void printSettingsUsage(QTextStream * out);
 
 QString getColourName(QColor colour);

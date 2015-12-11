@@ -1229,10 +1229,12 @@ QString checkForExcessArguments(QStringList arguments)
 }
 
 
-void printCommonHelp(QTextStream * out)
+void printCommonHelp(QTextStream * out, bool spacesAtStart)
 {
-    *out << "          --help              view this help message" << endl;
-    *out << "          --helpall           view all command line settings" << endl;
+    if (spacesAtStart)
+        *out << "          ";
+    *out << "--help              View this help message" << endl;
+    *out << "          --helpall           View all command line settings" << endl;
     *out << endl;
 }
 

@@ -76,9 +76,9 @@ void printLoadUsage(QTextStream * out, bool all)
     *out << "Usage:    Bandage load <graph> [options]" << endl;
     *out << endl;
     *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage." << endl;
+    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
     *out << endl;
-    *out << "Options:  --draw              draw graph after loading" << endl;
+    *out << "Options:  --draw              Draw graph after loading" << endl;
     *out << endl;
     printCommonHelp(out);
     if (all)

@@ -39,19 +39,19 @@
 void printUsage(QTextStream * out, bool all)
 {
     *out << endl;
-    *out << "Usage:   Bandage <command> [options]" << endl;
+    *out << "Usage:    Bandage <command> [options]" << endl;
     *out << endl;
-    *out << "Command: <blank>      launch Bandage GUI" << endl;
-    *out << "         load         launch Bandage GUI and load a graph file" << endl;
-    *out << "         info         display information about a graph" << endl;
-    *out << "         image        generate an image file of a graph" << endl;
-    *out << "         querypaths   output graph paths for BLAST queries" << endl;
-    *out << "         reduce       save a subgraphof a larger graph" << endl;
-//    *out << "         contiguous   extract all sequences contiguous with a target sequence" << endl;
+    *out << "Commands: <blank>      Launch the Bandage GUI" << endl;
+    *out << "          load         Launch the Bandage GUI and load a graph file" << endl;
+    *out << "          info         Display information about a graph" << endl;
+    *out << "          image        Generate an image file of a graph" << endl;
+    *out << "          querypaths   Output graph paths for BLAST queries" << endl;
+    *out << "          reduce       Save a subgraph of a larger graph" << endl;
+//    *out << "          contiguous   extract all sequences contiguous with a target sequence" << endl;
     *out << endl;
-    *out << "Options: --help       view this help message" << endl;
-    *out << "         --helpall    view all command line settings" << endl;
-    *out << "         --version    view Bandage version number" << endl;
+    *out << "Options:  --help       View this help message" << endl;
+    *out << "          --helpall    View all command line settings" << endl;
+    *out << "          --version    View Bandage version number" << endl;
     *out << endl;
     if (all)
         printSettingsUsage(out);

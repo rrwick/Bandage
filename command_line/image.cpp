@@ -206,12 +206,12 @@ void printImageUsage(QTextStream * out, bool all)
     *out << "Usage:    Bandage image <graph> <outputfile> [options]" << endl;
     *out << endl;
     *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage." << endl;
-    *out << "          <outputfile>        The image file to be created. Must end in '.jpg'," << endl;
-    *out << "                              '.png' or '.svg'." << endl;
+    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
+    *out << "          <outputfile>        The image file to be created (must end in '.jpg'," << endl;
+    *out << "                              '.png' or '.svg')" << endl;
     *out << endl;
-    *out << "Options:  --height <int>      image height (default: 1000)" << endl;
-    *out << "          --width <int>       image width (default: not set)" << endl;
+    *out << "Options:  --height <int>      Image height (default: 1000)" << endl;
+    *out << "          --width <int>       Image width (default: not set)" << endl;
     *out << "                              If only height or width is set, the other will be" << endl;
     *out << "                              determined automatically. If both are set, the" << endl;
     *out << "                              image will be exactly that size." << endl;
