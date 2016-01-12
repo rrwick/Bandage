@@ -1033,12 +1033,26 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         QApplication::processEvents();
 
         QString name = names[i];
+        double readDepth = 1.0;
         QByteArray sequence = sequences[i].toLocal8Bit();
 
-        //We only use the part of the name up to the first space.
-        QStringList nameParts = name.split(" ");
-        if (nameParts.size() > 0)
-            name = nameParts[0];
+        //Check to see if the node name matches the Velvet/SPAdes contig
+        //format.  If so, we can get the read depth and node number.
+        QStringList thisNodeDetails = name.split("_");
+        if (thisNodeDetails.size() >= 6 && thisNodeDetails[2] == "length" && thisNodeDetails[4] == "cov")
+        {
+            name = thisNodeDetails[1];
+            readDepth = thisNodeDetails[5].toDouble();
+        }
+
+        //If it doesn't match, then we will use the sequence name up to the
+        //first space.
+        else
+        {
+            QStringList nameParts = name.split(" ");
+            if (nameParts.size() > 0)
+                name = nameParts[0];
+        }
 
         name = cleanNodeName(name);
         name = getUniqueNodeName(name) + "+";
@@ -1046,7 +1060,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         if (name.length() < 1)
             throw "load error";
 
-        DeBruijnNode * node = new DeBruijnNode(name, 1.0, sequence);
+        DeBruijnNode * node = new DeBruijnNode(name, readDepth, sequence);
         m_deBruijnGraphNodes.insert(name, node);
         makeReverseComplementNodeIfNecessary(node);
     }
