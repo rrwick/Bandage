@@ -501,6 +501,8 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
                 m_deBruijnGraphNodes.insert(posNodeName, node);
                 m_deBruijnGraphNodes.insert(negNodeName, reverseComplementNode);
             }
+
+            //ARC lines contain edges.
             else if (line.startsWith("ARC"))
             {
                 QStringList arcDetails = line.split(QRegExp("\\s+"));
@@ -513,6 +515,10 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
                 createDeBruijnEdge(node1Name, node2Name);
             }
+
+            //NR lines occur after ARC lines, so we can quit looking when we see one.
+            else if (line.startsWith("NR"))
+                break;
         }
         inputFile.close();
 
