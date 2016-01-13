@@ -91,6 +91,8 @@ public:
     bool sequenceIsMissing() const;
     DeBruijnEdge *getSelfLoopingEdge() const;
     int getDeadEndCount() const;
+    int getNumberOfOgdfGraphEdges(double drawnNodeLength) const;
+    double getDrawnNodeLength() const;
 
     //MODIFERS
     void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}

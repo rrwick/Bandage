@@ -115,6 +115,15 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     else
         return; //Ending node or its reverse complement isn't in OGDF
 
+    //If this in an edge connected a single-segment node to itself, then we
+    //don't want to put it in the OGDF graph, because it would be redundant
+    //with the node segment (and created conflict with the node/edge length).
+    if (m_startingNode == m_endingNode)
+    {
+        if (m_startingNode->getNumberOfOgdfGraphEdges(m_startingNode->getDrawnNodeLength()) == 1)
+            return;
+    }
+
     ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
     (*edgeArray)[newEdge] = g_settings->edgeLength;
 }

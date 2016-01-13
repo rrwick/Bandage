@@ -263,7 +263,7 @@ per megabase:</string>
              <double>100.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.050000000000000</double>
+             <double>0.500000000000000</double>
             </property>
            </widget>
           </item>
@@ -317,7 +317,7 @@ per megabase:</string>
              <double>1000.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.050000000000000</double>
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -342,7 +342,7 @@ per megabase:</string>
              <double>50.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.100000000000000</double>
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>

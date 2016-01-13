@@ -105,16 +105,9 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     //Each node in the Velvet sense is made up of multiple nodes in the
     //OGDF sense.  This way, Velvet nodes appear as lines whose length
     //corresponds to the sequence length.
-    double nodeBasePairs = double(getLength());
-    double drawnNodeLength = getNodeLengthPerMegabase() * nodeBasePairs / 1000000.0;
-    if (drawnNodeLength < g_settings->minimumNodeLength)
-        drawnNodeLength = g_settings->minimumNodeLength;
-
-    int numberOfGraphEdges = ceil(drawnNodeLength / g_settings->nodeSegmentLength);
-    if (numberOfGraphEdges == 0)
-        numberOfGraphEdges = 1;
+    double drawnNodeLength = getDrawnNodeLength();
+    int numberOfGraphEdges = getNumberOfOgdfGraphEdges(drawnNodeLength);
     int numberOfGraphNodes = numberOfGraphEdges + 1;
-
     double drawnLengthPerEdge = drawnNodeLength / numberOfGraphEdges;
 
     ogdf::node newNode = 0;
@@ -132,6 +125,24 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
 
         previousNode = newNode;
     }
+}
+
+
+
+double DeBruijnNode::getDrawnNodeLength() const
+{
+    double drawnNodeLength = getNodeLengthPerMegabase() * getLength() / 1000000.0;
+    if (drawnNodeLength < g_settings->minimumNodeLength)
+        drawnNodeLength = g_settings->minimumNodeLength;
+    return drawnNodeLength;
+}
+
+int DeBruijnNode::getNumberOfOgdfGraphEdges(double drawnNodeLength) const
+{
+    int numberOfGraphEdges = ceil(drawnNodeLength / g_settings->nodeSegmentLength);
+    if (numberOfGraphEdges <= 0)
+        numberOfGraphEdges = 1;
+    return numberOfGraphEdges;
 }
 
 

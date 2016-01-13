@@ -154,9 +154,13 @@ void GraphicsItemEdge::setControlPointLocations()
 //to itself where the node graphics item has only one line segment.
 void GraphicsItemEdge::makeSpecialPathConnectingNodeToSelf()
 {
+    double extensionLength = g_settings->edgeLength;
+    m_controlPoint1 = extendLine(m_beforeStartingLocation, m_startingLocation, extensionLength);
+    m_controlPoint2 = extendLine(m_afterEndingLocation, m_endingLocation, extensionLength);
+
     QLineF nodeLine(m_startingLocation, m_endingLocation);
-    QLineF normalLine = nodeLine.normalVector();
-    QPointF perpendicularShift = normalLine.p2() - normalLine.p1();
+    QLineF normalUnitLine = nodeLine.normalVector().unitVector();
+    QPointF perpendicularShift = (normalUnitLine.p2() - normalUnitLine.p1()) * g_settings->edgeLength;
     QPointF nodeMidPoint = (m_startingLocation + m_endingLocation) / 2.0;
 
     QPainterPath path;
