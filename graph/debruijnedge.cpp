@@ -116,7 +116,7 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
         return; //Ending node or its reverse complement isn't in OGDF
 
     ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
-    (*edgeArray)[newEdge] = 1.0;
+    (*edgeArray)[newEdge] = g_settings->edgeLength;
 }
 
 

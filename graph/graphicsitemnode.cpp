@@ -928,7 +928,7 @@ void GraphicsItemNode::shiftPointSideways(bool left)
 
     //Shift by a quarter of the segment length.  This should make
     //nodes one half segment length separated from their complements.
-    double shiftDistance = g_settings->segmentLength / 4.0;
+    double shiftDistance = g_settings->doubleModeNodeSeparation;
 
     for (size_t i = 0; i < linePointsSize; ++i)
     {

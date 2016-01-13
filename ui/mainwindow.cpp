@@ -755,7 +755,7 @@ void MainWindow::layoutGraph()
     m_layoutThread = new QThread;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
-                                                                  g_settings->graphLayoutQuality, g_settings->segmentLength);
+                                                                  g_settings->graphLayoutQuality);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
     connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));

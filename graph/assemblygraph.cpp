@@ -1732,7 +1732,7 @@ void AssemblyGraph::layoutGraph()
 {
     ogdf::FMMMLayout fmmm;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes, m_edgeArray,
-                                                                  g_settings->graphLayoutQuality, g_settings->segmentLength);
+                                                                  g_settings->graphLayoutQuality);
     graphLayoutWorker->layoutGraph();
 }
 

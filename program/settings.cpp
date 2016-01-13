@@ -27,8 +27,11 @@ Settings::Settings()
     autoBasePairsPerSegment = 100;
     manualBasePairsPerSegment = 500;
     meanSegmentsPerNode = 3;
-    segmentLength = 15.0;
     graphLayoutQuality = 2;
+    nodeLengthPerKilobase = 10.0;
+    minimumNodeLength = 1.0;
+    edgeLength = 10.0;
+    doubleModeNodeSeparation = 2.0;
 
     averageNodeWidth = 5.0;
     readDepthEffectOnWidth = 0.5;

@@ -39,8 +39,11 @@ public:
     int autoBasePairsPerSegment;
     int manualBasePairsPerSegment;
     int meanSegmentsPerNode;
-    double segmentLength;
     int graphLayoutQuality;
+    double nodeLengthPerKilobase;
+    double minimumNodeLength;
+    double edgeLength;
+    double doubleModeNodeSeparation;
 
     double averageNodeWidth;
     double readDepthEffectOnWidth;

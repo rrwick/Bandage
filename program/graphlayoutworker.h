@@ -31,13 +31,12 @@ class GraphLayoutWorker : public QObject
 public:
     GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
                       ogdf::EdgeArray<double> * edgeArray,
-                      int graphLayoutQuality, int segmentLength);
+                      int graphLayoutQuality);
 
     ogdf::FMMMLayout * m_fmmm;
     ogdf::GraphAttributes * m_graphAttributes;
     ogdf::EdgeArray<double> * m_edgeArray;
     int m_graphLayoutQuality;
-    int m_segmentLength;
 
 public slots:
     void layoutGraph();

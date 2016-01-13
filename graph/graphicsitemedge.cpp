@@ -78,7 +78,7 @@ void GraphicsItemEdge::calculateAndSetPath()
 
     double edgeDistance = QLineF(m_startingLocation, m_endingLocation).length();
 
-    double extensionLength = g_settings->segmentLength;
+    double extensionLength = g_settings->edgeLength;
     if (extensionLength > edgeDistance / 2.0)
         extensionLength = edgeDistance / 2.0;
 
@@ -172,7 +172,7 @@ void GraphicsItemEdge::makeSpecialPathConnectingNodeToSelf()
 //reverse complement and is displayed in single mode.
 void GraphicsItemEdge::makeSpecialPathConnectingNodeToReverseComplement()
 {
-    double extensionLength = g_settings->segmentLength / 4.0;
+    double extensionLength = g_settings->edgeLength;
     m_controlPoint1 = extendLine(m_beforeStartingLocation, m_startingLocation, extensionLength);
     m_controlPoint2 = extendLine(m_afterEndingLocation, m_endingLocation, extensionLength);
 
