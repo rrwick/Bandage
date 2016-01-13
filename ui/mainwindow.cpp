@@ -23,7 +23,7 @@
 #include <QTextStream>
 #include <QLocale>
 #include <QRegExp>
-#include <ogdf/energybased/FMMMLayout.h>
+#include "../ogdf/energybased/FMMMLayout.h"
 #include <cmath>
 #include "../program/settings.h"
 #include <QClipboard>

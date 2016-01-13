@@ -20,8 +20,8 @@
 #define GRAPHLAYOUTWORKER_H
 
 #include <QObject>
-#include <ogdf/energybased/FMMMLayout.h>
-#include "ogdf/basic/GraphAttributes.h"
+#include "../ogdf/energybased/FMMMLayout.h"
+#include "../ogdf/basic/GraphAttributes.h"
 
 
 class GraphLayoutWorker : public QObject

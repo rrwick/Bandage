@@ -21,7 +21,7 @@
 
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <ogdf/basic/GraphAttributes.h>
+#include "../ogdf/basic/GraphAttributes.h"
 #include <vector>
 #include <QPointF>
 #include <QColor>

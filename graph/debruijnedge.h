@@ -19,7 +19,7 @@
 #ifndef DEBRUIJNEDGE_H
 #define DEBRUIJNEDGE_H
 
-#include <ogdf/basic/Graph.h>
+#include "../ogdf/basic/Graph.h"
 #include "debruijnnode.h"
 
 class GraphicsItemEdge;

@@ -21,7 +21,7 @@
 
 #include <QByteArray>
 #include <vector>
-#include <ogdf/basic/Graph.h>
+#include "../ogdf/basic/Graph.h"
 #include "../program/globals.h"
 #include <QColor>
 #include "../blast/blasthitpart.h"

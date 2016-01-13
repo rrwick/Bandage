@@ -27,7 +27,7 @@
 #include <QMessageBox>
 #include "debruijnedge.h"
 #include "graphicsitemedge.h"
-#include <ogdf/basic/GraphAttributes.h>
+#include "../ogdf/basic/GraphAttributes.h"
 #include <math.h>
 #include <QFontMetrics>
 #include <QSize>

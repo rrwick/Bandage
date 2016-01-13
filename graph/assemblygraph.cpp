@@ -30,7 +30,7 @@
 #include <QApplication>
 #include "../graph/graphicsitemedge.h"
 #include "../blast/blastsearch.h"
-#include <ogdf/energybased/FMMMLayout.h>
+#include "../ogdf/energybased/FMMMLayout.h"
 #include "../program/graphlayoutworker.h"
 #include "../program/memory.h"
 #include "path.h"

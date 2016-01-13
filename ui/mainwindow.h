@@ -28,7 +28,7 @@
 #include <QRectF>
 #include "../program/globals.h"
 #include <QThread>
-#include <ogdf/energybased/FMMMLayout.h>
+#include "../ogdf/energybased/FMMMLayout.h"
 
 class GraphicsViewZoom;
 class MyGraphicsScene;

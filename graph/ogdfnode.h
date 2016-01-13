@@ -20,9 +20,9 @@
 #define OGDFNODE_H
 
 #include <vector>
-#include <ogdf/basic/Graph.h>
+#include "../ogdf/basic/Graph.h"
 #include <QPainterPath>
-#include <ogdf/basic/GraphAttributes.h>
+#include "../ogdf/basic/GraphAttributes.h"
 #include <QPointF>
 
 class OgdfNode
