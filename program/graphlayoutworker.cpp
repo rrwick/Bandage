@@ -20,8 +20,9 @@
 #include <time.h>
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
+                                     ogdf::EdgeArray<double> * edgeArray,
                                      int graphLayoutQuality, int segmentLength) :
-    m_fmmm(fmmm), m_graphAttributes(graphAttributes),
+    m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray),
     m_graphLayoutQuality(graphLayoutQuality), m_segmentLength(segmentLength)
 {
 }
@@ -64,7 +65,7 @@ void GraphLayoutWorker::layoutGraph()
         break;
     }
 
-    m_fmmm->call(*m_graphAttributes);
+    m_fmmm->call(*m_graphAttributes, *m_edgeArray);
 
     emit finishedLayout();
 }

@@ -50,6 +50,7 @@ public:
     QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_deBruijnGraphEdges;
 
     ogdf::Graph * m_ogdfGraph;
+    ogdf::EdgeArray<double> * m_edgeArray;
     ogdf::GraphAttributes * m_graphAttributes;
 
     int m_kmer;

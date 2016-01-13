@@ -96,7 +96,7 @@ bool DeBruijnEdge::isPositiveEdge() const
 }
 
 
-void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph) const
+void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const
 {
     ogdf::node firstEdgeOgdfNode;
     ogdf::node secondEdgeOgdfNode;
@@ -115,7 +115,8 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph) const
     else
         return; //Ending node or its reverse complement isn't in OGDF
 
-    ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
+    ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
+    (*edgeArray)[newEdge] = 1.0;
 }
 
 

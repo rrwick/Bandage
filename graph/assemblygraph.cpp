@@ -44,6 +44,7 @@ AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
 {
     m_ogdfGraph = new ogdf::Graph();
+    m_edgeArray = new ogdf::EdgeArray<double>(*m_ogdfGraph);
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
                                                   ogdf::GraphAttributes::edgeGraphics);
     clearGraphInfo();
@@ -52,6 +53,7 @@ AssemblyGraph::AssemblyGraph() :
 AssemblyGraph::~AssemblyGraph()
 {
     delete m_graphAttributes;
+    delete m_edgeArray;
     delete m_ogdfGraph;
 }
 
@@ -156,6 +158,7 @@ void AssemblyGraph::clearOgdfGraphAndResetNodes()
     }
 
     m_ogdfGraph->clear();
+    m_edgeArray->init(*m_ogdfGraph);
 }
 
 
@@ -1378,10 +1381,10 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
     {
         i.next();
         if (i.value()->isDrawn())
-            i.value()->addToOgdfGraph(m_ogdfGraph);
+            i.value()->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
     }
 
-    //Then loop through each determining its drawn status and adding it
+    //Then loop through each edge determining its drawn status and adding it
     //to OGDF if it is drawn.
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
     while (j.hasNext())
@@ -1390,7 +1393,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         DeBruijnEdge * edge = j.value();
         edge->determineIfDrawn();
         if (edge->isDrawn())
-            edge->addToOgdfGraph(m_ogdfGraph);
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
     }
 }
 
@@ -1728,7 +1731,7 @@ QStringList AssemblyGraph::removeNullStringsFromList(QStringList in)
 void AssemblyGraph::layoutGraph()
 {
     ogdf::FMMMLayout fmmm;
-    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes,
+    GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes, m_edgeArray,
                                                                   g_settings->graphLayoutQuality, g_settings->segmentLength);
     graphLayoutWorker->layoutGraph();
 }
