@@ -38,7 +38,7 @@ public:
     NodeLengthMode nodeLengthMode;
     double autoNodeLengthPerMegabase;
     double manualNodeLengthPerMegabase;
-    double totalDrawnGraphLength;
+    double meanNodeLength;
     int graphLayoutQuality;
     double minimumNodeLength;
     double edgeLength;

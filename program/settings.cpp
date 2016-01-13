@@ -26,9 +26,9 @@ Settings::Settings()
     nodeLengthMode = AUTO_NODE_LENGTH;
     autoNodeLengthPerMegabase = 10000.0;
     manualNodeLengthPerMegabase = 1000.0;
-    totalDrawnGraphLength = 10000.0;
+    meanNodeLength = 40.0;
     graphLayoutQuality = 2;
-    minimumNodeLength = 2.0;
+    minimumNodeLength = 5.0;
     edgeLength = 5.0;
     doubleModeNodeSeparation = 2.0;
     nodeSegmentLength = 20.0;
@@ -37,7 +37,7 @@ Settings::Settings()
     readDepthEffectOnWidth = 0.5;
     readDepthPower = 0.5;
 
-    edgeWidth = 2.0;
+    edgeWidth = 1.5;
     outlineThickness = 0.0;
     selectionThickness = 1.0;
     arrowheadSize = 0.01;

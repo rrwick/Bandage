@@ -401,9 +401,10 @@ void AssemblyGraph::determineGraphInfo()
     m_thirdQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, thirdQuartileIndex);
 
     //Set the auto node length setting.
+    double targetDrawnGraphLength = m_nodeCount * g_settings->meanNodeLength;
     double megabases = totalLength / 1000000.0;
     if (megabases > 0)
-        g_settings->autoNodeLengthPerMegabase = g_settings->totalDrawnGraphLength / megabases;
+        g_settings->autoNodeLengthPerMegabase = targetDrawnGraphLength / megabases;
     else
         g_settings->autoNodeLengthPerMegabase = 10000.0;
 }
