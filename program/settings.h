@@ -36,14 +36,14 @@ public:
     bool doubleMode;
 
     NodeLengthMode nodeLengthMode;
-    int autoBasePairsPerSegment;
-    int manualBasePairsPerSegment;
-    int meanSegmentsPerNode;
+    double autoNodeLengthPerMegabase;
+    double manualNodeLengthPerMegabase;
+    double totalDrawnGraphLength;
     int graphLayoutQuality;
-    double nodeLengthPerKilobase;
     double minimumNodeLength;
     double edgeLength;
     double doubleModeNodeSeparation;
+    double nodeSegmentLength;
 
     double averageNodeWidth;
     double readDepthEffectOnWidth;

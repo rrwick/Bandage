@@ -59,7 +59,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     connect(ui->restoreDefaultsButton, SIGNAL(clicked()), this, SLOT(restoreDefaults()));
     connect(ui->readDepthValueManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(enableDisableReadDepthWidgets()));
-    connect(ui->basePairsPerSegmentManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(basePairsPerSegmentManualChanged()));
+    connect(ui->nodeLengthPerMegabaseManualRadioButton, SIGNAL(toggled(bool)), this, SLOT(nodeLengthPerMegabaseManualChanged()));
     connect(ui->readDepthPowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->readDepthEffectOnWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateNodeWidthVisualAid()));
     connect(ui->randomColourPositiveOpacitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(colourSpinBoxChanged()));
@@ -152,7 +152,15 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         checkBoxFunctionPointer = setOneSettingFromWidget;
     }
 
-    intFunctionPointer(&settings->manualBasePairsPerSegment, ui->basePairsPerSegmentSpinBox);
+    doubleFunctionPointer(&settings->manualNodeLengthPerMegabase, ui->nodeLengthPerMegabaseManualSpinBox, false);
+    doubleFunctionPointer(&settings->minimumNodeLength, ui->minimumNodeLengthSpinBox, false);
+    doubleFunctionPointer(&settings->edgeLength, ui->edgeLengthSpinBox, false);
+    doubleFunctionPointer(&settings->doubleModeNodeSeparation, ui->doubleModeNodeSeparationSpinBox, false);
+    doubleFunctionPointer(&settings->nodeSegmentLength, ui->nodeSegmentLengthSpinBox, false);
+
+
+
+
     doubleFunctionPointer(&settings->readDepthEffectOnWidth, ui->readDepthEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->readDepthPower, ui->readDepthPowerSpinBox, false);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
@@ -209,12 +217,12 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
         ui->readDepthValueAutoRadioButton->setChecked(settings->autoReadDepthValue);
         ui->readDepthValueManualRadioButton->setChecked(!settings->autoReadDepthValue);
-        basePairsPerSegmentManualChanged();
-        ui->basePairsPerSegmentAutoLabel->setText(formatIntForDisplay(settings->autoBasePairsPerSegment));
+        nodeLengthPerMegabaseManualChanged();
+        ui->nodeLengthPerMegabaseAutoLabel->setText(formatDoubleForDisplay(settings->autoNodeLengthPerMegabase, 1));
         ui->lowReadDepthAutoValueLabel2->setText(formatDoubleForDisplay(g_assemblyGraph->m_firstQuartileReadDepth, 2));
         ui->highReadDepthAutoValueLabel2->setText(formatDoubleForDisplay(g_assemblyGraph->m_thirdQuartileReadDepth, 2));
-        ui->basePairsPerSegmentAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
-        ui->basePairsPerSegmentManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
+        ui->nodeLengthPerMegabaseAutoRadioButton->setChecked(settings->nodeLengthMode == AUTO_NODE_LENGTH);
+        ui->nodeLengthPerMegabaseManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
         ui->positionVisibleRadioButton->setChecked(!settings->positionTextNodeCentre);
         ui->positionCentreRadioButton->setChecked(settings->positionTextNodeCentre);
     }
@@ -223,7 +231,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
         settings->autoReadDepthValue = ui->readDepthValueAutoRadioButton->isChecked();
-        if (ui->basePairsPerSegmentAutoRadioButton->isChecked())
+        if (ui->nodeLengthPerMegabaseAutoRadioButton->isChecked())
             settings->nodeLengthMode = AUTO_NODE_LENGTH;
         else
             settings->nodeLengthMode = MANUAL_NODE_LENGTH;
@@ -238,7 +246,7 @@ void SettingsDialog::restoreDefaults()
 
     //The auto base pairs per segment is the only setting we don't want to
     //restore, as it is calculated from the graph.
-    defaultSettings.autoBasePairsPerSegment = g_settings->autoBasePairsPerSegment;
+    defaultSettings.autoNodeLengthPerMegabase = g_settings->autoNodeLengthPerMegabase;
 
     loadOrSaveSettingsToOrFromWidgets(true, &defaultSettings);
 }
@@ -246,20 +254,20 @@ void SettingsDialog::restoreDefaults()
 
 void SettingsDialog::setInfoTexts()
 {
-    ui->basePairsPerSegmentInfoText->setInfoText("This controls the length of the drawn nodes. The number of line segments "
-                                                 "that make up a drawn node is determined by dividing the sequence length by "
-                                                 "this value and rounding up. Any node with a sequence length of less than or "
-                                                 "equal to this value will be drawn with a single line segment.<br><br>"
-                                                 "Guidelines for this setting:<ul>"
-                                                 "<li>Large values will result in shorter nodes. Very large values will result "
-                                                 "in all nodes being a similar size (one line segment). This can make the graph "
-                                                 "layout faster for large assembly graphs.</li>"
-                                                 "<li>Small values will result in longer nodes and a stronger correlation between "
-                                                 "sequence length and node length. Longer nodes can slow the graph layout "
-                                                 "process.</li></ul><br>"
-                                                 "When a graph is loaded, Bandage calculates an appropriate value and uses this "
-                                                 "for the 'Auto' option. Switch to 'Manual' if you want to specify this setting "
-                                                 "yourself.");
+//    ui->basePairsPerSegmentInfoText->setInfoText("This controls the length of the drawn nodes. The number of line segments "
+//                                                 "that make up a drawn node is determined by dividing the sequence length by "
+//                                                 "this value and rounding up. Any node with a sequence length of less than or "
+//                                                 "equal to this value will be drawn with a single line segment.<br><br>"
+//                                                 "Guidelines for this setting:<ul>"
+//                                                 "<li>Large values will result in shorter nodes. Very large values will result "
+//                                                 "in all nodes being a similar size (one line segment). This can make the graph "
+//                                                 "layout faster for large assembly graphs.</li>"
+//                                                 "<li>Small values will result in longer nodes and a stronger correlation between "
+//                                                 "sequence length and node length. Longer nodes can slow the graph layout "
+//                                                 "process.</li></ul><br>"
+//                                                 "When a graph is loaded, Bandage calculates an appropriate value and uses this "
+//                                                 "for the 'Auto' option. Switch to 'Manual' if you want to specify this setting "
+//                                                 "yourself.");
     ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
                                                 "positioning the graph components.<br><br>Low values are faster and "
                                                 "recommended for big assembly graphs. Higher values may result in smoother, "
@@ -449,11 +457,11 @@ void SettingsDialog::accept()
 }
 
 
-void SettingsDialog::basePairsPerSegmentManualChanged()
+void SettingsDialog::nodeLengthPerMegabaseManualChanged()
 {
-    bool manual = ui->basePairsPerSegmentManualRadioButton->isChecked();
-    ui->basePairsPerSegmentSpinBox->setEnabled(manual);
-    ui->basePairsPerSegmentAutoLabel->setEnabled(!manual);
+    bool manual = ui->nodeLengthPerMegabaseManualRadioButton->isChecked();
+    ui->nodeLengthPerMegabaseManualSpinBox->setEnabled(manual);
+    ui->nodeLengthPerMegabaseAutoLabel->setEnabled(!manual);
 }
 
 

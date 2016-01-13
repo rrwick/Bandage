@@ -400,16 +400,12 @@ void AssemblyGraph::determineGraphInfo()
     m_medianReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, medianIndex);
     m_thirdQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, thirdQuartileIndex);
 
-    //Set the auto base pairs per segment
-    int totalSegments = m_nodeCount * g_settings->meanSegmentsPerNode;
-    if (totalSegments > 0)
-    {
-        g_settings->autoBasePairsPerSegment = m_totalLength / totalSegments;
-        if (g_settings->autoBasePairsPerSegment < 1)
-            g_settings->autoBasePairsPerSegment = 1;
-    }
+    //Set the auto node length setting.
+    double megabases = totalLength / 1000000.0;
+    if (megabases > 0)
+        g_settings->autoNodeLengthPerMegabase = g_settings->totalDrawnGraphLength / megabases;
     else
-        g_settings->autoBasePairsPerSegment = 100;
+        g_settings->autoNodeLengthPerMegabase = 10000.0;
 }
 
 template<typename T> double AssemblyGraph::getValueUsingFractionalIndex(std::vector<T> * v, double index) const

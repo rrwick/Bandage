@@ -139,7 +139,7 @@ private:
     QString getNodeNameForFasta() const;
     QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
 
-    int getBasePairsPerSegment() const;
+    int getNodeLengthPerMegabase() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
                                   std::vector<DeBruijnNode *> * incomingNodes,
                                   std::vector<DeBruijnNode *> * outgoingNodes) const;

@@ -106,14 +106,15 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     //OGDF sense.  This way, Velvet nodes appear as lines whose length
     //corresponds to the sequence length.
     double nodeBasePairs = double(getLength());
-    int numberOfGraphEdges = ceil(nodeBasePairs / getBasePairsPerSegment());
+    double drawnNodeLength = getNodeLengthPerMegabase() * nodeBasePairs / 1000000.0;
+    if (drawnNodeLength < g_settings->minimumNodeLength)
+        drawnNodeLength = g_settings->minimumNodeLength;
+
+    int numberOfGraphEdges = ceil(drawnNodeLength / g_settings->nodeSegmentLength);
     if (numberOfGraphEdges == 0)
         numberOfGraphEdges = 1;
     int numberOfGraphNodes = numberOfGraphEdges + 1;
 
-    double drawnNodeLength = g_settings->nodeLengthPerKilobase * nodeBasePairs / 1000.0;
-    if (drawnNodeLength < g_settings->minimumNodeLength)
-        drawnNodeLength = g_settings->minimumNodeLength;
     double drawnLengthPerEdge = drawnNodeLength / numberOfGraphEdges;
 
     ogdf::node newNode = 0;
@@ -648,12 +649,12 @@ std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes() const
 
 
 
-int DeBruijnNode::getBasePairsPerSegment() const
+int DeBruijnNode::getNodeLengthPerMegabase() const
 {
     if (g_settings->nodeLengthMode == AUTO_NODE_LENGTH)
-        return g_settings->autoBasePairsPerSegment;
+        return g_settings->autoNodeLengthPerMegabase;
     else
-        return g_settings->manualBasePairsPerSegment;
+        return g_settings->manualNodeLengthPerMegabase;
 }
 
 

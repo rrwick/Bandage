@@ -24,14 +24,14 @@ Settings::Settings()
     doubleMode = false;
 
     nodeLengthMode = AUTO_NODE_LENGTH;
-    autoBasePairsPerSegment = 100;
-    manualBasePairsPerSegment = 500;
-    meanSegmentsPerNode = 3;
+    autoNodeLengthPerMegabase = 10000.0;
+    manualNodeLengthPerMegabase = 1000.0;
+    totalDrawnGraphLength = 10000.0;
     graphLayoutQuality = 2;
-    nodeLengthPerKilobase = 10.0;
-    minimumNodeLength = 1.0;
-    edgeLength = 10.0;
+    minimumNodeLength = 2.0;
+    edgeLength = 5.0;
     doubleModeNodeSeparation = 2.0;
+    nodeSegmentLength = 20.0;
 
     averageNodeWidth = 5.0;
     readDepthEffectOnWidth = 0.5;

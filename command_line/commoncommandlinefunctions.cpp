@@ -513,11 +513,11 @@ void parseSettings(QStringList arguments)
 
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 
-    if (isOptionPresent("--bases", &arguments))
-    {
-        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
-        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
-    }
+//    if (isOptionPresent("--bases", &arguments))
+//    {
+//        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
+//        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+//    }
 
     if (isOptionPresent("--quality", &arguments))
     {

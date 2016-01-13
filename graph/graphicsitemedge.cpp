@@ -172,7 +172,7 @@ void GraphicsItemEdge::makeSpecialPathConnectingNodeToSelf()
 //reverse complement and is displayed in single mode.
 void GraphicsItemEdge::makeSpecialPathConnectingNodeToReverseComplement()
 {
-    double extensionLength = g_settings->edgeLength;
+    double extensionLength = g_settings->edgeLength / 4.0;
     m_controlPoint1 = extendLine(m_beforeStartingLocation, m_startingLocation, extensionLength);
     m_controlPoint2 = extendLine(m_afterEndingLocation, m_endingLocation, extensionLength);
 
