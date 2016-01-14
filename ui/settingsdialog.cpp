@@ -254,29 +254,48 @@ void SettingsDialog::restoreDefaults()
 
 void SettingsDialog::setInfoTexts()
 {
-//    ui->basePairsPerSegmentInfoText->setInfoText("This controls the length of the drawn nodes. The number of line segments "
-//                                                 "that make up a drawn node is determined by dividing the sequence length by "
-//                                                 "this value and rounding up. Any node with a sequence length of less than or "
-//                                                 "equal to this value will be drawn with a single line segment.<br><br>"
-//                                                 "Guidelines for this setting:<ul>"
-//                                                 "<li>Large values will result in shorter nodes. Very large values will result "
-//                                                 "in all nodes being a similar size (one line segment). This can make the graph "
-//                                                 "layout faster for large assembly graphs.</li>"
-//                                                 "<li>Small values will result in longer nodes and a stronger correlation between "
-//                                                 "sequence length and node length. Longer nodes can slow the graph layout "
-//                                                 "process.</li></ul><br>"
-//                                                 "When a graph is loaded, Bandage calculates an appropriate value and uses this "
-//                                                 "for the 'Auto' option. Switch to 'Manual' if you want to specify this setting "
-//                                                 "yourself.");
-    ui->graphLayoutQualityInfoText->setInfoText("This setting controls how much time the graph layout algorithm spends on "
-                                                "positioning the graph components.<br><br>Low values are faster and "
-                                                "recommended for big assembly graphs. Higher values may result in smoother, "
-                                                "more pleasing layouts.");
+    ui->nodeLengthPerMegabaseInfoText->setInfoText("This controls the length of the drawn nodes relative to the nodes' "
+                                                   "sequence lengths.<br><br>"
+                                                   "Set to a larger number for longer nodes and set to a smaller number for "
+                                                   "shorter nodes.<br><br>"
+                                                   "Specifically, a node's length is determined by multiplying its sequence "
+                                                   "length (in Megabases) by this number. If the resulting value is less than "
+                                                   "the 'Minimum node length' setting, the node's length will be increased to "
+                                                   "that value.<br><br>"
+                                                   "Note that node lengths are not exact, but are rather used as targets for the "
+                                                   "graph layout algorithm.<br><br>"
+                                                   "The graph must be redrawn to see the effect of changing this setting.");
+    ui->minimumNodeLengthInfoText->setInfoText("This controls the minimum node length, regardless of the length of a node's "
+                                               "sequence.<br><br>"
+                                               "Setting this to a smaller value will give a tighter correlation between sequence "
+                                               "lengths and node lengths. Setting this to a larger will make smaller nodes "
+                                               "easier to see and work with.<br><br>"
+                                               "The graph must be redrawn to see the effect of changing this setting.");
+    ui->edgeLengthInfoText->setInfoText("This controls the length of the edges that connect nodes.<br><br>"
+                                        "Set to a larger value for more separate nodes. Set to a smaller value for more tightly "
+                                        "packed nodes.<br><br>"
+                                        "The graph must be redrawn to see the effect of changing this setting.");
+    ui->edgeWidthInfoText->setInfoText("This controls the width of the edges that connect nodes.<br><br>"
+                                       "The graph does not need to be redrawn to see the effect of changing this setting.");
+    ui->doubleModeNodeSeparationInfoText->setInfoText("This controls how far apart complementary nodes are drawn from each "
+                                                      "other when the graph is drawn in double mode.<br><br>"
+                                                      "The graph must be redrawn to see the effect of changing this setting.");
+
+    ui->nodeSegmentLengthInfoText->setInfoText("This controls the length of the line segments which make up a drawn node.<br><br>"
+                                               "Setting this to a smaller value will produce higher quality nodes with smoother "
+                                               "curves, but graph layout will take longer and graphical performance will be slower. "
+                                               "Setting this to a larger value will produce nodes with more obvious angles, but "
+                                               "graph layout and graphical performance will be faster.<br><br>"
+                                               "The graph must be redrawn to see the effect of changing this setting.");
+    ui->graphLayoutQualityInfoText->setInfoText("This controls how much time the graph layout algorithm spends on "
+                                                "positioning the graph components.<br><br>"
+                                                "Low values are faster and recommended for big assembly graphs. Higher values may "
+                                                "result in smoother, more pleasing layouts.");
+
     ui->readDepthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
-    ui->readDepthEffectOnWidthInfoText->setInfoText("This setting controls the degree to which a node's read depth affects its width.<br><br>"
+    ui->readDepthEffectOnWidthInfoText->setInfoText("This controls the degree to which a node's read depth affects its width.<br><br>"
                                                    "If set to 0%, all nodes will have the same width (equal to the average "
                                                    "node width).");
-    ui->edgeWidthInfoText->setInfoText("This is the width of the edges that connect nodes.");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.<br><br>"
                                               "Drawing outlines can result in slow performance, so set this to zero "
                                               "to improve performance.");

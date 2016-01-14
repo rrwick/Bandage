@@ -90,6 +90,7 @@ int bandageInfo(QStringList arguments)
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
 
     double medianReadDepthByBase = g_assemblyGraph->getMedianReadDepthByBase();
+    long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianReadDepthByBase);
 
     if (tsv)
     {
@@ -108,23 +109,25 @@ int bandageInfo(QStringList arguments)
         out << thirdQuartile << "\t";
         out << longestNode << "\t";
         out << medianReadDepthByBase << "\n";
+        out << estimatedSequenceLength << "\n";
     }
     else
     {
-        out << "Node count:               " << nodeCount << "\n";
-        out << "Edge count:               " << edgeCount << "\n";
-        out << "Total length (bp):        " << totalLength << "\n";
-        out << "Dead ends:                " << deadEnds << "\n";
-        out << "Percentage dead ends:     " << percentageDeadEnds << "%\n";
-        out << "Connected components:     " << componentCount << "\n";
-        out << "Largest component (bp):   " << largestComponentLength << "\n";
-        out << "N50 (bp):                 " << n50 << "\n";
-        out << "Shortest node (bp):       " << shortestNode << "\n";
-        out << "Lower quartile node (bp): " << firstQuartile << "\n";
-        out << "Median node (bp):         " << median << "\n";
-        out << "Upper quartile node (bp): " << thirdQuartile << "\n";
-        out << "Longest node (bp):        " << longestNode << "\n";
-        out << "Median read depth:        " << medianReadDepthByBase << "\n";
+        out << "Node count:                     " << nodeCount << "\n";
+        out << "Edge count:                     " << edgeCount << "\n";
+        out << "Total length (bp):              " << totalLength << "\n";
+        out << "Dead ends:                      " << deadEnds << "\n";
+        out << "Percentage dead ends:           " << percentageDeadEnds << "%\n";
+        out << "Connected components:           " << componentCount << "\n";
+        out << "Largest component (bp):         " << largestComponentLength << "\n";
+        out << "N50 (bp):                       " << n50 << "\n";
+        out << "Shortest node (bp):             " << shortestNode << "\n";
+        out << "Lower quartile node (bp):       " << firstQuartile << "\n";
+        out << "Median node (bp):               " << median << "\n";
+        out << "Upper quartile node (bp):       " << thirdQuartile << "\n";
+        out << "Longest node (bp):              " << longestNode << "\n";
+        out << "Median read depth:              " << medianReadDepthByBase << "\n";
+        out << "Estimated sequence length (bp): " << estimatedSequenceLength << "\n";
     }
 
     return 0;

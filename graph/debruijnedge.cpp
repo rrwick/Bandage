@@ -17,7 +17,7 @@
 
 
 #include "debruijnedge.h"
-#include <cmath>
+#include <math.h>
 #include "../program/settings.h"
 #include "ogdfnode.h"
 #include <QApplication>

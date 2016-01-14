@@ -116,7 +116,8 @@ SOURCES += \
     ogdf/internal/energybased/QuadTreeNM.cpp \
     ogdf/internal/energybased/QuadTreeNodeNM.cpp \
     ogdf/basic/Constraint.cpp \
-    ogdf/internal/energybased/MultilevelGraph.cpp
+    ogdf/internal/energybased/MultilevelGraph.cpp \
+    ui/graphinfodialog.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -238,7 +239,8 @@ HEADERS  += \
     ogdf/internal/energybased/QuadTreeNM.h \
     ogdf/internal/energybased/QuadTreeNodeNM.h \
     ogdf/basic/Constraints.h \
-    ogdf/internal/energybased/MultilevelGraph.h
+    ogdf/internal/energybased/MultilevelGraph.h \
+    ui/graphinfodialog.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -251,7 +253,8 @@ FORMS    += \
     ui/querypathsdialog.ui \
     ui/blasthitfiltersdialog.ui \
     ui/changenodenamedialog.ui \
-    ui/changenodereaddepthdialog.ui
+    ui/changenodereaddepthdialog.ui \
+    ui/graphinfodialog.ui
 
 
 # These includes are configured assuming that the OGDF

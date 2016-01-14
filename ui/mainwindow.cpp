@@ -24,7 +24,7 @@
 #include <QLocale>
 #include <QRegExp>
 #include "../ogdf/energybased/FMMMLayout.h"
-#include <cmath>
+#include <math.h>
 #include "../program/settings.h"
 #include <QClipboard>
 #include <QTransform>
@@ -66,6 +66,7 @@
 #include "changenodenamedialog.h"
 #include "changenodereaddepthdialog.h"
 #include <limits>
+#include "graphinfodialog.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -192,6 +193,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionMerge_all_possible_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeAllPossible()));
     connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
     connect(ui->actionChange_node_read_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeReadDepth()));
+    connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -2419,4 +2421,12 @@ void MainWindow::changeNodeReadDepth()
         g_assemblyGraph->recalculateAllNodeWidths();
         g_graphicsView->viewport()->update();
     }
+}
+
+
+
+void MainWindow::openGraphInfoDialog()
+{
+    GraphInfoDialog graphInfoDialog(this);
+    graphInfoDialog.exec();
 }

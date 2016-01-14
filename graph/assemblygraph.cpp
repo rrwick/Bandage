@@ -39,6 +39,7 @@
 #include <QSet>
 #include <QQueue>
 #include <QList>
+#include <math.h>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false)
@@ -3055,4 +3056,64 @@ double AssemblyGraph::findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, lon
             return node->getReadDepth();
     }
     return 0.0;
+}
+
+
+
+long long AssemblyGraph::getEstimatedSequenceLength() const
+{
+    return getEstimatedSequenceLength(getMedianReadDepthByBase());
+}
+
+
+
+long long AssemblyGraph::getEstimatedSequenceLength(double meanReadDepthByBase) const
+{
+    long long estimatedSequenceLength = 0;
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        if (node->isPositiveNode())
+        {
+            int nodeLength = node->getLengthWithoutTrailingOverlap();
+            double relativeReadDepth = node->getReadDepth() / meanReadDepthByBase;
+
+            int closestIntegerReadDepth = round(relativeReadDepth);
+            int lengthAdjustedForDepth = nodeLength * closestIntegerReadDepth;
+
+            estimatedSequenceLength += lengthAdjustedForDepth;
+        }
+    }
+
+    return estimatedSequenceLength;
+}
+
+
+
+long long AssemblyGraph::getTotalLengthMinusEdgeOverlaps() const
+{
+    long long totalLength = 0;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode())
+            totalLength += node->getLength();
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnEdge * edge = j.value();
+        if (edge->isPositiveEdge())
+            totalLength -= edge->getOverlap();
+    }
+
+    return totalLength;
 }

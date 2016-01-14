@@ -157,6 +157,7 @@ private slots:
     void cleanUpAllBlast();
     void changeNodeName();
     void changeNodeReadDepth();
+    void openGraphInfoDialog();
 
 protected:
       void showEvent(QShowEvent *ev);

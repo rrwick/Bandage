@@ -45,7 +45,7 @@
 #include "ogdf/basic/geometry.h"
 #include "ogdf/basic/GraphAttributes.h"
 #include "ogdf/basic/Math.h"
-#include <cmath>
+#include <math.h>
 
 
 namespace ogdf {

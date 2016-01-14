@@ -24,7 +24,7 @@ Settings::Settings()
     doubleMode = false;
 
     nodeLengthMode = AUTO_NODE_LENGTH;
-    autoNodeLengthPerMegabase = 10000.0;
+    autoNodeLengthPerMegabase = 1000.0;
     manualNodeLengthPerMegabase = 1000.0;
     meanNodeLength = 40.0;
     graphLayoutQuality = 2;

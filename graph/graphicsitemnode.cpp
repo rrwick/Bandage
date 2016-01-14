@@ -41,7 +41,7 @@
 #include "../blast/blastquery.h"
 #include "../blast/blasthitpart.h"
 #include "assemblygraph.h"
-#include <cmath>
+#include <math.h>
 #include <QFontMetrics>
 #include "../program/memory.h"
 
