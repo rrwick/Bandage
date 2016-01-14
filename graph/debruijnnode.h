@@ -48,6 +48,7 @@ public:
     int getLength() const {return m_length;}
     QByteArray getSequenceForGfa() const;
     int getFullLength() const;
+    int getLengthWithoutTrailingOverlap() const;
     QByteArray getFasta() const;
     QByteArray getFastaNoNewLinesInSequence() const;
     QByteArray getGfaSegmentLine() const;
@@ -141,7 +142,7 @@ private:
     QString getNodeNameForFasta() const;
     QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
 
-    int getNodeLengthPerMegabase() const;
+    double getNodeLengthPerMegabase() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
                                   std::vector<DeBruijnNode *> * incomingNodes,
                                   std::vector<DeBruijnNode *> * outgoingNodes) const;

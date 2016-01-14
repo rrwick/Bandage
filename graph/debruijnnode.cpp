@@ -94,6 +94,11 @@ void DeBruijnNode::resetNode()
 
 void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray)
 {
+    if (m_name == "5+")
+    {
+        int test = 5;
+    }
+
     //If this node or its reverse complement is already in OGDF, then
     //it's not necessary to make the node.
     if (thisOrReverseComplementInOgdf())
@@ -131,7 +136,7 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
 
 double DeBruijnNode::getDrawnNodeLength() const
 {
-    double drawnNodeLength = getNodeLengthPerMegabase() * getLength() / 1000000.0;
+    double drawnNodeLength = getNodeLengthPerMegabase() * double(getLength()) / 1000000.0;
     if (drawnNodeLength < g_settings->minimumNodeLength)
         drawnNodeLength = g_settings->minimumNodeLength;
     return drawnNodeLength;
@@ -464,6 +469,31 @@ int DeBruijnNode::getFullLength() const
 }
 
 
+int DeBruijnNode::getLengthWithoutTrailingOverlap() const
+{
+    int length = getLength();
+    std::vector<DeBruijnEdge *> leavingEdges = getLeavingEdges();
+
+    if (leavingEdges.size() == 0)
+        return length;
+
+    int maxOverlap = 0;
+    for (size_t i = 0; i < leavingEdges.size(); ++i)
+    {
+        int overlap = leavingEdges[i]->getOverlap();
+        if (overlap > maxOverlap)
+            maxOverlap = overlap;
+    }
+
+    length -= maxOverlap;
+
+    if (length < 0)
+        length = 0;
+
+    return length;
+}
+
+
 QString DeBruijnNode::getNodeNameForFasta() const
 {
     QString nodeNameForFasta;
@@ -660,7 +690,7 @@ std::vector<DeBruijnNode *> DeBruijnNode::getUpstreamNodes() const
 
 
 
-int DeBruijnNode::getNodeLengthPerMegabase() const
+double DeBruijnNode::getNodeLengthPerMegabase() const
 {
     if (g_settings->nodeLengthMode == AUTO_NODE_LENGTH)
         return g_settings->autoNodeLengthPerMegabase;
