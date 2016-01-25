@@ -176,7 +176,7 @@ void GraphicsItemEdge::makeSpecialPathConnectingNodeToSelf()
 //reverse complement and is displayed in single mode.
 void GraphicsItemEdge::makeSpecialPathConnectingNodeToReverseComplement()
 {
-    double extensionLength = g_settings->edgeLength / 4.0;
+    double extensionLength = g_settings->edgeLength / 2.0;
     m_controlPoint1 = extendLine(m_beforeStartingLocation, m_startingLocation, extensionLength);
     m_controlPoint2 = extendLine(m_afterEndingLocation, m_endingLocation, extensionLength);
 
@@ -184,7 +184,7 @@ void GraphicsItemEdge::makeSpecialPathConnectingNodeToReverseComplement()
     QPointF pathMidPoint = m_startingLocation + startToControl * 3.0;
 
     QLineF normalLine = QLineF(m_controlPoint1, m_startingLocation).normalVector();
-    QPointF perpendicularShift = normalLine.p2() - normalLine.p1();
+    QPointF perpendicularShift = (normalLine.p2() - normalLine.p1()) * 1.5;
 
     QPainterPath path;
     path.moveTo(m_startingLocation);
