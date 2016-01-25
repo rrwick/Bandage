@@ -269,9 +269,7 @@ unix:LIBS += -L/usr/lib
 
 # The following settings are compatible with OGDF being
 # built in 64 bit release mode using Visual Studio 2013
-win32:LIBS += -lpsapi -logdf
-#win32:LIBS += -L$$PWD/../OGDF/x64/Release/
-#win32:INCLUDEPATH += $$PWD/../OGDF/
+win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
 
 
