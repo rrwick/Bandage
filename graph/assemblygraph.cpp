@@ -668,7 +668,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
         }
         pointEachNodeToItsReverseComplement();
 
-        //Create all of the edges
+        //Create all of the edges.
         for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
         {
             QString node1Name = edgeStartingNodeNames[i];
@@ -835,7 +835,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
         pointEachNodeToItsReverseComplement();
 
 
-        //Create all of the edges
+        //Create all of the edges.
         for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
         {
             QString node1Name = edgeStartingNodeNames[i];
@@ -1021,6 +1021,148 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 
 
 
+//This function builds a graph from an ASQG file.  Bandage expects edges to
+//conform to its expectation: overlaps are only at the ends of sequences and
+//always have the same length in each of the two sequences.  It will not load
+//edges which fail to meet this expectation.  The function's return value is
+//the number of edges which could not be loaded.
+int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
+{
+    m_graphFileType = ASQG;
+    int badEdgeCount = 0;
+
+    QFile inputFile(fullFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        std::vector<QString> edgeStartingNodeNames;
+        std::vector<QString> edgeEndingNodeNames;
+        std::vector<int> edgeOverlaps;
+
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+            QString line = in.readLine();
+
+            QStringList lineParts = line.split(QRegExp("\t"));
+
+            if (lineParts.size() < 1)
+                continue;
+
+            //Lines beginning with "VT" are sequence (node) lines
+            if (lineParts.at(0) == "VT")
+            {
+                if (lineParts.size() < 3)
+                    throw "load error";
+
+                //We treat all nodes in this file as positive nodes and add "+" to the end of their names.
+                QString nodeName = lineParts.at(1);
+                if (nodeName.isEmpty())
+                    nodeName = "node";
+                nodeName += "+";
+
+                QByteArray sequence = lineParts.at(2).toLocal8Bit();
+                int length = sequence.length();
+
+                //ASQG files don't seem to include read depth, so just set this to one for every node.
+                double nodeReadDepth = 1.0;
+
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
+                m_deBruijnGraphNodes.insert(nodeName, node);
+            }
+
+            //Lines beginning with "ED" are edge lines
+            else if (lineParts.at(0) == "ED")
+            {
+                //Edges aren't made now, in case their sequence hasn't yet been specified.
+                //Instead, we save the starting and ending nodes and make the edges after
+                //we're done looking at the file.
+
+                if (lineParts.size() < 2)
+                    throw "load error";
+
+                QStringList edgeParts = lineParts[1].split(" ");
+                if (edgeParts.size() < 8)
+                    throw "load error";
+
+                QString s1Name = edgeParts.at(0);
+                QString s2Name = edgeParts.at(1);
+                int s1OverlapStart = edgeParts.at(2).toInt();
+                int s1OverlapEnd = edgeParts.at(3).toInt();
+                int s1Length = edgeParts.at(4).toInt();
+                int s2OverlapStart = edgeParts.at(5).toInt();
+                int s2OverlapEnd = edgeParts.at(6).toInt();
+                int s2Length = edgeParts.at(7).toInt();
+
+                //We want the overlap region of s1 to be at the end of the node sequence.  If it isn't, we use the
+                //negative node and flip the overlap coordinates.
+                if (s1OverlapEnd == s1Length - 1)
+                    s1Name += "+";
+                else
+                {
+                    s1Name += "-";
+                    int newOverlapStart = s1Length - s1OverlapEnd - 1;
+                    int newOverlapEnd = s1Length - s1OverlapStart - 1;
+                    s1OverlapStart = newOverlapStart;
+                    s1OverlapEnd = newOverlapEnd;
+                }
+
+                //We want the overlap region of s2 to be at the start of the node sequence.  If it isn't, we use the
+                //negative node and flip the overlap coordinates.
+                if (s2OverlapStart == 0)
+                    s2Name += "+";
+                else
+                {
+                    s2Name += "-";
+                    int newOverlapStart = s2Length - s2OverlapEnd - 1;
+                    int newOverlapEnd = s2Length - s2OverlapStart - 1;
+                    s2OverlapStart = newOverlapStart;
+                    s2OverlapEnd = newOverlapEnd;
+                }
+
+                int s1OverlapLength = s1OverlapEnd - s1OverlapStart + 1;
+                int s2OverlapLength = s2OverlapEnd - s2OverlapStart + 1;
+
+                //If the overlap between the two nodes is in agreement and the overlap regions extend to the ends of the
+                //nodes, then we will make the edge.
+                if (s1OverlapLength == s2OverlapLength && s1OverlapEnd == s1Length - 1 && s2OverlapStart == 0)
+                {
+                    edgeStartingNodeNames.push_back(s1Name);
+                    edgeEndingNodeNames.push_back(s2Name);
+                    edgeOverlaps.push_back(s1OverlapLength);
+                }
+                else
+                    ++badEdgeCount;
+            }
+        }
+
+        //Pair up reverse complements, creating them if necessary.
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            makeReverseComplementNodeIfNecessary(node);
+        }
+        pointEachNodeToItsReverseComplement();
+
+        //Create all of the edges.
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
+        {
+            QString node1Name = edgeStartingNodeNames[i];
+            QString node2Name = edgeEndingNodeNames[i];
+            int overlap = edgeOverlaps[i];
+            createDeBruijnEdge(node1Name, node2Name, overlap, EXACT_OVERLAP);
+        }
+    }
+
+    if (m_deBruijnGraphNodes.size() == 0)
+        throw "load error";
+
+    return badEdgeCount;
+}
+
+
 void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 {
     m_graphFileType = PLAIN_FASTA;
@@ -1093,6 +1235,8 @@ GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
         return GFA;
     if (checkFileIsTrinityFasta(fullFileName))
         return TRINITY;
+    if (checkFileIsAsqg(fullFileName))
+        return ASQG;
     if (checkFileIsFasta(fullFileName))
         return PLAIN_FASTA;
     return UNKNOWN_FILE_TYPE;
@@ -1117,17 +1261,22 @@ bool AssemblyGraph::checkFileIsFasta(QString fullFileName)
     return checkFirstLineOfFile(fullFileName, "^>");
 }
 
-
 //Cursory look to see if file appears to be a GFA file.
 bool AssemblyGraph::checkFileIsGfa(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, "[SLH]\t");
+    return checkFirstLineOfFile(fullFileName, "^[SLH]\t");
 }
 
 //Cursory look to see if file appears to be a Trinity.fasta file.
 bool AssemblyGraph::checkFileIsTrinityFasta(QString fullFileName)
 {
     return checkFirstLineOfFile(fullFileName, "path=\\[");
+}
+
+//Cursory look to see if file appears to be an ASQG file.
+bool AssemblyGraph::checkFileIsAsqg(QString fullFileName)
+{
+    return checkFirstLineOfFile(fullFileName, "^HT\t");
 }
 
 
@@ -1319,6 +1468,8 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
             buildDeBruijnGraphFromGfa(filename);
         if (graphFileType == TRINITY)
             buildDeBruijnGraphFromTrinityFasta(filename);
+        if (graphFileType == ASQG)
+            buildDeBruijnGraphFromAsqg(filename);
         if (graphFileType == PLAIN_FASTA)
             buildDeBruijnGraphFromPlainFasta(filename);
     }

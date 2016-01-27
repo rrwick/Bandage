@@ -94,11 +94,6 @@ void DeBruijnNode::resetNode()
 
 void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray)
 {
-    if (m_name == "5+")
-    {
-        int test = 5;
-    }
-
     //If this node or its reverse complement is already in OGDF, then
     //it's not necessary to make the node.
     if (thisOrReverseComplementInOgdf())

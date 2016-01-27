@@ -85,6 +85,7 @@ public:
     void buildDeBruijnGraphFromGfa(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
+    int buildDeBruijnGraphFromAsqg(QString fullFileName);
     void buildDeBruijnGraphFromPlainFasta(QString fullFileName);
     void recalculateAllReadDepthsRelativeToDrawnMean();
     void recalculateAllNodeWidths();
@@ -95,6 +96,7 @@ public:
     bool checkFileIsFasta(QString fullFileName);
     bool checkFileIsGfa(QString fullFileName);
     bool checkFileIsTrinityFasta(QString fullFileName);
+    bool checkFileIsAsqg(QString fullFileName);
     bool checkFirstLineOfFile(QString fullFileName, QString regExp);
 
     bool loadGraphFromFile(QString filename);

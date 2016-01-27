@@ -310,7 +310,7 @@ void MainWindow::loadGraph(QString fullFileName)
     QString selectedFilter = "Any supported graph (*)";
     if (fullFileName == "")
         fullFileName = QFileDialog::getOpenFileName(this, "Load graph", g_memory->rememberedPath,
-                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta);;Plain FASTA (*.fasta)",
+                                                    "Any supported graph (*);;LastGraph (*LastGraph*);;FASTG (*.fastg);;GFA (*.gfa);;Trinity.fasta (*.fasta);;ASQG (*.asqg);;Plain FASTA (*.fasta)",
                                                     &selectedFilter);
 
     if (fullFileName != "") //User did not hit cancel
@@ -326,6 +326,8 @@ void MainWindow::loadGraph(QString fullFileName)
             selectedFileType = GFA;
         else if (selectedFilter == "Trinity.fasta (*.fasta)")
             selectedFileType = TRINITY;
+        else if (selectedFilter == "ASQG (*.asqg)")
+            selectedFileType = ASQG;
         else if (selectedFilter == "Plain FASTA (*.fasta)")
             selectedFileType = PLAIN_FASTA;
 
@@ -382,6 +384,16 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
             g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName);
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);
+        else if (graphFileType == ASQG)
+        {
+            int badEdgeCount = g_assemblyGraph->buildDeBruijnGraphFromAsqg(fullFileName);
+            if (badEdgeCount > 0)
+                QMessageBox::warning(this, "Edges not loaded", "Bandage could not load " +
+                                     QString::number(badEdgeCount) + " edges in this file "
+                                     "because they have an abnormal overlap.\n\nBandage can "
+                                     "only handle edges with an exact overlap at the "
+                                     "start/end of node sequences.");
+        }
         else if (graphFileType == PLAIN_FASTA)
             g_assemblyGraph->buildDeBruijnGraphFromPlainFasta(fullFileName);
 
@@ -2073,6 +2085,7 @@ QString MainWindow::convertGraphFileTypeToString(GraphFileType graphFileType)
     case FASTG: graphFileTypeString = "FASTG"; break;
     case GFA: graphFileTypeString = "GFA"; break;
     case TRINITY: graphFileTypeString = "Trinity.fasta"; break;
+    case ASQG: graphFileTypeString = "ASQG"; break;
     case PLAIN_FASTA: graphFileTypeString = "FASTA"; break;
     case ANY_FILE_TYPE: graphFileTypeString = "any"; break;
     case UNKNOWN_FILE_TYPE: graphFileTypeString = "unknown"; break;
