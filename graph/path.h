@@ -90,6 +90,7 @@ private:
 
     void buildUnambiguousPathFromNodes(QList<DeBruijnNode *> nodes,
                                        bool strandSpecific);
+    QByteArray modifySequenceUsingOverlap(QByteArray sequence, int overlap) const;
     bool checkForOtherEdges();
 };
 

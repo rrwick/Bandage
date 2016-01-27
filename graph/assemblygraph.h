@@ -82,7 +82,7 @@ public:
     void determineGraphInfo();
     void clearGraphInfo();
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
-    void buildDeBruijnGraphFromGfa(QString fullFileName);
+    bool buildDeBruijnGraphFromGfa(QString fullFileName);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     int buildDeBruijnGraphFromAsqg(QString fullFileName);
@@ -170,6 +170,8 @@ private:
     std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
     std::vector<DeBruijnNode *> getNodesInReadDepthRange(double min, double max);
     std::vector<int> makeOverlapCountVector();
+    bool cigarContainsOnlyM(QString cigar);
+    int getLengthFromSimpleCigar(QString cigar);
     int getLengthFromCigar(QString cigar);
     int getCigarCount(QString cigarCode, QString cigar);
     QString getOppositeNodeName(QString nodeName);

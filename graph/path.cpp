@@ -448,15 +448,13 @@ QByteArray Path::getPathSequence() const
     QByteArray sequence;
     QByteArray firstNodeSequence = m_nodes[0]->getSequence();
 
-    //If the path is circular, we trim the overlap from the first node so it is
-    //flush with the end.  If the path is linear, we include the whole first
-    //node.
+    //If the path is circular, we trim the overlap from the first node.
     if (isCircular())
     {
         int overlap = m_edges.back()->getOverlap();
-        int rightChars = firstNodeSequence.length() - overlap;
-        if (rightChars > 0)
-            sequence += firstNodeSequence.right(rightChars);
+        if (overlap != 0)
+            firstNodeSequence = modifySequenceUsingOverlap(firstNodeSequence, overlap);
+        sequence += firstNodeSequence;
     }
 
     //If the path is linear, then we begin either with the entire first node
@@ -473,14 +471,31 @@ QByteArray Path::getPathSequence() const
     {
         int overlap = m_edges[i-1]->getOverlap();
         QByteArray nodeSequence = m_nodes[i]->getSequence();
-        int rightChars = nodeSequence.length() - overlap;
-        if (rightChars > 0)
-            sequence += nodeSequence.right(rightChars);
+        if (overlap != 0)
+            nodeSequence = modifySequenceUsingOverlap(sequence, overlap);
+        sequence += nodeSequence;
     }
 
     DeBruijnNode * lastNode = m_nodes.back();
-    int amountToTrim = lastNode->getLength() - m_endLocation.getPosition();
-    sequence.chop(amountToTrim);
+    int amountToTrimFromEnd = lastNode->getLength() - m_endLocation.getPosition();
+    sequence.chop(amountToTrimFromEnd);
+
+    return sequence;
+}
+
+
+//This function will trim bases from the start of a sequence (in the case of
+//positive overlap) or add Ns to the start (in the case of negative overlap).
+QByteArray Path::modifySequenceUsingOverlap(QByteArray sequence, int overlap) const
+{
+    if (overlap > 0)
+    {
+        int rightChars = sequence.length() - overlap;
+        if (rightChars > 0)
+            sequence += sequence.right(rightChars);
+    }
+    else if (overlap < 0)
+        sequence = QByteArray(-overlap, 'N') + sequence;
 
     return sequence;
 }

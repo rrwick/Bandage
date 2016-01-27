@@ -545,9 +545,14 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 }
 
 
-void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
+
+//This function loads a graph from a GFA file.  It returns whether or not it
+//encountered an unsupported CIGAR string.  A return value of false is good,
+//meaning that no unsupported CIGAR strings were found.
+bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 {
     m_graphFileType = GFA;
+    bool unsupportedCigar = false;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -652,9 +657,18 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 edgeStartingNodeNames.push_back(startingNode);
                 edgeEndingNodeNames.push_back(endingNode);
 
-                //Part 5 holds the node overlap cigar string
+                //Part 5 holds the node overlap cigar string.  A "*" means unspecified, so
+                //we 0 for that.
                 QString cigar = lineParts.at(5);
-                edgeOverlaps.push_back(getLengthFromCigar(cigar));
+                if (cigar == "*")
+                    edgeOverlaps.push_back(0);
+                if (cigarContainsOnlyM(cigar))
+                    edgeOverlaps.push_back(getLengthFromSimpleCigar(cigar));
+                else
+                {
+                    edgeOverlaps.push_back(getLengthFromCigar(cigar));
+                    unsupportedCigar = true;
+                }
             }
         }
 
@@ -680,21 +694,46 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
+
+    return unsupportedCigar;
 }
 
 
 
+bool AssemblyGraph::cigarContainsOnlyM(QString cigar)
+{
+    QRegExp rx("\\d+M");
+    return (rx.indexIn(cigar) != -1);
+}
 
-//This function converts a CIGAR string to a length.  It is
-//currently incomplete, only looking at matches and mismatches.
-//I'm waiting for the GFA format to be pinned down before
-//putting more work into this.
+
+//This function assumes that the cigar string is simple: just digits followed
+//by "M".
+int AssemblyGraph::getLengthFromSimpleCigar(QString cigar)
+{
+    cigar.chop(1);
+    return cigar.toInt();
+}
+
+//This function returns the length defined by a cigar string, relative to the
+//second sequence in the edge (the CIGAR reference).
+//Bandage does not fully support non-M CIGAR strings, so this is fairly crude
+//at the moment.
 int AssemblyGraph::getLengthFromCigar(QString cigar)
 {
-    int matchCount = getCigarCount("M", cigar);
-    int mismatchCount = getCigarCount("X", cigar);
+    int length = 0;
 
-    return matchCount + mismatchCount;
+    length = getCigarCount("M", cigar);
+    length += getCigarCount("=", cigar);
+    length += getCigarCount("X", cigar);
+    length += getCigarCount("I", cigar);
+    length -= getCigarCount("D", cigar);
+    length -= getCigarCount("N", cigar);
+    length += getCigarCount("S", cigar);
+    length += getCigarCount("H", cigar);
+    length += getCigarCount("P", cigar);
+
+    return length;
 }
 
 

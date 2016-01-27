@@ -381,7 +381,16 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         else if (graphFileType == FASTG)
             g_assemblyGraph->buildDeBruijnGraphFromFastg(fullFileName);
         else if (graphFileType == GFA)
-            g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName);
+        {
+            bool unsupportedCigar = g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName);
+            if (unsupportedCigar)
+                QMessageBox::warning(this, "Unsupported CIGAR", "This GFA file contains "
+                                     "links with complex CIGAR strings (containing "
+                                     "operators other than M).\n\n"
+                                     "Bandage does not support edge overlaps that are not "
+                                     "perfect, so the behaviour of such edges in this graph "
+                                     "is undefined.");
+        }
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);
         else if (graphFileType == ASQG)
