@@ -1102,7 +1102,7 @@ GraphFileType AssemblyGraph::getGraphFileTypeFromFile(QString fullFileName)
 //Cursory look to see if file appears to be a LastGraph file.
 bool AssemblyGraph::checkFileIsLastGraph(QString fullFileName)
 {
-    return checkFirstLineOfFile(fullFileName, "\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
+    return checkFirstLineOfFile(fullFileName, "^\\d+\\s+\\d+\\s+\\d+\\s+\\d+");
 }
 
 //Cursory look to see if file appears to be a FASTG file.
