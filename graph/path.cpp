@@ -492,7 +492,7 @@ QByteArray Path::modifySequenceUsingOverlap(QByteArray sequence, int overlap) co
     {
         int rightChars = sequence.length() - overlap;
         if (rightChars > 0)
-            sequence += sequence.right(rightChars);
+            sequence = sequence.right(rightChars);
     }
     else if (overlap < 0)
         sequence = QByteArray(-overlap, 'N') + sequence;
