@@ -472,7 +472,7 @@ QByteArray Path::getPathSequence() const
         int overlap = m_edges[i-1]->getOverlap();
         QByteArray nodeSequence = m_nodes[i]->getSequence();
         if (overlap != 0)
-            nodeSequence = modifySequenceUsingOverlap(sequence, overlap);
+            nodeSequence = modifySequenceUsingOverlap(nodeSequence, overlap);
         sequence += nodeSequence;
     }
 
