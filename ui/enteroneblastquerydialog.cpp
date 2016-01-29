@@ -43,5 +43,5 @@ QString EnterOneBlastQueryDialog::getName()
 
 QString EnterOneBlastQueryDialog::getSequence()
 {
-    return ui->sequenceTextEdit->toPlainText().simplified();
+    return ui->sequenceTextEdit->toPlainText().simplified().replace(" ", "");
 }
