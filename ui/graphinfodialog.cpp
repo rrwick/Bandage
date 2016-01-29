@@ -64,7 +64,10 @@ void GraphInfoDialog::setLabels()
     long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianReadDepthByBase);
 
     ui->medianReadDepthLabel->setText(formatDoubleForDisplay(medianReadDepthByBase, 2) + "x");
-    ui->estimatedSequenceLengthLabel->setText(formatIntForDisplay(estimatedSequenceLength) + " bp");
+    if (medianReadDepthByBase == 0.0)
+        ui->estimatedSequenceLengthLabel->setText("unavailable");
+    else
+        ui->estimatedSequenceLengthLabel->setText(formatIntForDisplay(estimatedSequenceLength) + " bp");
 }
 
 

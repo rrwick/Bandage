@@ -3260,6 +3260,8 @@ long long AssemblyGraph::getEstimatedSequenceLength() const
 long long AssemblyGraph::getEstimatedSequenceLength(double meanReadDepthByBase) const
 {
     long long estimatedSequenceLength = 0;
+    if (meanReadDepthByBase == 0.0)
+        return 0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
