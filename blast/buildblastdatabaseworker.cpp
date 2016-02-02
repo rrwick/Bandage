@@ -52,7 +52,7 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
         i.next();
         DeBruijnNode * node = i.value();
         if (!node->sequenceIsMissing() && node->getLength() > 0)
-            out << node->getFasta();
+            out << node->getFasta(true);
     }
     file.close();
 

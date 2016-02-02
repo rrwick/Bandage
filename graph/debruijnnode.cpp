@@ -335,21 +335,21 @@ bool DeBruijnNode::isNotOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 }
 
 
-QByteArray DeBruijnNode::getFasta() const
+QByteArray DeBruijnNode::getFasta(bool sign) const
 {
     QByteArray fasta = ">";
-    fasta += getNodeNameForFasta();
+    fasta += getNodeNameForFasta(sign);
     fasta += "\n";
     fasta += AssemblyGraph::addNewlinesToSequence(m_sequence);
     return fasta;
 }
 
 
-QByteArray DeBruijnNode::getFastaNoNewLinesInSequence() const
+QByteArray DeBruijnNode::getFastaNoNewLinesInSequence(bool sign) const
 {
     QByteArray fasta = ">";
 
-    fasta += getNodeNameForFasta();
+    fasta += getNodeNameForFasta(sign);
     fasta += "\n";
     fasta += getSequence();
     fasta += "\n";
@@ -489,12 +489,16 @@ int DeBruijnNode::getLengthWithoutTrailingOverlap() const
 }
 
 
-QString DeBruijnNode::getNodeNameForFasta() const
+QString DeBruijnNode::getNodeNameForFasta(bool sign) const
 {
     QString nodeNameForFasta;
 
     nodeNameForFasta += "NODE_";
-    nodeNameForFasta += m_name;
+    if (sign)
+        nodeNameForFasta += getName();
+    else
+        nodeNameForFasta += getNameWithoutSign();
+
     nodeNameForFasta += "_length_";
     nodeNameForFasta += QByteArray::number(getLength());
     nodeNameForFasta += "_cov_";

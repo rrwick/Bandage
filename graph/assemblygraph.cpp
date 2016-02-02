@@ -1260,6 +1260,10 @@ QString AssemblyGraph::cleanNodeName(QString name)
     //Remove any commas.
     name = name.replace(",", "");
 
+    //Remove any trailing + or -.
+    if (name.endsWith('+') || name.endsWith('-'))
+        name.chop(1);
+
     return name;
 }
 
@@ -2856,7 +2860,7 @@ void AssemblyGraph::saveEntireGraphToFasta(QString filename)
     while (i.hasNext())
     {
         i.next();
-        out << i.value()->getFasta();
+        out << i.value()->getFasta(true);
     }
 }
 
@@ -2872,7 +2876,7 @@ void AssemblyGraph::saveEntireGraphToFastaOnlyPositiveNodes(QString filename)
         i.next();
         DeBruijnNode * node = i.value();
         if (node->isPositiveNode())
-            out << node->getFasta();
+            out << node->getFasta(false);
     }
 }
 

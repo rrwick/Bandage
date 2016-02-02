@@ -49,8 +49,8 @@ public:
     QByteArray getSequenceForGfa() const;
     int getFullLength() const;
     int getLengthWithoutTrailingOverlap() const;
-    QByteArray getFasta() const;
-    QByteArray getFastaNoNewLinesInSequence() const;
+    QByteArray getFasta(bool sign) const;
+    QByteArray getFastaNoNewLinesInSequence(bool sign) const;
     QByteArray getGfaSegmentLine() const;
     char getBaseAt(int i) const {if (i >= 0 && i < m_sequence.length()) return m_sequence.at(i); else return '\0';}
     ContiguityStatus getContiguityStatus() const {return m_contiguityStatus;}
@@ -139,7 +139,7 @@ private:
     QString m_customLabel;
     std::vector<BlastHit *> m_blastHits;
     QStringList m_csvData;
-    QString getNodeNameForFasta() const;
+    QString getNodeNameForFasta(bool sign) const;
     QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
 
     double getNodeLengthPerMegabase() const;

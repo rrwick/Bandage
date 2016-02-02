@@ -937,7 +937,7 @@ void MainWindow::saveSelectedSequencesToFile()
         QTextStream out(&file);
 
         for (size_t i = 0; i < selectedNodes.size(); ++i)
-            out << selectedNodes[i]->getFasta();
+            out << selectedNodes[i]->getFasta(true);
 
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
     }
@@ -2198,7 +2198,7 @@ void MainWindow::webBlastSelectedNodes()
 
     QByteArray selectedNodesFasta;
     for (size_t i = 0; i < selectedNodes.size(); ++i)
-        selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence();
+        selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence(true);
     selectedNodesFasta.chop(1); //remove last newline
 
     QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
