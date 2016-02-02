@@ -83,6 +83,11 @@ QString BlastQueries::renameQuery(BlastQuery * newQuery, QString newName)
 //conflict with viewing all queries at once or no queries.
 QString BlastQueries::getUniqueName(QString name)
 {
+    //If the query name ends in a semicolon, remove it.  Ending semicolons
+    //mess with BLAST.
+    if (name.endsWith(';'))
+        name.chop(1);
+
     //The name can't be empty.
     if (name == "")
         name = g_settings->unnamedQueryDefaultName;
