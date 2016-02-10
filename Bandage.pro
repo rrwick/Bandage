@@ -117,7 +117,8 @@ SOURCES += \
     ogdf/internal/energybased/QuadTreeNodeNM.cpp \
     ogdf/basic/Constraint.cpp \
     ogdf/internal/energybased/MultilevelGraph.cpp \
-    ui/graphinfodialog.cpp
+    ui/graphinfodialog.cpp \
+    ui/tablewidgetitemname.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -240,7 +241,8 @@ HEADERS  += \
     ogdf/internal/energybased/QuadTreeNodeNM.h \
     ogdf/basic/Constraints.h \
     ogdf/internal/energybased/MultilevelGraph.h \
-    ui/graphinfodialog.h
+    ui/graphinfodialog.h \
+    ui/tablewidgetitemname.h
 
 FORMS    += \
     ui/mainwindow.ui \

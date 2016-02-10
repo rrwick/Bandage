@@ -43,6 +43,7 @@
 #include "myprogressdialog.h"
 #include "colourbutton.h"
 #include <QSet>
+#include "tablewidgetitemname.h"
 #include "tablewidgetitemint.h"
 #include "tablewidgetitemdouble.h"
 #include "tablewidgetitemshown.h"
@@ -201,7 +202,7 @@ void BlastSearchDialog::makeQueryRow(int row)
 
     BlastQuery * query = g_blastSearch->m_blastQueries.m_queries[row];
 
-    QTableWidgetItem * name = new QTableWidgetItem(query->getName());
+    TableWidgetItemName * name = new TableWidgetItemName(query);
     name->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 
     QTableWidgetItem * type = new QTableWidgetItem(query->getTypeString());
@@ -502,22 +503,23 @@ void BlastSearchDialog::clearAllQueries()
 void BlastSearchDialog::clearSelectedQueries()
 {
     //Use the table selection to figure out which queries are to be removed.
+    //The table cell containing the query name also has a pointer to the
+    //actual query, and that's what we use.
     std::vector<BlastQuery *> queriesToRemove;
     QItemSelectionModel * select = ui->blastQueriesTableWidget->selectionModel();
     QModelIndexList selection = select->selectedIndexes();
     QSet<int> rowsWithSelectionSet;
     for (int i = 0; i < selection.size(); ++i)
         rowsWithSelectionSet.insert(selection[i].row());
-    QSet<int>::const_iterator i = rowsWithSelectionSet.constBegin();
-    while (i != rowsWithSelectionSet.constEnd())
+    for (QSet<int>::const_iterator i = rowsWithSelectionSet.constBegin(); i != rowsWithSelectionSet.constEnd(); ++i)
     {
-        size_t queryToRemoveIndex = *i;
-        if (queryToRemoveIndex < g_blastSearch->m_blastQueries.m_queries.size())
-        {
-            BlastQuery * queryToRemove = g_blastSearch->m_blastQueries.m_queries[queryToRemoveIndex];
-            queriesToRemove.push_back(queryToRemove);
-        }
-        ++i;
+        int row = *i;
+        QTableWidgetItem * tableWidgetItem = ui->blastQueriesTableWidget->item(row, 2);
+        TableWidgetItemName * queryNameItem = dynamic_cast<TableWidgetItemName *>(tableWidgetItem);
+        if (queryNameItem == 0)
+            continue;
+        BlastQuery * query = queryNameItem->getQuery();
+        queriesToRemove.push_back(query);
     }
 
     if (queriesToRemove.size() == g_blastSearch->m_blastQueries.m_queries.size())
