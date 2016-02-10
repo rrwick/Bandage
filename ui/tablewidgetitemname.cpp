@@ -20,6 +20,6 @@
 #include "../blast/blastquery.h"
 
 TableWidgetItemName::TableWidgetItemName(BlastQuery * query) :
-    m_query(query), QTableWidgetItem(query->getName())
+    QTableWidgetItem(query->getName()), m_query(query)
 {
 }
