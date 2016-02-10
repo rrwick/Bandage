@@ -39,6 +39,9 @@ public:
 
 private:
     Ui::EnterOneBlastQueryDialog *ui;
+
+private slots:
+    void sequenceChanged();
 };
 
 #endif // ENTERONEBLASTQUERYDIALOG_H

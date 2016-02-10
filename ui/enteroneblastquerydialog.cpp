@@ -20,12 +20,16 @@
 #include "ui_enteroneblastquerydialog.h"
 #include "../program/settings.h"
 #include "../program/globals.h"
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 EnterOneBlastQueryDialog::EnterOneBlastQueryDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EnterOneBlastQueryDialog)
 {
     ui->setupUi(this);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    connect(ui->sequenceTextEdit, SIGNAL(textChanged()), this, SLOT(sequenceChanged()));
 }
 
 EnterOneBlastQueryDialog::~EnterOneBlastQueryDialog()
@@ -44,4 +48,10 @@ QString EnterOneBlastQueryDialog::getName()
 QString EnterOneBlastQueryDialog::getSequence()
 {
     return ui->sequenceTextEdit->toPlainText().simplified().replace(" ", "");
+}
+
+void EnterOneBlastQueryDialog::sequenceChanged()
+{
+    bool someText = !ui->sequenceTextEdit->toPlainText().isEmpty();
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(someText);
 }
