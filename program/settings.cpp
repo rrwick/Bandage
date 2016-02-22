@@ -53,6 +53,7 @@ Settings::Settings()
     unnamedQueryDefaultName = "unnamed";
 
     minZoom = 0.01;
+    minZoomOnGraphDraw = 0.2;
     maxZoom = 20.0;
     zoomFactor = 1.0005;
 

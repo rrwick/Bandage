@@ -844,14 +844,16 @@ void MainWindow::zoomToFitRect(QRectF rect)
     g_absoluteZoom *= zoomFactor;
     double newSpinBoxValue = ui->zoomSpinBox->value() * zoomFactor;
 
+    double minZoom = std::max(g_settings->minZoom, g_settings->minZoomOnGraphDraw);
+
     //Limit the zoom to the minimum and maximum
-    if (g_absoluteZoom < g_settings->minZoom)
+    if (g_absoluteZoom < minZoom)
     {
-        double newZoomFactor = g_settings->minZoom / g_absoluteZoom;
+        double newZoomFactor = minZoom / g_absoluteZoom;
         m_graphicsViewZoom->gentleZoom(newZoomFactor, SPIN_BOX);
         g_absoluteZoom *= newZoomFactor;
-        g_absoluteZoom = g_settings->minZoom;
-        newSpinBoxValue = g_settings->minZoom * 100.0;
+        g_absoluteZoom = minZoom;
+        newSpinBoxValue = minZoom * 100.0;
     }
     if (g_absoluteZoom > g_settings->maxZoom)
     {

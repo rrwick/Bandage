@@ -65,6 +65,7 @@ public:
     QString unnamedQueryDefaultName;
 
     double minZoom;
+    double minZoomOnGraphDraw;
     double maxZoom;
     double zoomFactor;
 
