@@ -454,6 +454,7 @@ void AssemblyGraph::clearGraphInfo()
 void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
     m_graphFileType = LAST_GRAPH;
+    m_filename = fullFileName;
 
     bool firstLine = true;
     QFile inputFile(fullFileName);
@@ -552,6 +553,8 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 {
     m_graphFileType = GFA;
+    m_filename = fullFileName;
+
     bool unsupportedCigar = false;
 
     QFile inputFile(fullFileName);
@@ -760,6 +763,7 @@ int AssemblyGraph::getCigarCount(QString cigarCode, QString cigar)
 void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
     m_graphFileType = FASTG;
+    m_filename = fullFileName;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -930,6 +934,7 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
 void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 {
     m_graphFileType = TRINITY;
+    m_filename = fullFileName;
 
     std::vector<QString> names;
     std::vector<QString> sequences;
@@ -1068,6 +1073,8 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
 {
     m_graphFileType = ASQG;
+    m_filename = fullFileName;
+
     int badEdgeCount = 0;
 
     QFile inputFile(fullFileName);
@@ -1205,6 +1212,7 @@ int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
 void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 {
     m_graphFileType = PLAIN_FASTA;
+    m_filename = fullFileName;
 
     std::vector<QString> names;
     std::vector<QString> sequences;

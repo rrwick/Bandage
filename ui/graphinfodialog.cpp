@@ -24,6 +24,8 @@ GraphInfoDialog::~GraphInfoDialog()
 
 void GraphInfoDialog::setLabels()
 {
+    ui->filenameLabel->setText(g_assemblyGraph->m_filename);
+
     int nodeCount = g_assemblyGraph->m_nodeCount;
 
     ui->nodeCountLabel->setText(formatIntForDisplay(nodeCount));
