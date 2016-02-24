@@ -101,7 +101,8 @@ void PathSpecifyDialog::checkPathValidity()
     //If the Path isn't empty, then we have succeeded!
     else
     {
-        ui->validPathLabel->setText("Valid path");
+        int pathLength = g_memory->userSpecifiedPath.getLength();
+        ui->validPathLabel->setText("Valid path: " + formatIntForDisplay(pathLength) + " bp");
         setPathValidityUiElements(true);
     }
 }
