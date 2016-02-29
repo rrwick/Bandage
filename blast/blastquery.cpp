@@ -51,14 +51,15 @@ void BlastQuery::autoSetSequenceType()
     //possibly be an extended alphabet DNA sequence or a protein
     //sequence without particular amino acids.
 
-    //Look to see if A, C, G and T make up 75% or more of
+    //Look to see if A, C, G, T and N make up 75% or more of
     //the sequence.  If so, it's DNA.  If not, it's
     //protein.
     int length = m_sequence.length();
     int nuclLetters = m_sequence.count('a') + m_sequence.count('A') +
             m_sequence.count('c') + m_sequence.count('C') +
             m_sequence.count('g') + m_sequence.count('G') +
-            m_sequence.count('t') + m_sequence.count('T');
+            m_sequence.count('t') + m_sequence.count('T') +
+            m_sequence.count('n') + m_sequence.count('N');
 
     if (double(nuclLetters) / length >= 0.75)
         m_sequenceType = NUCLEOTIDE;
