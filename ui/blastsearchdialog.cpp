@@ -672,6 +672,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 {
     QPixmap tick(":/icons/tick-128.png");
     QPixmap tickScaled = tick.scaled(32, 32);
+    tickScaled.setDevicePixelRatio(devicePixelRatio()); //This is a workaround for a Qt bug.  Can possibly remove in the future.  https://bugreports.qt.io/browse/QTBUG-46846
 
     switch (blastUiState)
     {

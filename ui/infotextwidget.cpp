@@ -54,11 +54,17 @@ void InfoTextWidget::paintEvent(QPaintEvent * /*event*/)
     else
         infoIcon = QPixmap(":/icons/information-256-inactive.png");
 
-    int scaledSize = std::min(width(), height());
+    //This scaling using the device pixel ratio was necessary to make the labels look right on a MacBook retina display.
+    double scaledWidth = width() * devicePixelRatio();
+    double scaledHeight = height() * devicePixelRatio();
+    double scaledSize = std::min(scaledWidth, scaledHeight);
 
     QPixmap scaledInfoIcon = infoIcon.scaled(scaledSize, scaledSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    double topLeftX = width()/2.0 - scaledSize/2.0;
-    double topLeftY = height()/2.0 - scaledSize/2.0;
+
+    scaledInfoIcon.setDevicePixelRatio(devicePixelRatio());
+
+    double topLeftX = scaledWidth / 2.0 - scaledSize / 2.0;
+    double topLeftY = scaledHeight / 2.0 - scaledSize / 2.0;
 
     painter.drawPixmap(topLeftX, topLeftY, scaledInfoIcon);
 }

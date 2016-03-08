@@ -110,10 +110,13 @@ void PathSpecifyDialog::checkPathValidity()
 
 void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
 {
+    QPixmap tickCross;
     if (pathValid)
-        ui->tickCrossLabel->setPixmap(QPixmap(":/icons/tick-128.png"));
+        tickCross = QPixmap(":/icons/tick-128.png");
     else
-        ui->tickCrossLabel->setPixmap(QPixmap(":/icons/cross-128.png"));
+        tickCross = QPixmap(":/icons/cross-128.png");
+    tickCross.setDevicePixelRatio(devicePixelRatio()); //This is a workaround for a Qt bug.  Can possibly remove in the future.  https://bugreports.qt.io/browse/QTBUG-46846
+    ui->tickCrossLabel->setPixmap(tickCross);
 
     ui->copyButton->setEnabled(pathValid);
     ui->saveButton->setEnabled(pathValid);
