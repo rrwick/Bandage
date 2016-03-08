@@ -266,8 +266,12 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
     double textHeight = textBoundingRect.height();
     QPointF offset(0.0, textHeight / 2.0);
 
+    double zoomAdjustment = 1.0 / (1.0 + ((g_absoluteZoom - 1.0) * g_settings->textZoomScaleFactor));
+    double inverseZoomAdjustment = 1.0 / zoomAdjustment;
+
     painter->translate(centre);
     painter->rotate(-g_graphicsView->getRotation());
+    painter->scale(zoomAdjustment, zoomAdjustment);
     painter->translate(offset);
 
     if (g_settings->textOutline)
@@ -282,6 +286,7 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
 
     painter->fillPath(textPath, QBrush(g_settings->textColour));
     painter->translate(-offset);
+    painter->scale(inverseZoomAdjustment, inverseZoomAdjustment);
     painter->rotate(g_graphicsView->getRotation());
     painter->translate(-centre);
 }

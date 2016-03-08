@@ -68,6 +68,7 @@ public:
     double minZoomOnGraphDraw;
     double maxZoom;
     double zoomFactor;
+    double textZoomScaleFactor; // 1.0 = text size constant, regardless of zoom.  0.0 = text size changes exactly with zoom.
 
     double dragStrength;
 

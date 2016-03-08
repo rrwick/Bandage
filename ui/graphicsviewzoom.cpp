@@ -43,7 +43,6 @@ void GraphicsViewZoom::gentleZoom(double factor, ZoomSource zoomSource)
         factor = g_settings->minZoom / g_absoluteZoom;
 
     g_absoluteZoom *= factor;
-
     m_view->scale(factor, factor);
 
     if (zoomSource == MOUSE_WHEEL)

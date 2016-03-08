@@ -825,7 +825,6 @@ void MainWindow::setZoomSpinBoxStep()
     newSingleStep = int((newSingleStep + 0.1) * 10.0) / 10.0;
 
     ui->zoomSpinBox->setSingleStep(newSingleStep);
-
 }
 
 

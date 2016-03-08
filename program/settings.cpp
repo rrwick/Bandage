@@ -56,6 +56,7 @@ Settings::Settings()
     minZoomOnGraphDraw = 0.2;
     maxZoom = 20.0;
     zoomFactor = 1.0005;
+    textZoomScaleFactor = 0.7;
 
     dragStrength = 100.0;
 
