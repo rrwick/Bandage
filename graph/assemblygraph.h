@@ -106,7 +106,7 @@ public:
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
     QStringList splitCsv(QString line, QString sep=",");
-    bool loadCSV(QString filename, QStringList * columns,QString * errormsg);
+    bool loadCSV(QString filename, QStringList * columns, QString * errormsg, bool * coloursLoaded);
     std::vector<DeBruijnNode *> getStartingNodes(QString * errorTitle,
                                                  QString * errorMessage,
                                                  bool doubleMode,

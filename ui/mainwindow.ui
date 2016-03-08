@@ -14,7 +14,7 @@
    <string>Bandage</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../images/images.qrc">
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -1812,7 +1812,7 @@
       <string>Select nodes based on contiguity</string>
      </property>
      <property name="icon">
-      <iconset>
+      <iconset resource="../images/images.qrc">
        <normaloff>:/icons/contiguity.png</normaloff>:/icons/contiguity.png</iconset>
      </property>
      <addaction name="actionSelect_contiguous_nodes"/>
@@ -1880,7 +1880,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_graph">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
    </property>
    <property name="text">
@@ -1895,7 +1895,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -1904,7 +1904,7 @@
   </action>
   <action name="actionExit">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/exit-256.png</normaloff>:/icons/exit-256.png</iconset>
    </property>
    <property name="text">
@@ -1913,7 +1913,7 @@
   </action>
   <action name="actionSettings">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/settings-256.png</normaloff>:/icons/settings-256.png</iconset>
    </property>
    <property name="text">
@@ -1922,7 +1922,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/information-256.png</normaloff>:/icons/information-256.png</iconset>
    </property>
    <property name="text">
@@ -1934,7 +1934,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -1965,7 +1965,7 @@
   </action>
   <action name="actionBring_selected_nodes_to_front">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/bring-to-front.png</normaloff>:/icons/bring-to-front.png</iconset>
    </property>
    <property name="text">
@@ -1977,7 +1977,7 @@
   </action>
   <action name="actionSelect_nodes_with_BLAST_hits">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/BLAST.png</normaloff>:/icons/BLAST.png</iconset>
    </property>
    <property name="text">
@@ -1989,7 +1989,7 @@
   </action>
   <action name="actionSelect_all">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/select-all.png</normaloff>:/icons/select-all.png</iconset>
    </property>
    <property name="text">
@@ -1998,7 +1998,7 @@
   </action>
   <action name="actionInvert_selection">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/invert-selection.png</normaloff>:/icons/invert-selection.png</iconset>
    </property>
    <property name="text">
@@ -2007,7 +2007,7 @@
   </action>
   <action name="actionCopy_selected_node_sequences_to_clipboard">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
@@ -2019,7 +2019,7 @@
   </action>
   <action name="actionSave_selected_node_sequences_to_FASTA">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2031,7 +2031,7 @@
   </action>
   <action name="actionSelect_none">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/select-none.png</normaloff>:/icons/select-none.png</iconset>
    </property>
    <property name="text">
@@ -2040,7 +2040,7 @@
   </action>
   <action name="actionZoom_to_selection">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/zoom.png</normaloff>:/icons/zoom.png</iconset>
    </property>
    <property name="text">
@@ -2049,7 +2049,7 @@
   </action>
   <action name="actionSelect_possibly_contiguous_nodes">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/contiguity-maybe_contiguous.png</normaloff>:/icons/contiguity-maybe_contiguous.png</iconset>
    </property>
    <property name="text">
@@ -2058,7 +2058,7 @@
   </action>
   <action name="actionSelect_contiguous_nodes">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/contiguity-contiguous.png</normaloff>:/icons/contiguity-contiguous.png</iconset>
    </property>
    <property name="text">
@@ -2067,7 +2067,7 @@
   </action>
   <action name="actionSelect_not_contiguous_nodes">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/contiguity-not_contiguous.png</normaloff>:/icons/contiguity-not_contiguous.png</iconset>
    </property>
    <property name="text">
@@ -2076,7 +2076,7 @@
   </action>
   <action name="actionBandage_online_help">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
    </property>
    <property name="text">
@@ -2088,7 +2088,7 @@
   </action>
   <action name="actionCopy_selected_node_path_to_clipboard">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
    </property>
    <property name="text">
@@ -2100,7 +2100,7 @@
   </action>
   <action name="actionSave_selected_node_path_to_FASTA">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2112,7 +2112,7 @@
   </action>
   <action name="actionSpecify_exact_path_for_copy_save">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/specify-path.png</normaloff>:/icons/specify-path.png</iconset>
    </property>
    <property name="text">
@@ -2121,11 +2121,11 @@
   </action>
   <action name="actionLoad_CSV">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
    </property>
    <property name="text">
-    <string>Load CSV label data</string>
+    <string>Load CSV data</string>
    </property>
    <property name="toolTip">
     <string>Load CSV label data</string>
@@ -2133,7 +2133,7 @@
   </action>
   <action name="actionSave_entire_graph_to_FASTA">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2142,7 +2142,7 @@
   </action>
   <action name="actionSave_entire_graph_to_FASTA_only_positive_nodes">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2151,7 +2151,7 @@
   </action>
   <action name="actionWeb_BLAST_selected_nodes">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/ncbi-256.png</normaloff>:/icons/ncbi-256.png</iconset>
    </property>
    <property name="text">
@@ -2200,7 +2200,7 @@
   </action>
   <action name="actionSave_entire_graph_to_GFA">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2209,7 +2209,7 @@
   </action>
   <action name="actionSave_visible_graph_to_GFA">
    <property name="icon">
-    <iconset>
+    <iconset resource="../images/images.qrc">
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
@@ -2275,6 +2275,8 @@
   <tabstop>setNodeCustomLabelButton</tabstop>
   <tabstop>selectedEdgesTextEdit</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../images/images.qrc"/>
+ </resources>
  <connections/>
 </ui>

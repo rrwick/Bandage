@@ -1382,7 +1382,7 @@ QStringList AssemblyGraph::splitCsv(QString line, QString sep)
  *                  or other information
  * @returns         true/false if loading data worked
  */
-bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * errormsg)
+bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * errormsg, bool * coloursLoaded)
 {
     clearAllCsvData();
 
@@ -1416,8 +1416,22 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
         *errormsg = "Not enough CSV headers: at least two required.";
         return false;
     }
-
     headers.pop_front();
+
+    //Check to see if any of the columns holds colour data.
+    int colourCol = -1;
+    for (int i = 0; i < headers.size(); ++i)
+    {
+        QString header = headers[i].toLower();
+        if (header == "colour" || header == "color")
+        {
+            colourCol = i;
+            headers.removeAt(i);
+            *coloursLoaded = true;
+            break;
+        }
+    }
+
     *columns = headers;
     int columnCount = headers.size();
 
@@ -1431,12 +1445,25 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
         //Get rid of the node name - no need to save that.
         cols.pop_front();
 
+        //If one of the columns holds colour data, get the colour from that one.
+        //Acceptable colour formats: 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue).
+        QColor colour;
+        if (colourCol != -1 && cols.size() > colourCol)
+        {
+            colour = QColor(cols[colourCol]);
+            cols.removeAt(colourCol);
+        }
+
         //Get rid of any extra data that doesn't have a header.
         while (cols.size() > columnCount)
             cols.pop_back();
 
         if (nodeName != "" && m_deBruijnGraphNodes.contains(nodeName))
+        {
             m_deBruijnGraphNodes[nodeName]->setCsvData(cols);
+            if (colour.isValid())
+                m_deBruijnGraphNodes[nodeName]->setCustomColour(colour);
+        }
         else
             unmatched_nodes++;
     }

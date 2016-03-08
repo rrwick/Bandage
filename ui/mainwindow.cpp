@@ -286,12 +286,19 @@ void MainWindow::loadCSV(QString fullFileName)
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
-        g_assemblyGraph->loadCSV(fullFileName, &columns, &errormsg);
+        bool coloursLoaded = false;
+        bool success = g_assemblyGraph->loadCSV(fullFileName, &columns, &errormsg, &coloursLoaded);
 
-        ui->csvComboBox->setEnabled(true);
-        ui->csvComboBox->clear();
-        ui->csvComboBox->addItems(columns);
-        g_settings->displayNodeCsvDataCol = 0;
+        if (success)
+        {
+            ui->csvCheckBox->setChecked(true);
+            ui->csvComboBox->setEnabled(true);
+            ui->csvComboBox->clear();
+            ui->csvComboBox->addItems(columns);
+            g_settings->displayNodeCsvDataCol = 0;
+            if (coloursLoaded)
+                ui->coloursComboBox->setCurrentIndex(6);
+        }
     }
 
     catch (...)
