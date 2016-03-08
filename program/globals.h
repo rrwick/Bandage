@@ -23,6 +23,7 @@
 #include <QString>
 #include <QProcess>
 #include <QSharedPointer>
+#include <QColor>
 
 class Settings;
 class Memory;
@@ -71,6 +72,9 @@ extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
+
+
+std::vector<QColor> getPresetColours();
 
 
 #endif // GLOBALS_H

@@ -56,7 +56,7 @@ public:
     bool isQueryPresent(BlastQuery * query);
     void findQueryPaths();
 
-    std::vector<QColor> presetColours;
+    std::vector<QColor> m_presetColours;
 
 private:
     QSharedPointer<QFile> m_tempNuclFile;
@@ -66,7 +66,6 @@ private:
     void updateTempFiles();
     bool tempNuclFileExists();
     bool tempProtFileExists();
-    void createPresetColours();
     void writeTempFile(QSharedPointer<QFile> file, SequenceType sequenceType);
     QString getUniqueName(QString name);
 

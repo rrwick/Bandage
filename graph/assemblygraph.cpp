@@ -1426,7 +1426,6 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
         if (header == "colour" || header == "color")
         {
             colourCol = i;
-            headers.removeAt(i);
             *coloursLoaded = true;
             break;
         }
@@ -1434,6 +1433,8 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 
     *columns = headers;
     int columnCount = headers.size();
+    QMap<QString, QColor> colourCategories;
+    std::vector<QColor> presetColours = getPresetColours();
 
     while (!in.atEnd())
     {
@@ -1446,12 +1447,24 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
         cols.pop_front();
 
         //If one of the columns holds colour data, get the colour from that one.
-        //Acceptable colour formats: 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue).
+        //Acceptable colour formats: 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a
+        //standard colour name (e.g. skyblue).
+        //If the colour value is something other than one of these, a colour will be assigned to the value.  That way
+        //categorical names can be used and automatically given colours.
         QColor colour;
         if (colourCol != -1 && cols.size() > colourCol)
         {
-            colour = QColor(cols[colourCol]);
-            cols.removeAt(colourCol);
+            QString colourString = cols[colourCol];
+            colour = QColor(colourString);
+            if (!colour.isValid())
+            {
+                if (!colourCategories.contains(colourString))
+                {
+                    int nextColourIndex = colourCategories.size();
+                    colourCategories[colourString] = presetColours[nextColourIndex];
+                }
+                colour = colourCategories[colourString];
+            }
         }
 
         //Get rid of any extra data that doesn't have a header.
@@ -1465,7 +1478,7 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
                 m_deBruijnGraphNodes[nodeName]->setCustomColour(colour);
         }
         else
-            unmatched_nodes++;
+            ++unmatched_nodes;
     }
 
     if (unmatched_nodes)

@@ -297,7 +297,12 @@ void MainWindow::loadCSV(QString fullFileName)
             ui->csvComboBox->addItems(columns);
             g_settings->displayNodeCsvDataCol = 0;
             if (coloursLoaded)
-                ui->coloursComboBox->setCurrentIndex(6);
+            {
+                if (ui->coloursComboBox->currentIndex() != 6)
+                    ui->coloursComboBox->setCurrentIndex(6);
+                else
+                    switchColourScheme();
+            }
         }
     }
 
