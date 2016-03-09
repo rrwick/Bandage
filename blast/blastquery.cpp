@@ -143,21 +143,21 @@ void BlastQuery::findQueryPaths()
 
             //Determine the minimum and maximum lengths allowed for the path.
             int minLength;
-            if (g_settings->minLengthPercentageOn && g_settings->minLengthBaseDiscrepancyOn) //both on
+            if (g_settings->minLengthPercentage.on && g_settings->minLengthBaseDiscrepancy.on) //both on
                 minLength = std::max(int(partialQueryLength * g_settings->minLengthPercentage + 0.5), partialQueryLength + g_settings->minLengthBaseDiscrepancy);
-            else if (g_settings->minLengthPercentageOn && !g_settings->minLengthBaseDiscrepancyOn) //just relative
+            else if (g_settings->minLengthPercentage.on && !g_settings->minLengthBaseDiscrepancy.on) //just relative
                 minLength = int(partialQueryLength * g_settings->minLengthPercentage + 0.5);
-            else if (!g_settings->minLengthPercentageOn && g_settings->minLengthBaseDiscrepancyOn) //just absolute
+            else if (!g_settings->minLengthPercentage.on && g_settings->minLengthBaseDiscrepancy.on) //just absolute
                 minLength = partialQueryLength + g_settings->minLengthBaseDiscrepancy;
             else //neither are on
                 minLength = 1;
 
             int maxLength;
-            if (g_settings->maxLengthPercentageOn && g_settings->maxLengthBaseDiscrepancyOn) //both on
+            if (g_settings->maxLengthPercentage.on && g_settings->maxLengthBaseDiscrepancy.on) //both on
                 maxLength = std::min(int(partialQueryLength * g_settings->maxLengthPercentage + 0.5), partialQueryLength + g_settings->maxLengthBaseDiscrepancy);
-            else if (g_settings->maxLengthPercentageOn && !g_settings->maxLengthBaseDiscrepancyOn) //just relative
+            else if (g_settings->maxLengthPercentage.on && !g_settings->maxLengthBaseDiscrepancy.on) //just relative
                 maxLength = int(partialQueryLength * g_settings->maxLengthPercentage + 0.5);
-            else if (!g_settings->maxLengthPercentageOn && g_settings->maxLengthBaseDiscrepancyOn) //just absolute
+            else if (!g_settings->maxLengthPercentage.on && g_settings->maxLengthBaseDiscrepancy.on) //just absolute
                 maxLength = partialQueryLength + g_settings->maxLengthBaseDiscrepancy;
             else //neither are on
                 maxLength = std::numeric_limits<int>::max();
@@ -184,19 +184,19 @@ void BlastQuery::findQueryPaths()
     {
         if (blastQueryPaths[i].getPathQueryCoverage() < g_settings->minQueryCoveredByPath)
             continue;
-        if (g_settings->minQueryCoveredByHitsOn && blastQueryPaths[i].getHitsQueryCoverage() < g_settings->minQueryCoveredByHits)
+        if (g_settings->minQueryCoveredByHits.on && blastQueryPaths[i].getHitsQueryCoverage() < g_settings->minQueryCoveredByHits)
             continue;
-        if (g_settings->maxEValueProductOn && blastQueryPaths[i].getEvalueProduct() > g_settings->maxEValueProduct)
+        if (g_settings->maxEValueProduct.on && blastQueryPaths[i].getEvalueProduct() > g_settings->maxEValueProduct)
             continue;
-        if (g_settings->minMeanHitIdentityOn && blastQueryPaths[i].getMeanHitPercIdentity() < 100.0 * g_settings->minMeanHitIdentity)
+        if (g_settings->minMeanHitIdentity.on && blastQueryPaths[i].getMeanHitPercIdentity() < 100.0 * g_settings->minMeanHitIdentity)
             continue;
-        if (g_settings->minLengthPercentageOn && blastQueryPaths[i].getRelativePathLength() < g_settings->minLengthPercentage)
+        if (g_settings->minLengthPercentage.on && blastQueryPaths[i].getRelativePathLength() < g_settings->minLengthPercentage)
             continue;
-        if (g_settings->maxLengthPercentageOn && blastQueryPaths[i].getRelativePathLength() > g_settings->maxLengthPercentage)
+        if (g_settings->maxLengthPercentage.on && blastQueryPaths[i].getRelativePathLength() > g_settings->maxLengthPercentage)
             continue;
-        if (g_settings->minLengthBaseDiscrepancyOn && blastQueryPaths[i].getAbsolutePathLengthDifference() < g_settings->minLengthBaseDiscrepancy)
+        if (g_settings->minLengthBaseDiscrepancy.on && blastQueryPaths[i].getAbsolutePathLengthDifference() < g_settings->minLengthBaseDiscrepancy)
             continue;
-        if (g_settings->maxLengthBaseDiscrepancyOn && blastQueryPaths[i].getAbsolutePathLengthDifference() > g_settings->maxLengthBaseDiscrepancy)
+        if (g_settings->maxLengthBaseDiscrepancy.on && blastQueryPaths[i].getAbsolutePathLengthDifference() > g_settings->maxLengthBaseDiscrepancy)
             continue;
 
         sufficientCoveragePaths.push_back(blastQueryPaths[i]);

@@ -28,6 +28,45 @@
 
 class DeBruijnNode;
 
+
+
+class IntSetting
+{
+public:
+    IntSetting(int v, int minimum, int maximum, bool isOn = true) {val = v; min = minimum; max = maximum; on = isOn;}
+    IntSetting() {val = 0; min = 0; max = 0;}
+    int val, min, max;
+    bool on;
+    operator int() const {return val;}
+    IntSetting & operator=(int newVal) {val = newVal; return *this;}
+    bool inRange(int v) const {return v >= min && v <= max;}
+};
+
+class FloatSetting
+{
+public:
+    FloatSetting(double v, double minimum, double maximum, bool isOn = true) {val = v; min = minimum; max = maximum; on = isOn;}
+    FloatSetting() {val = 0.0; min = 0.0; max = 0.0;}
+    double val, min, max;
+    bool on;
+    operator double() const {return val;}
+    FloatSetting & operator=(double newVal) {val = newVal; return *this;}
+    bool inRange(double v) const {return v >= min && v <= max;}
+};
+
+class SciNotSetting
+{
+public:
+    SciNotSetting(SciNot v, SciNot minimum, SciNot maximum, bool isOn = true) {val = v; min = minimum; max = maximum; on = isOn;}
+    SciNotSetting() {val = 0.0; min = 0.0; max = 0.0;}
+    SciNot val, min, max;
+    bool on;
+    operator SciNot() const {return val;}
+    SciNotSetting & operator=(SciNot newVal) {val = newVal; return *this;}
+    bool inRange(SciNot v) const {return v >= min && v <= max;}
+};
+
+
 class Settings
 {
 public:
@@ -37,23 +76,23 @@ public:
 
     NodeLengthMode nodeLengthMode;
     double autoNodeLengthPerMegabase;
-    double manualNodeLengthPerMegabase;
+    FloatSetting manualNodeLengthPerMegabase;
     double meanNodeLength;
-    int graphLayoutQuality;
-    double minimumNodeLength;
-    double edgeLength;
-    double doubleModeNodeSeparation;
-    double nodeSegmentLength;
+    IntSetting graphLayoutQuality;
+    FloatSetting minimumNodeLength;
+    FloatSetting edgeLength;
+    FloatSetting doubleModeNodeSeparation;
+    FloatSetting nodeSegmentLength;
 
-    double averageNodeWidth;
-    double readDepthEffectOnWidth;
-    double readDepthPower;
+    FloatSetting averageNodeWidth;
+    FloatSetting readDepthEffectOnWidth;
+    FloatSetting readDepthPower;
 
-    double edgeWidth;
-    double outlineThickness;
+    FloatSetting edgeWidth;
+    FloatSetting outlineThickness;
     double selectionThickness;
     double arrowheadSize;
-    double textOutlineThickness;
+    FloatSetting textOutlineThickness;
 
     int blastRainbowPartsPerQuery;
 
@@ -97,14 +136,14 @@ public:
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
 
-    int randomColourPositiveOpacity;
-    int randomColourNegativeOpacity;
-    int randomColourPositiveSaturation;
-    int randomColourNegativeSaturation;
-    int randomColourPositiveLightness;
-    int randomColourNegativeLightness;
+    IntSetting randomColourPositiveOpacity;
+    IntSetting randomColourNegativeOpacity;
+    IntSetting randomColourPositiveSaturation;
+    IntSetting randomColourNegativeSaturation;
+    IntSetting randomColourPositiveLightness;
+    IntSetting randomColourNegativeLightness;
 
-    int contiguitySearchSteps;
+    IntSetting contiguitySearchSteps;
     QColor contiguousStrandSpecificColour;
     QColor contiguousEitherStrandColour;
     QColor maybeContiguousColour;
@@ -114,9 +153,9 @@ public:
     QColor noBlastHitsColour;
 
     bool autoReadDepthValue;
-    double lowReadDepthValue;
+    FloatSetting lowReadDepthValue;
     QColor lowReadDepthColour;
-    double highReadDepthValue;
+    FloatSetting highReadDepthValue;
     QColor highReadDepthColour;
 
     QColor pathHighlightShadingColour;
@@ -130,22 +169,15 @@ public:
     //These control how Bandage finds the best path in the graph to represent
     //each BLAST query.  Some of these settings can be turned on and off and
     //therefore have a corresponding bool value.
-    int maxQueryPathNodes;
-    double minQueryCoveredByPath;
-    bool minQueryCoveredByHitsOn;
-    double minQueryCoveredByHits;
-    bool minMeanHitIdentityOn;
-    double minMeanHitIdentity;
-    bool maxEValueProductOn;
-    SciNot maxEValueProduct;
-    bool minLengthPercentageOn;
-    double minLengthPercentage;
-    bool maxLengthPercentageOn;
-    double maxLengthPercentage;
-    bool minLengthBaseDiscrepancyOn;
-    int minLengthBaseDiscrepancy;
-    bool maxLengthBaseDiscrepancyOn;
-    int maxLengthBaseDiscrepancy;
+    IntSetting maxQueryPathNodes;
+    FloatSetting minQueryCoveredByPath;
+    FloatSetting minQueryCoveredByHits;
+    FloatSetting minMeanHitIdentity;
+    SciNotSetting maxEValueProduct;
+    FloatSetting minLengthPercentage;
+    FloatSetting maxLengthPercentage;
+    IntSetting minLengthBaseDiscrepancy;
+    IntSetting maxLengthBaseDiscrepancy;
 
     //This holds the BLAST search parameters that a user can change before
     //running a BLAST search.
@@ -153,20 +185,15 @@ public:
 
     //These are the optional BLAST hit filters: whether or not they are used and
     //what their values are.
-    bool blastAlignmentLengthFilterOn;
-    int blastAlignmentLengthFilterValue;
-    bool blastQueryCoverageFilterOn;
-    double blastQueryCoverageFilterValue;
-    bool blastIdentityFilterOn;
-    double blastIdentityFilterValue;
-    bool blastEValueFilterOn;
-    SciNot blastEValueFilterValue;
-    bool blastBitScoreFilterOn;
-    double blastBitScoreFilterValue;
+    IntSetting blastAlignmentLengthFilter;
+    FloatSetting blastQueryCoverageFilter;
+    FloatSetting blastIdentityFilter;
+    SciNotSetting blastEValueFilter;
+    FloatSetting blastBitScoreFilter;
 
     //These are used for the 'Read depth range' graph scope.
-    double minReadDepthRange;
-    double maxReadDepthRange;
+    FloatSetting minReadDepthRange;
+    FloatSetting maxReadDepthRange;
 };
 
 #endif // SETTINGS_H

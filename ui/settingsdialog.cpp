@@ -94,16 +94,34 @@ SettingsDialog::~SettingsDialog()
 //These functions either set a widget to a value or set the value to the widget.  Pointers to
 //these functions will be passed to loadOrSaveSettingsToOrFromWidgets, so that one function can
 //take care of both save and load functionality.
-void setOneSettingFromWidget(double * setting, QDoubleSpinBox * spinBox, bool percentage) {*setting = spinBox->value() / (percentage ? 100.0 : 1.0);}
-void setOneSettingFromWidget(int * setting, QSpinBox * spinBox) {*setting = spinBox->value();}
+void setOneSettingFromWidget(FloatSetting * setting, QDoubleSpinBox * spinBox, bool percentage) {setting->val = spinBox->value() / (percentage ? 100.0 : 1.0);}
+void setOneSettingFromWidget(IntSetting * setting, QSpinBox * spinBox) {setting->val = spinBox->value();}
 void setOneSettingFromWidget(QColor * setting, ColourButton * button) {*setting = button->m_colour;}
-void setOneSettingFromWidget(SciNot * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox) {*setting = SciNot(coefficientSpinBox->value(), exponentSpinBox->value());}
+void setOneSettingFromWidget(SciNotSetting * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox) {setting->val = SciNot(coefficientSpinBox->value(), exponentSpinBox->value());}
 void setOneSettingFromWidget(bool * setting, QCheckBox * checkBox) {*setting = checkBox->isChecked();}
-void setOneWidgetFromSetting(double * setting, QDoubleSpinBox * spinBox, bool percentage) {spinBox->setValue(*setting * (percentage ? 100.0 : 1.0));}
-void setOneWidgetFromSetting(int * setting, QSpinBox * spinBox) {spinBox->setValue(*setting);}
 void setOneWidgetFromSetting(QColor * setting, ColourButton * button) {button->setColour(*setting);}
-void setOneWidgetFromSetting(SciNot * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox) {coefficientSpinBox->setValue(setting->getCoefficient()); exponentSpinBox->setValue(setting->getExponent());}
 void setOneWidgetFromSetting(bool * setting, QCheckBox * checkBox) {checkBox->setChecked(*setting);}
+void setOneWidgetFromSetting(FloatSetting * setting, QDoubleSpinBox * spinBox, bool percentage)
+{
+    spinBox->setValue(setting->val * (percentage ? 100.0 : 1.0));
+    spinBox->setMinimum(setting->min * (percentage ? 100.0 : 1.0));
+    spinBox->setMaximum(setting->max * (percentage ? 100.0 : 1.0));
+}
+void setOneWidgetFromSetting(IntSetting * setting, QSpinBox * spinBox)
+{
+    spinBox->setValue(setting->val);
+    spinBox->setMinimum(setting->min);
+    spinBox->setMaximum(setting->max);
+}
+void setOneWidgetFromSetting(SciNotSetting * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox)
+{
+    coefficientSpinBox->setValue(setting->val.getCoefficient());
+    coefficientSpinBox->setMinimum(setting->min.getCoefficient());
+    coefficientSpinBox->setMaximum(setting->max.getCoefficient());
+    exponentSpinBox->setValue(setting->val.getExponent());
+    exponentSpinBox->setMinimum(setting->min.getExponent());
+    exponentSpinBox->setMaximum(setting->max.getExponent());
+}
 
 
 void SettingsDialog::setWidgetsFromSettings()
@@ -129,10 +147,10 @@ void SettingsDialog::setSettingsFromWidgets()
 
 void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings * settings)
 {
-    void (*doubleFunctionPointer)(double *, QDoubleSpinBox *, bool);
-    void (*intFunctionPointer)(int *, QSpinBox *);
+    void (*doubleFunctionPointer)(FloatSetting *, QDoubleSpinBox *, bool);
+    void (*intFunctionPointer)(IntSetting *, QSpinBox *);
     void (*colourFunctionPointer)(QColor *, ColourButton *);
-    void (*sciNotFunctionPointer)(SciNot *, QDoubleSpinBox *, QSpinBox *);
+    void (*sciNotFunctionPointer)(SciNotSetting *, QDoubleSpinBox *, QSpinBox *);
     void (*checkBoxFunctionPointer)(bool *, QCheckBox *);
 
     if (setWidgets)
@@ -157,10 +175,6 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeLength, ui->edgeLengthSpinBox, false);
     doubleFunctionPointer(&settings->doubleModeNodeSeparation, ui->doubleModeNodeSeparationSpinBox, false);
     doubleFunctionPointer(&settings->nodeSegmentLength, ui->nodeSegmentLengthSpinBox, false);
-
-
-
-
     doubleFunctionPointer(&settings->readDepthEffectOnWidth, ui->readDepthEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->readDepthPower, ui->readDepthPowerSpinBox, false);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
@@ -193,19 +207,19 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
     intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
     doubleFunctionPointer(&settings->minQueryCoveredByPath, ui->minQueryCoveredByPathSpinBox, true);
-    checkBoxFunctionPointer(&settings->minQueryCoveredByHitsOn, ui->minQueryCoveredByHitsCheckBox);
+    checkBoxFunctionPointer(&settings->minQueryCoveredByHits.on, ui->minQueryCoveredByHitsCheckBox);
     doubleFunctionPointer(&settings->minQueryCoveredByHits, ui->minQueryCoveredByHitsSpinBox, true);
-    checkBoxFunctionPointer(&settings->minMeanHitIdentityOn, ui->minMeanHitIdentityCheckBox);
+    checkBoxFunctionPointer(&settings->minMeanHitIdentity.on, ui->minMeanHitIdentityCheckBox);
     doubleFunctionPointer(&settings->minMeanHitIdentity, ui->minMeanHitIdentitySpinBox, true);
-    checkBoxFunctionPointer(&settings->maxEValueProductOn, ui->maxEValueProductCheckBox);
+    checkBoxFunctionPointer(&settings->maxEValueProduct.on, ui->maxEValueProductCheckBox);
     sciNotFunctionPointer(&settings->maxEValueProduct, ui->maxEValueCoefficientSpinBox, ui->maxEValueExponentSpinBox);
-    checkBoxFunctionPointer(&settings->minLengthPercentageOn, ui->minLengthPercentageCheckBox);
+    checkBoxFunctionPointer(&settings->minLengthPercentage.on, ui->minLengthPercentageCheckBox);
     doubleFunctionPointer(&settings->minLengthPercentage, ui->minLengthPercentageSpinBox, true);
-    checkBoxFunctionPointer(&settings->maxLengthPercentageOn, ui->maxLengthPercentageCheckBox);
+    checkBoxFunctionPointer(&settings->maxLengthPercentage.on, ui->maxLengthPercentageCheckBox);
     doubleFunctionPointer(&settings->maxLengthPercentage, ui->maxLengthPercentageSpinBox, true);
-    checkBoxFunctionPointer(&settings->minLengthBaseDiscrepancyOn, ui->minLengthBaseDiscrepancyCheckBox);
+    checkBoxFunctionPointer(&settings->minLengthBaseDiscrepancy.on, ui->minLengthBaseDiscrepancyCheckBox);
     intFunctionPointer(&settings->minLengthBaseDiscrepancy, ui->minLengthBaseDiscrepancySpinBox);
-    checkBoxFunctionPointer(&settings->maxLengthBaseDiscrepancyOn, ui->maxLengthBaseDiscrepancyCheckBox);
+    checkBoxFunctionPointer(&settings->maxLengthBaseDiscrepancy.on, ui->maxLengthBaseDiscrepancyCheckBox);
     intFunctionPointer(&settings->maxLengthBaseDiscrepancy, ui->maxLengthBaseDiscrepancySpinBox);
 
     //A couple of settings are not in a spin box, check box or colour button, so
@@ -286,7 +300,6 @@ void SettingsDialog::setInfoTexts()
                                                "curves, but graph layout will take longer and graphical performance will be slower. "
                                                "Setting this to a larger value will produce nodes with more obvious angles, but "
                                                "graph layout and graphical performance will be faster.<br><br>"
-                                               "Setting this value to zero will result in all nodes being made up of a single segment.<br><br>"
                                                "The graph must be redrawn to see the effect of changing this setting.");
     ui->graphLayoutQualityInfoText->setInfoText("This controls how much time the graph layout algorithm spends on "
                                                 "positioning the graph components.<br><br>"

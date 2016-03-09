@@ -35,6 +35,7 @@
 #include "../blast/blastsearch.h"
 #include "../graph/assemblygraph.h"
 #include "../ui/mygraphicsview.h"
+#include <sys/ioctl.h>
 
 void printUsage(QTextStream * out, bool all)
 {
@@ -78,6 +79,13 @@ int main(int argc, char *argv[])
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
     g_graphicsView = new MyGraphicsView();
+
+    //Save the terminal width (useful for displaying help text neatly).
+    struct winsize ws;
+    ioctl(0, TIOCGWINSZ, &ws);
+    g_memory->terminalWidth = ws.ws_col;
+    if (g_memory->terminalWidth < 60)
+        g_memory->terminalWidth = 60;
 
     QApplication::setApplicationName("Bandage");
     QApplication::setApplicationVersion("0.7.2");
@@ -136,7 +144,7 @@ int main(int argc, char *argv[])
         else if (checkForHelp(arguments))
         {
             out << "" << endl;
-            out << "Program: Bandage" << endl;
+            out << getBandageTitleAsciiArt() << endl;
             out << "Version: " << QApplication::applicationVersion() << endl;
             printUsage(&out, false);
             return 0;
@@ -144,7 +152,7 @@ int main(int argc, char *argv[])
         else if (checkForHelpAll(arguments))
         {
             out << "" << endl;
-            out << "Program: Bandage" << endl;
+            out << getBandageTitleAsciiArt() << endl;
             out << "Version: " << QApplication::applicationVersion() << endl;
             printUsage(&out, true);
             return 0;

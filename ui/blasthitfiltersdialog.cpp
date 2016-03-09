@@ -40,20 +40,35 @@ void BlastHitFiltersDialog::checkBoxesChanged()
 }
 
 
+void setSpinBoxValMinAndMax(QSpinBox * spinBox, IntSetting setting)
+{
+    spinBox->setValue(setting.val);
+    spinBox->setMinimum(setting.min);
+    spinBox->setMaximum(setting.max);
+}
+
+void setSpinBoxValMinAndMax(QDoubleSpinBox * spinBox, FloatSetting setting)
+{
+    spinBox->setValue(setting.val);
+    spinBox->setMinimum(setting.min);
+    spinBox->setMaximum(setting.max);
+}
+
 void BlastHitFiltersDialog::setWidgetsFromSettings()
 {
-    ui->alignmentLengthCheckBox->setChecked(g_settings->blastAlignmentLengthFilterOn);
-    ui->queryCoverageCheckBox->setChecked(g_settings->blastQueryCoverageFilterOn);
-    ui->identityCheckBox->setChecked(g_settings->blastIdentityFilterOn);
-    ui->eValueCheckBox->setChecked(g_settings->blastEValueFilterOn);
-    ui->bitScoreCheckBox->setChecked(g_settings->blastBitScoreFilterOn);
+    ui->alignmentLengthCheckBox->setChecked(g_settings->blastAlignmentLengthFilter.on);
+    ui->queryCoverageCheckBox->setChecked(g_settings->blastQueryCoverageFilter.on);
+    ui->identityCheckBox->setChecked(g_settings->blastIdentityFilter.on);
+    ui->eValueCheckBox->setChecked(g_settings->blastEValueFilter.on);
+    ui->bitScoreCheckBox->setChecked(g_settings->blastBitScoreFilter.on);
 
-    ui->alignmentLengthSpinBox->setValue(g_settings->blastAlignmentLengthFilterValue);
-    ui->queryCoverageSpinBox->setValue(g_settings->blastQueryCoverageFilterValue);
-    ui->identitySpinBox->setValue(g_settings->blastIdentityFilterValue);
-    ui->eValueCoefficientSpinBox->setValue(g_settings->blastEValueFilterValue.getCoefficient());
-    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueFilterValue.getExponent());
-    ui->bitScoreSpinBox->setValue(g_settings->blastBitScoreFilterValue);
+    setSpinBoxValMinAndMax(ui->alignmentLengthSpinBox, g_settings->blastAlignmentLengthFilter);
+    setSpinBoxValMinAndMax(ui->queryCoverageSpinBox, g_settings->blastQueryCoverageFilter);
+    setSpinBoxValMinAndMax(ui->identitySpinBox, g_settings->blastIdentityFilter);
+    setSpinBoxValMinAndMax(ui->bitScoreSpinBox, g_settings->blastBitScoreFilter);
+
+    ui->eValueCoefficientSpinBox->setValue(g_settings->blastEValueFilter.val.getCoefficient());
+    ui->eValueExponentSpinBox->setValue(g_settings->blastEValueFilter.val.getExponent());
 
     checkBoxesChanged();
 }
@@ -61,52 +76,52 @@ void BlastHitFiltersDialog::setWidgetsFromSettings()
 
 void BlastHitFiltersDialog::setSettingsFromWidgets()
 {
-    g_settings->blastAlignmentLengthFilterOn = ui->alignmentLengthCheckBox->isChecked();
-    g_settings->blastQueryCoverageFilterOn = ui->queryCoverageCheckBox->isChecked();
-    g_settings->blastIdentityFilterOn = ui->identityCheckBox->isChecked();
-    g_settings->blastEValueFilterOn = ui->eValueCheckBox->isChecked();
-    g_settings->blastBitScoreFilterOn = ui->bitScoreCheckBox->isChecked();
+    g_settings->blastAlignmentLengthFilter.on = ui->alignmentLengthCheckBox->isChecked();
+    g_settings->blastQueryCoverageFilter.on = ui->queryCoverageCheckBox->isChecked();
+    g_settings->blastIdentityFilter.on = ui->identityCheckBox->isChecked();
+    g_settings->blastEValueFilter.on = ui->eValueCheckBox->isChecked();
+    g_settings->blastBitScoreFilter.on = ui->bitScoreCheckBox->isChecked();
 
-    g_settings->blastAlignmentLengthFilterValue = ui->alignmentLengthSpinBox->value();
-    g_settings->blastQueryCoverageFilterValue = ui->queryCoverageSpinBox->value();
-    g_settings->blastIdentityFilterValue = ui->identitySpinBox->value();
-    g_settings->blastEValueFilterValue = SciNot(ui->eValueCoefficientSpinBox->value(), ui->eValueExponentSpinBox->value());
-    g_settings->blastBitScoreFilterValue = ui->bitScoreSpinBox->value();
+    g_settings->blastAlignmentLengthFilter.val = ui->alignmentLengthSpinBox->value();
+    g_settings->blastQueryCoverageFilter.val = ui->queryCoverageSpinBox->value();
+    g_settings->blastIdentityFilter.val = ui->identitySpinBox->value();
+    g_settings->blastEValueFilter.val = SciNot(ui->eValueCoefficientSpinBox->value(), ui->eValueExponentSpinBox->value());
+    g_settings->blastBitScoreFilter.val = ui->bitScoreSpinBox->value();
 }
 
 
 QString BlastHitFiltersDialog::getFilterText()
 {
     QString filterText;
-    if (g_settings->blastAlignmentLengthFilterOn)
+    if (g_settings->blastAlignmentLengthFilter.on)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "alignment length: " + QString::number(g_settings->blastAlignmentLengthFilterValue);
+        filterText += "alignment length: " + QString::number(g_settings->blastAlignmentLengthFilter);
     }
-    if (g_settings->blastQueryCoverageFilterOn)
+    if (g_settings->blastQueryCoverageFilter.on)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "query coverage: " + QString::number(g_settings->blastQueryCoverageFilterValue) + "%";
+        filterText += "query coverage: " + QString::number(g_settings->blastQueryCoverageFilter) + "%";
     }
-    if (g_settings->blastIdentityFilterOn)
+    if (g_settings->blastIdentityFilter.on)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "identity: " + QString::number(g_settings->blastIdentityFilterValue) + "%";
+        filterText += "identity: " + QString::number(g_settings->blastIdentityFilter) + "%";
     }
-    if (g_settings->blastEValueFilterOn)
+    if (g_settings->blastEValueFilter.on)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "e-value: " + g_settings->blastEValueFilterValue.asString(true);
+        filterText += "e-value: " + g_settings->blastEValueFilter.val.asString(true);
     }
-    if (g_settings->blastBitScoreFilterOn)
+    if (g_settings->blastBitScoreFilter.on)
     {
         if (filterText.length() > 0)
             filterText += ", ";
-        filterText += "bit score: " + QString::number(g_settings->blastBitScoreFilterValue);
+        filterText += "bit score: " + QString::number(g_settings->blastBitScoreFilter);
     }
 
     if (filterText == "")

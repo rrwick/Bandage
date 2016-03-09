@@ -18,7 +18,6 @@
 
 #include "commoncommandlinefunctions.h"
 #include "../graph/assemblygraph.h"
-#include "../program/settings.h"
 #include <QDir>
 #include "../blast/blastsearch.h"
 #include <QApplication>
@@ -41,199 +40,138 @@ QStringList getArgumentList(int argc, char *argv[])
 
 void printSettingsUsage(QTextStream * out)
 {
-    *out << "Settings: The following options configure the Bandage settings that are" << endl;
-    *out << "          available in the Bandage GUI." << endl;
-    *out << endl;
-    *out << "          Colours can be specified using hex values, with or without an alpha " << endl;
-    *out << "          channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names" << endl;
-    *out << "          (e.g. red, yellowgreen or skyblue).  Note that hex colour names will" << endl;
-    *out << "          either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the" << endl;
-    *out << "          hash symbol escaped (e.g. \\#FFB6C1)." << endl;
-    *out << endl;
-    *out << "          Graph scope" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings control the graph scope.  If the aroundnodes scope is" << endl;
-    *out << "          used, then the --nodes option must also be used.  If the aroundblast" << endl;
-    *out << "          scope is used, a BLAST query must be given with the --query option." << endl;
-    *out << "          ";
-    printGraphScopeOptions(out);
-    *out << endl;
-    *out << "          Graph layout" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --double            Draw graph in double mode (default: off)" << endl;
-    *out << "          --bases <int>       Base pairs per segment (default: auto)" << endl;
-    *out << "                              High values result in longer nodes, small values" << endl;
-    *out << "                              in shorter nodes." << endl;
-    *out << "          --quality <int>     Graph layout quality, 0 (low) to 4 (high)" << endl;
-    *out << "                              (default: " + QString::number(g_settings->graphLayoutQuality) + ")" << endl;
-    *out << endl;
-    *out << "          Node width" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          Node widths are determined using the following formula:" << endl;
-    *out << "          a*b*((c/d)^e-1)+1" << endl;
-    *out << "            a = average node width, b = read depth effect on width" << endl;
-    *out << "            c = node read depth, d = mean read depth" << endl;
-    *out << "            e = power of read depth effect on width" << endl;
-    *out << "          --nodewidth <float> Average node width (0.5 to 1000, default: " + QString::number(g_settings->averageNodeWidth) + ")" << endl;
-    *out << "          --depwidth <float>  Read depth effect on width (0 to 1, default: " + QString::number(g_settings->readDepthEffectOnWidth) + ")" << endl;
-    *out << "          --deppower <float>  Power of read depth effect on width (0.1 to 1," << endl;
-    *out << "                              default: " + QString::number(g_settings->readDepthPower) + ")" << endl;
-    *out << endl;
-    *out << "          Node labels" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --names             Label nodes with name (default: off)" << endl;
-    *out << "          --lengths           Label nodes with length (default: off)" << endl;
-    *out << "          --readdepth         Label nodes with read depth (default: off)" << endl;
-    *out << "          --blasthits         Label BLAST hits (default: off)" << endl;
-    *out << "          --fontsize <int>    Font size for node labels (1 to 100, default: " + QString::number(g_settings->labelFont.pointSize()) + ")" << endl;
-    *out << endl;
-    *out << "          Graph appearance" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --edgecol <col>     Colour for edges (default: " + getColourName(g_settings->edgeColour.name()) + ")" << endl;
-    *out << "          --edgewidth <float> Edge width (0.1 to 1000, default: " + QString::number(g_settings->edgeWidth) + ")" << endl;
-    *out << "          --outcol <col>      Colour for node outlines (default: " + getColourName(g_settings->outlineColour.name()) + ")" << endl;
-    *out << "          --outline <float>   Node outline thickness (0 to 1000, default: " + QString::number(g_settings->outlineThickness) + ") " << endl;
-    *out << "          --selcol <col>      Colour for selections (default: " + getColourName(g_settings->selectionColour.name()) + ")" << endl;
-    *out << "          --noaa              Disable antialiasing (default: antialiasing on)" << endl;
-    *out << endl;
-    *out << "          Text appearance" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --textcol <col>     Colour for label text (default: " + getColourName(g_settings->textColour.name()) + ")" << endl;
-    *out << "          --toutcol <col>     Colour for text outline (default: " + getColourName(g_settings->textOutlineColour.name()) + ")" << endl;
-    *out << "          --toutline <float>  Surround text with an outline with this" << endl;
-    *out << "                              thickness (default: " + QString::number(g_settings->textOutlineThickness) + ")" << endl;
-    *out << "          --centre            Node labels appear at the centre of the node" << endl;
-    *out << "                              (default: off, node labels appear over visible" << endl;
-    *out << "                              parts of nodes)" << endl;
-    *out << endl;
-    *out << "          Node colours" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --colour <scheme>   Node colouring scheme, from one of the following" << endl;
-    *out << "                              options: random, uniform, readdepth, blastsolid," << endl;
-    *out << "                              blastrainbow (default: random if --query option" << endl;
-    *out << "                              not used, blastsolid if --query option used)" << endl;
-    *out << endl;
-    *out << "          Random colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the random colour scheme is used." << endl;
-    *out << "          --ransatpos <int>   Positive node saturation (0 to 255, default: " + QString::number(g_settings->randomColourPositiveSaturation) + ")" << endl;
-    *out << "          --ransatneg <int>   Negative node saturation (0 to 255, default: " + QString::number(g_settings->randomColourNegativeSaturation) + ")" << endl;
-    *out << "          --ranligpos <int>   Positive node lightness (0 to 255, default: " + QString::number(g_settings->randomColourPositiveLightness) + ")" << endl;
-    *out << "          --ranligneg <int>   Negative node lightness (0 to 255, default: " + QString::number(g_settings->randomColourNegativeLightness) + ")" << endl;
-    *out << "          --ranopapos <int>   Positive node opacity (0 to 255, default: " + QString::number(g_settings->randomColourPositiveOpacity) + ")" << endl;
-    *out << "          --ranopaneg <int>   Negative node opacity (0 to 255, default: " + QString::number(g_settings->randomColourNegativeOpacity) + ")" << endl;
-    *out << endl;
-    *out << "          Uniform colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the uniform colour scheme is used." << endl;
-    *out << "          --unicolpos <col>   Positive node colour (default: " + getColourName(g_settings->uniformPositiveNodeColour.name()) + ")" << endl;
-    *out << "          --unicolneg <col>   Negative node colour (default: " + getColourName(g_settings->uniformNegativeNodeColour.name()) + ")" << endl;
-    *out << "          --unicolspe <col>   Special node colour (default: " + getColourName(g_settings->uniformNodeSpecialColour.name()) + ")" << endl;
-    *out << endl;
-    *out << "          Read depth colour scheme" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings only apply when the read depth colour scheme is used." << endl;
-    *out << "          --depcollow <col>   Colour for nodes with read depth below the low" << endl;
-    *out << "                              read depth value (default: " + getColourName(g_settings->lowReadDepthColour.name()) + ")" << endl;
-    *out << "          --depcolhi <col>    Colour for nodes with read depth above the high" << endl;
-    *out << "                              read depth value (default: " + getColourName(g_settings->highReadDepthColour.name()) + ")" << endl;
-    *out << "          --depvallow <float> Low read depth value (default: auto)" << endl;
-    *out << "          --depvalhi <float>  High read depth value (default: auto)" << endl;
-    *out << endl;
-    *out << "          BLAST search" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          --query <fastafile> A FASTA file of either nucleotide or protein" << endl;
-    *out << "                              sequences to be used as BLAST queries (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "          --blastp <param>    Parameters to be used by blastn and tblastn when" << endl;
-    *out << "                              conducting a BLAST search in Bandage (default:" << endl;
-    *out << "                              none)" << endl;
-    *out << "                              Format BLAST parameters exactly as they would be" << endl;
-    *out << "                              used for blastn/tblastn on the command line, and" << endl;
-    *out << "                              enclose them in quotes." << endl;
-    *out << "          --alfilter <int>    Alignment length filter for BLAST hits. Hits with" << endl;
-    *out << "                              shorter alignments will be excluded (0 to" << endl;
-    *out << "                              1000000, default: off)" << endl;
-    *out << "          --qcfilter <float>  Query coverage filter for BLAST hits. Hits with" << endl;
-    *out << "                              less coverage will be excluded (0 to 100," << endl;
-    *out << "                              default: off)" << endl;
-    *out << "          --ifilter <float>   Identity filter for BLAST hits. Hits with less" << endl;
-    *out << "                              identity will be excluded (0 to 100, default:" << endl;
-    *out << "                              off)" << endl;
-    *out << "          --evfilter <sci>    E-value filter for BLAST hits. Hits with larger" << endl;
-    *out << "                              e-values will be excluded (1e-999 to 9.9e1," << endl;
-    *out << "                              default: off)" << endl;
-    *out << "          --bsfilter <float>  Bit score filter for BLAST hits. Hits with lower" << endl;
-    *out << "                              bit scores will be excluded (0 to 1000000," << endl;
-    *out << "                              default: off)" << endl;
-    *out << endl;
-    *out << "          BLAST query paths" << endl;
-    *out << "          ---------------------------------------------------------------------" << endl;
-    *out << "          These settings control how Bandage searches for query paths after" << endl;
-    *out << "          conducting a BLAST search." << endl;
-    *out << "          --pathnodes <int>   The number of allowed nodes in a BLAST query path" << endl;
-    *out << "                              (1 to 50, default: " << QString::number(g_settings->maxQueryPathNodes) + ")" << endl;
+    int wrapSize = g_memory->terminalWidth;
+    int indentSize = 10;
+    int optionIndent = 20;
 
-    *out << "          --minpatcov <float> Minimum fraction of a BLAST query which must be" << endl;
-    *out << "                              covered by a query path (0.3 to 1.0, default:" << endl;
-    *out << "                              " + QString::number(g_settings->minQueryCoveredByPath) + ")" << endl;
 
-    *out << "          --minhitcov <float> Minimum fraction of a BLAST query which must be" << endl;
-    *out << "                              covered by BLAST hits in a query path (0.3 to" << endl;
-    *out << "                              1.0 or off, default: ";
-    if (g_settings->minQueryCoveredByHitsOn)
-        *out << QString::number(g_settings->minQueryCoveredByHits) + ")" << endl;
-    else
-        *out << "off)" << endl;
+    QStringList wrapped;
+    wrapped << wrapText("Settings: The following options configure the Bandage settings that are available in the Bandage GUI.", wrapSize, indentSize, optionIndent, false);
 
-    *out << "          --minmeanid <float> Minimum mean identity of BLAST hits in a query" << endl;
-    *out << "                              path (0.0 to 1.0 or off, default: ";
-    if (g_settings->minMeanHitIdentityOn)
-        *out << QString::number(g_settings->minMeanHitIdentity) + ")" << endl;
-    else
-        *out << "off)" << endl;
+    QString dashes = "";
+    for (int i = 0; i < wrapSize - indentSize; ++i)
+        dashes += '-';
 
-    *out << "          --maxevprod <sci>   Maximum e-value product for all BLAST hits in a" << endl;
-    *out << "                              query path, (1e-999 to 9.9e1 or off, default:" << endl;
-    *out << "                              ";
-    if (g_settings->maxEValueProductOn)
-        *out << g_settings->maxEValueProduct.asString(true) + ")" << endl;
-    else
-        *out << "off)" << endl;
+    QStringList u;
+    u << "";
+    u << "Colours can be specified using hex values, with or without an alpha channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names (e.g. red, yellowgreen or skyblue).  Note that hex colours will either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the hash symbol escaped (e.g. \\#FFB6C1).";
+    u << "";
+    u << "Graph scope";
+    u << dashes;
+    u << "These settings control the graph scope.  If the aroundnodes scope is used, then the --nodes option must also be used.  If the aroundblast scope is used, a BLAST query must be given with the --query option.";
+//    getGraphScopeOptions(&u);
+    u << "--double            Draw graph in double mode (default: off)";
+    u << "";
+    u << "Graph size";
+    u << dashes;
+    u << "--nodelen <float>   Node length per megabase " + getRangeAndDefault(g_settings->manualNodeLengthPerMegabase, "auto");
+    u << "--minnodlen <float> Minimum node length " + getRangeAndDefault(g_settings->minimumNodeLength);
+    u << "--edgelen <float>   Edge length " + getRangeAndDefault(g_settings->edgeLength);
+    u << "--edgewidth <float> Edge width " + getRangeAndDefault(g_settings->edgeWidth);
+    u << "--doubsep <float>   Double mode separation " + getRangeAndDefault(g_settings->doubleModeNodeSeparation);
+    u << "";
+    u << "Graph layout quality";
+    u << dashes;
+    u << "--nodseglen <float> Minimum node length " + getRangeAndDefault(g_settings->nodeSegmentLength);
+    u << "--iter <int>        Graph layout iterations " + getRangeAndDefault(g_settings->graphLayoutQuality);
+    u << "";
+    u << "Graph appearance";
+    u << dashes;
+    u << "--edgecol <col>     Colour for edges " + getDefaultColour(g_settings->edgeColour);
+    u << "--outcol <col>      Colour for node outlines " + getDefaultColour(g_settings->outlineColour);
+    u << "--outline <float>   Node outline thickness " + getRangeAndDefault(g_settings->outlineThickness);
+    u << "--selcol <col>      Colour for selections " + getDefaultColour(g_settings->selectionColour);
+    u << "--noaa              Disable antialiasing (default: antialiasing on)";
+    u << "";
+    u << "Text appearance";
+    u << dashes;
+    u << "--textcol <col>     Colour for label text " + getDefaultColour(g_settings->textColour);
+    u << "--toutcol <col>     Colour for text outline " + getDefaultColour(g_settings->textOutlineColour);
+    u << "--toutline <float>  Surround text with an outline with this thickness " + getRangeAndDefault(g_settings->textOutlineThickness);
+    u << "--centre            Node labels appear at the centre of the node (default: off, node labels appear over visible parts of nodes)";
+    u << "";
+    u << "Node width";
+    u << dashes;
+    u << "Node widths are determined using the following formula:";
+    u << "a*b*((c/d)^e-1)+1";
+    u << "  a = average node width";
+    u << "  b = read depth effect on width";
+    u << "  c = node read depth";
+    u << "  d = mean read depth";
+    u << "  e = power of read depth effect on width";
+    u << "--nodewidth <float> Average node width " + getRangeAndDefault(g_settings->averageNodeWidth);
+    u << "--depwidth <float>  Read depth effect on width " + getRangeAndDefault(g_settings->readDepthEffectOnWidth);
+    u << "--deppower <float>  Power of read depth effect on width " + getRangeAndDefault(g_settings->readDepthPower);
+    u << "";
+    u << "Node labels";
+    u << dashes;
+    u << "--names             Label nodes with name (default: off)";
+    u << "--lengths           Label nodes with length (default: off)";
+    u << "--readdepth         Label nodes with read depth (default: off)";
+    u << "--blasthits         Label BLAST hits (default: off)";
+    u << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(g_settings->labelFont.pointSize(), 1, 100);
+    u << "";
+    u << "Node colours";
+    u << dashes;
+    u << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, readdepth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
+    u << "";
+    u << "Random colour scheme";
+    u << dashes;
+    u << "These settings only apply when the random colour scheme is used.";
+    u << "--ransatpos <int>   Positive node saturation " + getRangeAndDefault(g_settings->randomColourPositiveSaturation);
+    u << "--ransatneg <int>   Negative node saturation " + getRangeAndDefault(g_settings->randomColourNegativeSaturation);
+    u << "--ranligpos <int>   Positive node lightness " + getRangeAndDefault(g_settings->randomColourPositiveLightness);
+    u << "--ranligneg <int>   Negative node lightness " + getRangeAndDefault(g_settings->randomColourNegativeLightness);
+    u << "--ranopapos <int>   Positive node opacity " + getRangeAndDefault(g_settings->randomColourPositiveOpacity);
+    u << "--ranopaneg <int>   Negative node opacity " + getRangeAndDefault(g_settings->randomColourNegativeOpacity);
+    u << "";
+    u << "Uniform colour scheme";
+    u << dashes;
+    u << "These settings only apply when the uniform colour scheme is used.";
+    u << "--unicolpos <col>   Positive node colour " + getDefaultColour(g_settings->uniformPositiveNodeColour);
+    u << "--unicolneg <col>   Negative node colour " + getDefaultColour(g_settings->uniformNegativeNodeColour);
+    u << "--unicolspe <col>   Special node colour " + getDefaultColour(g_settings->uniformNodeSpecialColour);
+    u << "";
+    u << "Read depth colour scheme";
+    u << dashes;
+    u << "These settings only apply when the read depth colour scheme is used.";
+    u << "--depcollow <col>   Colour for nodes with read depth below the low read depth value " + getDefaultColour(g_settings->lowReadDepthColour);
+    u << "--depcolhi <col>    Colour for nodes with read depth above the high read depth value " + getDefaultColour(g_settings->highReadDepthColour);
+    u << "--depvallow <float> Low read depth value (default: auto)";
+    u << "--depvalhi <float>  High read depth value (default: auto)";
+    u << "";
+    u << "BLAST search";
+    u << dashes;
+    u << "--query <fastafile> A FASTA file of either nucleotide or protein sequences to be used as BLAST queries (default: none)";
+    u << "--blastp <param>    Parameters to be used by blastn and tblastn when conducting a BLAST search in Bandage (default: none). Format BLAST parameters exactly as they would be used for blastn/tblastn on the command line, and enclose them in quotes.";
+    u << "--alfilter <int>    Alignment length filter for BLAST hits. Hits with shorter alignments will be excluded " + getRangeAndDefault(g_settings->blastAlignmentLengthFilter);
+    u << "--qcfilter <float>  Query coverage filter for BLAST hits. Hits with less coverage will be excluded " + getRangeAndDefault(g_settings->blastQueryCoverageFilter);
+    u << "--ifilter <float>   Identity filter for BLAST hits. Hits with less identity will be excluded " + getRangeAndDefault(g_settings->blastIdentityFilter);
+    u << "--evfilter <sci>    E-value filter for BLAST hits. Hits with larger e-values will be excluded " + getRangeAndDefault(g_settings->blastEValueFilter);
+    u << "--bsfilter <float>  Bit score filter for BLAST hits. Hits with lower bit scores will be excluded " + getRangeAndDefault(g_settings->blastBitScoreFilter);
+    u << "";
+    u << "BLAST query paths";
+    u << dashes;
+    u << "These settings control how Bandage searches for query paths after conducting a BLAST search.";
+    u << "--pathnodes <int>   The number of allowed nodes in a BLAST query path " + getRangeAndDefault(g_settings->maxQueryPathNodes);
+    u << "--minpatcov <float> Minimum fraction of a BLAST query which must be covered by a query path " + getRangeAndDefault(g_settings->minQueryCoveredByPath);
+    u << "--minhitcov <float> Minimum fraction of a BLAST query which must be covered by BLAST hits in a query path " + getRangeAndDefault(g_settings->minQueryCoveredByHits);
+    u << "--minmeanid <float> Minimum mean identity of BLAST hits in a query path " + getRangeAndDefault(g_settings->minMeanHitIdentity);
+    u << "--maxevprod <sci>   Maximum e-value product for all BLAST hits in a query path " + getRangeAndDefault(g_settings->maxEValueProduct);
+    u << "--minpatlen <float> Minimum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->minLengthPercentage);
+    u << "--maxpatlen <float> Maximum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->maxLengthPercentage);
+    u << "--minlendis <int>   Minimum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->minLengthBaseDiscrepancy);
+    u << "--maxlendis <int>   Maximum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->maxLengthBaseDiscrepancy);
+    u << "";
 
-    *out << "          --minpatlen <float> Minimum allowed relative path length as compared" << endl;
-    *out << "                              to the query." << endl;
-    *out << "                              (0 to 10000 or off, default: ";
-    if (g_settings->minLengthPercentageOn)
-        *out << QString::number(g_settings->minLengthPercentage) + ")" << endl;
-    else
-        *out << "off)" << endl;
+    for (int i = 0; i < u.size(); ++i)
+        wrapped << wrapText(u[i], wrapSize, indentSize, optionIndent, true);
 
-    *out << "          --maxpatlen <float> Maximum allowed relative path length as compared" << endl;
-    *out << "                              to the query." << endl;
-    *out << "                              (0 to 10000 or off, default: ";
-    if (g_settings->maxLengthPercentageOn)
-        *out << QString::number(g_settings->maxLengthPercentage) + ")" << endl;
-    else
-        *out << "off)" << endl;
-
-    *out << "          --minlendis <int>   Minimum allowed length discrepancy (in bases)" << endl;
-    *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (-1000000 to 1000000 or off, default: ";
-    if (g_settings->minLengthBaseDiscrepancyOn)
-        *out << QString::number(g_settings->minLengthBaseDiscrepancy) + ")" << endl;
-    else
-        *out << "off)" << endl;
-
-    *out << "          --maxlendis <int>   Maximum allowed length discrepancy (in bases)" << endl;
-    *out << "                              between a BLAST query and its path in the graph" << endl;
-    *out << "                              (-1000000 to 1000000 or off, default: ";
-    if (g_settings->maxLengthBaseDiscrepancyOn)
-        *out << QString::number(g_settings->maxLengthBaseDiscrepancy) + ")" << endl;
-    else
-        *out << "off)" << endl;
-
-    *out << endl;
+    for (int i = 0; i < wrapped.size(); ++i)
+    {
+        *out << wrapped[i];
+        *out << endl;
+    }
 }
 
 
@@ -406,8 +344,8 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     //Make sure that the min path length is less than or equal to the max path
     //length.
-    bool minLengthPercentageOn = g_settings->minLengthPercentageOn;
-    bool maxLengthPercentageOn = g_settings->maxLengthPercentageOn;
+    bool minLengthPercentageOn = g_settings->minLengthPercentage.on;
+    bool maxLengthPercentageOn = g_settings->maxLengthPercentage.on;
     double minLengthPercentage = g_settings->minLengthPercentage;
     double maxLengthPercentage = g_settings->maxLengthPercentage;
     if (isOptionPresent("--minpatlen", &argumentsCopy))
@@ -438,8 +376,8 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     //Make sure that the min length discrepancy is less than or equal to the max
     //length discrepancy.
-    bool minLengthBaseDiscrepancyOn = g_settings->minLengthBaseDiscrepancyOn;
-    bool maxLengthBaseDiscrepancyOn = g_settings->maxLengthBaseDiscrepancyOn;
+    bool minLengthBaseDiscrepancyOn = g_settings->minLengthBaseDiscrepancy.on;
+    bool maxLengthBaseDiscrepancyOn = g_settings->maxLengthBaseDiscrepancy.on;
     int minLengthBaseDiscrepancy = g_settings->minLengthBaseDiscrepancy;
     int maxLengthBaseDiscrepancy = g_settings->maxLengthBaseDiscrepancy;
     if (isOptionPresent("--minlendis", &argumentsCopy))
@@ -457,7 +395,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     {
         QString optionString = getStringOption("--maxlendis", &argumentsCopy);
         if (optionString.toLower() == "off")
-            g_settings->maxLengthBaseDiscrepancyOn = false;
+            g_settings->maxLengthBaseDiscrepancy.on = false;
         else
         {
             maxLengthBaseDiscrepancyOn = true;
@@ -629,10 +567,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--minhitcov", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->minQueryCoveredByHitsOn = false;
+            g_settings->minQueryCoveredByHits.on = false;
         else
         {
-            g_settings->minQueryCoveredByHitsOn = true;
+            g_settings->minQueryCoveredByHits.on = true;
             g_settings->minQueryCoveredByHits = getFloatOption("--minhitcov", &arguments);
         }
     }
@@ -640,10 +578,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--minmeanid", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->minMeanHitIdentityOn = false;
+            g_settings->minMeanHitIdentity.on = false;
         else
         {
-            g_settings->minMeanHitIdentityOn = true;
+            g_settings->minMeanHitIdentity.on = true;
             g_settings->minMeanHitIdentity = getFloatOption("--minmeanid", &arguments);
         }
     }
@@ -651,10 +589,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--maxevprod", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->maxEValueProductOn = false;
+            g_settings->maxEValueProduct.on = false;
         else
         {
-            g_settings->maxEValueProductOn = true;
+            g_settings->maxEValueProduct.on = true;
             g_settings->maxEValueProduct = getSciNotOption("--maxevprod", &arguments);
         }
     }
@@ -662,10 +600,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--minpatlen", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->minLengthPercentageOn = false;
+            g_settings->minLengthPercentage.on = false;
         else
         {
-            g_settings->minLengthPercentageOn = true;
+            g_settings->minLengthPercentage.on = true;
             g_settings->minLengthPercentage = getFloatOption("--minpatlen", &arguments);
         }
     }
@@ -673,10 +611,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--maxpatlen", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->maxLengthPercentageOn = false;
+            g_settings->maxLengthPercentage.on = false;
         else
         {
-            g_settings->maxLengthPercentageOn = true;
+            g_settings->maxLengthPercentage.on = true;
             g_settings->maxLengthPercentage = getFloatOption("--maxpatlen", &arguments);
         }
     }
@@ -684,10 +622,10 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--minlendis", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->minLengthBaseDiscrepancyOn = false;
+            g_settings->minLengthBaseDiscrepancy.on = false;
         else
         {
-            g_settings->minLengthBaseDiscrepancyOn = true;
+            g_settings->minLengthBaseDiscrepancy.on = true;
             g_settings->minLengthBaseDiscrepancy = getIntOption("--minlendis", &arguments);
         }
     }
@@ -695,38 +633,38 @@ void parseSettings(QStringList arguments)
     {
         QString optionString = getStringOption("--maxlendis", &arguments);
         if (optionString.toLower() == "off")
-            g_settings->maxLengthBaseDiscrepancyOn = false;
+            g_settings->maxLengthBaseDiscrepancy.on = false;
         else
         {
-            g_settings->maxLengthBaseDiscrepancyOn = true;
+            g_settings->maxLengthBaseDiscrepancy.on = true;
             g_settings->maxLengthBaseDiscrepancy = getIntOption("--maxlendis", &arguments);
         }
     }
 
     if (isOptionPresent("--alfilter", &arguments))
     {
-        g_settings->blastAlignmentLengthFilterOn = true;
-        g_settings->blastAlignmentLengthFilterValue = getIntOption("--alfilter", &arguments);
+        g_settings->blastAlignmentLengthFilter.on = true;
+        g_settings->blastAlignmentLengthFilter = getIntOption("--alfilter", &arguments);
     }
     if (isOptionPresent("--qcfilter", &arguments))
     {
-        g_settings->blastQueryCoverageFilterOn = true;
-        g_settings->blastQueryCoverageFilterValue = getFloatOption("--qcfilter", &arguments);
+        g_settings->blastAlignmentLengthFilter.on = true;
+        g_settings->blastQueryCoverageFilter = getFloatOption("--qcfilter", &arguments);
     }
     if (isOptionPresent("--ifilter", &arguments))
     {
-        g_settings->blastIdentityFilterOn = true;
-        g_settings->blastIdentityFilterValue = getFloatOption("--ifilter", &arguments);
+        g_settings->blastIdentityFilter.on = true;
+        g_settings->blastIdentityFilter = getFloatOption("--ifilter", &arguments);
     }
     if (isOptionPresent("--evfilter", &arguments))
     {
-        g_settings->blastEValueFilterOn = true;
-        g_settings->blastEValueFilterValue = getSciNotOption("--evfilter", &arguments);
+        g_settings->blastEValueFilter.on = true;
+        g_settings->blastEValueFilter = getSciNotOption("--evfilter", &arguments);
     }
     if (isOptionPresent("--bsfilter", &arguments))
     {
-        g_settings->blastBitScoreFilterOn = true;
-        g_settings->blastBitScoreFilterValue = getFloatOption("--bsfilter", &arguments);
+        g_settings->blastBitScoreFilter.on = true;
+        g_settings->blastBitScoreFilter = getFloatOption("--bsfilter", &arguments);
     }
 }
 
@@ -1427,4 +1365,78 @@ QString getElapsedTime(QDateTime start, QDateTime end)
     QString hourString = QString("%1").arg(hoursElapsed, 2, 10, QChar('0'));
 
     return hourString + ":" + minString + ":" + secString + "." + msecString;
+}
+
+
+QStringList wrapText(QString text, int width, int indent, int optionIndent, bool indentFirst)
+{
+    QStringList returnList;
+
+    QString spaces = "";
+    for (int i = 0; i < indent; ++i)
+        spaces += ' ';
+    QString optionSpaces = spaces;
+    for (int i = 0; i < optionIndent; ++i)
+        optionSpaces += ' ';
+
+    bool option = (text.length() > 2 && text[0] == '-' && text[1] == '-' && text[2] != '-');
+
+    if (indentFirst)
+        text = spaces + text;
+
+    while (text.length() > width)
+    {
+        QString leftString = text.left(width);
+        int spaceIndex = leftString.lastIndexOf(' ');
+        if (spaceIndex < width / 2)
+            spaceIndex = width;
+
+        leftString = text.left(spaceIndex);
+        returnList << rstrip(leftString);
+        if (option)
+            text = optionSpaces + text.mid(spaceIndex).trimmed();
+        else
+            text = spaces + text.mid(spaceIndex).trimmed();
+    }
+
+    returnList << text;
+    return returnList;
+}
+
+//http://stackoverflow.com/questions/8215303/how-do-i-remove-trailing-whitespace-from-a-qstring
+QString rstrip(const QString& str)
+{
+    int n = str.size() - 1;
+    for (; n >= 0; --n)
+    {
+        if (!str.at(n).isSpace())
+            return str.left(n + 1);
+    }
+    return "";
+}
+
+QString getRangeAndDefault(IntSetting setting) {return (setting.on) ? getRangeAndDefault(setting.min, setting.max, setting.val) : getRangeAndDefault(setting.min, setting.max, "off");}
+QString getRangeAndDefault(IntSetting setting, QString defaultVal) {return getRangeAndDefault(setting.min, setting.max, defaultVal);}
+QString getRangeAndDefault(FloatSetting setting) {return (setting.on) ? getRangeAndDefault(setting.min, setting.max, setting.val) : getRangeAndDefault(setting.min, setting.max, "off");}
+QString getRangeAndDefault(FloatSetting setting, QString defaultVal) {return getRangeAndDefault(setting.min, setting.max, defaultVal);}
+QString getRangeAndDefault(SciNotSetting setting) {return (setting.on) ? getRangeAndDefault(setting.min.asString(true), setting.max.asString(true), setting.val.asString(true)) : getRangeAndDefault(setting.min.asString(true), setting.max.asString(true), "off");}
+QString getRangeAndDefault(int min, int max, int defaultVal) { return getRangeAndDefault(double(min), double(max), QString::number(defaultVal));}
+QString getRangeAndDefault(int min, int max, QString defaultVal) {return getRangeAndDefault(double(min), double(max), defaultVal);}
+QString getRangeAndDefault(double min, double max, double defaultVal) {return getRangeAndDefault(min, max, QString::number(defaultVal));}
+QString getRangeAndDefault(double min, double max, QString defaultVal) {return getRangeAndDefault(QString::number(min), QString::number(max), defaultVal);}
+
+QString getRangeAndDefault(QString min, QString max, QString defaultVal)
+{
+    return "(" + min + " to " + max + ", default: " + defaultVal + ")";
+}
+
+QString getDefaultColour(QColor colour)
+{
+    return "(default: " + getColourName(colour.name()) + ")";
+}
+
+
+QString getBandageTitleAsciiArt()
+{
+    return "  ____                  _                  \n |  _ \\                | |                 \n | |_) | __ _ _ __   __| | __ _  __ _  ___ \n |  _ < / _` | '_ \\ / _` |/ _` |/ _` |/ _ \\\n | |_) | (_| | | | | (_| | (_| | (_| |  __/\n |____/ \\__,_|_| |_|\\__,_|\\__,_|\\__, |\\___|\n                                 __/ |     \n                                |___/      ";
 }

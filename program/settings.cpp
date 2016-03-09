@@ -25,23 +25,23 @@ Settings::Settings()
 
     nodeLengthMode = AUTO_NODE_LENGTH;
     autoNodeLengthPerMegabase = 1000.0;
-    manualNodeLengthPerMegabase = 1000.0;
+    manualNodeLengthPerMegabase = FloatSetting(1000.0, 0, 1000000.0);
     meanNodeLength = 40.0;
-    graphLayoutQuality = 2;
-    minimumNodeLength = 5.0;
-    edgeLength = 5.0;
-    doubleModeNodeSeparation = 2.0;
-    nodeSegmentLength = 20.0;
+    graphLayoutQuality = IntSetting(2, 0, 4);
+    minimumNodeLength = FloatSetting(5.0, 1.0, 100.0);
+    edgeLength = FloatSetting(5.0, 0.1, 100.0);
+    doubleModeNodeSeparation = FloatSetting(2.0, 0.0, 100.0);
+    nodeSegmentLength = FloatSetting(20.0, 1.0, 1000.0);
 
-    averageNodeWidth = 5.0;
-    readDepthEffectOnWidth = 0.5;
-    readDepthPower = 0.5;
+    averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
+    readDepthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
+    readDepthPower = FloatSetting(0.1, 0.0, 1.0);
 
-    edgeWidth = 1.5;
-    outlineThickness = 0.0;
+    edgeWidth = FloatSetting(1.5, 0.1, 100);
+    outlineThickness = FloatSetting(0.0, 0.0, 100.0);
     selectionThickness = 1.0;
     arrowheadSize = 0.01;
-    textOutlineThickness = 0.3;
+    textOutlineThickness = FloatSetting(0.3, 0.0, 10.0);
 
     blastRainbowPartsPerQuery = 100;
 
@@ -79,12 +79,12 @@ Settings::Settings()
     uniformNegativeNodeColour = QColor(128, 0, 0);
     uniformNodeSpecialColour = QColor(0, 128, 0);
 
-    randomColourPositiveOpacity = 255;
-    randomColourNegativeOpacity = 255;
-    randomColourPositiveSaturation = 127;
-    randomColourNegativeSaturation = 127;
-    randomColourPositiveLightness = 127;
-    randomColourNegativeLightness = 63;
+    randomColourPositiveOpacity = IntSetting(255, 0, 255);
+    randomColourNegativeOpacity = IntSetting(255, 0, 255);
+    randomColourPositiveSaturation = IntSetting(127, 0, 255);
+    randomColourNegativeSaturation = IntSetting(127, 0, 255);
+    randomColourPositiveLightness = IntSetting(127, 0, 255);
+    randomColourNegativeLightness = IntSetting(63, 0, 255);
 
     edgeColour = QColor(0, 0, 0, 180);
     outlineColour = QColor(0, 0, 0);
@@ -92,7 +92,7 @@ Settings::Settings()
     textColour = QColor(0, 0, 0);
     textOutlineColour = QColor(255, 255, 255);
 
-    contiguitySearchSteps = 15;
+    contiguitySearchSteps = IntSetting(15, 1, 50);
     contiguousStrandSpecificColour = QColor(0, 155, 0);
     contiguousEitherStrandColour = QColor(0, 155, 0);
     maybeContiguousColour = QColor(190, 240, 190);
@@ -102,9 +102,9 @@ Settings::Settings()
     noBlastHitsColour = QColor(220, 220, 220);
 
     autoReadDepthValue = true;
-    lowReadDepthValue = 5.0;
+    lowReadDepthValue = FloatSetting(5.0, 0.0, 1000000.0);
     lowReadDepthColour = QColor(0, 0, 0);
-    highReadDepthValue = 50.0;
+    highReadDepthValue = FloatSetting(50.0, 0.0, 1000000.0);
     highReadDepthColour = QColor(255, 0, 0);
 
     pathHighlightShadingColour = QColor(0, 0, 0, 60);
@@ -113,36 +113,24 @@ Settings::Settings()
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
-    maxQueryPathNodes = 6;
-    minQueryCoveredByPath = 0.9;
-    minQueryCoveredByHitsOn = true;
-    minQueryCoveredByHits = 0.9;
-    minMeanHitIdentityOn = true;
-    minMeanHitIdentity = 0.5;
-    maxEValueProductOn = true;
-    maxEValueProduct = SciNot(1.0, -10);
-    minLengthPercentageOn = true;
-    minLengthPercentage = 0.95;
-    maxLengthPercentageOn = true;
-    maxLengthPercentage = 1.05;
-    minLengthBaseDiscrepancyOn = false;
-    minLengthBaseDiscrepancy = -100;
-    maxLengthBaseDiscrepancyOn = false;
-    maxLengthBaseDiscrepancy = 100;
+    maxQueryPathNodes = IntSetting(6, 1, 50);
+    minQueryCoveredByPath = FloatSetting(0.9, 0.3, 1.0);
+    minQueryCoveredByHits = FloatSetting(0.9, 0.3, 1.0, true);
+    minMeanHitIdentity = FloatSetting(0.5, 0.0, 1.0, true);
+    maxEValueProduct = SciNotSetting(SciNot(1.0, -10), SciNot(1.0, -999), SciNot(9.9, 1), true);
+    minLengthPercentage = FloatSetting(0.95, 0.0, 10000.0, true);
+    maxLengthPercentage = FloatSetting(1.05, 0.0, 10000.0, true);
+    minLengthBaseDiscrepancy = IntSetting(-100, -1000000, 1000000, false);
+    maxLengthBaseDiscrepancy = IntSetting(100, -1000000, 1000000, false);
 
     blastSearchParameters = "";
 
-    blastAlignmentLengthFilterOn = false;
-    blastAlignmentLengthFilterValue = 100;
-    blastQueryCoverageFilterOn = false;
-    blastQueryCoverageFilterValue = 50.0;
-    blastIdentityFilterOn = false;
-    blastIdentityFilterValue = 90.0;
-    blastEValueFilterOn = false;
-    blastEValueFilterValue = SciNot(1.0, -10);
-    blastBitScoreFilterOn = false;
-    blastBitScoreFilterValue = 1000.0;
+    blastAlignmentLengthFilter = IntSetting(100, 1, 1000000, false);
+    blastQueryCoverageFilter = FloatSetting(50.0, 0.0, 100.0, false);
+    blastIdentityFilter = FloatSetting(90.0, 0.0, 100.0, false);
+    blastEValueFilter = SciNotSetting(SciNot(1.0, -10), SciNot(1.0, -999), SciNot(9.9, 1), false);
+    blastBitScoreFilter = FloatSetting(1000.0, 0.0, 1000000.0, false);
 
-    minReadDepthRange = 10.0;
-    maxReadDepthRange = 100.0;
+    minReadDepthRange = FloatSetting(10.0, 0.0, 1000000.0);
+    maxReadDepthRange = FloatSetting(100.0, 0.0, 1000000.0);
 }

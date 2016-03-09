@@ -22,7 +22,6 @@
 
 Memory::Memory()
 {
-
     rememberedPath = QDir::homePath();
 
     commandLineCommand = NO_COMMAND;
@@ -38,6 +37,8 @@ Memory::Memory()
     distancePathSearchQuery2 = "";
     distancePathSearchQuery1Path = "";
     distancePathSearchQuery2Path = "";
+
+    terminalWidth = 80;
 }
 
 

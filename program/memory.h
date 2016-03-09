@@ -54,6 +54,8 @@ public:
 
     //This stores the currently selected query path in a query path dialog.
     QList<Path> queryPaths;
+
+    int terminalWidth;
 };
 
 #endif // MEMORY_H

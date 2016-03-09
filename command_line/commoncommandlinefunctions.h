@@ -26,6 +26,8 @@
 #include <QTextStream>
 #include "../program/scinot.h"
 #include <QDateTime>
+#include <QStringList>
+#include "../program/settings.h"
 
 QStringList getArgumentList(int argc, char *argv[]);
 
@@ -80,6 +82,25 @@ void deleteBlastTempDirectory();
 QString getElapsedTime(QDateTime start, QDateTime end);
 
 void printGraphScopeOptions(QTextStream * out);
+
+QStringList wrapText(QString text, int width, int indent, int optionIndent, bool indentFirst);
+QString rstrip(const QString& str);
+
+
+QString getRangeAndDefault(IntSetting setting);
+QString getRangeAndDefault(IntSetting setting, QString defaultVal);
+QString getRangeAndDefault(FloatSetting setting);
+QString getRangeAndDefault(FloatSetting setting, QString defaultVal);
+QString getRangeAndDefault(SciNotSetting setting);
+QString getRangeAndDefault(int min, int max, int defaultVal);
+QString getRangeAndDefault(int min, int max, int defaultVal);
+QString getRangeAndDefault(int min, int max, QString defaultVal);
+QString getRangeAndDefault(double min, double max, double defaultVal);
+QString getRangeAndDefault(double min, double max, QString defaultVal);
+QString getRangeAndDefault(QString min, QString max, QString defaultVal);
+QString getDefaultColour(QColor colour);
+
+QString getBandageTitleAsciiArt();
 
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H
