@@ -37,7 +37,7 @@
      <widget class="QWidget" name="scrollAreaWidgetContents">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>-50</x>
         <y>0</y>
         <width>400</width>
         <height>3310</height>
@@ -122,28 +122,6 @@
               <height>16</height>
              </size>
             </property>
-            <widget class="InfoTextWidget" name="nodeLengthPerMegabaseInfoText_2" native="true">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>16</width>
-               <height>16</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
            </widget>
           </item>
           <item>
@@ -223,7 +201,7 @@ per megabase:</string>
                 <double>10000000.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.050000000000000</double>
+                <double>100.000000000000000</double>
                </property>
                <property name="value">
                 <double>1000.000000000000000</double>
@@ -689,11 +667,14 @@ per megabase:</string>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
             <property name="maximum">
              <double>1000.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.050000000000000</double>
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>

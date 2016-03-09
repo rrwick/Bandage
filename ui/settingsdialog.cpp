@@ -286,6 +286,7 @@ void SettingsDialog::setInfoTexts()
                                                "curves, but graph layout will take longer and graphical performance will be slower. "
                                                "Setting this to a larger value will produce nodes with more obvious angles, but "
                                                "graph layout and graphical performance will be faster.<br><br>"
+                                               "Setting this value to zero will result in all nodes being made up of a single segment.<br><br>"
                                                "The graph must be redrawn to see the effect of changing this setting.");
     ui->graphLayoutQualityInfoText->setInfoText("This controls how much time the graph layout algorithm spends on "
                                                 "positioning the graph components.<br><br>"
