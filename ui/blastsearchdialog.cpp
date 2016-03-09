@@ -671,8 +671,7 @@ void BlastSearchDialog::queryTableSelectionChanged()
 void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
 {
     QPixmap tick(":/icons/tick-128.png");
-    QPixmap tickScaled = tick.scaled(32, 32);
-    tickScaled.setDevicePixelRatio(devicePixelRatio()); //This is a workaround for a Qt bug.  Can possibly remove in the future.  https://bugreports.qt.io/browse/QTBUG-46846
+    tick.setDevicePixelRatio(devicePixelRatio()); //This is a workaround for a Qt bug.  Can possibly remove in the future.  https://bugreports.qt.io/browse/QTBUG-46846
 
     switch (blastUiState)
     {
@@ -747,7 +746,7 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->clearAllQueriesButton->setEnabled(false);
         ui->clearAllQueriesButton->setEnabled(false);
         ui->hitsLabel->setEnabled(false);
-        ui->step1TickLabel->setPixmap(tickScaled);
+        ui->step1TickLabel->setPixmap(tick);
         ui->step2TickLabel->setPixmap(QPixmap());
         ui->step3TickLabel->setPixmap(QPixmap());
         ui->buildBlastDatabaseInfoText->setEnabled(true);
@@ -775,8 +774,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->clearAllQueriesButton->setEnabled(true);
         queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(false);
-        ui->step1TickLabel->setPixmap(tickScaled);
-        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step1TickLabel->setPixmap(tick);
+        ui->step2TickLabel->setPixmap(tick);
         ui->step3TickLabel->setPixmap(QPixmap());
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
@@ -803,8 +802,8 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->clearAllQueriesButton->setEnabled(true);
         queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(false);
-        ui->step1TickLabel->setPixmap(tickScaled);
-        ui->step2TickLabel->setPixmap(tickScaled);
+        ui->step1TickLabel->setPixmap(tick);
+        ui->step2TickLabel->setPixmap(tick);
         ui->step3TickLabel->setPixmap(QPixmap());
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
@@ -831,9 +830,9 @@ void BlastSearchDialog::setUiStep(BlastUiState blastUiState)
         ui->clearAllQueriesButton->setEnabled(true);
         queryTableSelectionChanged();
         ui->hitsLabel->setEnabled(true);
-        ui->step1TickLabel->setPixmap(tickScaled);
-        ui->step2TickLabel->setPixmap(tickScaled);
-        ui->step3TickLabel->setPixmap(tickScaled);
+        ui->step1TickLabel->setPixmap(tick);
+        ui->step2TickLabel->setPixmap(tick);
+        ui->step3TickLabel->setPixmap(tick);
         ui->buildBlastDatabaseInfoText->setEnabled(true);
         ui->loadQueriesFromFastaInfoText->setEnabled(true);
         ui->enterQueryManuallyInfoText->setEnabled(true);

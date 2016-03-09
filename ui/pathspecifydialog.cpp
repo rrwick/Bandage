@@ -54,6 +54,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()));
 }
 
+
 PathSpecifyDialog::~PathSpecifyDialog()
 {
     g_memory->pathDialogIsVisible = false;
@@ -121,7 +122,6 @@ void PathSpecifyDialog::setPathValidityUiElements(bool pathValid)
     ui->copyButton->setEnabled(pathValid);
     ui->saveButton->setEnabled(pathValid);
 }
-
 
 
 void PathSpecifyDialog::copyPathToClipboard()
