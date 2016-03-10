@@ -78,7 +78,47 @@ SOURCES += \
     program/scinot.cpp \
     ui/changenodenamedialog.cpp \
     ui/changenodereaddepthdialog.cpp \
-    ui/querypathsequencecopybutton.cpp
+    ui/querypathsequencecopybutton.cpp \
+    command_line/querypaths.cpp \
+    command_line/info.cpp \
+    command_line/reduce.cpp \
+    ogdf/basic/Graph.cpp \
+    ogdf/basic/GraphAttributes.cpp \
+    ogdf/energybased/FMMMLayout.cpp \
+    ogdf/basic/geometry.cpp \
+    ogdf/cluster/ClusterGraphAttributes.cpp \
+    ogdf/internal/energybased/FruchtermanReingold.cpp \
+    ogdf/internal/energybased/NMM.cpp \
+    ogdf/fileformats/GmlParser.cpp \
+    ogdf/basic/simple_graph_alg.cpp \
+    ogdf/basic/basic.cpp \
+    ogdf/fileformats/XmlParser.cpp \
+    ogdf/basic/String.cpp \
+    ogdf/basic/Hashing.cpp \
+    ogdf/internal/basic/PoolMemoryAllocator.cpp \
+    ogdf/basic/GraphCopy.cpp \
+    ogdf/basic/CombinatorialEmbedding.cpp \
+    ogdf/fileformats/OgmlParser.cpp \
+    ogdf/cluster/ClusterGraph.cpp \
+    ogdf/basic/Math.cpp \
+    ogdf/internal/energybased/EdgeAttributes.cpp \
+    ogdf/internal/energybased/NodeAttributes.cpp \
+    ogdf/energybased/MAARPacking.cpp \
+    ogdf/energybased/Multilevel.cpp \
+    ogdf/energybased/numexcept.cpp \
+    ogdf/energybased/Set.cpp \
+    ogdf/fileformats/Ogml.cpp \
+    ogdf/fileformats/DinoXmlParser.cpp \
+    ogdf/fileformats/DinoXmlScanner.cpp \
+    ogdf/fileformats/DinoTools.cpp \
+    ogdf/fileformats/DinoLineBuffer.cpp \
+    ogdf/basic/System.cpp \
+    ogdf/internal/energybased/QuadTreeNM.cpp \
+    ogdf/internal/energybased/QuadTreeNodeNM.cpp \
+    ogdf/basic/Constraint.cpp \
+    ogdf/internal/energybased/MultilevelGraph.cpp \
+    ui/graphinfodialog.cpp \
+    ui/tablewidgetitemname.cpp
 
 HEADERS  += \
     program/settings.h \
@@ -131,7 +171,78 @@ HEADERS  += \
     program/scinot.h \
     ui/changenodenamedialog.h \
     ui/changenodereaddepthdialog.h \
-    ui/querypathsequencecopybutton.h
+    ui/querypathsequencecopybutton.h \
+    command_line/querypaths.h \
+    command_line/info.h \
+    command_line/reduce.h \
+    ogdf/basic/Graph.h \
+    ogdf/basic/GraphAttributes.h \
+    ogdf/energybased/FMMMLayout.h \
+    ogdf/basic/geometry.h \
+    ogdf/cluster/ClusterGraphAttributes.h \
+    ogdf/module/LayoutModule.h \
+    ogdf/internal/energybased/FruchtermanReingold.h \
+    ogdf/internal/energybased/NMM.h \
+    ogdf/basic/AdjEntryArray.h \
+    ogdf/basic/Array.h \
+    ogdf/fileformats/GmlParser.h \
+    ogdf/basic/GraphObserver.h \
+    ogdf/basic/simple_graph_alg.h \
+    ogdf/basic/basic.h \
+    ogdf/basic/EdgeArray.h \
+    ogdf/basic/List.h \
+    ogdf/basic/NodeArray.h \
+    ogdf/basic/Graph_d.h \
+    ogdf/fileformats/XmlParser.h \
+    ogdf/basic/String.h \
+    ogdf/internal/basic/list_templates.h \
+    ogdf/basic/Hashing.h \
+    ogdf/basic/comparer.h \
+    ogdf/basic/exceptions.h \
+    ogdf/basic/memory.h \
+    ogdf/internal/basic/MallocMemoryAllocator.h \
+    ogdf/internal/basic/PoolMemoryAllocator.h \
+    ogdf/basic/BoundedStack.h \
+    ogdf/basic/GraphCopy.h \
+    ogdf/basic/SList.h \
+    ogdf/basic/Stack.h \
+    ogdf/basic/tuples.h \
+    ogdf/basic/FaceSet.h \
+    ogdf/basic/FaceArray.h \
+    ogdf/basic/CombinatorialEmbedding.h \
+    ogdf/cluster/ClusterArray.h \
+    ogdf/fileformats/OgmlParser.h \
+    ogdf/cluster/ClusterGraph.h \
+    ogdf/cluster/ClusterGraphObserver.h \
+    ogdf/basic/HashArray.h \
+    ogdf/basic/Math.h \
+    ogdf/internal/energybased/EdgeAttributes.h \
+    ogdf/internal/energybased/NodeAttributes.h \
+    ogdf/energybased/Edge.h \
+    ogdf/energybased/MAARPacking.h \
+    ogdf/energybased/Multilevel.h \
+    ogdf/energybased/numexcept.h \
+    ogdf/energybased/Rectangle.h \
+    ogdf/energybased/PackingRowInfo.h \
+    ogdf/energybased/PQueue.h \
+    ogdf/energybased/Set.h \
+    ogdf/energybased/Node.h \
+    ogdf/fileformats/Ogml.h \
+    ogdf/fileformats/DinoXmlParser.h \
+    ogdf/fileformats/DinoXmlScanner.h \
+    ogdf/fileformats/DinoTools.h \
+    ogdf/fileformats/DinoLineBuffer.h \
+    ogdf/fileformats/XmlObject.h \
+    ogdf/basic/CriticalSection.h \
+    ogdf/basic/System.h \
+    ogdf/basic/Array2D.h \
+    ogdf/internal/energybased/ParticleInfo.h \
+    ogdf/internal/energybased/QuadTreeNM.h \
+    ogdf/internal/energybased/QuadTreeNodeNM.h \
+    ogdf/basic/Constraints.h \
+    ogdf/internal/energybased/MultilevelGraph.h \
+    ui/graphinfodialog.h \
+    ui/tablewidgetitemname.h
 
 FORMS    += \
     ui/mainwindow.ui \
@@ -144,29 +255,24 @@ FORMS    += \
     ui/querypathsdialog.ui \
     ui/blasthitfiltersdialog.ui \
     ui/changenodenamedialog.ui \
-    ui/changenodereaddepthdialog.ui
+    ui/changenodereaddepthdialog.ui \
+    ui/graphinfodialog.ui
+
+RESOURCES += \
+    images/images.qrc
 
 
-# These includes are configured assuming that the OGDF
-# directory is next to the Bandage project directory.
 unix:INCLUDEPATH += /usr/include/
 unix:LIBS += -L/usr/lib
-unix:QMAKE_CXXFLAGS += -isystem ../OGDF #prevents compilers warnings for OGDF
-unix:LIBS += -L$$PWD/../OGDF/_release
-unix:LIBS += -lOGDF
-unix:INCLUDEPATH += $$PWD/../OGDF/
 
-
-# The following settings are compatible with OGDF being
-# built in 64 bit release mode using Visual Studio 2013
-win32:LIBS += -lpsapi -logdf
-win32:LIBS += -L$$PWD/../OGDF/x64/Release/
-win32:INCLUDEPATH += $$PWD/../OGDF/
+# The following settings are compatible with OGDF being built in 64 bit release mode using Visual Studio 2013
+win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
-
 
 macx:ICON = images/application.icns
 macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
-RESOURCES += \
-    images/images.qrc
+# Each target platform needs the native platform as well as Qt's minimal platform.
+win32: QTPLUGIN.platforms += qwindows qminimal
+unix:!macx: QTPLUGIN.platforms += qxcb qminimal
+macx: QTPLUGIN.platforms += qcocoa qminimal

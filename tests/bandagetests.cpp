@@ -266,7 +266,8 @@ void BandageTests::loadCsvData()
 
     QString errormsg;
     QStringList columns;
-    g_assemblyGraph->loadCSV(getTestDirectory() + "test.csv", &columns, &errormsg);
+    bool coloursLoaded = false;
+    g_assemblyGraph->loadCSV(getTestDirectory() + "test.csv", &columns, &errormsg, &coloursLoaded);
 
     DeBruijnNode * node6Plus = g_assemblyGraph->m_deBruijnGraphNodes["6+"];
     DeBruijnNode * node6Minus = g_assemblyGraph->m_deBruijnGraphNodes["6-"];
@@ -331,7 +332,8 @@ void BandageTests::loadCsvDataTrinity()
 
     QString errormsg;
     QStringList columns;
-    g_assemblyGraph->loadCSV(getTestDirectory() + "test.Trinity.csv", &columns, &errormsg);
+    bool coloursLoaded = false;
+    g_assemblyGraph->loadCSV(getTestDirectory() + "test.Trinity.csv", &columns, &errormsg, &coloursLoaded);
 
     DeBruijnNode * node3912Plus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3912+"];
     DeBruijnNode * node3912Minus = g_assemblyGraph->m_deBruijnGraphNodes["19|c0_3912-"];
@@ -407,33 +409,33 @@ void BandageTests::blastSearchFilters()
     int unfilteredHitCount = g_blastSearch->m_allHits.size();
 
     //Now filter by e-value.
-    g_settings->blastEValueFilterOn = true;
-    g_settings->blastEValueFilterValue = SciNot(1.0, -5);
+    g_settings->blastEValueFilter.on = true;
+    g_settings->blastEValueFilter = SciNot(1.0, -5);
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 14);
     QCOMPARE(g_blastSearch->m_allHits.size() < unfilteredHitCount, true);
 
     //Now add a bit score filter.
-    g_settings->blastBitScoreFilterOn = true;
-    g_settings->blastBitScoreFilterValue = 100.0;
+    g_settings->blastBitScoreFilter.on = true;
+    g_settings->blastBitScoreFilter = 100.0;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 9);
 
     //Now add an alignment length filter.
-    g_settings->blastAlignmentLengthFilterOn = true;
-    g_settings->blastAlignmentLengthFilterValue = 100;
+    g_settings->blastAlignmentLengthFilter.on = true;
+    g_settings->blastAlignmentLengthFilter = 100;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 8);
 
     //Now add an identity filter.
-    g_settings->blastIdentityFilterOn = true;
-    g_settings->blastIdentityFilterValue = 50.0;
+    g_settings->blastIdentityFilter.on = true;
+    g_settings->blastIdentityFilter = 50.0;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 7);
 
     //Now add a query coverage filter.
-    g_settings->blastQueryCoverageFilterOn = true;
-    g_settings->blastQueryCoverageFilterValue = 90.0;
+    g_settings->blastQueryCoverageFilter.on = true;
+    g_settings->blastQueryCoverageFilter = 90.0;
     g_blastSearch->doAutoBlastSearch();
     QCOMPARE(g_blastSearch->m_allHits.size(), 5);
 
@@ -635,15 +637,15 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--distance 12").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->nodeDistance, 12);
+    QCOMPARE(g_settings->nodeDistance.val, 12);
 
     commandLineSettings = QString("--mindepth 1.2").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minReadDepthRange, 1.2);
+    QCOMPARE(g_settings->minReadDepthRange.val, 1.2);
 
     commandLineSettings = QString("--maxdepth 2.1").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxReadDepthRange, 2.1);
+    QCOMPARE(g_settings->maxReadDepthRange.val, 2.1);
 
     QCOMPARE(g_settings->doubleMode, false);
     commandLineSettings = QString("--double").split(" ");
@@ -651,26 +653,26 @@ void BandageTests::commandLineSettings()
     QCOMPARE(g_settings->doubleMode, true);
 
     QCOMPARE(g_settings->nodeLengthMode, AUTO_NODE_LENGTH);
-    commandLineSettings = QString("--bases 1000").split(" ");
+    commandLineSettings = QString("--nodelen 10000").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->nodeLengthMode, MANUAL_NODE_LENGTH);
-    QCOMPARE(g_settings->manualBasePairsPerSegment, 1000);
+    QCOMPARE(g_settings->manualNodeLengthPerMegabase.val, 10000.0);
 
     commandLineSettings = QString("--quality 1").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->graphLayoutQuality, 1);
+    QCOMPARE(g_settings->graphLayoutQuality.val, 1);
 
     commandLineSettings = QString("--nodewidth 4.2").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->averageNodeWidth, 4.2);
+    QCOMPARE(g_settings->averageNodeWidth.val, 4.2);
 
     commandLineSettings = QString("--depwidth 0.222").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->readDepthEffectOnWidth, 0.222);
+    QCOMPARE(g_settings->readDepthEffectOnWidth.val, 0.222);
 
     commandLineSettings = QString("--deppower 0.72").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->readDepthPower, 0.72);
+    QCOMPARE(g_settings->readDepthPower.val, 0.72);
 
     QCOMPARE(g_settings->displayNodeNames, false);
     commandLineSettings = QString("--names").split(" ");
@@ -702,7 +704,7 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--edgewidth 5.5").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->edgeWidth, 5.5);
+    QCOMPARE(g_settings->edgeWidth.val, 5.5);
 
     commandLineSettings = QString("--outcol #ff0000").split(" ");
     parseSettings(commandLineSettings);
@@ -710,7 +712,7 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--outline 0.123").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->outlineThickness, 0.123);
+    QCOMPARE(g_settings->outlineThickness.val, 0.123);
 
     commandLineSettings = QString("--selcol tomato").split(" ");
     parseSettings(commandLineSettings);
@@ -732,7 +734,7 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--toutline 0.321").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->textOutlineThickness, 0.321);
+    QCOMPARE(g_settings->textOutlineThickness.val, 0.321);
 
     QCOMPARE(g_settings->positionTextNodeCentre, false);
     commandLineSettings = QString("--centre").split(" ");
@@ -761,27 +763,27 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--ransatpos 12").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourPositiveSaturation, 12);
+    QCOMPARE(g_settings->randomColourPositiveSaturation.val, 12);
 
     commandLineSettings = QString("--ransatneg 23").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourNegativeSaturation, 23);
+    QCOMPARE(g_settings->randomColourNegativeSaturation.val, 23);
 
     commandLineSettings = QString("--ranligpos 34").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourPositiveLightness, 34);
+    QCOMPARE(g_settings->randomColourPositiveLightness.val, 34);
 
     commandLineSettings = QString("--ranligneg 45").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourNegativeLightness, 45);
+    QCOMPARE(g_settings->randomColourNegativeLightness.val, 45);
 
     commandLineSettings = QString("--ranopapos 56").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourPositiveOpacity, 56);
+    QCOMPARE(g_settings->randomColourPositiveOpacity.val, 56);
 
     commandLineSettings = QString("--ranopaneg 67").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->randomColourNegativeOpacity, 67);
+    QCOMPARE(g_settings->randomColourNegativeOpacity.val, 67);
 
     commandLineSettings = QString("--unicolpos springgreen").split(" ");
     parseSettings(commandLineSettings);
@@ -806,16 +808,16 @@ void BandageTests::commandLineSettings()
     QCOMPARE(g_settings->autoReadDepthValue, true);
     commandLineSettings = QString("--depvallow 56.7").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->lowReadDepthValue, 56.7);
+    QCOMPARE(g_settings->lowReadDepthValue.val, 56.7);
     QCOMPARE(g_settings->autoReadDepthValue, false);
 
     commandLineSettings = QString("--depvalhi 67.8").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->highReadDepthValue, 67.8);
+    QCOMPARE(g_settings->highReadDepthValue.val, 67.8);
 
     commandLineSettings = QString("--depvalhi 67.8").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->highReadDepthValue, 67.8);
+    QCOMPARE(g_settings->highReadDepthValue.val, 67.8);
 
     commandLineSettings = QString("--query queries.fasta").split(" ");
     parseSettings(commandLineSettings);
@@ -825,108 +827,109 @@ void BandageTests::commandLineSettings()
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->blastSearchParameters, QString("--abc"));
 
-    QCOMPARE(g_settings->blastAlignmentLengthFilterOn, false);
+    QCOMPARE(g_settings->blastAlignmentLengthFilter.on, false);
     commandLineSettings = QString("--alfilter 543").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->blastAlignmentLengthFilterOn, true);
-    QCOMPARE(g_settings->blastAlignmentLengthFilterValue, 543);
+    QCOMPARE(g_settings->blastAlignmentLengthFilter.on, true);
+    QCOMPARE(g_settings->blastAlignmentLengthFilter.val, 543);
 
-    QCOMPARE(g_settings->blastQueryCoverageFilterOn, false);
+    QCOMPARE(g_settings->blastQueryCoverageFilter.on, false);
     commandLineSettings = QString("--qcfilter 67.8").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->blastQueryCoverageFilterOn, true);
-    QCOMPARE(g_settings->blastQueryCoverageFilterValue, 67.8);
+    QCOMPARE(g_settings->blastQueryCoverageFilter.on, true);
+    QCOMPARE(g_settings->blastQueryCoverageFilter.val, 67.8);
 
-    QCOMPARE(g_settings->blastIdentityFilterOn, false);
+    QCOMPARE(g_settings->blastIdentityFilter.on, false);
     commandLineSettings = QString("--ifilter 12.3").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->blastIdentityFilterOn, true);
-    QCOMPARE(g_settings->blastIdentityFilterValue, 12.3);
+    QCOMPARE(g_settings->blastIdentityFilter.on, true);
+    QCOMPARE(g_settings->blastIdentityFilter.val, 12.3);
 
-    QCOMPARE(g_settings->blastEValueFilterOn, false);
+    QCOMPARE(g_settings->blastEValueFilter.on, false);
     commandLineSettings = QString("--evfilter 8.5e-14").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->blastEValueFilterOn, true);
-    QCOMPARE(g_settings->blastEValueFilterValue.getCoefficient(), 8.5);
-    QCOMPARE(g_settings->blastEValueFilterValue.getExponent(), -14);
+    QCOMPARE(g_settings->blastEValueFilter.on, true);
+    QCOMPARE(g_settings->blastEValueFilter.val, SciNot(8.5, -14));
+    QCOMPARE(g_settings->blastEValueFilter.val.getCoefficient(), 8.5);
+    QCOMPARE(g_settings->blastEValueFilter.val.getExponent(), -14);
 
-    QCOMPARE(g_settings->blastBitScoreFilterOn, false);
+    QCOMPARE(g_settings->blastBitScoreFilter.on, false);
     commandLineSettings = QString("--bsfilter 1234.5").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->blastBitScoreFilterOn, true);
-    QCOMPARE(g_settings->blastBitScoreFilterValue, 1234.5);
+    QCOMPARE(g_settings->blastBitScoreFilter.on, true);
+    QCOMPARE(g_settings->blastBitScoreFilter.val, 1234.5);
 
     commandLineSettings = QString("--pathnodes 3").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxQueryPathNodes, 3);
+    QCOMPARE(g_settings->maxQueryPathNodes.val, 3);
 
     commandLineSettings = QString("--minpatcov 0.543").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minQueryCoveredByPath, 0.543);
+    QCOMPARE(g_settings->minQueryCoveredByPath.val, 0.543);
 
     commandLineSettings = QString("--minhitcov 0.654").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minQueryCoveredByHits, 0.654);
-    QCOMPARE(g_settings->minQueryCoveredByHitsOn, true);
+    QCOMPARE(g_settings->minQueryCoveredByHits.val, 0.654);
+    QCOMPARE(g_settings->minQueryCoveredByHits.on, true);
 
     commandLineSettings = QString("--minhitcov off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minQueryCoveredByHitsOn, false);
+    QCOMPARE(g_settings->minQueryCoveredByHits.on, false);
 
     commandLineSettings = QString("--minmeanid 0.765").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minMeanHitIdentity, 0.765);
-    QCOMPARE(g_settings->minMeanHitIdentityOn, true);
+    QCOMPARE(g_settings->minMeanHitIdentity.val, 0.765);
+    QCOMPARE(g_settings->minMeanHitIdentity.on, true);
 
     commandLineSettings = QString("--minmeanid off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minMeanHitIdentityOn, false);
+    QCOMPARE(g_settings->minMeanHitIdentity.on, false);
 
     commandLineSettings = QString("--minpatlen 0.97").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minLengthPercentage, 0.97);
-    QCOMPARE(g_settings->minLengthPercentageOn, true);
+    QCOMPARE(g_settings->minLengthPercentage.val, 0.97);
+    QCOMPARE(g_settings->minLengthPercentage.on, true);
 
     commandLineSettings = QString("--minpatlen off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minLengthPercentageOn, false);
+    QCOMPARE(g_settings->minLengthPercentage.on, false);
 
     commandLineSettings = QString("--maxpatlen 1.03").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxLengthPercentage, 1.03);
-    QCOMPARE(g_settings->maxLengthPercentageOn, true);
+    QCOMPARE(g_settings->maxLengthPercentage.val, 1.03);
+    QCOMPARE(g_settings->maxLengthPercentage.on, true);
 
     commandLineSettings = QString("--maxpatlen off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxLengthPercentageOn, false);
+    QCOMPARE(g_settings->maxLengthPercentage.on, false);
 
     commandLineSettings = QString("--minlendis -1234").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minLengthBaseDiscrepancy, -1234);
-    QCOMPARE(g_settings->minLengthBaseDiscrepancyOn, true);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancy.val, -1234);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancy.on, true);
 
     commandLineSettings = QString("--minlendis off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minLengthBaseDiscrepancyOn, false);
+    QCOMPARE(g_settings->minLengthBaseDiscrepancy.on, false);
 
     commandLineSettings = QString("--maxlendis 4321").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxLengthBaseDiscrepancy, 4321);
-    QCOMPARE(g_settings->maxLengthBaseDiscrepancyOn, true);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancy.val, 4321);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancy.on, true);
 
     commandLineSettings = QString("--maxlendis off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxLengthBaseDiscrepancyOn, false);
+    QCOMPARE(g_settings->maxLengthBaseDiscrepancy.on, false);
 
     commandLineSettings = QString("--maxevprod 4e-500").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxEValueProduct.getCoefficient(), 4.0);
-    QCOMPARE(g_settings->maxEValueProduct.getExponent(), -500);
-    QCOMPARE(g_settings->maxEValueProductOn, true);
+    QCOMPARE(g_settings->maxEValueProduct.val.getCoefficient(), 4.0);
+    QCOMPARE(g_settings->maxEValueProduct.val.getExponent(), -500);
+    QCOMPARE(g_settings->maxEValueProduct.on, true);
 
     commandLineSettings = QString("--maxevprod off").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxEValueProductOn, false);
+    QCOMPARE(g_settings->maxEValueProduct.on, false);
 }
 
 
@@ -1236,8 +1239,8 @@ void BandageTests::blastQueryPaths()
     createBlastTempDirectory();
 
     //Now filter by e-value to get only strong hits and do the BLAST search.
-    g_settings->blastEValueFilterOn = true;
-    g_settings->blastEValueFilterValue = SciNot(1.0, -5);
+    g_settings->blastEValueFilter.on = true;
+    g_settings->blastEValueFilter = SciNot(1.0, -5);
 
     QList<BlastQueryPath> query1Paths;
     QList<BlastQueryPath> query2Paths;
@@ -1266,7 +1269,7 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query7Paths.size(), 0);
 
     //query2 has a mean hit identity of 0.98.
-    g_settings->minMeanHitIdentityOn = true;
+    g_settings->minMeanHitIdentity.on = true;
     g_settings->minMeanHitIdentity = 0.979;
     g_blastSearch->doAutoBlastSearch();
     query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
@@ -1277,14 +1280,14 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query2Paths.size(), 0);
 
     //Turning the filter off should make the path return.
-    g_settings->minMeanHitIdentityOn = false;
+    g_settings->minMeanHitIdentity.on = false;
     g_blastSearch->doAutoBlastSearch();
     query2Paths = g_blastSearch->m_blastQueries.m_queries[1]->getPaths();
     QCOMPARE(query2Paths.size(), 1);
     *g_settings = defaultSettings;
 
     //query3 has a length discrepancy of -20.
-    g_settings->minLengthBaseDiscrepancyOn = true;
+    g_settings->minLengthBaseDiscrepancy.on = true;
     g_settings->minLengthBaseDiscrepancy = -20;
     g_blastSearch->doAutoBlastSearch();
     query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
@@ -1295,14 +1298,14 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query3Paths.size(), 0);
 
     //Turning the filter off should make the path return.
-    g_settings->minLengthBaseDiscrepancyOn = false;
+    g_settings->minLengthBaseDiscrepancy.on = false;
     g_blastSearch->doAutoBlastSearch();
     query3Paths = g_blastSearch->m_blastQueries.m_queries[2]->getPaths();
     QCOMPARE(query3Paths.size(), 1);
     *g_settings = defaultSettings;
 
     //query4 has a length discrepancy of +20.
-    g_settings->maxLengthBaseDiscrepancyOn = true;
+    g_settings->maxLengthBaseDiscrepancy.on = true;
     g_settings->maxLengthBaseDiscrepancy = 20;
     g_blastSearch->doAutoBlastSearch();
     query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
@@ -1313,7 +1316,7 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query4Paths.size(), 0);
 
     //Turning the filter off should make the path return.
-    g_settings->maxLengthBaseDiscrepancyOn = false;
+    g_settings->maxLengthBaseDiscrepancy.on = false;
     g_blastSearch->doAutoBlastSearch();
     query4Paths = g_blastSearch->m_blastQueries.m_queries[3]->getPaths();
     QCOMPARE(query4Paths.size(), 1);
@@ -1332,10 +1335,10 @@ void BandageTests::blastQueryPaths()
 
     //By turning off length restrictions, queries 6 and 7 should get path with
     //a large insert in the middle.
-    g_settings->minLengthPercentageOn = false;
-    g_settings->maxLengthPercentageOn = false;
-    g_settings->minLengthBaseDiscrepancyOn = false;
-    g_settings->maxLengthBaseDiscrepancyOn = false;
+    g_settings->minLengthPercentage.on = false;
+    g_settings->maxLengthPercentage.on = false;
+    g_settings->minLengthBaseDiscrepancy.on = false;
+    g_settings->maxLengthBaseDiscrepancy.on = false;
     g_blastSearch->doAutoBlastSearch();
     query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();
     query7Paths = g_blastSearch->m_blastQueries.m_queries[6]->getPaths();
@@ -1344,7 +1347,7 @@ void BandageTests::blastQueryPaths()
 
     //Adjusting on the max length restriction can allow query 6 to get a path
     //and then query 7.
-    g_settings->maxLengthBaseDiscrepancyOn = true;
+    g_settings->maxLengthBaseDiscrepancy.on = true;
     g_settings->maxLengthBaseDiscrepancy = 1999;
     g_blastSearch->doAutoBlastSearch();
     query6Paths = g_blastSearch->m_blastQueries.m_queries[5]->getPaths();

@@ -258,33 +258,21 @@ FORMS    += \
     ui/changenodereaddepthdialog.ui \
     ui/graphinfodialog.ui
 
+RESOURCES += \
+    images/images.qrc
 
-# These includes are configured assuming that the OGDF
-# directory is next to the Bandage project directory.
+
 unix:INCLUDEPATH += /usr/include/
 unix:LIBS += -L/usr/lib
-#unix:QMAKE_CXXFLAGS += -isystem ogdf #prevents compilers warnings for OGDF
-#unix:LIBS += -L$$PWD/../OGDF/_release
-#unix:LIBS += -lOGDF
-#unix:INCLUDEPATH += $$PWD/../OGDF/
 
-
-# The following settings are compatible with OGDF being
-# built in 64 bit release mode using Visual Studio 2013
+# The following settings are compatible with OGDF being built in 64 bit release mode using Visual Studio 2013
 win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
-
 
 macx:ICON = images/application.icns
 macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
-
-# Each target platform needs the native platform as well as Qt's minimal
-# platform.
+# Each target platform needs the native platform as well as Qt's minimal platform.
 win32: QTPLUGIN.platforms += qwindows qminimal
 unix:!macx: QTPLUGIN.platforms += qxcb qminimal
 macx: QTPLUGIN.platforms += qcocoa qminimal
-
-
-RESOURCES += \
-    images/images.qrc
