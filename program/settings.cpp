@@ -46,7 +46,7 @@ Settings::Settings()
     blastRainbowPartsPerQuery = 100;
 
     graphScope = WHOLE_GRAPH;
-    nodeDistance = 0;
+    nodeDistance = IntSetting(0, 0, 100);
     startingNodesExactMatch = true;
     startingNodes = "";
     blastQueryFilename = "";

@@ -50,14 +50,14 @@ int bandageInfo(QStringList arguments)
 
     if (!checkIfFileExists(graphFilename))
     {
-        err << "Bandage error: " << graphFilename << " does not exist." << endl;
+        outputText("Bandage error: " + graphFilename + " does not exist.", &err);
         return 1;
     }
 
     QString error = checkForInvalidInfoOptions(arguments);
     if (error.length() > 0)
     {
-        err << "Bandage error: " << error << endl;
+        outputText("Bandage error: " + error, &err);
         return 1;
     }
 
@@ -137,46 +137,38 @@ int bandageInfo(QStringList arguments)
 
 void printInfoUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Bandage info takes a graph file as input and outputs the following statistics" << endl;
-    *out << "about the graph:" << endl;
-    *out << "  * Node count: The number of nodes in the graph. Only positive nodes are" << endl;
-    *out << "        counted (i.e. each complementary pair counts as one)." << endl;
-    *out << "  * Edge count: The number of edges in the graph. Only one edge in each" << endl;
-    *out << "        complementary pair is counted." << endl;
-    *out << "  * Total length: The total number of base pairs in the graph." << endl;
-    *out << "  * Dead ends: The number of instances where an end of a node does not connect" << endl;
-    *out << "        to any other nodes." << endl;
-    *out << "  * Percentage dead ends: The proportion of possible dead ends. The maximum" << endl;
-    *out << "        number of dead ends is twice the number of nodes (occurs when there are" << endl;
-    *out << "        no edges), so this value is the number of dead ends divided by twice the" << endl;
-    *out << "        node count." << endl;
-    *out << "  * Connected components: The number of regions of the graph which are" << endl;
-    *out << "        disconnected from each other." << endl;
-    *out << "  * Largest component: The total number of base pairs in the largest connected" << endl;
-    *out << "        component." << endl;
-    *out << "  * N50: Nodes that are this length or greater will collectively add up to at" << endl;
-    *out << "        least half of the total length." << endl;
-    *out << "  * Shortest node: The length of the shortest node in the graph." << endl;
-    *out << "  * Lower quartile node: The median node length for the shorter half of the" << endl;
-    *out << "        nodes." << endl;
-    *out << "  * Median node: The median node length for the graph." << endl;
-    *out << "  * Upper quartile node: The median node length for the longer half of the" << endl;
-    *out << "        nodes." << endl;
-    *out << "  * Longest node: The length of the longest node in the graph." << endl;
-    *out << "  * Median read depth: The median read depth of the graph, by base." << endl;
-    *out << endl;
-    *out << "Usage:    Bandage info <graph> [options]" << endl;
-    *out << endl;
-    *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
-    *out << endl;
-    *out << "Options:  --tsv               Output the information in a single tab-delimited" << endl;
-    *out << "                              line starting with the graph file" << endl;
-    *out << endl;
-    printCommonHelp(out);
+    QStringList text;
+
+    text << "Bandage info takes a graph file as input and outputs (to stdout) the following statistics about the graph:";
+    text << "* Node count: The number of nodes in the graph. Only positive nodes are counted (i.e. each complementary pair counts as one).";
+    text << "* Edge count: The number of edges in the graph. Only one edge in each complementary pair is counted.";
+    text << "* Total length: The total number of base pairs in the graph.";
+    text << "* Dead ends: The number of instances where an end of a node does not connect to any other nodes.";
+    text << "* Percentage dead ends: The proportion of possible dead ends. The maximum number of dead ends is twice the number of nodes (occurs when there are no edges), so this value is the number of dead ends divided by twice the node count.";
+    text << "* Connected components: The number of regions of the graph which are disconnected from each other.";
+    text << "* Largest component: The total number of base pairs in the largest connected component.";
+    text << "* N50: Nodes that are this length or greater will collectively add up to at least half of the total length.";
+    text << "* Shortest node: The length of the shortest node in the graph.";
+    text << "* Lower quartile node: The median node length for the shorter half of the nodes.";
+    text << "* Median node: The median node length for the graph.";
+    text << "* Upper quartile node: The median node length for the longer half of the nodes.";
+    text << "* Longest node: The length of the longest node in the graph.";
+    text << "* Median read depth: The median read depth of the graph, by base.";
+    text << "";
+    text << "Usage:    Bandage info <graph> [options]";
+    text << "";
+    text << "Positional parameters:";
+    text << "<graph>             A graph file of any type supported by Bandage";
+    text << "";
+    text << "Options:  --tsv               Output the information in a single tab-delimited line starting with the graph file";
+    text << "";
+
+    getCommonHelp(&text);
     if (all)
-        printSettingsUsage(out);
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 

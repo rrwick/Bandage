@@ -28,13 +28,19 @@ int bandageContiguous(QStringList arguments)
 
     if (checkForHelp(arguments))
     {
-        printContiguousUsage(&out);
+        printContiguousUsage(&out, false);
+        return 0;
+    }
+
+    if (checkForHelpAll(arguments))
+    {
+        printContiguousUsage(&out, true);
         return 0;
     }
 
     if (arguments.size() < 2)
     {
-        printContiguousUsage(&err);
+        printContiguousUsage(&err, false);
         return 1;
     }
 
@@ -48,7 +54,7 @@ int bandageContiguous(QStringList arguments)
     if (error.length() > 0)
     {
         err << "" << endl << "Error: " << error << endl;
-        printContiguousUsage(&err);
+        printContiguousUsage(&err, false);
         return 1;
     }
 
@@ -63,15 +69,22 @@ int bandageContiguous(QStringList arguments)
 
 
 
-void printContiguousUsage(QTextStream * out)
+void printContiguousUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Usage:   Bandage contiguous <graph> <target> [options]" << endl;
-    *out << endl;
-    *out << "Options: " << endl;
-    *out << endl;
-    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
-    *out << endl;
+    QStringList text;
+
+    text << "";
+    text << "Usage:   Bandage contiguous <graph> <target> [options]";
+    text << "";
+    text << "Options:";
+    text << "";
+
+    getCommonHelp(&text);
+    if (all)
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 

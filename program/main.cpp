@@ -39,25 +39,29 @@
 
 void printUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Usage:    Bandage <command> [options]" << endl;
-    *out << endl;
-    *out << "Commands: <blank>      Launch the Bandage GUI" << endl;
-    *out << "          load         Launch the Bandage GUI and load a graph file" << endl;
-    *out << "          info         Display information about a graph" << endl;
-    *out << "          image        Generate an image file of a graph" << endl;
-    *out << "          querypaths   Output graph paths for BLAST queries" << endl;
-    *out << "          reduce       Save a subgraph of a larger graph" << endl;
-//    *out << "          contiguous   extract all sequences contiguous with a target sequence" << endl;
-    *out << endl;
-    *out << "Options:  --help       View this help message" << endl;
-    *out << "          --helpall    View all command line settings" << endl;
-    *out << "          --version    View Bandage version number" << endl;
-    *out << endl;
+    QStringList text;
+
+    text << "";
+    text << "Usage:    Bandage <command> [options]";
+    text << "";
+    text << "Commands: <blank>      Launch the Bandage GUI";
+    text << "load         Launch the Bandage GUI and load a graph file";
+    text << "info         Display information about a graph";
+    text << "image        Generate an image file of a graph";
+    text << "querypaths   Output graph paths for BLAST queries";
+    text << "reduce       Save a subgraph of a larger graph";
+//    text << "          contiguous   extract all sequences contiguous with a target sequence";
+    text << "";
+    text << "Options:  --help       View this help message";
+    text << "--helpall    View all command line settings";
+    text << "--version    View Bandage version number";
+    text << "";
+
     if (all)
-        printSettingsUsage(out);
-    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
-    *out << endl;
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 int main(int argc, char *argv[])
@@ -84,8 +88,8 @@ int main(int argc, char *argv[])
     struct winsize ws;
     ioctl(0, TIOCGWINSZ, &ws);
     g_memory->terminalWidth = ws.ws_col;
-    if (g_memory->terminalWidth < 60)
-        g_memory->terminalWidth = 60;
+    if (g_memory->terminalWidth < 50)
+        g_memory->terminalWidth = 50;
 
     QApplication::setApplicationName("Bandage");
     QApplication::setApplicationVersion("0.7.2");
@@ -167,7 +171,7 @@ int main(int argc, char *argv[])
     QString error = checkForInvalidOrExcessSettings(&argumentsCopy);
     if (error.length() > 0)
     {
-        err << "Bandage error: " + error << endl;
+        outputText("Bandage error: " + error, &err);
         return 1;
     }
 

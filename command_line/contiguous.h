@@ -25,7 +25,7 @@
 #include <QApplication>
 
 int bandageContiguous(QStringList arguments);
-void printContiguousUsage(QTextStream * out);
+void printContiguousUsage(QTextStream * out, bool all);
 QString checkForInvalidContiguousOptions(QStringList arguments);
 void parseContiguousOptions(QStringList arguments);
 

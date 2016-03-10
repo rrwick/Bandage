@@ -35,12 +35,9 @@ bool checkForHelp(QStringList arguments);
 bool checkForHelpAll(QStringList arguments);
 bool checkForVersion(QStringList arguments);
 
-QString checkOptionForInt(QString option, QStringList * arguments, int min,
-                          int max, bool offOkay);
-QString checkOptionForFloat(QString option, QStringList * arguments, double min,
-                            double max, bool offOkay);
-QString checkOptionForSciNot(QString option, QStringList * arguments,
-                             SciNot min, SciNot max, bool offOkay);
+QString checkOptionForInt(QString option, QStringList * arguments, IntSetting setting, bool offOkay);
+QString checkOptionForFloat(QString option, QStringList * arguments, FloatSetting setting, bool offOkay);
+QString checkOptionForSciNot(QString option, QStringList * arguments, SciNotSetting setting, bool offOkay);
 QString checkOptionForString(QString option, QStringList * arguments,
                              QStringList validOptionsList,
                              QString validDescription = "");
@@ -50,8 +47,8 @@ bool checkIfFileExists(QString filename);
 void checkOptionWithoutValue(QString option, QStringList * arguments);
 QString checkTwoOptionsForFloats(QString option1, QString option2,
                                  QStringList * arguments,
-                                 double min1, double max1,
-                                 double min2, double max2,
+                                 FloatSetting setting1,
+                                 FloatSetting setting2,
                                  bool secondMustBeEqualOrLarger = false);
 
 bool isOptionPresent(QString option, QStringList * arguments);
@@ -71,8 +68,8 @@ QString checkForExcessArguments(QStringList arguments);
 
 void parseSettings(QStringList arguments);
 
-void printCommonHelp(QTextStream * out, bool spacesAtStart = true);
-void printSettingsUsage(QTextStream * out);
+void getCommonHelp(QStringList * text);
+void getSettingsUsage(QStringList *text);
 
 QString getColourName(QColor colour);
 
@@ -81,9 +78,9 @@ void deleteBlastTempDirectory();
 
 QString getElapsedTime(QDateTime start, QDateTime end);
 
-void printGraphScopeOptions(QTextStream * out);
+void getGraphScopeOptions(QStringList * text);
 
-QStringList wrapText(QString text, int width, int indent, int optionIndent, bool indentFirst);
+QStringList wrapText(QString text, int width, int firstLineIndent, int laterLineIndent);
 QString rstrip(const QString& str);
 
 
@@ -101,6 +98,13 @@ QString getRangeAndDefault(QString min, QString max, QString defaultVal);
 QString getDefaultColour(QColor colour);
 
 QString getBandageTitleAsciiArt();
-
+bool isOption(QString text);
+bool isSectionHeader(QString text);
+bool isListItem(QString text);
+bool isCommand(QString text);
+bool isError(QString text);
+void outputText(QString text, QTextStream * out);
+void outputText(QStringList text, QTextStream * out);
+void getOnlineHelpMessage(QStringList * text);
 
 #endif // COMMANDCOMMANDLINEFUNCTIONS_H

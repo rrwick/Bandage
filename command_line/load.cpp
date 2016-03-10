@@ -47,14 +47,14 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
     if (!checkIfFileExists(filename))
     {
-        err << "Bandage error: " << filename << " does not exist" << endl;
+        outputText("Bandage error: " + filename, &err);
         return 1;
     }
 
     QString error = checkForInvalidLoadOptions(arguments);
     if (error.length() > 0)
     {
-        err << "Bandage error: " << error << endl;
+        outputText("Bandage error: " + error, &err);
         return 1;
     }
 
@@ -69,22 +69,24 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
 void printLoadUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Bandage load will open the Bandage GUI and immediately load the specified graph" << endl;
-    *out << "file." << endl;
-    *out << endl;
-    *out << "Usage:    Bandage load <graph> [options]" << endl;
-    *out << endl;
-    *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
-    *out << endl;
-    *out << "Options:  --draw              Draw graph after loading" << endl;
-    *out << endl;
-    printCommonHelp(out);
+    QStringList text;
+
+    text << "Bandage load will open the Bandage GUI and immediately load the specified graph file.";
+    text << "";
+    text << "Usage:    Bandage load <graph> [options]";
+    text << "";
+    text << "Positional parameters:";
+    text << "<graph>             A graph file of any type supported by Bandage";
+    text << "";
+    text << "Options:  --draw              Draw graph after loading";
+    text << "";
+
+    getCommonHelp(&text);
     if (all)
-        printSettingsUsage(out);
-    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
-    *out << endl;
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 

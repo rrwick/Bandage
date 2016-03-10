@@ -97,7 +97,7 @@ public:
     int blastRainbowPartsPerQuery;
 
     GraphScope graphScope;
-    int nodeDistance;
+    IntSetting nodeDistance;
     bool startingNodesExactMatch;
     QString startingNodes;
     QString blastQueryFilename;

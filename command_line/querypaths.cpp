@@ -50,7 +50,7 @@ int bandageQueryPaths(QStringList arguments)
     arguments.pop_front();
     if (!checkIfFileExists(graphFilename))
     {
-        err << "Bandage error: " << graphFilename << " does not exist" << endl;
+        outputText("Bandage error: " + graphFilename, &err);
         return 1;
     }
 
@@ -58,7 +58,7 @@ int bandageQueryPaths(QStringList arguments)
     arguments.pop_front();
     if (!checkIfFileExists(queriesFilename))
     {
-        err << "Bandage error: " << queriesFilename << " does not exist." << endl;
+        outputText("Bandage error: " + queriesFilename, &err);
         return 1;
     }
     g_settings->blastQueryFilename = queriesFilename;
@@ -80,7 +80,7 @@ int bandageQueryPaths(QStringList arguments)
     QString error = checkForInvalidQueryPathsOptions(arguments);
     if (error.length() > 0)
     {
-        err << "Bandage error: " << error << endl;
+        outputText("Bandage error: " + error, &err);
         return 1;
     }
 
@@ -94,17 +94,17 @@ int bandageQueryPaths(QStringList arguments)
     QFile hitsFile(hitsFastaFilename);
     if (tableFile.exists())
     {
-        err << "Bandage error: " << tableFilename << " already exists." << endl;
+        outputText("Bandage error: " + tableFilename + " already exists.", &err);
         return 1;
     }
     if (pathFasta && pathsFile.exists())
     {
-        err << "Bandage error: " << pathFastaFilename << " already exists." << endl;
+        outputText("Bandage error: " + pathFastaFilename + " already exists.", &err);
         return 1;
     }
     if (hitsFasta && hitsFile.exists())
     {
-        err << "Bandage error: " << hitsFastaFilename << " already exists." << endl;
+        outputText("Bandage error: " + hitsFastaFilename + " already exists.", &err);
         return 1;
     }
 
@@ -268,29 +268,27 @@ int bandageQueryPaths(QStringList arguments)
 
 void printQueryPathsUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Bandage querypaths searches for queries in the graph using BLAST and outputs" << endl;
-    *out << "the results to a tab-delimited file." << endl;
-    *out << endl;
-    *out << "Usage:    Bandage querypaths <graph> <queries> <output_prefix> [options]" << endl;
-    *out << endl;
-    *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
-    *out << "          <queries>           A FASTA file of one or more BLAST queries" << endl;
-    *out << "          <output_prefix>     The output file prefix (used to create the '.tsv'" << endl;
-    *out << "                              output file, and possibly FASTA files as well," << endl;
-    *out << "                              depending on options)" << endl;
-    *out << endl;
-    *out << "Options:  --pathfasta         Put all query path sequences in a multi-FASTA" << endl;
-    *out << "                              file, not in the TSV file" << endl;
-    *out << "          --hitsfasta         Produce a multi-FASTA file of all BLAST hits in" << endl;
-    *out << "                              the query paths" << endl;
-    *out << endl;
-    printCommonHelp(out);
+    QStringList text;
+
+    text << "Bandage querypaths searches for queries in the graph using BLAST and outputs the results to a tab-delimited file.";
+    text << "";
+    text << "Usage:    Bandage querypaths <graph> <queries> <output_prefix> [options]";
+    text << "";
+    text << "Positional parameters:";
+    text << "<graph>             A graph file of any type supported by Bandage";
+    text << "<queries>           A FASTA file of one or more BLAST queries";
+    text << "<output_prefix>     The output file prefix (used to create the '.tsv' output file, and possibly FASTA files as well, depending on options)";
+    text << "";
+    text << "Options:  --pathfasta         Put all query path sequences in a multi-FASTA file, not in the TSV file";
+    text << "--hitsfasta         Produce a multi-FASTA file of all BLAST hits in the query paths";
+    text << "";
+
+    getCommonHelp(&text);
     if (all)
-        printSettingsUsage(out);
-    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
-    *out << endl;
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 

@@ -57,7 +57,7 @@ int bandageImage(QStringList arguments)
 
     if (!checkIfFileExists(graphFilename))
     {
-        err << "Bandage error: " << graphFilename << " does not exist" << endl;
+        outputText("Bandage error: " + graphFilename, &err);
         return 1;
     }
 
@@ -72,21 +72,21 @@ int bandageImage(QStringList arguments)
         pixelImage = false;
     else
     {
-        err << "Bandage error: the output filename must end in .png, .jpg or .svg" << endl;
+        outputText("Bandage error: the output filename must end in .png, .jpg or .svg", &err);
         return 1;
     }
 
     QString error = checkForInvalidImageOptions(arguments);
     if (error.length() > 0)
     {
-        err << "Bandage error: " << error << endl;
+        outputText("Bandage error: " + error, &err);
         return 1;
     }
 
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
     {
-        err << "Bandage error: could not load " << graphFilename << endl;
+        outputText("Bandage error: could not load " + graphFilename, &err);
         return 1;
     }
 
@@ -199,36 +199,36 @@ int bandageImage(QStringList arguments)
 
 void printImageUsage(QTextStream * out, bool all)
 {
-    *out << endl;
-    *out << "Bandage image will generate an image file of the graph visualisation without" << endl;
-    *out << "opening the GUI." << endl;
-    *out << endl;
-    *out << "Usage:    Bandage image <graph> <outputfile> [options]" << endl;
-    *out << endl;
-    *out << "Positional parameters:" << endl;
-    *out << "          <graph>             A graph file of any type supported by Bandage" << endl;
-    *out << "          <outputfile>        The image file to be created (must end in '.jpg'," << endl;
-    *out << "                              '.png' or '.svg')" << endl;
-    *out << endl;
-    *out << "Options:  --height <int>      Image height (default: 1000)" << endl;
-    *out << "          --width <int>       Image width (default: not set)" << endl;
-    *out << "                              If only height or width is set, the other will be" << endl;
-    *out << "                              determined automatically. If both are set, the" << endl;
-    *out << "                              image will be exactly that size." << endl;
-    *out << endl;
-    printCommonHelp(out);
+    QStringList text;
+
+    text << "Bandage image will generate an image file of the graph visualisation without opening the GUI.";
+    text << "";
+    text << "Usage:    Bandage image <graph> <outputfile> [options]";
+    text << "";
+    text << "Positional parameters:";
+    text << "<graph>             A graph file of any type supported by Bandage";
+    text << "<outputfile>        The image file to be created (must end in '.jpg', '.png' or '.svg')";
+    text << "";
+    text << "Options:  --height <int>      Image height (default: 1000)";
+    text << "--width <int>       Image width (default: not set)";
+    text << "";
+    text << "If only height or width is set, the other will be determined automatically. If both are set, the image will be exactly that size.";
+    text << "";
+
+    getCommonHelp(&text);
     if (all)
-        printSettingsUsage(out);
-    *out << "Online Bandage help: https://github.com/rrwick/Bandage/wiki" << endl;
-    *out << endl;
+        getSettingsUsage(&text);
+    getOnlineHelpMessage(&text);
+
+    outputText(text, out);
 }
 
 QString checkForInvalidImageOptions(QStringList arguments)
 {
-    QString error = checkOptionForInt("--height", &arguments, 1, 32767, false);
+    QString error = checkOptionForInt("--height", &arguments, IntSetting(0, 1, 32767), false);
     if (error.length() > 0) return error;
 
-    error = checkOptionForInt("--width", &arguments, 1, 32767, false);
+    error = checkOptionForInt("--width", &arguments, IntSetting(0, 1, 32767), false);
     if (error.length() > 0) return error;
 
     return checkForInvalidOrExcessSettings(&arguments);

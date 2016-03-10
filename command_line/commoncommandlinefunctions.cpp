@@ -38,135 +38,165 @@ QStringList getArgumentList(int argc, char *argv[])
 
 
 
-void printSettingsUsage(QTextStream * out)
+void getSettingsUsage(QStringList * text)
 {
-    int wrapSize = g_memory->terminalWidth;
-    int indentSize = 10;
-    int optionIndent = 20;
-
-
-    QStringList wrapped;
-    wrapped << wrapText("Settings: The following options configure the Bandage settings that are available in the Bandage GUI.", wrapSize, indentSize, optionIndent, false);
-
     QString dashes = "";
-    for (int i = 0; i < wrapSize - indentSize; ++i)
+    for (int i = 0; i < g_memory->terminalWidth - 10; ++i)
         dashes += '-';
 
-    QStringList u;
-    u << "";
-    u << "Colours can be specified using hex values, with or without an alpha channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names (e.g. red, yellowgreen or skyblue).  Note that hex colours will either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the hash symbol escaped (e.g. \\#FFB6C1).";
-    u << "";
-    u << "Graph scope";
-    u << dashes;
-    u << "These settings control the graph scope.  If the aroundnodes scope is used, then the --nodes option must also be used.  If the aroundblast scope is used, a BLAST query must be given with the --query option.";
-//    getGraphScopeOptions(&u);
-    u << "--double            Draw graph in double mode (default: off)";
-    u << "";
-    u << "Graph size";
-    u << dashes;
-    u << "--nodelen <float>   Node length per megabase " + getRangeAndDefault(g_settings->manualNodeLengthPerMegabase, "auto");
-    u << "--minnodlen <float> Minimum node length " + getRangeAndDefault(g_settings->minimumNodeLength);
-    u << "--edgelen <float>   Edge length " + getRangeAndDefault(g_settings->edgeLength);
-    u << "--edgewidth <float> Edge width " + getRangeAndDefault(g_settings->edgeWidth);
-    u << "--doubsep <float>   Double mode separation " + getRangeAndDefault(g_settings->doubleModeNodeSeparation);
-    u << "";
-    u << "Graph layout quality";
-    u << dashes;
-    u << "--nodseglen <float> Minimum node length " + getRangeAndDefault(g_settings->nodeSegmentLength);
-    u << "--iter <int>        Graph layout iterations " + getRangeAndDefault(g_settings->graphLayoutQuality);
-    u << "";
-    u << "Graph appearance";
-    u << dashes;
-    u << "--edgecol <col>     Colour for edges " + getDefaultColour(g_settings->edgeColour);
-    u << "--outcol <col>      Colour for node outlines " + getDefaultColour(g_settings->outlineColour);
-    u << "--outline <float>   Node outline thickness " + getRangeAndDefault(g_settings->outlineThickness);
-    u << "--selcol <col>      Colour for selections " + getDefaultColour(g_settings->selectionColour);
-    u << "--noaa              Disable antialiasing (default: antialiasing on)";
-    u << "";
-    u << "Text appearance";
-    u << dashes;
-    u << "--textcol <col>     Colour for label text " + getDefaultColour(g_settings->textColour);
-    u << "--toutcol <col>     Colour for text outline " + getDefaultColour(g_settings->textOutlineColour);
-    u << "--toutline <float>  Surround text with an outline with this thickness " + getRangeAndDefault(g_settings->textOutlineThickness);
-    u << "--centre            Node labels appear at the centre of the node (default: off, node labels appear over visible parts of nodes)";
-    u << "";
-    u << "Node width";
-    u << dashes;
-    u << "Node widths are determined using the following formula:";
-    u << "a*b*((c/d)^e-1)+1";
-    u << "  a = average node width";
-    u << "  b = read depth effect on width";
-    u << "  c = node read depth";
-    u << "  d = mean read depth";
-    u << "  e = power of read depth effect on width";
-    u << "--nodewidth <float> Average node width " + getRangeAndDefault(g_settings->averageNodeWidth);
-    u << "--depwidth <float>  Read depth effect on width " + getRangeAndDefault(g_settings->readDepthEffectOnWidth);
-    u << "--deppower <float>  Power of read depth effect on width " + getRangeAndDefault(g_settings->readDepthPower);
-    u << "";
-    u << "Node labels";
-    u << dashes;
-    u << "--names             Label nodes with name (default: off)";
-    u << "--lengths           Label nodes with length (default: off)";
-    u << "--readdepth         Label nodes with read depth (default: off)";
-    u << "--blasthits         Label BLAST hits (default: off)";
-    u << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(g_settings->labelFont.pointSize(), 1, 100);
-    u << "";
-    u << "Node colours";
-    u << dashes;
-    u << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, readdepth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
-    u << "";
-    u << "Random colour scheme";
-    u << dashes;
-    u << "These settings only apply when the random colour scheme is used.";
-    u << "--ransatpos <int>   Positive node saturation " + getRangeAndDefault(g_settings->randomColourPositiveSaturation);
-    u << "--ransatneg <int>   Negative node saturation " + getRangeAndDefault(g_settings->randomColourNegativeSaturation);
-    u << "--ranligpos <int>   Positive node lightness " + getRangeAndDefault(g_settings->randomColourPositiveLightness);
-    u << "--ranligneg <int>   Negative node lightness " + getRangeAndDefault(g_settings->randomColourNegativeLightness);
-    u << "--ranopapos <int>   Positive node opacity " + getRangeAndDefault(g_settings->randomColourPositiveOpacity);
-    u << "--ranopaneg <int>   Negative node opacity " + getRangeAndDefault(g_settings->randomColourNegativeOpacity);
-    u << "";
-    u << "Uniform colour scheme";
-    u << dashes;
-    u << "These settings only apply when the uniform colour scheme is used.";
-    u << "--unicolpos <col>   Positive node colour " + getDefaultColour(g_settings->uniformPositiveNodeColour);
-    u << "--unicolneg <col>   Negative node colour " + getDefaultColour(g_settings->uniformNegativeNodeColour);
-    u << "--unicolspe <col>   Special node colour " + getDefaultColour(g_settings->uniformNodeSpecialColour);
-    u << "";
-    u << "Read depth colour scheme";
-    u << dashes;
-    u << "These settings only apply when the read depth colour scheme is used.";
-    u << "--depcollow <col>   Colour for nodes with read depth below the low read depth value " + getDefaultColour(g_settings->lowReadDepthColour);
-    u << "--depcolhi <col>    Colour for nodes with read depth above the high read depth value " + getDefaultColour(g_settings->highReadDepthColour);
-    u << "--depvallow <float> Low read depth value (default: auto)";
-    u << "--depvalhi <float>  High read depth value (default: auto)";
-    u << "";
-    u << "BLAST search";
-    u << dashes;
-    u << "--query <fastafile> A FASTA file of either nucleotide or protein sequences to be used as BLAST queries (default: none)";
-    u << "--blastp <param>    Parameters to be used by blastn and tblastn when conducting a BLAST search in Bandage (default: none). Format BLAST parameters exactly as they would be used for blastn/tblastn on the command line, and enclose them in quotes.";
-    u << "--alfilter <int>    Alignment length filter for BLAST hits. Hits with shorter alignments will be excluded " + getRangeAndDefault(g_settings->blastAlignmentLengthFilter);
-    u << "--qcfilter <float>  Query coverage filter for BLAST hits. Hits with less coverage will be excluded " + getRangeAndDefault(g_settings->blastQueryCoverageFilter);
-    u << "--ifilter <float>   Identity filter for BLAST hits. Hits with less identity will be excluded " + getRangeAndDefault(g_settings->blastIdentityFilter);
-    u << "--evfilter <sci>    E-value filter for BLAST hits. Hits with larger e-values will be excluded " + getRangeAndDefault(g_settings->blastEValueFilter);
-    u << "--bsfilter <float>  Bit score filter for BLAST hits. Hits with lower bit scores will be excluded " + getRangeAndDefault(g_settings->blastBitScoreFilter);
-    u << "";
-    u << "BLAST query paths";
-    u << dashes;
-    u << "These settings control how Bandage searches for query paths after conducting a BLAST search.";
-    u << "--pathnodes <int>   The number of allowed nodes in a BLAST query path " + getRangeAndDefault(g_settings->maxQueryPathNodes);
-    u << "--minpatcov <float> Minimum fraction of a BLAST query which must be covered by a query path " + getRangeAndDefault(g_settings->minQueryCoveredByPath);
-    u << "--minhitcov <float> Minimum fraction of a BLAST query which must be covered by BLAST hits in a query path " + getRangeAndDefault(g_settings->minQueryCoveredByHits);
-    u << "--minmeanid <float> Minimum mean identity of BLAST hits in a query path " + getRangeAndDefault(g_settings->minMeanHitIdentity);
-    u << "--maxevprod <sci>   Maximum e-value product for all BLAST hits in a query path " + getRangeAndDefault(g_settings->maxEValueProduct);
-    u << "--minpatlen <float> Minimum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->minLengthPercentage);
-    u << "--maxpatlen <float> Maximum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->maxLengthPercentage);
-    u << "--minlendis <int>   Minimum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->minLengthBaseDiscrepancy);
-    u << "--maxlendis <int>   Maximum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->maxLengthBaseDiscrepancy);
-    u << "";
+    *text << "Settings: The following options configure the Bandage settings that are available in the Bandage GUI.";
+    *text << "";
+    *text << "Colours can be specified using hex values, with or without an alpha channel, (e.g. #FFB6C1 or #7FD2B48C) or using standard colour names (e.g. red, yellowgreen or skyblue).  Note that hex colours will either need to be enclosed in quotes (e.g. \"#FFB6C1\") or have the hash symbol escaped (e.g. \\#FFB6C1).";
+    *text << "";
+    *text << "Graph scope";
+    *text << dashes;
+    *text << "These settings control the graph scope.  If the aroundnodes scope is used, then the --nodes option must also be used.  If the aroundblast scope is used, a BLAST query must be given with the --query option.";
+    getGraphScopeOptions(text);
+    *text << "--double            Draw graph in double mode (default: off)";
+    *text << "";
+    *text << "Graph size";
+    *text << dashes;
+    *text << "--nodelen <float>   Node length per megabase " + getRangeAndDefault(g_settings->manualNodeLengthPerMegabase, "auto");
+    *text << "--minnodlen <float> Minimum node length " + getRangeAndDefault(g_settings->minimumNodeLength);
+    *text << "--edgelen <float>   Edge length " + getRangeAndDefault(g_settings->edgeLength);
+    *text << "--edgewidth <float> Edge width " + getRangeAndDefault(g_settings->edgeWidth);
+    *text << "--doubsep <float>   Double mode separation " + getRangeAndDefault(g_settings->doubleModeNodeSeparation);
+    *text << "";
+    *text << "Graph layout quality";
+    *text << dashes;
+    *text << "--nodseglen <float> Node segment length " + getRangeAndDefault(g_settings->nodeSegmentLength);
+    *text << "--iter <int>        Graph layout iterations " + getRangeAndDefault(g_settings->graphLayoutQuality);
+    *text << "";
+    *text << "Graph appearance";
+    *text << dashes;
+    *text << "--edgecol <col>     Colour for edges " + getDefaultColour(g_settings->edgeColour);
+    *text << "--outcol <col>      Colour for node outlines " + getDefaultColour(g_settings->outlineColour);
+    *text << "--outline <float>   Node outline thickness " + getRangeAndDefault(g_settings->outlineThickness);
+    *text << "--selcol <col>      Colour for selections " + getDefaultColour(g_settings->selectionColour);
+    *text << "--noaa              Disable antialiasing (default: antialiasing on)";
+    *text << "";
+    *text << "Text appearance";
+    *text << dashes;
+    *text << "--textcol <col>     Colour for label text " + getDefaultColour(g_settings->textColour);
+    *text << "--toutcol <col>     Colour for text outline " + getDefaultColour(g_settings->textOutlineColour);
+    *text << "--toutline <float>  Surround text with an outline with this thickness " + getRangeAndDefault(g_settings->textOutlineThickness);
+    *text << "--centre            Node labels appear at the centre of the node (default: off, node labels appear over visible parts of nodes)";
+    *text << "";
+    *text << "Node width";
+    *text << dashes;
+    *text << "Node widths are determined using the following formula:";
+    *text << "a*b*((c/d)^e-1)+1";
+    *text << "  a = average node width";
+    *text << "  b = read depth effect on width";
+    *text << "  c = node read depth";
+    *text << "  d = mean read depth";
+    *text << "  e = power of read depth effect on width";
+    *text << "--nodewidth <float> Average node width " + getRangeAndDefault(g_settings->averageNodeWidth);
+    *text << "--depwidth <float>  Read depth effect on width " + getRangeAndDefault(g_settings->readDepthEffectOnWidth);
+    *text << "--deppower <float>  Power of read depth effect on width " + getRangeAndDefault(g_settings->readDepthPower);
+    *text << "";
+    *text << "Node labels";
+    *text << dashes;
+    *text << "--names             Label nodes with name (default: off)";
+    *text << "--lengths           Label nodes with length (default: off)";
+    *text << "--readdepth         Label nodes with read depth (default: off)";
+    *text << "--blasthits         Label BLAST hits (default: off)";
+    *text << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(g_settings->labelFont.pointSize(), 1, 100);
+    *text << "";
+    *text << "Node colours";
+    *text << dashes;
+    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, readdepth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
+    *text << "";
+    *text << "Random colour scheme";
+    *text << dashes;
+    *text << "These settings only apply when the random colour scheme is used.";
+    *text << "--ransatpos <int>   Positive node saturation " + getRangeAndDefault(g_settings->randomColourPositiveSaturation);
+    *text << "--ransatneg <int>   Negative node saturation " + getRangeAndDefault(g_settings->randomColourNegativeSaturation);
+    *text << "--ranligpos <int>   Positive node lightness " + getRangeAndDefault(g_settings->randomColourPositiveLightness);
+    *text << "--ranligneg <int>   Negative node lightness " + getRangeAndDefault(g_settings->randomColourNegativeLightness);
+    *text << "--ranopapos <int>   Positive node opacity " + getRangeAndDefault(g_settings->randomColourPositiveOpacity);
+    *text << "--ranopaneg <int>   Negative node opacity " + getRangeAndDefault(g_settings->randomColourNegativeOpacity);
+    *text << "";
+    *text << "Uniform colour scheme";
+    *text << dashes;
+    *text << "These settings only apply when the uniform colour scheme is used.";
+    *text << "--unicolpos <col>   Positive node colour " + getDefaultColour(g_settings->uniformPositiveNodeColour);
+    *text << "--unicolneg <col>   Negative node colour " + getDefaultColour(g_settings->uniformNegativeNodeColour);
+    *text << "--unicolspe <col>   Special node colour " + getDefaultColour(g_settings->uniformNodeSpecialColour);
+    *text << "";
+    *text << "Read depth colour scheme";
+    *text << dashes;
+    *text << "These settings only apply when the read depth colour scheme is used.";
+    *text << "--depcollow <col>   Colour for nodes with read depth below the low read depth value " + getDefaultColour(g_settings->lowReadDepthColour);
+    *text << "--depcolhi <col>    Colour for nodes with read depth above the high read depth value " + getDefaultColour(g_settings->highReadDepthColour);
+    *text << "--depvallow <float> Low read depth value " + getRangeAndDefault(g_settings->lowReadDepthValue, "auto");
+    *text << "--depvalhi <float>  High read depth value " + getRangeAndDefault(g_settings->highReadDepthValue, "auto");
+    *text << "";
+    *text << "BLAST search";
+    *text << dashes;
+    *text << "--query <fastafile> A FASTA file of either nucleotide or protein sequences to be used as BLAST queries (default: none)";
+    *text << "--blastp <param>    Parameters to be used by blastn and tblastn when conducting a BLAST search in Bandage (default: none). Format BLAST parameters exactly as they would be used for blastn/tblastn on the command line, and enclose them in quotes.";
+    *text << "--alfilter <int>    Alignment length filter for BLAST hits. Hits with shorter alignments will be excluded " + getRangeAndDefault(g_settings->blastAlignmentLengthFilter);
+    *text << "--qcfilter <float>  Query coverage filter for BLAST hits. Hits with less coverage will be excluded " + getRangeAndDefault(g_settings->blastQueryCoverageFilter);
+    *text << "--ifilter <float>   Identity filter for BLAST hits. Hits with less identity will be excluded " + getRangeAndDefault(g_settings->blastIdentityFilter);
+    *text << "--evfilter <sci>    E-value filter for BLAST hits. Hits with larger e-values will be excluded " + getRangeAndDefault(g_settings->blastEValueFilter);
+    *text << "--bsfilter <float>  Bit score filter for BLAST hits. Hits with lower bit scores will be excluded " + getRangeAndDefault(g_settings->blastBitScoreFilter);
+    *text << "";
+    *text << "BLAST query paths";
+    *text << dashes;
+    *text << "These settings control how Bandage searches for query paths after conducting a BLAST search.";
+    *text << "--pathnodes <int>   The number of allowed nodes in a BLAST query path " + getRangeAndDefault(g_settings->maxQueryPathNodes);
+    *text << "--minpatcov <float> Minimum fraction of a BLAST query which must be covered by a query path " + getRangeAndDefault(g_settings->minQueryCoveredByPath);
+    *text << "--minhitcov <float> Minimum fraction of a BLAST query which must be covered by BLAST hits in a query path " + getRangeAndDefault(g_settings->minQueryCoveredByHits);
+    *text << "--minmeanid <float> Minimum mean identity of BLAST hits in a query path " + getRangeAndDefault(g_settings->minMeanHitIdentity);
+    *text << "--maxevprod <sci>   Maximum e-value product for all BLAST hits in a query path " + getRangeAndDefault(g_settings->maxEValueProduct);
+    *text << "--minpatlen <float> Minimum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->minLengthPercentage);
+    *text << "--maxpatlen <float> Maximum allowed relative path length as compared to the query " + getRangeAndDefault(g_settings->maxLengthPercentage);
+    *text << "--minlendis <int>   Minimum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->minLengthBaseDiscrepancy);
+    *text << "--maxlendis <int>   Maximum allowed length discrepancy (in bases) between a BLAST query and its path in the graph " + getRangeAndDefault(g_settings->maxLengthBaseDiscrepancy);
+    *text << "";
+}
 
-    for (int i = 0; i < u.size(); ++i)
-        wrapped << wrapText(u[i], wrapSize, indentSize, optionIndent, true);
 
+
+void outputText(QString text, QTextStream * out)
+{
+    QStringList list;
+    list << text;
+    outputText(list, out);
+}
+
+void outputText(QStringList text, QTextStream * out)
+{
+    QStringList wrapped;
+
+    bool seenHeaderOrList = false;
+    for (int i = 0; i < text.size(); ++i)
+    {
+        QString line = text[i];
+
+        if (isSectionHeader(line) || isListItem(line))
+            seenHeaderOrList = true;
+
+        if (isError(line))
+            wrapped << wrapText(line, g_memory->terminalWidth, 0, 0);
+        else if (!seenHeaderOrList)
+            wrapped << wrapText(line, g_memory->terminalWidth, 0, 0);
+        else if (isSectionHeader(line) && line.contains("--"))
+            wrapped << wrapText(line, g_memory->terminalWidth, 0, 30);
+        else if (isSectionHeader(line))
+            wrapped << wrapText(line, g_memory->terminalWidth, 0, 10);
+        else if (isListItem(line))
+            wrapped << wrapText(line, g_memory->terminalWidth, 2, 4);
+        else if (isCommand(line))
+            wrapped << wrapText(line, g_memory->terminalWidth, 10, 23);
+        else if (isOption(line))
+            wrapped << wrapText(line, g_memory->terminalWidth, 10, 30);
+        else
+            wrapped << wrapText(line, g_memory->terminalWidth, 10, 10);
+    }
+
+    *out << endl;
     for (int i = 0; i < wrapped.size(); ++i)
     {
         *out << wrapped[i];
@@ -175,24 +205,16 @@ void printSettingsUsage(QTextStream * out)
 }
 
 
-
 //This is in a separate function because the command line tool Bandage reduce
 //also displays these.
-void printGraphScopeOptions(QTextStream * out)
+void getGraphScopeOptions(QStringList * text)
 {
-    *out << "--scope <scope>     Graph scope, from one of the following options:" << endl;
-    *out << "                              entire, aroundnodes, aroundblast, depthrange" << endl;
-    *out << "                              (default: entire)" << endl;
-    *out << "          --nodes <list>      A comma-separated list of starting nodes for the" << endl;
-    *out << "                              aroundnodes scope (default: none)" << endl;
-    *out << "          --partial           Use partial node name matching (default: exact" << endl;
-    *out << "                              node name matching)" << endl;
-    *out << "          --distance <int>    The number of node steps away to draw for the" << endl;
-    *out << "                              aroundnodes and aroundblast scopes (default: " << QString::number(g_settings->nodeDistance) << ")" << endl;
-    *out << "          --mindepth <float>  The minimum allowed read depth for the depthrange" << endl;
-    *out << "                              scope (default: " << QString::number(g_settings->minReadDepthRange) << ")" << endl;
-    *out << "          --maxdepth <float>  The maximum allowed read depth for the depthrange" << endl;
-    *out << "                              scope (default: " << QString::number(g_settings->maxReadDepthRange) << ")" << endl;
+    *text << "--scope <scope>     Graph scope, from one of the following options: entire, aroundnodes, aroundblast, depthrange (default: entire)";
+    *text << "--nodes <list>      A comma-separated list of starting nodes for the aroundnodes scope (default: none)";
+    *text << "--partial           Use partial node name matching (default: exact node name matching)";
+    *text << "--distance <int>    The number of node steps away to draw for the aroundnodes and aroundblast scopes " + getRangeAndDefault(g_settings->nodeDistance);
+    *text << "--mindepth <float>  The minimum allowed read depth for the depthrange scope " + getRangeAndDefault(g_settings->minReadDepthRange);
+    *text << "--maxdepth <float>  The maximum allowed read depth for the depthrange scope "  + getRangeAndDefault(g_settings->maxReadDepthRange);
 }
 
 
@@ -205,131 +227,71 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
 
     QStringList validScopeOptions;
     validScopeOptions << "entire" << "aroundnodes" << "aroundblast" << "depthrange";
-    QString error = checkOptionForString("--scope", arguments, validScopeOptions);
-    if (error.length() > 0) return error;
+    QString error;
 
-    error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names");
-    if (error.length() > 0) return error;
+    error = checkOptionForString("--scope", arguments, validScopeOptions); if (error.length() > 0) return error;
+    error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names"); if (error.length() > 0) return error;
     checkOptionWithoutValue("--partial", arguments);
-
-    error = checkOptionForInt("--distance", arguments, 0, 100, false);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--mindepth", arguments, 0.0, 1000000.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--maxdepth", arguments, 0.0, 1000000.0, false);
-    if (error.length() > 0) return error;
-
-    if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND)
-        return "The --query option can only be used with Bandage load and Bandage image";
-
-    error = checkOptionForFile("--query", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters");
-    if (error.length() > 0) return error;
-
+    error = checkOptionForInt("--distance", arguments, g_settings->nodeDistance, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--mindepth", arguments, g_settings->minReadDepthRange, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxdepth", arguments, g_settings->maxReadDepthRange, false); if (error.length() > 0) return error;
+    if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND) return "The --query option can only be used with Bandage load and Bandage image";
+    error = checkOptionForFile("--query", arguments); if (error.length() > 0) return error;
+    error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters"); if (error.length() > 0) return error;
     checkOptionWithoutValue("--double", arguments);
-    error = checkOptionForInt("--bases", arguments, 1, std::numeric_limits<int>::max(), false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--quality", arguments, 1, 5, false);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--nodewidth", arguments, 0.5, 1000.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--depwidth", arguments, 0.0, 1.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--deppower", arguments, 0.1, 1.0, false);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForFloat("--edgewidth", arguments, 0.1, 1000.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--outline", arguments, 0.0, 1000.0, false);
-    if (error.length() > 0) return error;
-
+    error = checkOptionForFloat("--nodelen", arguments, g_settings->manualNodeLengthPerMegabase, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minnodlen", arguments, g_settings->minimumNodeLength, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--edgelen", arguments, g_settings->edgeLength, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--doubsep", arguments, g_settings->doubleModeNodeSeparation, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--iter", arguments, g_settings->graphLayoutQuality, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--nodseglen", arguments, g_settings->nodeSegmentLength, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--nodewidth", arguments, g_settings->averageNodeWidth, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--depwidth", arguments, g_settings->readDepthEffectOnWidth, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--deppower", arguments, g_settings->readDepthPower, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--edgewidth", arguments, g_settings->edgeWidth, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--outline", arguments, g_settings->outlineThickness, false); if (error.length() > 0) return error;
     checkOptionWithoutValue("--names", arguments);
     checkOptionWithoutValue("--lengths", arguments);
     checkOptionWithoutValue("--readdepth", arguments);
     checkOptionWithoutValue("--blasthits", arguments);
-    error = checkOptionForInt("--fontsize", arguments, 1, 100, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--toutline", arguments, 0.0, 2.0, false);
-    if (error.length() > 0) return error;
+    error = checkOptionForInt("--fontsize", arguments, IntSetting(0, 1, 100), false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--toutline", arguments, g_settings->textOutlineThickness, false); if (error.length() > 0) return error;
     checkOptionWithoutValue("--centre", arguments);
-
-    error = checkOptionForColour("--edgecol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--outcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--selcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--textcol", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--toutcol", arguments);
-    if (error.length() > 0) return error;
+    error = checkOptionForColour("--edgecol", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--outcol", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--selcol", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--textcol", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--toutcol", arguments); if (error.length() > 0) return error;
     checkOptionWithoutValue("--noaa", arguments);
-
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "readdepth" << "blastsolid" << "blastrainbow";
-    error = checkOptionForString("--colour", arguments, validColourOptions);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--ransatpos", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ransatneg", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligpos", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranligneg", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopapos", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--ranopaneg", arguments, 0, 255, false);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForColour("--unicolpos", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--unicolneg", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--unicolspe", arguments);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForColour("--depcollow", arguments);
-    if (error.length() > 0) return error;
-    error = checkOptionForColour("--depcolhi", arguments);
-    if (error.length() > 0) return error;
-
-    error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, 0.0, 1000000.0, 0.0, 1000000.0, true);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--pathnodes", arguments, 1, 50, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minpatcov", arguments, 0.3, 1.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minhitcov", arguments, 0.3, 1.0, true);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minmeanid", arguments, 0.0, 1.0, true);
-    if (error.length() > 0) return error;
-    error = checkOptionForSciNot("--maxevprod", arguments, SciNot(1.0, -999), SciNot(9.9, 1), true);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--minpatlen", arguments, 0.0, 10000.0, true);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--maxpatlen", arguments, 0.0, 10000.0, true);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--minlendis", arguments, -1000000, 1000000, true);
-    if (error.length() > 0) return error;
-    error = checkOptionForInt("--maxlendis", arguments, -1000000, 1000000, true);
-    if (error.length() > 0) return error;
-
-    error = checkOptionForInt("--alfilter", arguments, 0, 1000000, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--qcfilter", arguments, 0.0, 100.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--ifilter", arguments, 0.0, 100.0, false);
-    if (error.length() > 0) return error;
-    error = checkOptionForSciNot("--evfilter", arguments, SciNot(1.0, -999), SciNot(9.9, 1), false);
-    if (error.length() > 0) return error;
-    error = checkOptionForFloat("--bsfilter", arguments, 0.0, 1000000.0, false);
-    if (error.length() > 0) return error;
+    error = checkOptionForString("--colour", arguments, validColourOptions); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ransatpos", arguments, g_settings->randomColourPositiveSaturation, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ransatneg", arguments, g_settings->randomColourNegativeSaturation, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligpos", arguments, g_settings->randomColourPositiveLightness, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranligneg", arguments, g_settings->randomColourNegativeLightness, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopapos", arguments, g_settings->randomColourPositiveOpacity, false); if (error.length() > 0) return error;
+    error = checkOptionForInt("--ranopaneg", arguments, g_settings->randomColourNegativeOpacity, false); if (error.length() > 0) return error;
+    error = checkOptionForColour("--unicolpos", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--unicolneg", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--unicolspe", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--depcollow", arguments); if (error.length() > 0) return error;
+    error = checkOptionForColour("--depcolhi", arguments); if (error.length() > 0) return error;
+    error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, g_settings->lowReadDepthValue, g_settings->highReadDepthValue, true); if (error.length() > 0) return error;
+    error = checkOptionForInt("--pathnodes", arguments, g_settings->maxQueryPathNodes, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minpatcov", arguments, g_settings->minQueryCoveredByPath, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minhitcov", arguments, g_settings->minQueryCoveredByHits, true); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minmeanid", arguments, g_settings->minMeanHitIdentity, true); if (error.length() > 0) return error;
+    error = checkOptionForSciNot("--maxevprod", arguments, g_settings->maxEValueProduct, true); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--minpatlen", arguments, g_settings->minLengthPercentage, true); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxpatlen", arguments, g_settings->maxLengthPercentage, true); if (error.length() > 0) return error;
+    error = checkOptionForInt("--minlendis", arguments, g_settings->minLengthBaseDiscrepancy, true); if (error.length() > 0) return error;
+    error = checkOptionForInt("--maxlendis", arguments, g_settings->maxLengthBaseDiscrepancy, true); if (error.length() > 0) return error;
+    error = checkOptionForInt("--alfilter", arguments, g_settings->blastAlignmentLengthFilter, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--qcfilter", arguments, g_settings->blastQueryCoverageFilter, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--ifilter", arguments, g_settings->blastIdentityFilter, false); if (error.length() > 0) return error;
+    error = checkOptionForSciNot("--evfilter", arguments, g_settings->blastEValueFilter, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--bsfilter", arguments, g_settings->blastBitScoreFilter, false); if (error.length() > 0) return error;
 
     //Make sure that the min read depth is less than or equal to the max read
     //depth.
@@ -451,15 +413,15 @@ void parseSettings(QStringList arguments)
 
     g_settings->doubleMode = isOptionPresent("--double", &arguments);
 
-//    if (isOptionPresent("--bases", &arguments))
-//    {
-//        g_settings->manualBasePairsPerSegment = getIntOption("--bases", &arguments);
-//        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
-//    }
-
-    if (isOptionPresent("--quality", &arguments))
+    if (isOptionPresent("--nodelen", &arguments))
     {
-        int quality = getIntOption("--quality", &arguments);
+        g_settings->manualNodeLengthPerMegabase = getIntOption("--nodelen", &arguments);
+        g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
+    }
+
+    if (isOptionPresent("--iter", &arguments))
+    {
+        int quality = getIntOption("--iter", &arguments);
         if (quality < 0)
             quality = 0;
         if (quality > 4)
@@ -700,8 +662,7 @@ bool checkForVersion(QStringList arguments)
 //Returns empty string if everything is okay and an error message if there's a
 //problem.  If everything is okay, it also removes the option and its value from
 //arguments.
-QString checkOptionForInt(QString option, QStringList * arguments, int min,
-                          int max, bool offOkay)
+QString checkOptionForInt(QString option, QStringList * arguments, IntSetting setting, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -727,9 +688,9 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min,
     //Check the range of the option.
     if (optionIsInt)
     {
-        if (optionInt < min || optionInt > max)
+        if (optionInt < setting.min || optionInt > setting.max)
             return "Value of " + option + " must be between "
-                    + QString::number(min) + " and " + QString::number(max) +
+                    + QString::number(setting.min) + " and " + QString::number(setting.max) +
                     " (inclusive)";
     }
 
@@ -747,8 +708,7 @@ QString checkOptionForInt(QString option, QStringList * arguments, int min,
 //Returns empty string if everything is okay and an error message if there's a
 //problem.  If everything is okay, it also removes the option and its value from
 //arguments.
-QString checkOptionForFloat(QString option, QStringList * arguments, double min,
-                            double max, bool offOkay)
+QString checkOptionForFloat(QString option, QStringList * arguments, FloatSetting setting, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -774,9 +734,9 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
     //Check the range of the option.
     if (optionIsFloat)
     {
-        if (optionFloat < min || optionFloat > max)
+        if (optionFloat < setting.min || optionFloat > setting.max)
             return "Value of " + option + " must be between "
-                    + QString::number(min) + " and " + QString::number(max) +
+                    + QString::number(setting.min) + " and " + QString::number(setting.max) +
                     " (inclusive)";
     }
 
@@ -796,7 +756,7 @@ QString checkOptionForFloat(QString option, QStringList * arguments, double min,
 //problem.  If everything is okay, it also removes the option and its value from
 //arguments.
 QString checkOptionForSciNot(QString option, QStringList * arguments,
-                             SciNot min, SciNot max, bool offOkay)
+                             SciNotSetting setting, bool offOkay)
 {
     int optionIndex = arguments->indexOf(option);
 
@@ -824,9 +784,9 @@ QString checkOptionForSciNot(QString option, QStringList * arguments,
     //Check the range of the option.
     if (optionIsSciNot)
     {
-        if (optionSciNot < min || optionSciNot > max)
+        if (optionSciNot < setting.min || optionSciNot > setting.max)
             return "Value of " + option + " must be between "
-                    + min.asString(true) + " and " + max.asString(true) +
+                    + setting.min.asString(true) + " and " + setting.max.asString(true) +
                     " (inclusive)";
     }
 
@@ -966,15 +926,15 @@ void checkOptionWithoutValue(QString option, QStringList * arguments)
 //are used.  It can also optionally check to make sure the second is larger
 //than the first.
 QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList * arguments,
-                                 double min1, double max1, double min2, double max2,
+                                 FloatSetting setting1, FloatSetting setting2,
                                  bool secondMustBeEqualOrLarger)
 {
     //First check each option independently
     QStringList argumentsCopy = *arguments;
-    QString option1Error = checkOptionForFloat(option1, &argumentsCopy, min1, max1, false);
+    QString option1Error = checkOptionForFloat(option1, &argumentsCopy, setting1, false);
     if (option1Error != "")
         return option1Error;
-    QString option2Error = checkOptionForFloat(option2, &argumentsCopy, min2, max2, false);
+    QString option2Error = checkOptionForFloat(option2, &argumentsCopy, setting2, false);
     if (option2Error != "")
         return option2Error;
 
@@ -989,8 +949,8 @@ QString checkTwoOptionsForFloats(QString option1, QString option2, QStringList *
     }
 
     //Now remove the options from the arguments before finishing.
-    checkOptionForFloat(option1, arguments, min1, max1, false);
-    checkOptionForFloat(option2, arguments, min2, max2, false);
+    checkOptionForFloat(option1, arguments, setting1, false);
+    checkOptionForFloat(option2, arguments, setting2, false);
     return "";
 }
 
@@ -1167,13 +1127,12 @@ QString checkForExcessArguments(QStringList arguments)
 }
 
 
-void printCommonHelp(QTextStream * out, bool spacesAtStart)
+void getCommonHelp(QStringList * text)
 {
-    if (spacesAtStart)
-        *out << "          ";
-    *out << "--help              View this help message" << endl;
-    *out << "          --helpall           View all command line settings" << endl;
-    *out << endl;
+    *text << "--help              View this help message";
+    *text << "--helpall           View all command line settings";
+    *text << "--version           View Bandage version number";
+    *text << "";
 }
 
 
@@ -1368,21 +1327,25 @@ QString getElapsedTime(QDateTime start, QDateTime end)
 }
 
 
-QStringList wrapText(QString text, int width, int indent, int optionIndent, bool indentFirst)
+QStringList wrapText(QString text, int width, int firstLineIndent, int laterLineIndent)
 {
     QStringList returnList;
 
-    QString spaces = "";
-    for (int i = 0; i < indent; ++i)
-        spaces += ' ';
-    QString optionSpaces = spaces;
-    for (int i = 0; i < optionIndent; ++i)
-        optionSpaces += ' ';
+    QString firstLineSpaces = "";
+    for (int i = 0; i < firstLineIndent; ++i)
+        firstLineSpaces += ' ';
+    QString laterLineSpaces = "";
+    for (int i = 0; i < laterLineIndent; ++i)
+        laterLineSpaces += ' ';
 
-    bool option = (text.length() > 2 && text[0] == '-' && text[1] == '-' && text[2] != '-');
+    text = firstLineSpaces + text;
 
-    if (indentFirst)
-        text = spaces + text;
+    //If the terminal width is at the minimum, don't bother wrapping.
+    if (g_memory->terminalWidth <= 50)
+    {
+        returnList << text;
+        return returnList;
+    }
 
     while (text.length() > width)
     {
@@ -1393,10 +1356,7 @@ QStringList wrapText(QString text, int width, int indent, int optionIndent, bool
 
         leftString = text.left(spaceIndex);
         returnList << rstrip(leftString);
-        if (option)
-            text = optionSpaces + text.mid(spaceIndex).trimmed();
-        else
-            text = spaces + text.mid(spaceIndex).trimmed();
+        text = laterLineSpaces + text.mid(spaceIndex).trimmed();
     }
 
     returnList << text;
@@ -1435,8 +1395,55 @@ QString getDefaultColour(QColor colour)
     return "(default: " + getColourName(colour.name()) + ")";
 }
 
-
 QString getBandageTitleAsciiArt()
 {
     return "  ____                  _                  \n |  _ \\                | |                 \n | |_) | __ _ _ __   __| | __ _  __ _  ___ \n |  _ < / _` | '_ \\ / _` |/ _` |/ _` |/ _ \\\n | |_) | (_| | | | | (_| | (_| | (_| |  __/\n |____/ \\__,_|_| |_|\\__,_|\\__,_|\\__, |\\___|\n                                 __/ |     \n                                |___/      ";
 }
+
+bool isOption(QString text)
+{
+    bool option = (text.length() > 2 && text[0] == '-' && text[1] == '-' && text[2] != '-');
+
+    QRegExp rx("^<[\\w_]+>");
+    bool positional = (rx.indexIn(text) != -1);
+
+    return option || positional;
+}
+
+bool isSectionHeader(QString text)
+{
+    //Make an exception:
+    if (text.startsWith("Node widths are determined"))
+        return false;
+
+    QRegExp rx("^[\\w ]+:");
+    return (rx.indexIn(text) != -1);
+}
+
+
+bool isListItem(QString text)
+{
+    return (text.length() > 1 && text[0] == '*' && text[1] == ' ');
+}
+
+bool isCommand(QString text)
+{
+    return text.startsWith("load   ") ||
+            text.startsWith("info   ") ||
+            text.startsWith("image   ") ||
+            text.startsWith("querypaths   ") ||
+            text.startsWith("reduce   ");
+}
+
+
+bool isError(QString text)
+{
+    return text.startsWith("Bandage error");
+}
+
+void getOnlineHelpMessage(QStringList * text)
+{
+    *text << "Online Bandage help: https://github.com/rrwick/Bandage/wiki";
+    *text << "";
+}
+
