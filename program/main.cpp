@@ -35,7 +35,10 @@
 #include "../blast/blastsearch.h"
 #include "../graph/assemblygraph.h"
 #include "../ui/mygraphicsview.h"
+
+#ifndef Q_OS_WIN32
 #include <sys/ioctl.h>
+#endif //Q_OS_WIN32
 
 void printUsage(QTextStream * out, bool all)
 {
@@ -71,8 +74,9 @@ int main(int argc, char *argv[])
     QString first;
     if (arguments.size() > 0)
         first = arguments[0];
+
     //Create the application.
-    bool guiNeeded = first == "" || first.toLower() == "load";
+    bool guiNeeded = (first == "") || (first.toLower() == "load");
     if (!guiNeeded)
         qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("minimal"));
     QApplication * a = new QApplication(argc, argv);
@@ -85,18 +89,19 @@ int main(int argc, char *argv[])
     g_graphicsView = new MyGraphicsView();
 
     //Save the terminal width (useful for displaying help text neatly).
+    #ifndef Q_OS_WIN32
     struct winsize ws;
     ioctl(0, TIOCGWINSZ, &ws);
     g_memory->terminalWidth = ws.ws_col;
-    if (g_memory->terminalWidth < 50)
-        g_memory->terminalWidth = 50;
+    if (g_memory->terminalWidth < 50) g_memory->terminalWidth = 50;
+    if (g_memory->terminalWidth > 300) g_memory->terminalWidth = 300;
+    #endif //Q_OS_WIN32
 
     QApplication::setApplicationName("Bandage");
     QApplication::setApplicationVersion("0.7.2");
 
     QTextStream out(stdout);
     QTextStream err(stderr);
-
 
     //If the first argument was a recognised command, move to that command's function.
     if (arguments.size() > 0)
