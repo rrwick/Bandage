@@ -152,17 +152,17 @@ int main(int argc, char *argv[])
         //was looking for help information.
         else if (checkForHelp(arguments))
         {
-            out << "" << endl;
+            out << endl;
             out << getBandageTitleAsciiArt() << endl;
-            out << "Version: " << QApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion();
             printUsage(&out, false);
             return 0;
         }
         else if (checkForHelpAll(arguments))
         {
-            out << "" << endl;
+            out << endl;
             out << getBandageTitleAsciiArt() << endl;
-            out << "Version: " << QApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion();
             printUsage(&out, true);
             return 0;
         }
