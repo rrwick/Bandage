@@ -47,7 +47,7 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
     if (!checkIfFileExists(filename))
     {
-        outputText("Bandage error: " + filename, &err);
+        outputText("Bandage error: " + filename + " does not exist", &err);
         return 1;
     }
 

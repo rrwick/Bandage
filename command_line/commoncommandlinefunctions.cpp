@@ -235,7 +235,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--distance", arguments, g_settings->nodeDistance, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--mindepth", arguments, g_settings->minReadDepthRange, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--maxdepth", arguments, g_settings->maxReadDepthRange, false); if (error.length() > 0) return error;
-    if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND) return "The --query option can only be used with Bandage load and Bandage image";
+    if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND) return "A graph must be given (e.g. via Bandage load) to use the --query option";
     error = checkOptionForFile("--query", arguments); if (error.length() > 0) return error;
     error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters"); if (error.length() > 0) return error;
     checkOptionWithoutValue("--double", arguments);
