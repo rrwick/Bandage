@@ -610,7 +610,7 @@ void parseSettings(QStringList arguments)
     }
     if (isOptionPresent("--qcfilter", &arguments))
     {
-        g_settings->blastAlignmentLengthFilter.on = true;
+        g_settings->blastQueryCoverageFilter.on = true;
         g_settings->blastQueryCoverageFilter = getFloatOption("--qcfilter", &arguments);
     }
     if (isOptionPresent("--ifilter", &arguments))

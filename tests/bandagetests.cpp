@@ -658,7 +658,7 @@ void BandageTests::commandLineSettings()
     QCOMPARE(g_settings->nodeLengthMode, MANUAL_NODE_LENGTH);
     QCOMPARE(g_settings->manualNodeLengthPerMegabase.val, 10000.0);
 
-    commandLineSettings = QString("--quality 1").split(" ");
+    commandLineSettings = QString("--iter 1").split(" ");
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->graphLayoutQuality.val, 1);
 
