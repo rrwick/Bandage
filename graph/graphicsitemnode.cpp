@@ -818,13 +818,29 @@ QStringList GraphicsItemNode::getNodeText()
     if (g_settings->displayNodeLengths)
         nodeText << formatIntForDisplay(m_deBruijnNode->getLength()) + " bp";
     if (g_settings->displayNodeReadDepth)
-        nodeText << formatDoubleForDisplay(m_deBruijnNode->getReadDepth(), 1) + "x";
+        nodeText << formatReadDepthForDisplay(m_deBruijnNode->getReadDepth());
     if (g_settings->displayNodeCsvData && m_deBruijnNode->hasCsvData())
         nodeText << m_deBruijnNode->getCsvLine(g_settings->displayNodeCsvDataCol);
 
     return nodeText;
 }
 
+
+
+QString GraphicsItemNode::formatReadDepthForDisplay(double depth)
+{
+    if (depth == 0.0)
+        return "0.0x";
+
+    int decimals = 1;
+    double multipliedDepth = fabs(depth);
+    while (multipliedDepth < 10.0)
+    {
+        multipliedDepth *= 10.0;
+        decimals += 1;
+    }
+    return formatDoubleForDisplay(depth, decimals) + "x";
+}
 
 
 QSize GraphicsItemNode::getNodeTextSize(QString text)
