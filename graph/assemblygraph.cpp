@@ -3347,16 +3347,17 @@ long long AssemblyGraph::getTotalLengthMinusEdgeOverlaps() const
         i.next();
         DeBruijnNode * node = i.value();
         if (node->isPositiveNode())
+        {
             totalLength += node->getLength();
-    }
-
-    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
-    while (j.hasNext())
-    {
-        j.next();
-        DeBruijnEdge * edge = j.value();
-        if (edge->isPositiveEdge())
-            totalLength -= edge->getOverlap();
+            const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
+            int maxOverlap = 0;
+            for (size_t j = 0; j < edges->size(); ++j)
+            {
+                int edgeOverlap = (*edges)[j]->getOverlap();
+                maxOverlap = std::max(maxOverlap, edgeOverlap);
+            }
+            totalLength -= maxOverlap;
+        }
     }
 
     return totalLength;
