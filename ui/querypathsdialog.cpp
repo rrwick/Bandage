@@ -37,6 +37,7 @@ QueryPathsDialog::QueryPathsDialog(QWidget * parent, BlastQuery * query) :
 
     connect(this, SIGNAL(rejected()), this, SLOT(hidden()));
     connect(ui->tableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(tableSelectionChanged()));
+    connect(QApplication::instance(), SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(changeAlwaysOnTop(Qt::ApplicationState)));
 
     g_memory->queryPathDialogIsVisible = true;
     g_memory->queryPaths.clear();
@@ -229,4 +230,14 @@ void QueryPathsDialog::tableSelectionChanged()
     }
 
     emit selectionChanged();
+}
+
+
+void QueryPathsDialog::changeAlwaysOnTop(Qt::ApplicationState state)
+{
+    if (state == Qt::ApplicationActive)
+        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    else
+        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
+    show();
 }

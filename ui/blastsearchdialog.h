@@ -83,6 +83,7 @@ private slots:
     void showPathsDialog(BlastQuery * query);
     void queryPathSelectionChangedSlot();
     void openFiltersDialog();
+    void changeAlwaysOnTop(Qt::ApplicationState state);
 
 signals:
     void blastChanged();

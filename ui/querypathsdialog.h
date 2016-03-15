@@ -41,6 +41,7 @@ private:
 private slots:
     void hidden();
     void tableSelectionChanged();
+    void changeAlwaysOnTop(Qt::ApplicationState state);
 
 signals:
     void selectionChanged();
