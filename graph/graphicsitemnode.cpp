@@ -906,6 +906,8 @@ void GraphicsItemNode::setWidth()
 {
     m_width = getNodeWidth(m_deBruijnNode->getReadDepthRelativeToMeanDrawnReadDepth(), g_settings->readDepthPower,
                            g_settings->readDepthEffectOnWidth, g_settings->averageNodeWidth);
+    if (m_width < 0.0)
+        m_width = 0.0;
 }
 
 
@@ -931,6 +933,8 @@ QRectF GraphicsItemNode::boundingRect() const
 double GraphicsItemNode::getNodeWidth(double readDepthRelativeToMeanDrawnReadDepth, double readDepthPower,
                                       double readDepthEffectOnWidth, double averageNodeWidth)
 {
+    if (readDepthRelativeToMeanDrawnReadDepth < 0.0)
+        readDepthRelativeToMeanDrawnReadDepth = 0.0;
     double widthRelativeToAverage = (pow(readDepthRelativeToMeanDrawnReadDepth, readDepthPower) - 1.0) * readDepthEffectOnWidth + 1.0;
     return averageNodeWidth * widthRelativeToAverage;
 }
