@@ -47,9 +47,8 @@ public:
 
     void setAntialiasing(bool antialiasingOn);
     bool isPointVisible(QPointF p);
-    bool isLineVisible(QLineF line);
     QPointF findIntersectionWithViewportBoundary(QLineF line);
-    QLineF findVisiblePartOfLine(QLineF line);
+    QLineF findVisiblePartOfLine(QLineF line, bool * success);
 
 protected:
     void mousePressEvent(QMouseEvent * event);

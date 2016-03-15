@@ -197,14 +197,6 @@ bool MyGraphicsView::isPointVisible(QPointF p)
 }
 
 
-bool MyGraphicsView::isLineVisible(QLineF line)
-{
-    QPointF corner1, corner2, corner3, corner4;
-    getFourViewportCornersInSceneCoordinates(&corner1, &corner2, &corner3, &corner4);
-    return differentSidesOfLine(corner1, corner2, corner3, corner4, line);
-}
-
-
 //This function tests to see if two given points, p1 and p2, are on different sides of a line.
 bool MyGraphicsView::differentSidesOfLine(QPointF p1, QPointF p2, QLineF line)
 {
@@ -265,9 +257,8 @@ QPointF MyGraphicsView::findIntersectionWithViewportBoundary(QLineF line)
 
 //If a line intersections the scene rectangle but both of its end points are
 //outside the scene rectangle, then this function will return the part of the
-//line which is in the scene rectangle.  If that isn't true, it retuns an
-//empty line.
-QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line)
+//line which is in the scene rectangle.
+QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line, bool * success)
 {
     QPointF c1, c2, c3, c4;
     getFourViewportCornersInSceneCoordinates(&c1, &c2, &c3, &c4);
@@ -280,6 +271,8 @@ QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line)
     QPointF intersection2;
     QPointF intersection3;
     QPointF intersection4;
+
+    *success = true;
 
     bool b1Intersects = (line.intersect(boundary1, &intersection1) == QLineF::BoundedIntersection);
     bool b2Intersects = (line.intersect(boundary2, &intersection2) == QLineF::BoundedIntersection);
@@ -300,6 +293,7 @@ QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line)
     if (b3Intersects && b4Intersects)
         return QLineF(intersection3, intersection4);
 
+    *success = false;
     return QLineF();
 }
 

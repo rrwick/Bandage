@@ -749,14 +749,18 @@ std::vector<QPointF> GraphicsItemNode::getCentres() const
             currentRun.clear();
         }
 
-        //If neither this point nor the last were visible but the line between them is,
-        //then this is probably a case where we are really zoomed in and no points are seen
-        //but the line between them is.
-        else if (i > 0 && !pVisible && !lastPointVisible && g_graphicsView->isLineVisible(QLineF(lastP, p)))
+        //If neither this point nor the last were visible, we still need to check whether
+        //the line segment between them is.  If so, then then this may be a case where
+        //we are really zoomed in (and so line segments are large compared to the scene rect).
+        else if (i > 0 && !pVisible && !lastPointVisible)
         {
-            QLineF v = g_graphicsView->findVisiblePartOfLine(QLineF(lastP, p));
-            QPointF vCentre = QPointF((v.p1().x() + v.p2().x()) / 2.0, (v.p1().y() + v.p2().y()) / 2.0);
-            centres.push_back(vCentre);
+            bool success;
+            QLineF v = g_graphicsView->findVisiblePartOfLine(QLineF(lastP, p), &success);
+            if (success)
+            {
+                QPointF vCentre = QPointF((v.p1().x() + v.p2().x()) / 2.0, (v.p1().y() + v.p2().y()) / 2.0);
+                centres.push_back(vCentre);
+            }
         }
 
         lastPointVisible = pVisible;
