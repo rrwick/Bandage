@@ -478,11 +478,6 @@ void parseSettings(QStringList arguments)
             g_settings->textOutlineThickness = textOutlineThickness;
         }
     }
-    else
-    {
-        g_settings->textOutline = true;
-        g_settings->textOutlineThickness = 0.3;
-    }
 
     g_settings->nodeColourScheme = getColourSchemeOption("--colour", &arguments);
 

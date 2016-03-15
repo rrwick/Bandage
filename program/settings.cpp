@@ -41,7 +41,7 @@ Settings::Settings()
     outlineThickness = FloatSetting(0.0, 0.0, 100.0);
     selectionThickness = 1.0;
     arrowheadSize = 0.01;
-    textOutlineThickness = FloatSetting(0.3, 0.0, 10.0);
+    textOutlineThickness = FloatSetting(1.5, 0.0, 10.0);
 
     blastRainbowPartsPerQuery = 100;
 
@@ -54,7 +54,7 @@ Settings::Settings()
 
     minZoom = 0.01;
     minZoomOnGraphDraw = 0.2;
-    maxZoom = 20.0;
+    maxZoom = 50.0;
     zoomFactor = 1.0005;
     textZoomScaleFactor = 0.7;
 
@@ -68,7 +68,7 @@ Settings::Settings()
     displayNodeCsvDataCol = 0;
     displayBlastHits = false;
     labelFont = QFont();
-    textOutline = true;
+    textOutline = false;
     antialiasing = true;
     positionTextNodeCentre = false;
 
@@ -83,8 +83,8 @@ Settings::Settings()
     randomColourNegativeOpacity = IntSetting(255, 0, 255);
     randomColourPositiveSaturation = IntSetting(127, 0, 255);
     randomColourNegativeSaturation = IntSetting(127, 0, 255);
-    randomColourPositiveLightness = IntSetting(127, 0, 255);
-    randomColourNegativeLightness = IntSetting(63, 0, 255);
+    randomColourPositiveLightness = IntSetting(150, 0, 255);
+    randomColourNegativeLightness = IntSetting(90, 0, 255);
 
     edgeColour = QColor(0, 0, 0, 180);
     outlineColour = QColor(0, 0, 0);
