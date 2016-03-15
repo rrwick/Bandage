@@ -46,7 +46,6 @@ private slots:
     void checkPathValidity();
     void copyPathToClipboard();
     void savePathToFile();
-    void changeAlwaysOnTop(Qt::ApplicationState state);
 };
 
 #endif // PATHSPECIFYDIALOG_H

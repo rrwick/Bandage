@@ -59,7 +59,8 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     m_tblastnCommand("tblastn"), m_queryPathsDialog(0)
 {
     ui->setupUi(this);
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+
+    setWindowFlags(windowFlags() | Qt::Tool);
 
     ui->blastHitsTableWidget->m_smallFirstColumn = true;
     ui->blastQueriesTableWidget->m_smallFirstColumn = true;
@@ -135,7 +136,6 @@ BlastSearchDialog::BlastSearchDialog(QWidget *parent, QString autoQuery) :
     connect(ui->blastQueriesTableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(queryCellChanged(int,int)));
     connect(ui->blastQueriesTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(queryTableSelectionChanged()));
     connect(ui->blastFiltersButton, SIGNAL(clicked(bool)), this, SLOT(openFiltersDialog()));
-    connect(QApplication::instance(), SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(changeAlwaysOnTop(Qt::ApplicationState)));
 }
 
 BlastSearchDialog::~BlastSearchDialog()
@@ -1049,14 +1049,4 @@ void BlastSearchDialog::openFiltersDialog()
 void BlastSearchDialog::setFilterText()
 {
     ui->blastHitFiltersLabel->setText("Current filters: " + BlastHitFiltersDialog::getFilterText());
-}
-
-
-void BlastSearchDialog::changeAlwaysOnTop(Qt::ApplicationState state)
-{
-    if (state == Qt::ApplicationActive)
-        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    else
-        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-    show();
 }

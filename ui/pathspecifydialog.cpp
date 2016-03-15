@@ -33,7 +33,7 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     ui(new Ui::PathSpecifyDialog)
 {
     ui->setupUi(this);
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::Tool);
 
     ui->pathTextEdit->setPlainText(g_memory->userSpecifiedPathString);
     ui->circularPathCheckBox->setChecked(g_memory->userSpecifiedPathCircular);
@@ -52,7 +52,6 @@ PathSpecifyDialog::PathSpecifyDialog(QWidget *parent) :
     connect(ui->copyButton, SIGNAL(clicked(bool)), this, SLOT(copyPathToClipboard()));
     connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(savePathToFile()));
     connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()));
-    connect(QApplication::instance(), SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(changeAlwaysOnTop(Qt::ApplicationState)));
 }
 
 
@@ -176,14 +175,4 @@ void PathSpecifyDialog::addNodeName(DeBruijnNode * node)
     //added to the path, it isn't added to the text.
 
     ui->pathTextEdit->setPlainText(pathText);
-}
-
-
-void PathSpecifyDialog::changeAlwaysOnTop(Qt::ApplicationState state)
-{
-    if (state == Qt::ApplicationActive)
-        setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    else
-        setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-    show();
 }
