@@ -197,13 +197,41 @@ bool MyGraphicsView::isPointVisible(QPointF p)
 }
 
 
+bool MyGraphicsView::isLineVisible(QLineF line)
+{
+    QPointF corner1, corner2, corner3, corner4;
+    getFourViewportCornersInSceneCoordinates(&corner1, &corner2, &corner3, &corner4);
+    return differentSidesOfLine(corner1, corner2, corner3, corner4, line);
+}
+
+
 //This function tests to see if two given points, p1 and p2, are on different sides of a line.
 bool MyGraphicsView::differentSidesOfLine(QPointF p1, QPointF p2, QLineF line)
 {
-    bool testPoint1Side = ((p1.y() - line.p1().y() - (p1.x() - line.p1().x())*(line.p2().y() - line.p1().y())/(line.p2().x() - line.p1().x())) > 0);
-    bool testPoint2Side = ((p2.y() - line.p1().y() - (p2.x() - line.p1().x())*(line.p2().y() - line.p1().y())/(line.p2().x() - line.p1().x())) > 0);
+    bool p1Side = sideOfLine(p1, line);
+    bool p2Side = sideOfLine(p2, line);
+    return (p1Side != p2Side);
+}
+//This function tests to see if all four points are the same side of a line (returns false) or
+//some are on different sides (returns true).
+bool MyGraphicsView::differentSidesOfLine(QPointF p1, QPointF p2, QPointF p3, QPointF p4, QLineF line)
+{
+    bool p1Side = sideOfLine(p1, line);
+    bool p2Side = sideOfLine(p2, line);
+    if (p1Side != p2Side)
+        return true;
 
-    return (testPoint1Side != testPoint2Side);
+    bool p3Side = sideOfLine(p3, line);
+    if (p1Side != p3Side)
+        return true;
+
+    bool p4Side = sideOfLine(p4, line);
+    return (p1Side != p4Side);
+}
+
+bool MyGraphicsView::sideOfLine(QPointF p, QLineF line)
+{
+    return ((p.y() - line.p1().y() - (p.x() - line.p1().x())*(line.p2().y() - line.p1().y())/(line.p2().x() - line.p1().x())) > 0);
 }
 
 
@@ -232,6 +260,47 @@ QPointF MyGraphicsView::findIntersectionWithViewportBoundary(QLineF line)
     //The code should not get here, as the line should intersect with one of
     //the boundaries.
     return intersection;
+}
+
+
+//If a line intersections the scene rectangle but both of its end points are
+//outside the scene rectangle, then this function will return the part of the
+//line which is in the scene rectangle.  If that isn't true, it retuns an
+//empty line.
+QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line)
+{
+    QPointF c1, c2, c3, c4;
+    getFourViewportCornersInSceneCoordinates(&c1, &c2, &c3, &c4);
+    QLineF boundary1(c1, c2);
+    QLineF boundary2(c2, c3);
+    QLineF boundary3(c3, c4);
+    QLineF boundary4(c4, c1);
+
+    QPointF intersection1;
+    QPointF intersection2;
+    QPointF intersection3;
+    QPointF intersection4;
+
+    bool b1Intersects = (line.intersect(boundary1, &intersection1) == QLineF::BoundedIntersection);
+    bool b2Intersects = (line.intersect(boundary2, &intersection2) == QLineF::BoundedIntersection);
+    if (b1Intersects && b2Intersects)
+        return QLineF(intersection1, intersection2);
+
+    bool b3Intersects = (line.intersect(boundary3, &intersection3) == QLineF::BoundedIntersection);
+    if (b1Intersects && b3Intersects)
+        return QLineF(intersection1, intersection3);
+    if (b2Intersects && b3Intersects)
+        return QLineF(intersection2, intersection3);
+
+    bool b4Intersects = (line.intersect(boundary4, &intersection4) == QLineF::BoundedIntersection);
+    if (b1Intersects && b4Intersects)
+        return QLineF(intersection1, intersection4);
+    if (b2Intersects && b4Intersects)
+        return QLineF(intersection2, intersection4);
+    if (b3Intersects && b4Intersects)
+        return QLineF(intersection3, intersection4);
+
+    return QLineF();
 }
 
 

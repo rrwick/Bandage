@@ -47,7 +47,9 @@ public:
 
     void setAntialiasing(bool antialiasingOn);
     bool isPointVisible(QPointF p);
+    bool isLineVisible(QLineF line);
     QPointF findIntersectionWithViewportBoundary(QLineF line);
+    QLineF findVisiblePartOfLine(QLineF line);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -63,6 +65,8 @@ private:
     double angleBetweenTwoLines(QPointF line1Start, QPointF line1End, QPointF line2Start, QPointF line2End);
     void getFourViewportCornersInSceneCoordinates(QPointF * c1, QPointF * c2, QPointF * c3, QPointF * c4);
     bool differentSidesOfLine(QPointF p1, QPointF p2, QLineF line);
+    bool differentSidesOfLine(QPointF p1, QPointF p2, QPointF p3, QPointF p4, QLineF line);
+    bool sideOfLine(QPointF p, QLineF line);
 
 signals:
     void doubleClickedNode(DeBruijnNode * node);

@@ -735,11 +735,11 @@ std::vector<QPointF> GraphicsItemNode::getCentres() const
             currentRun.push_back(p);
         }
 
-        //If this point is visible, add it to the current run.
-        if (pVisible && lastPointVisible)
+        //If th last point is visible and this one is too, add it to the current run.
+        else if (pVisible && lastPointVisible)
             currentRun.push_back(p);
 
-        //If the last point was visible and this one isn't, then a run has ended.
+        //If the last point is visible and this one isn't, then a run has ended.
         else if (!pVisible && lastPointVisible)
         {
             //We need to find the intermediate point that is on the visible boundary.
@@ -747,6 +747,16 @@ std::vector<QPointF> GraphicsItemNode::getCentres() const
 
             centres.push_back(getCentre(currentRun));
             currentRun.clear();
+        }
+
+        //If neither this point nor the last were visible but the line between them is,
+        //then this is probably a case where we are really zoomed in and no points are seen
+        //but the line between them is.
+        else if (i > 0 && !pVisible && !lastPointVisible && g_graphicsView->isLineVisible(QLineF(lastP, p)))
+        {
+            QLineF v = g_graphicsView->findVisiblePartOfLine(QLineF(lastP, p));
+            QPointF vCentre = QPointF((v.p1().x() + v.p2().x()) / 2.0, (v.p1().y() + v.p2().y()) / 2.0);
+            centres.push_back(vCentre);
         }
 
         lastPointVisible = pVisible;
