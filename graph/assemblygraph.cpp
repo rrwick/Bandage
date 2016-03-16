@@ -821,7 +821,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
                 //Edges aren't made right now (because the other node might not yet exist),
                 //so they are saved into vectors and made after all the nodes have been made.
-                if (nodeDetails.size() == 1)
+                if (nodeDetails.size() == 1 || nodeDetails.at(1).isEmpty())
                     continue;
                 QStringList edgeNodes = nodeDetails.at(1).split(",");
                 for (int i = 0; i < edgeNodes.size(); ++i)
