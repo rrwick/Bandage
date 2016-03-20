@@ -382,6 +382,8 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
     cleanUp();
     ui->selectionSearchNodesLineEdit->clear();
 
+    bool customColours = false, customLabels = false;
+
     try
     {
         MyProgressDialog progress(this, "Loading " + convertGraphFileTypeToString(graphFileType) + " file...", false);
@@ -394,7 +396,8 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
             g_assemblyGraph->buildDeBruijnGraphFromFastg(fullFileName);
         else if (graphFileType == GFA)
         {
-            bool unsupportedCigar = g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName);
+            bool unsupportedCigar = false;
+            g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName, &unsupportedCigar, &customLabels, &customColours);
             if (unsupportedCigar)
                 QMessageBox::warning(this, "Unsupported CIGAR", "This GFA file contains "
                                      "links with complex CIGAR strings (containing "
@@ -425,6 +428,11 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         displayGraphDetails();
         g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
         g_memory->clearGraphSpecificMemory();
+
+        if (customColours)
+            ui->coloursComboBox->setCurrentIndex(6);
+        if (customLabels)
+            ui->nodeCustomLabelsCheckBox->setChecked(true);
     }
 
     catch (...)

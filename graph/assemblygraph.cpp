@@ -547,15 +547,18 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 
 
 
-//This function loads a graph from a GFA file.  It returns whether or not it
-//encountered an unsupported CIGAR string.  A return value of false is good,
-//meaning that no unsupported CIGAR strings were found.
-bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
+//This function loads a graph from a GFA file.  It reports whether or not it
+//encountered an unsupported CIGAR string, whether the GFA has custom labels
+//and whether it has custom colours.
+void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupportedCigar,
+                                              bool *customLabels, bool *customColours)
 {
     m_graphFileType = GFA;
     m_filename = fullFileName;
 
-    bool unsupportedCigar = false;
+    *unsupportedCigar = false;
+    *customLabels = false;
+    *customColours = false;
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -647,13 +650,18 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 if (lastChar != "+" && lastChar != "-")
                     nodeName += "+";
 
-                if (!cl.isValid())
+                if (cl.isValid())
+                    *customColours = true;
+                else
                     cl = g_settings->defaultCustomNodeColour;
 
                 DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length, cl);
 
                 if (!lb.isEmpty())
+                {
                     node->setCustomLabel(lb);
+                    *customLabels = true;
+                }
 
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
@@ -684,7 +692,7 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 else
                 {
                     edgeOverlaps.push_back(getLengthFromCigar(cigar));
-                    unsupportedCigar = true;
+                    *unsupportedCigar = true;
                 }
             }
         }
@@ -711,8 +719,6 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
-
-    return unsupportedCigar;
 }
 
 
@@ -1570,7 +1576,10 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
         if (graphFileType == FASTG)
             buildDeBruijnGraphFromFastg(filename);
         if (graphFileType == GFA)
-            buildDeBruijnGraphFromGfa(filename);
+        {
+            bool unsupportedCigar, customLabels, customColours;
+            buildDeBruijnGraphFromGfa(filename, &unsupportedCigar, &customLabels, &customColours);
+        }
         if (graphFileType == TRINITY)
             buildDeBruijnGraphFromTrinityFasta(filename);
         if (graphFileType == ASQG)
