@@ -3,6 +3,7 @@
 
 #include "../program/globals.h"
 #include "../graph/assemblygraph.h"
+#include <QPair>
 
 GraphInfoDialog::GraphInfoDialog(QWidget *parent) :
     QDialog(parent),
@@ -30,6 +31,20 @@ void GraphInfoDialog::setLabels()
 
     ui->nodeCountLabel->setText(formatIntForDisplay(nodeCount));
     ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
+
+    if (g_assemblyGraph->m_edgeCount == 0)
+        ui->edgeOverlapRangeLabel->setText("n/a");
+    else
+    {
+        QPair<int, int> overlapRange = g_assemblyGraph->getOverlapRange();
+        int smallestOverlap = overlapRange.first;
+        int largestOverlap = overlapRange.second;
+        if (smallestOverlap == largestOverlap)
+            ui->edgeOverlapRangeLabel->setText(formatIntForDisplay(smallestOverlap) + " bp");
+        else
+            ui->edgeOverlapRangeLabel->setText(formatIntForDisplay(smallestOverlap) + " to " + formatIntForDisplay(largestOverlap) + " bp");
+    }
+
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength) + " bp");
     ui->totalLengthNoOverlapsLabel->setText(formatIntForDisplay(g_assemblyGraph->getTotalLengthMinusEdgeOverlaps()) + " bp");
 
@@ -84,6 +99,10 @@ void GraphInfoDialog::setInfoTexts()
     ui->edgeCountInfoText->setInfoText("The number of positive edges in the graph.<br><br>"
                                        "Since only positive edges are counted, each complementary edge pair counts "
                                        "as one.");
+    ui->edgeOverlapRangeInfoText->setInfoText("The sequence overlap size for edges in the graph<br><br>"
+                                              "For most graphs, this will either be zero or a single value, but it is "
+                                              "also possible for a graph to have edges with different overlaps, "
+                                              "in which case this will show the range.");
     ui->totalLengthInfoText->setInfoText("The total length of all sequences in positive nodes.<br><br>"
                                          "This value is a simple sum of node sequence lengths and does not take "
                                          "node overlaps into account.");

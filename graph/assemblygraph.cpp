@@ -3362,3 +3362,23 @@ long long AssemblyGraph::getTotalLengthMinusEdgeOverlaps() const
 
     return totalLength;
 }
+
+
+QPair<int, int> AssemblyGraph::getOverlapRange() const
+{
+    int smallestOverlap = std::numeric_limits<int>::max();
+    int largestOverlap = 0;
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> i(m_deBruijnGraphEdges);
+    while (i.hasNext())
+    {
+        i.next();
+        int overlap = i.value()->getOverlap();
+        if (overlap < smallestOverlap)
+            smallestOverlap = overlap;
+        if (overlap > largestOverlap)
+            largestOverlap = overlap;
+    }
+    if (smallestOverlap == std::numeric_limits<int>::max())
+        smallestOverlap = 0;
+    return QPair<int, int>(smallestOverlap, largestOverlap);
+}

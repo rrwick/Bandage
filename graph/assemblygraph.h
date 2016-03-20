@@ -29,6 +29,7 @@
 #include "../program/globals.h"
 #include "../ui/mygraphicsscene.h"
 #include "path.h"
+#include <QPair>
 
 class DeBruijnNode;
 class DeBruijnEdge;
@@ -159,6 +160,8 @@ public:
     long long getEstimatedSequenceLength() const;
     long long getEstimatedSequenceLength(double meanReadDepthByBase) const;
     long long getTotalLengthMinusEdgeOverlaps() const;
+    QPair<int, int> getOverlapRange() const;
+
 
 private:
     template<typename T> double getValueUsingFractionalIndex(std::vector<T> * v, double index) const;
