@@ -362,14 +362,12 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 {
     QByteArray gfaSequence = getSequenceForGfa();
 
-
     QByteArray gfaSegmentLine = "S\t";
     gfaSegmentLine += getNameWithoutSign() + "\t";
     gfaSegmentLine += gfaSequence + "\t";
     gfaSegmentLine += "LN:i:" + QString::number(gfaSequence.length()) + "\t";
-    gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5));
-
-    gfaSegmentLine += "\n";
+    gfaSegmentLine += "DP:f:" + QString::number(getReadDepth()) + "\t";
+    gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5)) + "\n";
     return gfaSegmentLine;
 }
 
