@@ -25,6 +25,7 @@
 #include "../program/globals.h"
 #include <QColor>
 #include "../blast/blasthitpart.h"
+#include "../program/settings.h"
 
 class OgdfNode;
 class DeBruijnEdge;
@@ -35,7 +36,8 @@ class DeBruijnNode
 {
 public:
     //CREATORS
-    DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length = 0);
+    DeBruijnNode(QString name, double readDepth, QByteArray sequence,
+                 int length = 0, QColor customColour = g_settings->defaultCustomNodeColour);
     ~DeBruijnNode();
 
     //ACCESSORS
@@ -71,6 +73,7 @@ public:
     bool isNotDrawn() const {return !m_drawn;}
     QColor getCustomColour() const {return m_customColour;}
     QString getCustomLabel() const {return m_customLabel;}
+    bool hasCustomColour() const {return m_customColour != g_settings->defaultCustomNodeColour;}
     bool isPositiveNode() const;
     bool isNegativeNode() const;
     bool inOgdf() const {return m_ogdfNode != 0;}
@@ -107,7 +110,7 @@ public:
     void setAsDrawn() {m_drawn = true;}
     void setAsNotDrawn() {m_drawn = false;}
     void setCustomColour(QColor newColour) {m_customColour = newColour;}
-    void setCustomLabel(QString newLabel) {m_customLabel = newLabel;}
+    void setCustomLabel(QString newLabel);
     void resetNode();
     void addEdge(DeBruijnEdge * edge);
     void removeEdge(DeBruijnEdge * edge);

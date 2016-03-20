@@ -587,14 +587,11 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
 
-                //If there is an attribute holding the read depth, we'll use
-                //that. If there isn't, then we'll use zero.
-                //We try to load 'DP' (depth), 'RC' (read count), 'FC'
-                //(fragment count) or 'KC' (k-mer count) in that order of
-                //preference.
-                double nodeReadDepth = 0.0;
+                //Get the tags.
                 double kc = 0.0, rc = 0.0, fc = 0.0, dp = 0.0;
                 int ln = 0;
+                QString lb;
+                QColor cl;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
@@ -610,6 +607,10 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                         dp = part.right(part.length() - 5).toDouble();
                     if (part.left(3) == "LN:")
                         ln = part.right(part.length() - 5).toInt();
+                    if (part.left(3) == "LB:")
+                        lb = part.right(part.length() - 5);
+                    if (part.left(3) == "CL:")
+                        cl = QColor(part.right(part.length() - 5));
                 }
 
                 //GFA can use * to indicate that the sequence is not in the
@@ -620,9 +621,15 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 if (sequence == "*" || sequence == "")
                     length = ln;
 
-                //If we used KC, RC or FC for the depth, then that is really a
+                //If there is an attribute holding the read depth, we'll use
+                //that. If there isn't, then we'll use zero.
+                //We try to load 'DP' (depth), 'RC' (read count), 'FC'
+                //(fragment count) or 'KC' (k-mer count) in that order of
+                //preference.
+                //If we use KC, RC or FC for the depth, then that is really a
                 //count, so we need to divide by the sequence length to get the
                 //depth.
+                double nodeReadDepth = 0.0;
                 if (dp > 0.0)
                     nodeReadDepth = dp;
                 else if (rc > 0.0)
@@ -640,7 +647,14 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
                 if (lastChar != "+" && lastChar != "-")
                     nodeName += "+";
 
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
+                if (!cl.isValid())
+                    cl = g_settings->defaultCustomNodeColour;
+
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length, cl);
+
+                if (!lb.isEmpty())
+                    node->setCustomLabel(lb);
+
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 

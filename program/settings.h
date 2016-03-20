@@ -161,6 +161,8 @@ public:
     QColor pathHighlightShadingColour;
     QColor pathHighlightOutlineColour;
 
+    QColor defaultCustomNodeColour;
+
     //These specify the range of overlaps to look for when Bandage determines
     //edge overlaps automatically.
     int minAutoFindEdgeOverlap;

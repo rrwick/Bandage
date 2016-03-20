@@ -75,6 +75,7 @@ QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
 
 
 std::vector<QColor> getPresetColours();
+QString getColourName(QColor colour);
 
 
 #endif // GLOBALS_H

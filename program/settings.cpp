@@ -110,6 +110,8 @@ Settings::Settings()
     pathHighlightShadingColour = QColor(0, 0, 0, 60);
     pathHighlightOutlineColour = QColor(0, 0, 0);
 
+    defaultCustomNodeColour = QColor(190, 190, 190);
+
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 

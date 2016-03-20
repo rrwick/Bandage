@@ -71,8 +71,6 @@ void parseSettings(QStringList arguments);
 void getCommonHelp(QStringList * text);
 void getSettingsUsage(QStringList *text);
 
-QString getColourName(QColor colour);
-
 bool createBlastTempDirectory();
 void deleteBlastTempDirectory();
 

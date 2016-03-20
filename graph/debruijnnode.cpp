@@ -19,7 +19,6 @@
 #include "debruijnnode.h"
 #include "debruijnedge.h"
 #include "ogdfnode.h"
-#include "../program/settings.h"
 #include "graphicsitemnode.h"
 #include <math.h>
 #include "../blast/blasthit.h"
@@ -32,7 +31,8 @@
 
 //The length parameter is optional.  If it is set, then the node will use that
 //for its length.  If not set, it will just use the sequence length.
-DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length) :
+DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence,
+                           int length, QColor customColour) :
     m_name(name),
     m_readDepth(readDepth),
     m_readDepthRelativeToMeanDrawnReadDepth(1.0),
@@ -45,7 +45,7 @@ DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence, 
     m_specialNode(false),
     m_drawn(false),
     m_highestDistanceInNeighbourSearch(0),
-    m_customColour(QColor(190, 190, 190)),
+    m_customColour(customColour),
     m_csvData()
 {
     if (length > 0)
@@ -362,12 +362,17 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
 {
     QByteArray gfaSequence = getSequenceForGfa();
 
-    QByteArray gfaSegmentLine = "S\t";
-    gfaSegmentLine += getNameWithoutSign() + "\t";
-    gfaSegmentLine += gfaSequence + "\t";
-    gfaSegmentLine += "LN:i:" + QString::number(gfaSequence.length()) + "\t";
-    gfaSegmentLine += "DP:f:" + QString::number(getReadDepth()) + "\t";
-    gfaSegmentLine += "RC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5)) + "\n";
+    QByteArray gfaSegmentLine = "S";
+    gfaSegmentLine += "\t" + getNameWithoutSign();
+    gfaSegmentLine += "\t" + gfaSequence;
+    gfaSegmentLine += "\tLN:i:" + QString::number(gfaSequence.length());
+    gfaSegmentLine += "\tDP:f:" + QString::number(getReadDepth());
+    gfaSegmentLine += "\tRC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5));
+    if (!m_customLabel.isEmpty())
+        gfaSegmentLine += "\tLB:z:" + m_customLabel;
+    if (hasCustomColour())
+        gfaSegmentLine += "\tCL:z:" + getColourName(m_customColour);
+    gfaSegmentLine += "\n";
     return gfaSegmentLine;
 }
 
@@ -778,4 +783,10 @@ std::vector<DeBruijnNode *> DeBruijnNode::getAllConnectedPositiveNodes() const
         connectedPositiveNodesVector.push_back(i.next());
 
     return connectedPositiveNodesVector;
+}
+
+void DeBruijnNode::setCustomLabel(QString newLabel)
+{
+    newLabel.replace("\t", "    ");
+    m_customLabel = newLabel;
 }
