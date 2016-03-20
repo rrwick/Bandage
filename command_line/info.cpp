@@ -19,6 +19,7 @@
 #include "info.h"
 #include "commoncommandlinefunctions.h"
 #include "../graph/assemblygraph.h"
+#include <QPair>
 
 
 
@@ -73,7 +74,11 @@ int bandageInfo(QStringList arguments)
 
     int nodeCount = g_assemblyGraph->m_nodeCount;
     int edgeCount = g_assemblyGraph->m_edgeCount;
+    QPair<int, int> overlapRange = g_assemblyGraph->getOverlapRange();
+    int smallestOverlap = overlapRange.first;
+    int largestOverlap = overlapRange.second;
     int totalLength = g_assemblyGraph->m_totalLength;
+    int totalLengthNoOverlaps = g_assemblyGraph->getTotalLengthMinusEdgeOverlaps();
     int deadEnds = g_assemblyGraph->getDeadEndCount();
     double percentageDeadEnds = 100.0 * double(deadEnds) / (2 * nodeCount);
 
@@ -97,7 +102,10 @@ int bandageInfo(QStringList arguments)
         out << graphFilename << "\t";
         out << nodeCount << "\t";
         out << edgeCount << "\t";
+        out << smallestOverlap << "\t";
+        out << largestOverlap << "\t";
         out << totalLength << "\t";
+        out << totalLengthNoOverlaps << "\t";
         out << deadEnds << "\t";
         out << percentageDeadEnds << "%\t";
         out << componentCount << "\t";
@@ -115,7 +123,10 @@ int bandageInfo(QStringList arguments)
     {
         out << "Node count:                     " << nodeCount << "\n";
         out << "Edge count:                     " << edgeCount << "\n";
+        out << "Smallest edge overlap (bp):     " << smallestOverlap << "\n";
+        out << "Largest edge overlap (bp):      " << largestOverlap << "\n";
         out << "Total length (bp):              " << totalLength << "\n";
+        out << "Total length no overlaps (bp):  " << totalLengthNoOverlaps << "\n";
         out << "Dead ends:                      " << deadEnds << "\n";
         out << "Percentage dead ends:           " << percentageDeadEnds << "%\n";
         out << "Connected components:           " << componentCount << "\n";
@@ -142,7 +153,10 @@ void printInfoUsage(QTextStream * out, bool all)
     text << "Bandage info takes a graph file as input and outputs (to stdout) the following statistics about the graph:";
     text << "* Node count: The number of nodes in the graph. Only positive nodes are counted (i.e. each complementary pair counts as one).";
     text << "* Edge count: The number of edges in the graph. Only one edge in each complementary pair is counted.";
+    text << "* Smallest edge overlap: The smallest overlap size (in bp) for the edges in the graph.";
+    text << "* Largest edge overlap: The smallest overlap size (in bp) for the edges in the graph. For most graphs this will be the same as the smallest edge overlap (i.e. all edges have the same overlap).";
     text << "* Total length: The total number of base pairs in the graph.";
+    text << "* Total length no overlaps: The total number of base pairs in the graph, subtracting bases that are duplicated in edge overlaps.";
     text << "* Dead ends: The number of instances where an end of a node does not connect to any other nodes.";
     text << "* Percentage dead ends: The proportion of possible dead ends. The maximum number of dead ends is twice the number of nodes (occurs when there are no edges), so this value is the number of dead ends divided by twice the node count.";
     text << "* Connected components: The number of regions of the graph which are disconnected from each other.";
@@ -154,6 +168,7 @@ void printInfoUsage(QTextStream * out, bool all)
     text << "* Upper quartile node: The median node length for the longer half of the nodes.";
     text << "* Longest node: The length of the longest node in the graph.";
     text << "* Median read depth: The median read depth of the graph, by base.";
+    text << "* Estimated sequence length: An estimate of the total number of bases in the original sequence, calculated by multiplying each node's length (minus overlaps) by its read depth relative to the median.";
     text << "";
     text << "Usage:    Bandage info <graph> [options]";
     text << "";
