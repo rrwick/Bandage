@@ -589,48 +589,48 @@ bool AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName)
 
                 //If there is an attribute holding the read depth, we'll use
                 //that. If there isn't, then we'll use zero.
-                //We try to load 'RC' (read count), 'FC' (fragment count) or
-                //'KC' (k-mer count)in that order of preference.
+                //We try to load 'DP' (depth), 'RC' (read count), 'FC'
+                //(fragment count) or 'KC' (k-mer count) in that order of
+                //preference.
                 double nodeReadDepth = 0.0;
-                QString kc, rc, fc, ln;
+                double kc = 0.0, rc = 0.0, fc = 0.0, dp = 0.0;
+                int ln = 0;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
                     if (part.left(3) == "KC:")
-                        kc = part.right(part.length() - 5);
+                        kc = part.right(part.length() - 5).toDouble();
                     if (part.left(3) == "RC:")
-                        rc = part.right(part.length() - 5);
+                        rc = part.right(part.length() - 5).toDouble();
                     if (part.left(3) == "FC:")
-                        fc = part.right(part.length() - 5);
+                        fc = part.right(part.length() - 5).toDouble();
+                    if (part.left(3) == "DP:")
+                        dp = part.right(part.length() - 5).toDouble();
                     if (part.left(3) == "LN:")
-                        ln = part.right(part.length() - 5);
+                        ln = part.right(part.length() - 5).toInt();
                 }
-                if (!rc.isEmpty())
-                    nodeReadDepth = rc.toDouble();
-                else if (!fc.isEmpty())
-                    nodeReadDepth = fc.toDouble();
-                else if (!kc.isEmpty())
-                    nodeReadDepth = kc.toDouble();
-
-                int length = sequence.length();
 
                 //GFA can use * to indicate that the sequence is not in the
                 //file.  In this case, try to use the LN tag for length.  If
                 //that's not available, use a length of 0.
+                //If there is a sequence, then the LN tag will be ignored.
+                int length = sequence.length();
                 if (sequence == "*" || sequence == "")
-                {
-                    if (!ln.isEmpty())
-                        length = ln.toInt();
-                    else
-                        length = 0;
-                }
+                    length = ln;
 
-                //Since the value stored in the GFA file is really a read count,
-                //we need to divide by the sequence length to get the depth.
-                if (length > 0)
-                    nodeReadDepth /= double(length);
+                //If we used KC, RC or FC for the depth, then that is really a
+                //count, so we need to divide by the sequence length to get the
+                //depth.
+                if (dp > 0.0)
+                    nodeReadDepth = dp;
+                else if (rc > 0.0)
+                    nodeReadDepth = rc / length;
+                else if (fc > 0.0)
+                    nodeReadDepth = fc / length;
+                else if (kc > 0.0)
+                    nodeReadDepth = kc / length;
 
                 //We check to see if the node ended in a "+" or "-".
                 //If so, we assume that is giving the orientation and leave it.
