@@ -36,8 +36,7 @@ class DeBruijnNode
 {
 public:
     //CREATORS
-    DeBruijnNode(QString name, double readDepth, QByteArray sequence,
-                 int length = 0, QColor customColour = g_settings->defaultCustomNodeColour);
+    DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length = 0);
     ~DeBruijnNode();
 
     //ACCESSORS
@@ -72,8 +71,10 @@ public:
     bool thisNodeOrReverseComplementIsDrawn() const {return isDrawn() || getReverseComplement()->isDrawn();}
     bool isNotDrawn() const {return !m_drawn;}
     QColor getCustomColour() const {return m_customColour;}
+    QColor getCustomColourForDisplay() const;
     QString getCustomLabel() const {return m_customLabel;}
-    bool hasCustomColour() const {return m_customColour != g_settings->defaultCustomNodeColour;}
+    QStringList getCustomLabelForDisplay() const;
+    bool hasCustomColour() const {return m_customColour.isValid();}
     bool isPositiveNode() const;
     bool isNegativeNode() const;
     bool inOgdf() const {return m_ogdfNode != 0;}

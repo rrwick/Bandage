@@ -567,6 +567,9 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
         std::vector<QString> edgeEndingNodeNames;
         std::vector<int> edgeOverlaps;
 
+        QMap<QString, QColor> colours;
+        QMap<QString, QString> labels;
+
         QTextStream in(&inputFile);
         while (!in.atEnd())
         {
@@ -593,8 +596,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //Get the tags.
                 double kc = 0.0, rc = 0.0, fc = 0.0, dp = 0.0;
                 int ln = 0;
-                QString lb;
-                QColor cl;
+                QString lb, l2;
+                QColor cl, c2;
                 for (int i = 3; i < lineParts.size(); ++i)
                 {
                     QString part = lineParts.at(i);
@@ -614,6 +617,10 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                         lb = part.right(part.length() - 5);
                     if (part.left(3) == "CL:")
                         cl = QColor(part.right(part.length() - 5));
+                    if (part.left(3) == "L2:")
+                        l2 = part.right(part.length() - 5);
+                    if (part.left(3) == "C2:")
+                        c2 = QColor(part.right(part.length() - 5));
                 }
 
                 //GFA can use * to indicate that the sequence is not in the
@@ -650,19 +657,30 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 if (lastChar != "+" && lastChar != "-")
                     nodeName += "+";
 
+                //Save custom colours and labels to be applied later, after
+                //reverse complement nodes are built.
                 if (cl.isValid())
+                {
                     *customColours = true;
-                else
-                    cl = g_settings->defaultCustomNodeColour;
-
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length, cl);
-
+                    colours.insert(nodeName, cl);
+                }
+                if (c2.isValid())
+                {
+                    *customColours = true;
+                    colours.insert(getOppositeNodeName(nodeName), c2);
+                }
                 if (!lb.isEmpty())
                 {
-                    node->setCustomLabel(lb);
                     *customLabels = true;
+                    labels.insert(nodeName, lb);
+                }
+                if (!l2.isEmpty())
+                {
+                    *customLabels = true;
+                    labels.insert(getOppositeNodeName(nodeName), l2);
                 }
 
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
@@ -706,6 +724,24 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             makeReverseComplementNodeIfNecessary(node);
         }
         pointEachNodeToItsReverseComplement();
+
+        //Add any custom colours or labels that were loaded.
+        QMapIterator<QString, QColor> j(colours);
+        while (j.hasNext())
+        {
+            j.next();
+            QString nodeName = j.key();
+            if (m_deBruijnGraphNodes.contains(nodeName))
+                m_deBruijnGraphNodes[nodeName]->setCustomColour(j.value());
+        }
+        QMapIterator<QString, QString> k(labels);
+        while (k.hasNext())
+        {
+            k.next();
+            QString nodeName = k.key();
+            if (m_deBruijnGraphNodes.contains(nodeName))
+                m_deBruijnGraphNodes[nodeName]->setCustomLabel(k.value());
+        }
 
         //Create all of the edges.
         for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)

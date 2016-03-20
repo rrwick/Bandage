@@ -31,8 +31,7 @@
 
 //The length parameter is optional.  If it is set, then the node will use that
 //for its length.  If not set, it will just use the sequence length.
-DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence,
-                           int length, QColor customColour) :
+DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length) :
     m_name(name),
     m_readDepth(readDepth),
     m_readDepthRelativeToMeanDrawnReadDepth(1.0),
@@ -45,7 +44,6 @@ DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence,
     m_specialNode(false),
     m_drawn(false),
     m_highestDistanceInNeighbourSearch(0),
-    m_customColour(customColour),
     m_csvData()
 {
     if (length > 0)
@@ -369,9 +367,13 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
     gfaSegmentLine += "\tDP:f:" + QString::number(getReadDepth());
     gfaSegmentLine += "\tRC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5));
     if (!m_customLabel.isEmpty())
-        gfaSegmentLine += "\tLB:z:" + m_customLabel;
+        gfaSegmentLine += "\tLB:z:" + getCustomLabel();
     if (hasCustomColour())
-        gfaSegmentLine += "\tCL:z:" + getColourName(m_customColour);
+        gfaSegmentLine += "\tCL:z:" + getColourName(getCustomColour());
+    if (!m_reverseComplement->m_customLabel.isEmpty())
+        gfaSegmentLine += "\tL2:z:" + m_reverseComplement->getCustomLabel();
+    if (m_reverseComplement->hasCustomColour())
+        gfaSegmentLine += "\tC2:z:" + getColourName(m_reverseComplement->getCustomColour());
     gfaSegmentLine += "\n";
     return gfaSegmentLine;
 }
@@ -789,4 +791,28 @@ void DeBruijnNode::setCustomLabel(QString newLabel)
 {
     newLabel.replace("\t", "    ");
     m_customLabel = newLabel;
+}
+
+
+QStringList DeBruijnNode::getCustomLabelForDisplay() const
+{
+    QStringList customLabelLines;
+    if (!getCustomLabel().isEmpty())
+        customLabelLines << getCustomLabel();
+    if (!g_settings->doubleMode)
+    {
+        if (!m_reverseComplement->getCustomLabel().isEmpty())
+            customLabelLines << m_reverseComplement->getCustomLabel();
+    }
+    return customLabelLines;
+}
+
+
+QColor DeBruijnNode::getCustomColourForDisplay() const
+{
+    if (hasCustomColour())
+        return getCustomColour();
+    if (!g_settings->doubleMode && m_reverseComplement->hasCustomColour())
+        return m_reverseComplement->getCustomColour();
+    return g_settings->defaultCustomNodeColour;
 }

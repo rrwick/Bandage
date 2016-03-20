@@ -96,6 +96,7 @@ private:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement);
+    std::vector<DeBruijnNode *> addComplementaryNodes(std::vector<DeBruijnNode *> nodes);
 
 private slots:
     void loadGraph(QString fullFileName = "");

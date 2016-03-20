@@ -366,7 +366,7 @@ void GraphicsItemNode::setNodeColour()
 
     case CUSTOM_COLOURS:
     {
-        m_colour = m_deBruijnNode->getCustomColour();
+        m_colour = m_deBruijnNode->getCustomColourForDisplay();
         break;
     }
 
@@ -820,8 +820,8 @@ QStringList GraphicsItemNode::getNodeText()
 {
     QStringList nodeText;
 
-    if (g_settings->displayNodeCustomLabels && m_deBruijnNode->getCustomLabel().length() > 0)
-        nodeText << m_deBruijnNode->getCustomLabel();
+    if (g_settings->displayNodeCustomLabels)
+        nodeText << m_deBruijnNode->getCustomLabelForDisplay();
     if (g_settings->displayNodeNames)
     {
         QString nodeName = m_deBruijnNode->getName();

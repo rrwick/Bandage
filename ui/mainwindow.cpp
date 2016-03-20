@@ -1320,9 +1320,14 @@ void MainWindow::setNodeCustomColour()
     if (selectedNodes.size() > 1)
         dialogTitle += "s";
 
-    QColor newColour = QColorDialog::getColor(selectedNodes[0]->getCustomColour(), this, dialogTitle);
+    QColor newColour = QColorDialog::getColor(selectedNodes[0]->getCustomColourForDisplay(), this, dialogTitle);
     if (newColour.isValid())
     {
+        //If we are in single mode, apply the custom colour to both nodes in
+        //each complementary pair.
+        if (!g_settings->doubleMode)
+            selectedNodes = addComplementaryNodes(selectedNodes);
+
         //If the colouring scheme is not currently custom, change it to custom now
         if (g_settings->nodeColourScheme != CUSTOM_COLOURS)
             setNodeColourSchemeComboBox(CUSTOM_COLOURS);
@@ -1364,7 +1369,16 @@ void MainWindow::setNodeCustomLabel()
 }
 
 
-
+//Takes a vector of nodes and returns a vector of the same nodes, along with
+//their complements.  Does not check for duplicates.
+std::vector<DeBruijnNode *> MainWindow::addComplementaryNodes(std::vector<DeBruijnNode *> nodes)
+{
+    std::vector<DeBruijnNode *> complementaryNodes;
+    for (size_t i = 0; i < nodes.size(); ++i)
+        complementaryNodes.push_back(nodes[i]->getReverseComplement());
+    nodes.insert(nodes.end(), complementaryNodes.begin(), complementaryNodes.end());
+    return nodes;
+}
 
 
 void MainWindow::openSettingsDialog()
