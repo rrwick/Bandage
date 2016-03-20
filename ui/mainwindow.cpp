@@ -548,8 +548,8 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
         totalLength += selectedNodes[i]->getLength();
     }
 
-    selectedNodeLengthText = formatIntForDisplay(totalLength);
-    selectedNodeDepthText = formatDoubleForDisplay(g_assemblyGraph->getMeanReadDepth(selectedNodes), 1);
+    selectedNodeLengthText = formatIntForDisplay(totalLength) + " bp";
+    selectedNodeDepthText = formatReadDepthForDisplay(g_assemblyGraph->getMeanReadDepth(selectedNodes));
 }
 
 

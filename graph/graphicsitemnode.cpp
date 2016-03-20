@@ -813,9 +813,6 @@ QPointF GraphicsItemNode::getCentre(std::vector<QPointF> linePoints) const
     return QPointF();
 }
 
-
-
-
 QStringList GraphicsItemNode::getNodeText()
 {
     QStringList nodeText;
@@ -837,23 +834,6 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << m_deBruijnNode->getCsvLine(g_settings->displayNodeCsvDataCol);
 
     return nodeText;
-}
-
-
-
-QString GraphicsItemNode::formatReadDepthForDisplay(double depth)
-{
-    if (depth == 0.0)
-        return "0.0x";
-
-    int decimals = 1;
-    double multipliedDepth = fabs(depth);
-    while (multipliedDepth < 10.0)
-    {
-        multipliedDepth *= 10.0;
-        decimals += 1;
-    }
-    return formatDoubleForDisplay(depth, decimals) + "x";
 }
 
 

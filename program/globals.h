@@ -72,7 +72,7 @@ extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
-
+QString formatReadDepthForDisplay(double depth);
 
 std::vector<QColor> getPresetColours();
 QString getColourName(QColor colour);

@@ -100,8 +100,6 @@ private:
     QPainterPath buildPartialHighlightPath(double startFraction, double endFraction, bool reverse);
     bool anyNodeDisplayText();
     void shiftPointSideways(bool left);
-    QString formatReadDepthForDisplay(double depth);
-
 };
 
 #endif // GRAPHICSITEMNODE_H

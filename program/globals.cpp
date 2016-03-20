@@ -76,6 +76,23 @@ QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
 }
 
 
+QString formatReadDepthForDisplay(double depth)
+{
+    if (depth == 0.0)
+        return "0.0x";
+
+    int decimals = 1;
+    double multipliedDepth = fabs(depth);
+    while (multipliedDepth < 10.0)
+    {
+        multipliedDepth *= 10.0;
+        decimals += 1;
+    }
+    return formatDoubleForDisplay(depth, decimals) + "x";
+}
+
+
+
 std::vector<QColor> getPresetColours()
 {
     std::vector<QColor> presetColours;
