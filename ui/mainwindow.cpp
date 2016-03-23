@@ -874,13 +874,13 @@ void MainWindow::zoomToFitRect(QRectF rect)
         g_absoluteZoom = minZoom;
         newSpinBoxValue = minZoom * 100.0;
     }
-    if (g_absoluteZoom > g_settings->maxZoom)
+    if (g_absoluteZoom > g_settings->maxAutomaticZoom)
     {
-        double newZoomFactor = g_settings->maxZoom / g_absoluteZoom;
+        double newZoomFactor = g_settings->maxAutomaticZoom / g_absoluteZoom;
         m_graphicsViewZoom->gentleZoom(newZoomFactor, SPIN_BOX);
         g_absoluteZoom *= newZoomFactor;
-        g_absoluteZoom = g_settings->maxZoom;
-        newSpinBoxValue = g_settings->maxZoom * 100.0;
+        g_absoluteZoom = g_settings->maxAutomaticZoom;
+        newSpinBoxValue = g_settings->maxAutomaticZoom * 100.0;
     }
 
     ui->zoomSpinBox->blockSignals(true);
@@ -1437,9 +1437,6 @@ void MainWindow::selectUserSpecifiedNodes()
                                  "Separate multiple nodes with commas.");
         return;
     }
-
-
-
 
     if (ui->selectionSearchNodesLineEdit->text().length() == 0)
     {
