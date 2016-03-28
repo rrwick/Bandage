@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     bool guiNeeded = (first == "") || (first.toLower() == "load");
     if (!guiNeeded)
         qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("minimal"));
-    QApplication * a = new QApplication(argc, argv);
+    new QApplication(argc, argv);
 
     //Create the important global objects.
     g_settings.reset(new Settings());
@@ -185,5 +185,5 @@ int main(int argc, char *argv[])
     parseSettings(arguments);
     MainWindow w;
     w.show();
-    return a->exec();
+    return QApplication::exec();
 }
