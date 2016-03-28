@@ -124,6 +124,7 @@ namespace ogdf {
 
 			//! Initializes the instance with ClusterGraph \a cg.
 			//! Sets the attributes to \a initAttributes
+            using GraphAttributes::init;
 			virtual void init(ClusterGraph &cg, long initAttributes = 0);
 
 			//! Initializes the attributes according to \a initAttributes.

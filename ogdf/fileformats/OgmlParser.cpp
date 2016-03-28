@@ -2032,7 +2032,7 @@ int OgmlParser::getLineTypeAsInt(String s)
 
 
 // Mapping ArrowStyles to Integer
-int OgmlParser::getArrowStyleAsInt(String s, String sot)
+int OgmlParser::getArrowStyleAsInt(String s, String /*sot*/)
 {
 	// sot = "source" or "target", actually not necessary
 	// TODO: Complete, if new arrow styles are implemented in ogdf
@@ -2333,6 +2333,8 @@ bool OgmlParser::buildAttributedClusterGraph(
 		if (structure->m_pBrother != NULL) {
 			layout = structure->m_pBrother;
 		}
+        else
+            layout = 0;
 
 		if ((layout) && (layout->getName() == Ogml::s_tagNames[Ogml::t_layout]))
 		{

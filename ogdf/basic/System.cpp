@@ -84,6 +84,7 @@ static void __cpuid(int CPUInfo[4], int infoType)
 #else
 	// not supported on other systems!
 	a = b = c = d = 0;
+    infoType = 0;
 #endif
 
 	CPUInfo[0] = a;

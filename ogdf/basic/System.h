@@ -177,14 +177,15 @@ public:
 	 */
 	//@{
 
-	static void *alignedMemoryAlloc16(size_t size) {
-		size_t alignment = 16;
+    static void *alignedMemoryAlloc16(size_t size) {
 #ifdef OGDF_SYSTEM_WINDOWS
+        size_t alignment = 16;
 		return _aligned_malloc(size,alignment);
 #elif defined(OGDF_SYSTEM_OSX)
 		// malloc returns 16 byte aligned memory on OS X.
 		return malloc(size);
 #else
+        size_t alignment = 16;
 		return memalign(alignment,size);
 #endif
 	}

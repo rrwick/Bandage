@@ -374,6 +374,7 @@ public:
 	//! Calls the algorithm for clustered graph \a GA and returns the layout information in \a AG.
 	//! Models cluster by simple edge length adaption based on least common ancestor
 	//! cluster of end vertices.
+    using LayoutModule::call;
 	void call(ClusterGraphAttributes &GA);
 
 	//! Extended algorithm call: Allows to pass desired lengths of the edges.

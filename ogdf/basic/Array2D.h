@@ -272,7 +272,7 @@ float Array2D<E>::det() const
 	int b = m_b;
 	int c = m_c;
 	int d = m_d;
-	int m = m_b - m_a + 1;
+//	int m = m_b - m_a + 1;
 	int n = m_lenDim2;
 
 	int i, j;
@@ -280,7 +280,7 @@ float Array2D<E>::det() const
 
 	float determinant = 0.0;
 
-	OGDF_ASSERT(m == n);
+//	OGDF_ASSERT(m == n);
 
 	switch(n) {
 	case 0:

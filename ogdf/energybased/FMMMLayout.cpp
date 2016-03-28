@@ -1291,7 +1291,11 @@ double FMMMLayout::f_attr_scalar(double d, double ind_ideal_edge_length)
 		else
 			s = -1e10;
 	}
-	else cout <<" Error FMMMLayout:: f_attr_scalar"<<endl;
+    else
+    {
+        s = -1e10;
+        cout << " Error FMMMLayout:: f_attr_scalar" << endl;
+    }
 
 	return s;
 }

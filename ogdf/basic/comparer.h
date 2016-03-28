@@ -82,11 +82,11 @@ namespace ogdf {
 template<typename E> class StdComparer
 {
 public:
-	static bool less(const E &x, const E &y) { OGDF_THROW(NoStdComparerException); }
-	static bool leq(const E &x, const E &y) { OGDF_THROW(NoStdComparerException); }
-	static bool greater(const E &x, const E &y) { OGDF_THROW(NoStdComparerException); }
-	static bool geq(const E &x, const E &y) { OGDF_THROW(NoStdComparerException); }
-	static bool equal(const E &x, const E &y) { OGDF_THROW(NoStdComparerException); }
+    static bool less(const E &/*x*/, const E &/*y*/) { OGDF_THROW(NoStdComparerException); }
+    static bool leq(const E &/*x*/, const E &/*y*/) { OGDF_THROW(NoStdComparerException); }
+    static bool greater(const E &/*x*/, const E &/*y*/) { OGDF_THROW(NoStdComparerException); }
+    static bool geq(const E &/*x*/, const E &/*y*/) { OGDF_THROW(NoStdComparerException); }
+    static bool equal(const E &/*x*/, const E &/*y*/) { OGDF_THROW(NoStdComparerException); }
 };
 
 //! Generates a specialization of the standard static comparer for \a type based on compare operators.

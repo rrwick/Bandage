@@ -310,7 +310,7 @@ void makeParallelFreeUndirected(
 	SListConstIterator<edge> it = edges.begin();
 	edge ePrev = *it++, e;
 	bool bAppend = true;
-	int  counter = 0;
+//	int  counter = 0;
 	while(it.valid())
 	{
 		e = *it++;
