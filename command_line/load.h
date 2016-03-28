@@ -22,9 +22,8 @@
 #include <QStringList>
 #include "../ui/mainwindow.h"
 #include <QTextStream>
-#include <QApplication>
 
-int bandageLoad(QApplication *a, QStringList arguments);
+int bandageLoad(QStringList arguments);
 void printLoadUsage(QTextStream * out, bool all);
 QString checkForInvalidLoadOptions(QStringList arguments);
 void parseLoadOptions(QStringList arguments, bool *drawGraph);

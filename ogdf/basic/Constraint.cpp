@@ -51,12 +51,12 @@
 namespace ogdf {
 
 
-bool Constraint::buildFromOgml(XmlTagObject* constraintTag, Hashing <String, node> * nodes)
+bool Constraint::buildFromOgml(XmlTagObject* /*constraintTag*/, Hashing <String, node> * /*nodes*/)
 {
 	return true;
 }
 
-bool Constraint::storeToOgml(int id, ostream & os, int indentStep)
+bool Constraint::storeToOgml(int /*id*/, ostream & /*os*/, int /*indentStep*/)
 {
 	return true;
 }

@@ -49,7 +49,7 @@
 #define OGDF_B_STACK_H
 
 
-#pragma GCC system_header
+
 
 #include "basic.h"
 

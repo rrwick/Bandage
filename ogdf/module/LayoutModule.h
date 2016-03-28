@@ -41,7 +41,7 @@
  * \see  http://www.gnu.org/copyleft/gpl.html
  ***************************************************************/
 
-#pragma GCC system_header
+
 
 
 
@@ -85,7 +85,7 @@ public:
 	 * \brief Computes a layout of graph \a GA wrt the constraints in \a GC
 	 * (if applicable).
 	 */
-	virtual void call(GraphAttributes &GA, GraphConstraints & GC) { call(GA); }
+        virtual void call(GraphAttributes &GA, GraphConstraints & /*GC*/) { call(GA); }
 
 	/**
 	 * \brief Computes a layout of graph \a GA.

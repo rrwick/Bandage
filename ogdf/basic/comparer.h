@@ -41,7 +41,7 @@
  ***************************************************************/
 
 
-#pragma GCC system_header
+
 
 #ifdef _MSC_VER
 #pragma once

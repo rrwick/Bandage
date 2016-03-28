@@ -18,8 +18,9 @@
 
 #include "load.h"
 #include "commoncommandlinefunctions.h"
+#include <QApplication>
 
-int bandageLoad(QApplication * a, QStringList arguments)
+int bandageLoad(QStringList arguments)
 {
     QTextStream out(stdout);
     QTextStream err(stderr);
@@ -63,7 +64,7 @@ int bandageLoad(QApplication * a, QStringList arguments)
 
     MainWindow w(filename, drawGraph);
     w.show();
-    return a->exec();
+    return QApplication::exec();
 }
 
 

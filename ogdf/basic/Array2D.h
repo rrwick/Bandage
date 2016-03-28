@@ -49,7 +49,7 @@
 #define OGDF_ARRAY2D_H
 
 
-#pragma GCC system_header
+
 
 #include "basic.h"
 #include <math.h>

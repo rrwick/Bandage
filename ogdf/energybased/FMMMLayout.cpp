@@ -177,7 +177,7 @@ void FMMMLayout::call_MULTILEVEL_step_for_subGraph(
 	Graph& G,
 	NodeArray<NodeAttributes>& A,
 	EdgeArray<EdgeAttributes>& E,
-	int comp_index)
+    int /*comp_index*/)
 {
 	Multilevel Mult;
 

@@ -71,7 +71,7 @@
  */
 
 
-#pragma GCC system_header
+
 
 //---------------------------------------------------------
 // detection of the system

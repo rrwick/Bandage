@@ -3218,7 +3218,7 @@ void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuart
 
     double halfTotalLength = m_totalLength / 2.0;
     long long totalSoFar = 0;
-    for (int i = nodeLengths.size() - 1; i >= 0 ; --i)
+    for (int i = int(nodeLengths.size()) - 1; i >= 0 ; --i)
     {
         totalSoFar += nodeLengths[i];
         if (totalSoFar >= halfTotalLength)

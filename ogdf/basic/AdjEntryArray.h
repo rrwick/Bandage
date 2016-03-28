@@ -48,7 +48,7 @@
 #ifndef OGDF_ADJ_ENTRY_ARRAY_H
 #define OGDF_ADJ_ENTRY_ARRAY_H
 
-#pragma GCC system_header
+
 
 #include "Graph.h"
 

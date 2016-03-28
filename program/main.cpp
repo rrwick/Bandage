@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
         {
             arguments.pop_front();
             g_memory->commandLineCommand = BANDAGE_LOAD;
-            return bandageLoad(a, arguments);
+            return bandageLoad(arguments);
         }
         else if (first.toLower() == "info")
         {

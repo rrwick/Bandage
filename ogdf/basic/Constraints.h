@@ -41,7 +41,7 @@
  ***************************************************************/
 
 
-#pragma GCC system_header
+
 
 #ifdef _MSC_VER
 #pragma once
@@ -79,7 +79,7 @@ protected:
 	const Graph *m_pGraph;
 
 	/* Will be called by the GraphConstraints when a Node in mGraph is removed. */
-	virtual void nodeDeleted(node v) { }
+        virtual void nodeDeleted(node /*v*/) { }
 
 public:
 	Constraint(const Graph &g) : m_pGraph(&g) { m_Status = 0; m_UserDisabled = false;  }
@@ -185,9 +185,9 @@ public:
 	}
 
 	virtual void nodeDeleted(node v);
-	virtual void nodeAdded(node v)    { }
-	virtual void edgeDeleted(edge e)  { }
-	virtual void edgeAdded(edge e)    { }
+        virtual void nodeAdded(node /*v*/)    { }
+        virtual void edgeDeleted(edge /*e*/)  { }
+        virtual void edgeAdded(edge /*e*/)    { }
 	virtual void reInit()             { }
 	virtual void cleared()            { }
 

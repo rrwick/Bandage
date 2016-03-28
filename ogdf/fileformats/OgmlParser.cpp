@@ -1692,7 +1692,7 @@ ostream& operator<<(ostream& os, const OgmlParser::OgmlTag& ot)
 // p r i n t V a l i d i t y I n f o
 //
 // ***********************************************************
-void OgmlParser::printValidityInfo(const OgmlTag & ot, const XmlTagObject & xto, int valStatus, int line)
+void OgmlParser::printValidityInfo(const OgmlTag & ot, const XmlTagObject & xto, int valStatus, int /*line*/)
 {
 	const String &ogmlTagName = ot.getName();
 
@@ -1774,10 +1774,10 @@ void OgmlParser::printValidityInfo(const OgmlTag & ot, const XmlTagObject & xto,
 		break;
 	}
 
-#ifdef OGDF_DEBUG
-	if(valStatus != Ogml::vs_valid)
-		cout << "(Line OgmlParser::validate: " << line << ")\n";
-#endif
+//#ifdef OGDF_DEBUG
+//	if(valStatus != Ogml::vs_valid)
+//		cout << "(Line OgmlParser::validate: " << line << ")\n";
+//#endif
 }
 
 

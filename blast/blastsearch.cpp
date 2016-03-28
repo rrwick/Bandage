@@ -163,14 +163,22 @@ QString BlastSearch::getNodeNameFromString(QString nodeString)
 }
 
 
+#ifdef Q_OS_WIN32
+//On Windows, we use the WHERE command to find a program.
+bool BlastSearch::findProgram(QString programName, QString * /*command*/)
+{
+    QString findCommand = "WHERE " + programName;
+    QProcess find;
+    find.start(findCommand);
+    find.waitForFinished();
+    return (find.exitCode() == 0);
+}
 
+#else
+//On Mac/Linux we use the which command to find a program.
 bool BlastSearch::findProgram(QString programName, QString * command)
 {
     QString findCommand = "which " + programName;
-#ifdef Q_OS_WIN32
-    findCommand = "WHERE " + programName;
-#endif
-
     QProcess find;
 
     //On Mac, it's necessary to adjust the PATH variable in order
@@ -190,7 +198,6 @@ bool BlastSearch::findProgram(QString programName, QString * command)
                                                                    "$HOME/bin:"
                                                                    "/usr/local/ncbi/blast/bin:"
                                                                    "\\1");
-
     find.setEnvironment(envlist);
 #endif
 
@@ -204,6 +211,7 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 
     return (find.exitCode() == 0);
 }
+#endif
 
 
 

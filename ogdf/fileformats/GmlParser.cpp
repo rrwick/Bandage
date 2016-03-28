@@ -848,11 +848,11 @@ bool GmlParser::read(Graph &G, GraphAttributes &AG)
 
 //to be called AFTER calling read(G, AG)
 bool GmlParser::readAttributedCluster(
-	Graph &G,
+    Graph &/*G*/,
 	ClusterGraph& CG,
 	ClusterGraphAttributes& ACG)
 {
-	OGDF_ASSERT(&CG.getGraph() == &G)
+//	OGDF_ASSERT(&CG.getGraph() == &G)
 
 
 	//now we need the cluster object
@@ -879,9 +879,9 @@ bool GmlParser::readAttributedCluster(
 
 //the clustergraph has to be initialized on G!!,
 //no clusters other then root cluster may exist, which holds all nodes
-bool GmlParser::readCluster(Graph &G, ClusterGraph& CG)
+bool GmlParser::readCluster(Graph &/*G*/, ClusterGraph& CG)
 {
-	OGDF_ASSERT(&CG.getGraph() == &G)
+//	OGDF_ASSERT(&CG.getGraph() == &G)
 
 	//now we need the cluster object
 	GmlObject *rootObject = m_objectTree;

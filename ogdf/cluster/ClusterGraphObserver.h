@@ -45,7 +45,7 @@
  * \see  http://www.gnu.org/copyleft/gpl.html
  ***************************************************************/
 
-#pragma GCC system_header
+
 
 
 

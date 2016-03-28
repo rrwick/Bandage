@@ -50,7 +50,7 @@
 #define OGDF_COMBINATORIAL_EMBEDDING_H
 
 
-#pragma GCC system_header
+
 
 #include "AdjEntryArray.h"
 

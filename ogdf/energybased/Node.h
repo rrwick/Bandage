@@ -40,7 +40,7 @@
  * \see  http://www.gnu.org/copyleft/gpl.html
  ***************************************************************/
 
-#pragma GCC system_header
+
 
 
 //Data structure for representing nodes and an int value (needed for class ogdf/list)

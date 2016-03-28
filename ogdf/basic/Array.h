@@ -50,7 +50,7 @@
 #define OGDF_ARRAY_H
 
 
-#pragma GCC system_header
+
 
 #include "basic.h"
 
