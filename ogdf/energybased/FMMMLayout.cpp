@@ -875,7 +875,8 @@ Rectangle FMMMLayout::calculate_bounding_rectangle(
 {
 	Rectangle r;
 	node v;
-	double x_min,x_max,y_min,y_max,act_x_min,act_x_max,act_y_min,act_y_max;
+    double x_min = 0.0, x_max = 0.0, y_min = 0.0, y_max = 0.0;
+    double act_x_min, act_x_max, act_y_min, act_y_max;
 	double max_boundary;//the maximum of half of the width and half of the height of
 	//each node; (needed to be able to tipp rectangles over without
 	//having access to the height and width of each node)
@@ -898,7 +899,7 @@ Rectangle FMMMLayout::calculate_bounding_rectangle(
 			act_y_max = A[v].get_y() + max_boundary;
 			if(act_x_min < x_min) x_min = act_x_min;
 			if(act_x_max > x_max) x_max = act_x_max;
-			if(act_y_min < y_min) y_min = act_y_min;
+            if(act_y_min < y_min) y_min = act_y_min;
 			if(act_y_max > y_max) y_max = act_y_max;
 		}
 	}

@@ -260,11 +260,11 @@ void Multilevel::create_moon_nodes_and_pm_nodes(
 	int act_level)
 {
 	edge e;
-	node v, nearest_neighbour_node, neighbour_node, dedicated_sun_node;
-	double dist_to_nearest_neighbour, dedicated_sun_distance;
+    node v, nearest_neighbour_node = node(), neighbour_node, dedicated_sun_node;
+    double dist_to_nearest_neighbour = 0, dedicated_sun_distance;
 	bool first_adj_edge;
 	int neighbour_type;
-	edge moon_edge;
+    edge moon_edge = edge();
 
 	forall_nodes(v,*G_mult_ptr[act_level])
 		if((*A_mult_ptr[act_level])[v].get_type() == 0) //a moon node
@@ -620,7 +620,7 @@ void Multilevel::create_all_placement_sectors(
 	node v_high, w_high, sun_node, v, ded_sun;
 	edge e_high;
 	List<DPoint> adj_pos;
-	double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle;
+    double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
 	DPoint start_pos, end_pos;
 	int MAX = 10; //the biggest of at most MAX random selected sectors is choosen
 	int steps;

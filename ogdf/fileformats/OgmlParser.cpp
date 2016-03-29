@@ -520,7 +520,7 @@ class OgmlParser::OgmlTag
 	void printOwnedTags(ostream &os, int mode) const
 	{
 		String s;
-		const List<OgmlTag*> *list;
+        const List<OgmlTag*> *list = 0;
 
 		switch(mode) {
 		case 0:
@@ -553,7 +553,7 @@ class OgmlParser::OgmlTag
 	void printOwnedAttributes(ostream &os, int mode) const
 	{
 		String s;
-		const List<OgmlAttribute*> *list;
+        const List<OgmlAttribute*> *list = 0;
 
 		switch(mode)
 		case 0: {

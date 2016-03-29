@@ -784,7 +784,7 @@ private:
 	//! Create postorder information in cluster tree.
 	void postOrder() const;
 	//! Check postorder information in cluster tree.
-	void checkPostOrder() const;
+//	void checkPostOrder() const;
 
 	void postOrder(cluster c,SListPure<cluster> &S) const;
 

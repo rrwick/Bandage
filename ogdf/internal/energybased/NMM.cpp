@@ -1909,8 +1909,8 @@ void NMM::find_small_cell_by_formula(
 	{//else
 		int k,a1,a2,A,j_minus_k;
 		double h1,h2;
-		int Sm_x_level,Sm_y_level;
-		int Sm_x_position,Sm_y_position;
+        int Sm_x_level = 0.0, Sm_y_level = 0.0;
+        int Sm_x_position = 0.0, Sm_y_position = 0.0;
 
 		if(x_min != x_max)
 		{//if1
@@ -2180,7 +2180,7 @@ void NMM::calculate_local_expansions_and_WSPRLS(
 	QuadTreeNodeNM* act_node_ptr)
 {
 	List<QuadTreeNodeNM*> I,L,L2,E,D1,D2,M;
-	QuadTreeNodeNM *father_ptr,*selected_node_ptr;
+    QuadTreeNodeNM *father_ptr = 0, *selected_node_ptr;
 	ListIterator<QuadTreeNodeNM*> ptr_it;
 
 	//Step 0: Initializations

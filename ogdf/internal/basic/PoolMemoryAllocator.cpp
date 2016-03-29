@@ -213,7 +213,7 @@ PoolMemoryAllocator::collectGroups(
 
 void PoolMemoryAllocator::flushPoolSmall(__uint16 nBytes)
 {
-	int n = slicesPerBlock(nBytes < eMinBytes ? eMinBytes : nBytes);
+    int n = slicesPerBlock(nBytes < eMinBytes ? int(eMinBytes) : int(nBytes));
 	PoolElement &pe = s_pool[nBytes];
 
 #if !defined(OGDF_MEMORY_POOL_NTS) && defined(OGDF_NO_COMPILER_TLS)

@@ -70,7 +70,8 @@ GraphCopySimple::GraphCopySimple(const Graph &G) : m_pGraph(&G)
 }
 
 
-GraphCopySimple::GraphCopySimple(const GraphCopySimple &GC)
+GraphCopySimple::GraphCopySimple(const GraphCopySimple &GC) : Graph()
+
 {
 	NodeArray<node> vCopy;
 	EdgeArray<edge> eCopy;
@@ -141,7 +142,7 @@ GraphCopy::GraphCopy(const Graph &G) : m_pGraph(&G)
 }
 
 
-GraphCopy::GraphCopy(const GraphCopy &GC)
+GraphCopy::GraphCopy(const GraphCopy &GC) : Graph()
 {
 	NodeArray<node> vCopy;
 	EdgeArray<edge> eCopy;

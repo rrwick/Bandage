@@ -54,7 +54,6 @@ private:
     void setUiStep(BlastUiState blastUiState);
     void clearBlastHits();
     void setInfoTexts();
-    bool findProgram(QString programName, QString * command);
     void loadBlastQueriesFromFastaFile(QString fullFileName);
     void buildBlastDatabase(bool separateThread);
     void runBlastSearches(bool separateThread);

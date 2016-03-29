@@ -1397,30 +1397,30 @@ void ClusterGraph::postOrder() const
 #endif
 }
 
-void ClusterGraph::checkPostOrder() const
-{
-	SListPure<cluster> L;
-	postOrder(m_rootCluster,L);
-	cluster c = 0;
-	cluster prev = L.popFrontRet();
-	OGDF_ASSERT(prev->m_pPrev == 0);
+//void ClusterGraph::checkPostOrder() const
+//{
+//	SListPure<cluster> L;
+//	postOrder(m_rootCluster,L);
+//	cluster c = 0;
+//    cluster prev = L.popFrontRet();
+//    OGDF_ASSERT(prev->m_pPrev == 0);
 
-	while (!L.empty())
-	{
-		c = L.popFrontRet();
-		OGDF_ASSERT(prev->m_pNext == c)
-		OGDF_ASSERT(c->m_pPrev == prev)
-		prev = c;
-	}
-	if (c != 0)
-	{
-		OGDF_ASSERT(c->m_pNext == 0)
-	}
-	else
-	{
-		OGDF_ASSERT(m_postOrderStart->m_pNext == 0);
-	}
-}
+//	while (!L.empty())
+//	{
+//		c = L.popFrontRet();
+//        OGDF_ASSERT(prev->m_pNext == c)
+//        OGDF_ASSERT(c->m_pPrev == prev)
+//		prev = c;
+//	}
+//	if (c != 0)
+//	{
+//		OGDF_ASSERT(c->m_pNext == 0)
+//	}
+//	else
+//	{
+//		OGDF_ASSERT(m_postOrderStart->m_pNext == 0);
+//	}
+//}
 // Recursive function for post order
 void ClusterGraph::postOrder(cluster c,SListPure<cluster> &L) const
 {

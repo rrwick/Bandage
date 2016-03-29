@@ -165,12 +165,13 @@ QString BlastSearch::getNodeNameFromString(QString nodeString)
 
 #ifdef Q_OS_WIN32
 //On Windows, we use the WHERE command to find a program.
-bool BlastSearch::findProgram(QString programName, QString * /*command*/)
+bool BlastSearch::findProgram(QString programName, QString * command)
 {
     QString findCommand = "WHERE " + programName;
     QProcess find;
     find.start(findCommand);
     find.waitForFinished();
+    *command = programName;
     return (find.exitCode() == 0);
 }
 
@@ -207,6 +208,8 @@ bool BlastSearch::findProgram(QString programName, QString * command)
     //On a Mac, we need to use the full path to the program.
 #ifdef Q_OS_MAC
     *command = QString(find.readAll()).simplified();
+#else
+    *command = programName;
 #endif
 
     return (find.exitCode() == 0);
@@ -257,7 +260,7 @@ QString BlastSearch::doAutoBlastSearch()
 {
     cleanUp();
 
-    QString makeblastdbCommand = "makeblastdb";
+    QString makeblastdbCommand;
     if (!findProgram("makeblastdb", &makeblastdbCommand))
         return "Error: The program makeblastdb was not found.  Please install NCBI BLAST to use this feature.";
 
@@ -268,10 +271,10 @@ QString BlastSearch::doAutoBlastSearch()
 
     loadBlastQueriesFromFastaFile(g_settings->blastQueryFilename);
 
-    QString blastnCommand = "blastn";
+    QString blastnCommand;
     if (!findProgram("blastn", &blastnCommand))
         return "Error: The program blastn was not found.  Please install NCBI BLAST to use this feature.";
-    QString tblastnCommand = "tblastn";
+    QString tblastnCommand;
     if (!findProgram("tblastn", &tblastnCommand))
         return "Error: The program tblastn was not found.  Please install NCBI BLAST to use this feature.";
 
