@@ -157,7 +157,7 @@ void Set::init_node_set(Graph& G,NodeArray<NodeAttributes>& A)
 
 node Set::get_random_node_with_lowest_star_mass(int rand_tries)
 {
-    int rand_index = 0, new_rand_index, min_mass;
+    int rand_index = 0, new_rand_index, min_mass = 0;
 	int i = 1;
     node random_node = node(), new_rand_node,last_trie_node,last_selectable_node;
 
@@ -200,7 +200,7 @@ node Set::get_random_node_with_lowest_star_mass(int rand_tries)
 
 node Set::get_random_node_with_highest_star_mass(int rand_tries)
 {
-    int rand_index = 0, new_rand_index, min_mass;
+    int rand_index = 0, new_rand_index, min_mass = 0;
 	int i = 1;
     node random_node = node(), new_rand_node,last_trie_node,last_selectable_node;
 

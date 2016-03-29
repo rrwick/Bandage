@@ -425,11 +425,11 @@ void Multilevel::delete_parallel_edges_and_update_edgelength(
 {
 	EdgeMaxBucketFunc get_max_index;
 	EdgeMinBucketFunc get_min_index;
-	edge e_act, e_save;
+    edge e_act, e_save = 0;
 	Edge f_act;
 	List<Edge> sorted_edges;
 	Graph* Graph_ptr = G_mult_ptr[act_level+1];
-	int save_s_index,save_t_index,act_s_index,act_t_index;
+    int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
 	int counter = 1;
 
 	//make *G_mult_ptr[act_level+1] undirected
@@ -620,7 +620,7 @@ void Multilevel::create_all_placement_sectors(
 	node v_high, w_high, sun_node, v, ded_sun;
 	edge e_high;
 	List<DPoint> adj_pos;
-    double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
+    double angle_1 = 0.0, angle_2 = 0.0, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
 	DPoint start_pos, end_pos;
 	int MAX = 10; //the biggest of at most MAX random selected sectors is choosen
 	int steps;

@@ -525,11 +525,11 @@ void FMMMLayout::delete_parallel_edges(
 	EdgeMaxBucketFunc MaxSort;
 	EdgeMinBucketFunc MinSort;
 	ListIterator<Edge> EdgeIterator;
-	edge e_act,e_save;
+    edge e_act = 0, e_save = 0;
 	Edge f_act;
 	List<Edge> sorted_edges;
 	EdgeArray<edge> original_edge (G_reduced); //helping array
-	int save_s_index,save_t_index,act_s_index,act_t_index;
+    int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
 	int counter = 1;
 	Graph* Graph_ptr = &G_reduced;
 
@@ -922,7 +922,7 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 {
 	int i,j;
 	double sin_j,cos_j;
-	double angle,act_area,act_area_PI_half_rotated,best_area;
+    double angle, act_area, act_area_PI_half_rotated = 0.0, best_area;
 	double ratio,new_width,new_height;
 	Array<NodeArray<DPoint> > best_coords(number_of_components);
 	Array<NodeArray<DPoint> > old_coords(number_of_components);
