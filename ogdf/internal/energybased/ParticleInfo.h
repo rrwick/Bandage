@@ -79,7 +79,9 @@ class OGDF_EXPORT ParticleInfo
 	//inputstream for ParticleInfo
 	friend istream &operator>> (istream & input,  ParticleInfo & A)
 	{
-		input >> A;
+        int c = input.peek();
+        if (c != EOF)
+            input >> A;
 		return input;
 	}
 

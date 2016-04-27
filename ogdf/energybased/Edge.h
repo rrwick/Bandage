@@ -72,7 +72,9 @@ class Edge
 	//inputstream for Edge
 	friend istream &operator>> (istream & input,  Edge & E)
 	{
-		input >> E;//.e>>E.Graph_ptr;
+        int c = input.peek();
+        if (c != EOF)
+            input >> E;//.e>>E.Graph_ptr;
 		return input;
 	}
 
