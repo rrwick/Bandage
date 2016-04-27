@@ -75,6 +75,16 @@ int main(int argc, char *argv[])
     if (arguments.size() > 0)
         first = arguments[0];
 
+    //When launched from the app bundle, OS X can pass a process serial number
+    //as the first argument. If so, we throw it out.
+    if (first.contains("-psn_"))
+    {
+        arguments.pop_front();
+        first = "";
+        if (arguments.size() > 0)
+            first = arguments[0];
+    }
+
     //Create the application. Some ways of running Bandage require the normal
     //platform while other command line only ways use the minimal platform.
     //Frustratingly, Bandage image cannot render text properly with the minimal
