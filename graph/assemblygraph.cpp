@@ -3152,6 +3152,11 @@ void AssemblyGraph::changeNodeDepth(std::vector<DeBruijnNode *> * nodes,
         (*nodes)[i]->setDepth(newDepth);
         (*nodes)[i]->getReverseComplement()->setDepth(newDepth);
     }
+
+    //If this graph does not already have a depthTag, give it a depthTag of KC
+    //so the depth info will be saved.
+    if (m_depthTag == "")
+        m_depthTag = "KC";
 }
 
 

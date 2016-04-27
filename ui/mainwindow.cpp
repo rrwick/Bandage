@@ -2462,9 +2462,8 @@ void MainWindow::changeNodeDepth()
     }
 
     double oldDepth = g_assemblyGraph->getMeanDepth(selectedNodes);
-    ChangeNodeDepthDialog changeNodeDepthDialog(this,
-                                                        &selectedNodes,
-                                                        oldDepth);
+    ChangeNodeDepthDialog changeNodeDepthDialog(this, &selectedNodes,
+                                                oldDepth);
 
     if (changeNodeDepthDialog.exec()) //The user clicked OK
     {
