@@ -75,8 +75,18 @@ int main(int argc, char *argv[])
     if (arguments.size() > 0)
         first = arguments[0];
 
-    //Create the application.
-    bool guiNeeded = (first == "") || (first.toLower() == "load");
+    //Create the application. Some ways of running Bandage require the normal
+    //platform while other command line only ways use the minimal platform.
+    //Frustratingly, Bandage image cannot render text properly with the minimal
+    //platform (at least on OS X), so we need to use the full platform in that
+    //case.
+    bool imageWithText = (first.toLower() == "image") &&
+                          (arguments.contains("--names") ||
+                           arguments.contains("--lengths") ||
+                           arguments.contains("--depth") ||
+                           arguments.contains("--blasthits"));
+    bool guiNeeded = (first == "") || (first.toLower() == "load") ||
+                     imageWithText;
     if (!guiNeeded)
         qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("minimal"));
     new QApplication(argc, argv);
