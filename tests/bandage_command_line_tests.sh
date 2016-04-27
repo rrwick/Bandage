@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this variable to point to the Bandage executable.
-bandagepath="../../build-Bandage-Desktop_Qt_5_5_1_clang_64bit-Release/Bandage.app/Contents/MacOS/Bandage"
+bandagepath="../../build-Bandage-Desktop_Qt_5_6_0_clang_64bit-Release/Bandage.app/Contents/MacOS/Bandage"
 
 # This function tests the exit code, stdout and stderr of a command.
 function test_all {
@@ -168,8 +168,8 @@ test_all "$bandagepath --selcol" 1 "" "Bandage error: --selcol must be followed 
 test_all "$bandagepath --textcol" 1 "" "Bandage error: --textcol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --toutcol" 1 "" "Bandage error: --toutcol must be followed by a 6-digit hex colour (e.g. #FFB6C1), an 8-digit hex colour (e.g. #7FD2B48C) or a standard colour name (e.g. skyblue)"
 test_all "$bandagepath --toutline" 1 "" "Bandage error: --toutline must be followed by a number"
-test_all "$bandagepath --colour" 1 "" "Bandage error: --colour must be followed by random, uniform, readdepth, blastsolid or blastrainbow"
-test_all "$bandagepath --colour abc" 1 "" "Bandage error: --colour must be followed by random, uniform, readdepth, blastsolid or blastrainbow"
+test_all "$bandagepath --colour" 1 "" "Bandage error: --colour must be followed by random, uniform, depth, blastsolid or blastrainbow"
+test_all "$bandagepath --colour abc" 1 "" "Bandage error: --colour must be followed by random, uniform, depth, blastsolid or blastrainbow"
 test_all "$bandagepath --ransatpos" 1 "" "Bandage error: --ransatpos must be followed by an integer"
 test_all "$bandagepath --ransatneg" 1 "" "Bandage error: --ransatneg must be followed by an integer"
 test_all "$bandagepath --ranligpos" 1 "" "Bandage error: --ranligpos must be followed by an integer"
