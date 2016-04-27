@@ -266,7 +266,11 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
     double textHeight = textBoundingRect.height();
     QPointF offset(0.0, textHeight / 2.0);
 
-    double zoomAdjustment = 1.0 / (1.0 + ((g_absoluteZoom - 1.0) * g_settings->textZoomScaleFactor));
+    double zoom = g_absoluteZoom;
+    if (zoom == 0.0)
+        zoom = 1.0;
+
+    double zoomAdjustment = 1.0 / (1.0 + ((zoom - 1.0) * g_settings->textZoomScaleFactor));
     double inverseZoomAdjustment = 1.0 / zoomAdjustment;
 
     painter->translate(centre);
