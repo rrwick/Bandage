@@ -91,7 +91,7 @@ private:
     void setSelectedEdgesWidgetsVisibility(bool visible);
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
-    void setReadDepthRangeWidgetVisibility(bool visible);
+    void setDepthRangeWidgetVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
@@ -141,7 +141,7 @@ private slots:
     void selectNotContiguous();
     void openBandageUrl();
     void nodeDistanceChanged();
-    void readDepthRangeChanged();
+    void depthRangeChanged();
     void afterMainWindowShow();
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();
@@ -157,7 +157,7 @@ private slots:
     void mergeAllPossible();
     void cleanUpAllBlast();
     void changeNodeName();
-    void changeNodeReadDepth();
+    void changeNodeDepth();
     void openGraphInfoDialog();
 
 protected:

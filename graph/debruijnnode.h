@@ -36,15 +36,15 @@ class DeBruijnNode
 {
 public:
     //CREATORS
-    DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length = 0);
+    DeBruijnNode(QString name, double depth, QByteArray sequence, int length = 0);
     ~DeBruijnNode();
 
     //ACCESSORS
     QString getName() const {return m_name;}
     QString getNameWithoutSign() const {return m_name.left(m_name.length() - 1);}
     QString getSign() const {if (m_name.length() > 0) return m_name.right(1); else return "+";}
-    double getReadDepth() const {return m_readDepth;}
-    double getReadDepthRelativeToMeanDrawnReadDepth() const {return m_readDepthRelativeToMeanDrawnReadDepth;}
+    double getDepth() const {return m_depth;}
+    double getDepthRelativeToMeanDrawnDepth() const {return m_depthRelativeToMeanDrawnDepth;}
     QByteArray getSequence() const;
     int getLength() const {return m_length;}
     QByteArray getSequenceForGfa() const;
@@ -92,7 +92,7 @@ public:
     bool hasCsvData() const {return !m_csvData.isEmpty();}
     QStringList getAllCsvData() const {return m_csvData;}
     QString getCsvLine(int i) const {if (i < m_csvData.length()) return m_csvData[i]; else return "";}
-    bool isInReadDepthRange(double min, double max) const;
+    bool isInDepthRange(double min, double max) const;
     bool sequenceIsMissing() const;
     DeBruijnEdge *getSelfLoopingEdge() const;
     int getDeadEndCount() const;
@@ -100,7 +100,7 @@ public:
     double getDrawnNodeLength() const;
 
     //MODIFERS
-    void setReadDepthRelativeToMeanDrawnReadDepth(double newVal) {m_readDepthRelativeToMeanDrawnReadDepth = newVal;}
+    void setDepthRelativeToMeanDrawnDepth(double newVal) {m_depthRelativeToMeanDrawnDepth = newVal;}
     void appendToSequence(QByteArray additionalSeq) {m_sequence.append(additionalSeq); m_length = m_sequence.length();}
     void upgradeContiguityStatus(ContiguityStatus newStatus);
     void resetContiguityStatus() {m_contiguityStatus = NOT_CONTIGUOUS;}
@@ -122,13 +122,13 @@ public:
     void labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode * callingNode);
     void setCsvData(QStringList csvData) {m_csvData = csvData;}
     void clearCsvData() {m_csvData.clear();}
-    void setReadDepth(double newReadDepth) {m_readDepth = newReadDepth;}
+    void setDepth(double newDepth) {m_depth = newDepth;}
     void setName(QString newName) {m_name = newName;}
 
 private:
     QString m_name;
-    double m_readDepth;
-    double m_readDepthRelativeToMeanDrawnReadDepth;
+    double m_depth;
+    double m_depthRelativeToMeanDrawnDepth;
     QByteArray m_sequence;
     int m_length;
     ContiguityStatus m_contiguityStatus;

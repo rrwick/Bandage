@@ -31,10 +31,10 @@
 
 //The length parameter is optional.  If it is set, then the node will use that
 //for its length.  If not set, it will just use the sequence length.
-DeBruijnNode::DeBruijnNode(QString name, double readDepth, QByteArray sequence, int length) :
+DeBruijnNode::DeBruijnNode(QString name, double depth, QByteArray sequence, int length) :
     m_name(name),
-    m_readDepth(readDepth),
-    m_readDepthRelativeToMeanDrawnReadDepth(1.0),
+    m_depth(depth),
+    m_depthRelativeToMeanDrawnDepth(1.0),
     m_sequence(sequence),
     m_length(sequence.length()),
     m_contiguityStatus(NOT_CONTIGUOUS),
@@ -364,8 +364,8 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
     gfaSegmentLine += "\t" + getNameWithoutSign();
     gfaSegmentLine += "\t" + gfaSequence;
     gfaSegmentLine += "\tLN:i:" + QString::number(gfaSequence.length());
-    gfaSegmentLine += "\tDP:f:" + QString::number(getReadDepth());
-    gfaSegmentLine += "\tRC:i:" + QString::number(int(getReadDepth() * gfaSequence.length() + 0.5));
+    gfaSegmentLine += "\tDP:f:" + QString::number(getDepth());
+    gfaSegmentLine += "\tKC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
     if (!m_customLabel.isEmpty())
         gfaSegmentLine += "\tLB:z:" + getCustomLabel();
     if (hasCustomColour())
@@ -507,7 +507,7 @@ QString DeBruijnNode::getNodeNameForFasta(bool sign) const
     nodeNameForFasta += "_length_";
     nodeNameForFasta += QByteArray::number(getLength());
     nodeNameForFasta += "_cov_";
-    nodeNameForFasta += QByteArray::number(getReadDepth());
+    nodeNameForFasta += QByteArray::number(getDepth());
 
     return nodeNameForFasta;
 }
@@ -704,9 +704,9 @@ double DeBruijnNode::getNodeLengthPerMegabase() const
 
 
 
-bool DeBruijnNode::isInReadDepthRange(double min, double max) const
+bool DeBruijnNode::isInDepthRange(double min, double max) const
 {
-    return m_readDepth >= min && m_readDepth <= max;
+    return m_depth >= min && m_depth <= max;
 }
 
 

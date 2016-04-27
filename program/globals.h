@@ -31,10 +31,10 @@ class MyGraphicsView;
 class BlastSearch;
 class AssemblyGraph;
 
-enum NodeColourScheme {UNIFORM_COLOURS, RANDOM_COLOURS, READ_DEPTH_COLOUR,
+enum NodeColourScheme {UNIFORM_COLOURS, RANDOM_COLOURS, DEPTH_COLOUR,
                        BLAST_HITS_RAINBOW_COLOUR, BLAST_HITS_SOLID_COLOUR,
                        CONTIGUITY_COLOUR, CUSTOM_COLOURS};
-enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS, READ_DEPTH_RANGE};
+enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS, DEPTH_RANGE};
 enum ContiguityStatus {STARTING, CONTIGUOUS_STRAND_SPECIFIC,
                        CONTIGUOUS_EITHER_STRAND, MAYBE_CONTIGUOUS,
                        NOT_CONTIGUOUS};
@@ -72,7 +72,7 @@ extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
 QString formatIntForDisplay(int num);
 QString formatIntForDisplay(long long num);
 QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay);
-QString formatReadDepthForDisplay(double depth);
+QString formatDepthForDisplay(double depth);
 
 std::vector<QColor> getPresetColours();
 QString getColourName(QColor colour);

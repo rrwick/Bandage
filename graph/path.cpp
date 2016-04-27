@@ -757,14 +757,14 @@ QList<Path> Path::extendPathInAllPossibleWays() const
 
 
 
-double Path::getMeanReadDepth() const
+double Path::getMeanDepth() const
 {
     long double depthTimesLengthSum = 0.0;
     int nodeLengthTotal = 0;
     for (int i = 0; i < m_nodes.size(); ++i)
     {
         DeBruijnNode * node = m_nodes[i];
-        depthTimesLengthSum += node->getReadDepth() * node->getLength();
+        depthTimesLengthSum += node->getDepth() * node->getLength();
         nodeLengthTotal += node->getLength();
     }
 

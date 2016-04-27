@@ -1,20 +1,20 @@
-#include "changenodereaddepthdialog.h"
-#include "ui_changenodereaddepthdialog.h"
+#include "changenodedepthdialog.h"
+#include "ui_changenodedepthdialog.h"
 
 
 #include "../program/globals.h"
 #include "../graph/debruijnnode.h"
 
-ChangeNodeReadDepthDialog::ChangeNodeReadDepthDialog(QWidget * parent,
+ChangeNodeDepthDialog::ChangeNodeDepthDialog(QWidget * parent,
                                                      std::vector<DeBruijnNode *> * nodes,
                                                      double oldDepth) :
     QDialog(parent),
-    ui(new Ui::ChangeNodeReadDepthDialog)
+    ui(new Ui::ChangeNodeDepthDialog)
 {
     ui->setupUi(this);
 
-    ui->currentReadDepthLabel2->setText(formatDoubleForDisplay(oldDepth, 1));
-    ui->newReadDepthSpinBox->setValue(oldDepth);
+    ui->currentDepthLabel2->setText(formatDoubleForDisplay(oldDepth, 1));
+    ui->newDepthSpinBox->setValue(oldDepth);
 
     //Display the node names.  If there are lots of nodes (more than 10), just
     //display the first 10 and then an ellipsis.
@@ -35,27 +35,27 @@ ChangeNodeReadDepthDialog::ChangeNodeReadDepthDialog(QWidget * parent,
     if (nodes->size() == 1)
     {
         ui->nodeNameLabel1->setText("Node:");
-        ui->currentReadDepthLabel1->setText("Current read depth:");
-        ui->infoLabel->setText("Enter a new read depth. Both the node and its reverse complement will have their read depth set to the new value.");
+        ui->currentDepthLabel1->setText("Current depth:");
+        ui->infoLabel->setText("Enter a new depth. Both the node and its reverse complement will have their depth set to the new value.");
     }
     else
     {
         ui->nodeNameLabel1->setText("Nodes (" + formatIntForDisplay(int(nodes->size())) + "):");
-        ui->currentReadDepthLabel1->setText("Current mean read depth:");
-        ui->infoLabel->setText("Enter a new read depth. The nodes and their reverse complements will have their read depths set to the new value.");
+        ui->currentDepthLabel1->setText("Current mean depth:");
+        ui->infoLabel->setText("Enter a new depth. The nodes and their reverse complements will have their depths set to the new value.");
     }
 
     ui->nodeNameLabel2->setText(nodeNames);
 
-    ui->newReadDepthSpinBox->setFocus();
+    ui->newDepthSpinBox->setFocus();
 }
 
-ChangeNodeReadDepthDialog::~ChangeNodeReadDepthDialog()
+ChangeNodeDepthDialog::~ChangeNodeDepthDialog()
 {
     delete ui;
 }
 
-double ChangeNodeReadDepthDialog::getNewDepth() const
+double ChangeNodeDepthDialog::getNewDepth() const
 {
-    return ui->newReadDepthSpinBox->value();
+    return ui->newDepthSpinBox->value();
 }

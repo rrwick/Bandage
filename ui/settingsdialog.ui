@@ -1419,14 +1419,14 @@ per megabase:</string>
           </font>
          </property>
          <property name="text">
-          <string>Read depth and node width</string>
+          <string>Depth and node width</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="nodeWidthDescriptionLabel">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These settings control how the read depth of a node affects its width. The average node width is controlled in the main Bandage window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;These settings control how the depth of a node affects its width. The average node width is controlled in the main Bandage window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -1459,7 +1459,7 @@ per megabase:</string>
            <number>0</number>
           </property>
           <item row="0" column="2">
-           <widget class="InfoTextWidget" name="readDepthEffectOnWidthInfoText" native="true">
+           <widget class="InfoTextWidget" name="depthEffectOnWidthInfoText" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1475,7 +1475,7 @@ per megabase:</string>
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="InfoTextWidget" name="readDepthPowerInfoText" native="true">
+           <widget class="InfoTextWidget" name="depthPowerInfoText" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1499,12 +1499,12 @@ per megabase:</string>
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Read depth effect on width:</string>
+             <string>Depth effect on width:</string>
             </property>
            </widget>
           </item>
           <item row="0" column="4">
-           <widget class="QDoubleSpinBox" name="readDepthEffectOnWidthSpinBox">
+           <widget class="QDoubleSpinBox" name="depthEffectOnWidthSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1532,7 +1532,7 @@ per megabase:</string>
            </widget>
           </item>
           <item row="1" column="4">
-           <widget class="QDoubleSpinBox" name="readDepthPowerSpinBox">
+           <widget class="QDoubleSpinBox" name="depthPowerSpinBox">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1562,7 +1562,7 @@ per megabase:</string>
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Read depth effect power:</string>
+             <string>Depth effect power:</string>
             </property>
            </widget>
           </item>
@@ -1726,7 +1726,7 @@ per megabase:</string>
                    <string notr="true">background-color: rgb(255, 255, 255)</string>
                   </property>
                   <property name="text">
-                   <string>Read depth</string>
+                   <string>Depth</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -2417,7 +2417,7 @@ per megabase:</string>
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="readDepthColourSchemeHeadingLabel">
+        <widget class="QLabel" name="depthColourSchemeHeadingLabel">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -2425,7 +2425,7 @@ per megabase:</string>
           </font>
          </property>
          <property name="text">
-          <string>Read depth colour scheme</string>
+          <string>Depth colour scheme</string>
          </property>
         </widget>
        </item>
@@ -2437,9 +2437,9 @@ per megabase:</string>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="readDepthColourSchemeDescriptionLabel">
+        <widget class="QLabel" name="depthColourSchemeDescriptionLabel">
          <property name="text">
-          <string>These settings control the node colours when the 'Colour by read depth' colour scheme is used.</string>
+          <string>These settings control the node colours when the 'Colour by depth' colour scheme is used.</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -2489,7 +2489,7 @@ per megabase:</string>
            <number>0</number>
           </property>
           <item row="0" column="1">
-           <widget class="InfoTextWidget" name="lowReadDepthColourInfoText" native="true">
+           <widget class="InfoTextWidget" name="lowDepthColourInfoText" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2529,12 +2529,12 @@ per megabase:</string>
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Low read depth:</string>
+             <string>Low depth:</string>
             </property>
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="ColourButton" name="lowReadDepthColourButton">
+           <widget class="ColourButton" name="lowDepthColourButton">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -2563,7 +2563,7 @@ per megabase:</string>
            </spacer>
           </item>
           <item row="1" column="1">
-           <widget class="InfoTextWidget" name="highReadDepthColourInfoText" native="true">
+           <widget class="InfoTextWidget" name="highDepthColourInfoText" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2587,12 +2587,12 @@ per megabase:</string>
              </sizepolicy>
             </property>
             <property name="text">
-             <string>High read depth:</string>
+             <string>High depth:</string>
             </property>
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="ColourButton" name="highReadDepthColourButton">
+           <widget class="ColourButton" name="highDepthColourButton">
             <property name="text">
              <string/>
             </property>
@@ -2633,7 +2633,7 @@ per megabase:</string>
            </spacer>
           </item>
           <item>
-           <widget class="QWidget" name="readDepthAutoManualWidget" native="true">
+           <widget class="QWidget" name="depthAutoManualWidget" native="true">
             <layout class="QGridLayout" name="gridLayout_4">
              <property name="leftMargin">
               <number>0</number>
@@ -2648,7 +2648,7 @@ per megabase:</string>
               <number>0</number>
              </property>
              <item row="0" column="2">
-              <widget class="QWidget" name="readDepthAutoWidget" native="true">
+              <widget class="QWidget" name="depthAutoWidget" native="true">
                <layout class="QGridLayout" name="gridLayout_7">
                 <property name="leftMargin">
                  <number>0</number>
@@ -2666,7 +2666,7 @@ per megabase:</string>
                  <number>0</number>
                 </property>
                 <item row="1" column="1">
-                 <widget class="QLabel" name="highReadDepthAutoValueLabel2">
+                 <widget class="QLabel" name="highDepthAutoValueLabel2">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -2682,7 +2682,7 @@ per megabase:</string>
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLabel" name="lowReadDepthAutoValueLabel2">
+                 <widget class="QLabel" name="lowDepthAutoValueLabel2">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -2698,7 +2698,7 @@ per megabase:</string>
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QLabel" name="highReadDepthAutoValueLabel1">
+                 <widget class="QLabel" name="highDepthAutoValueLabel1">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -2711,7 +2711,7 @@ per megabase:</string>
                  </widget>
                 </item>
                 <item row="0" column="0">
-                 <widget class="QLabel" name="lowReadDepthAutoValueLabel1">
+                 <widget class="QLabel" name="lowDepthAutoValueLabel1">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -2727,7 +2727,7 @@ per megabase:</string>
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QWidget" name="readDepthManualWidget" native="true">
+              <widget class="QWidget" name="depthManualWidget" native="true">
                <layout class="QGridLayout" name="gridLayout_8">
                 <property name="leftMargin">
                  <number>0</number>
@@ -2745,7 +2745,7 @@ per megabase:</string>
                  <number>0</number>
                 </property>
                 <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="lowReadDepthValueSpinBox">
+                 <widget class="QDoubleSpinBox" name="lowDepthValueSpinBox">
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
@@ -2758,7 +2758,7 @@ per megabase:</string>
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QDoubleSpinBox" name="highReadDepthValueSpinBox">
+                 <widget class="QDoubleSpinBox" name="highDepthValueSpinBox">
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
@@ -2771,14 +2771,14 @@ per megabase:</string>
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QLabel" name="highReadDepthValueLabel">
+                 <widget class="QLabel" name="highDepthValueLabel">
                   <property name="text">
                    <string>High:</string>
                   </property>
                  </widget>
                 </item>
                 <item row="0" column="0">
-                 <widget class="QLabel" name="lowReadDepthValueLabel">
+                 <widget class="QLabel" name="lowDepthValueLabel">
                   <property name="text">
                    <string>Low:</string>
                   </property>
@@ -2788,7 +2788,7 @@ per megabase:</string>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QRadioButton" name="readDepthValueAutoRadioButton">
+              <widget class="QRadioButton" name="depthValueAutoRadioButton">
                <property name="text">
                 <string>Auto</string>
                </property>
@@ -2798,14 +2798,14 @@ per megabase:</string>
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QRadioButton" name="readDepthValueManualRadioButton">
+              <widget class="QRadioButton" name="depthValueManualRadioButton">
                <property name="text">
                 <string>Manual</string>
                </property>
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="InfoTextWidget" name="readDepthAutoValuesInfoText" native="true">
+              <widget class="InfoTextWidget" name="depthAutoValuesInfoText" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -2821,7 +2821,7 @@ per megabase:</string>
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="InfoTextWidget" name="readDepthManualValuesInfoText" native="true">
+              <widget class="InfoTextWidget" name="depthManualValuesInfoText" native="true">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -3888,7 +3888,7 @@ discrepancy (bases):</string>
   <tabstop>antialiasingOffRadioButton</tabstop>
   <tabstop>positionVisibleRadioButton</tabstop>
   <tabstop>positionCentreRadioButton</tabstop>
-  <tabstop>readDepthValueAutoRadioButton</tabstop>
+  <tabstop>depthValueAutoRadioButton</tabstop>
   <tabstop>restoreDefaultsButton</tabstop>
  </tabstops>
  <resources/>

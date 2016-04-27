@@ -60,10 +60,10 @@ public:
     long long m_totalLength;
     long long m_shortestContig;
     long long m_longestContig;
-    double m_meanReadDepth;
-    double m_firstQuartileReadDepth;
-    double m_medianReadDepth;
-    double m_thirdQuartileReadDepth;
+    double m_meanDepth;
+    double m_firstQuartileDepth;
+    double m_medianDepth;
+    double m_thirdQuartileDepth;
     GraphFileType m_graphFileType;
     bool m_contiguitySearchDone;
     QString m_filename;
@@ -75,9 +75,9 @@ public:
     void clearOgdfGraphAndResetNodes();
     static QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
-    double getMeanReadDepth(bool drawnNodesOnly = false);
-    double getMeanReadDepth(std::vector<DeBruijnNode *> nodes);
-    double getMeanReadDepth(QList<DeBruijnNode *> nodes);
+    double getMeanDepth(bool drawnNodesOnly = false);
+    double getMeanDepth(std::vector<DeBruijnNode *> nodes);
+    double getMeanDepth(QList<DeBruijnNode *> nodes);
     void resetNodeContiguityStatus();
     void resetAllNodeColours();
     void clearAllBlastHitPointers();
@@ -89,7 +89,7 @@ public:
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     int buildDeBruijnGraphFromAsqg(QString fullFileName);
     void buildDeBruijnGraphFromPlainFasta(QString fullFileName);
-    void recalculateAllReadDepthsRelativeToDrawnMean();
+    void recalculateAllDepthsRelativeToDrawnMean();
     void recalculateAllNodeWidths();
 
     GraphFileType getGraphFileTypeFromFile(QString fullFileName);
@@ -133,7 +133,7 @@ public:
     void deleteEdges(std::vector<DeBruijnEdge *> * edges);
     void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
     bool mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
-                    bool recalulateReadDepth);
+                    bool recalulateDepth);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges,
                                  bool reverseComplement,
                                  MyGraphicsScene * scene);
@@ -149,16 +149,16 @@ public:
     bool saveVisibleGraphToGfa(QString filename);
     void changeNodeName(QString oldName, QString newName);
     NodeNameStatus checkNodeNameValidity(QString nodeName);
-    void changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
-                             double newReadDepth);
+    void changeNodeDepth(std::vector<DeBruijnNode *> * nodes,
+                             double newDepth);
 
     static QByteArray addNewlinesToSequence(QByteArray sequence, int interval = 70);
     int getDeadEndCount() const;
     void getNodeStats(int * n50, int * shortestNode, int * firstQuartile, int * median, int * thirdQuartile, int * longestNode) const;
     void getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const;
-    double getMedianReadDepthByBase() const;
+    double getMedianDepthByBase() const;
     long long getEstimatedSequenceLength() const;
-    long long getEstimatedSequenceLength(double meanReadDepthByBase) const;
+    long long getEstimatedSequenceLength(double meanDepthByBase) const;
     long long getTotalLengthMinusEdgeOverlaps() const;
     QPair<int, int> getOverlapRange() const;
 
@@ -172,7 +172,7 @@ private:
     std::vector<DeBruijnNode *> getNodesFromListExact(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromListPartial(QStringList nodesList, std::vector<QString> * nodesNotInGraph);
     std::vector<DeBruijnNode *> getNodesFromBlastHits(QString queryName);
-    std::vector<DeBruijnNode *> getNodesInReadDepthRange(double min, double max);
+    std::vector<DeBruijnNode *> getNodesInDepthRange(double min, double max);
     std::vector<int> makeOverlapCountVector();
     bool cigarContainsOnlyM(QString cigar);
     int getLengthFromSimpleCigar(QString cigar);
@@ -197,7 +197,7 @@ private:
                                         bool reverseComplement,
                                         MyGraphicsScene * scene);
     QString cleanNodeName(QString name);
-    double findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
+    double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
 
 signals:
     void setMergeTotalCount(int totalCount);

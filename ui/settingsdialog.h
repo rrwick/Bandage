@@ -47,7 +47,7 @@ private:
 
 private slots:
     void restoreDefaults();
-    void enableDisableReadDepthWidgets();
+    void enableDisableDepthWidgets();
     void nodeLengthPerMegabaseManualChanged();
     void updateNodeWidthVisualAid();
     void colourSliderChanged();

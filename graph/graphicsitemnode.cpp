@@ -346,9 +346,9 @@ void GraphicsItemNode::setNodeColour()
         break;
     }
 
-    case READ_DEPTH_COLOUR:
+    case DEPTH_COLOUR:
     {
-        m_colour = getReadDepthColour();
+        m_colour = getDepthColour();
         break;
     }
 
@@ -828,8 +828,8 @@ QStringList GraphicsItemNode::getNodeText()
     }
     if (g_settings->displayNodeLengths)
         nodeText << formatIntForDisplay(m_deBruijnNode->getLength()) + " bp";
-    if (g_settings->displayNodeReadDepth)
-        nodeText << formatReadDepthForDisplay(m_deBruijnNode->getReadDepth());
+    if (g_settings->displayNodeDepth)
+        nodeText << formatDepthForDisplay(m_deBruijnNode->getDepth());
     if (g_settings->displayNodeCsvData && m_deBruijnNode->hasCsvData())
         nodeText << m_deBruijnNode->getCsvLine(g_settings->displayNodeCsvDataCol);
 
@@ -844,38 +844,38 @@ QSize GraphicsItemNode::getNodeTextSize(QString text)
 }
 
 
-QColor GraphicsItemNode::getReadDepthColour()
+QColor GraphicsItemNode::getDepthColour()
 {
-    double readDepth = m_deBruijnNode->getReadDepth();
+    double depth = m_deBruijnNode->getDepth();
     double lowValue;
     double highValue;
-    if (g_settings->autoReadDepthValue)
+    if (g_settings->autoDepthValue)
     {
-        lowValue = g_assemblyGraph->m_firstQuartileReadDepth;
-        highValue = g_assemblyGraph->m_thirdQuartileReadDepth;
+        lowValue = g_assemblyGraph->m_firstQuartileDepth;
+        highValue = g_assemblyGraph->m_thirdQuartileDepth;
     }
     else
     {
-        lowValue = g_settings->lowReadDepthValue;
-        highValue = g_settings->highReadDepthValue;
+        lowValue = g_settings->lowDepthValue;
+        highValue = g_settings->highDepthValue;
     }
 
-    if (readDepth <= lowValue)
-        return g_settings->lowReadDepthColour;
-    if (readDepth >= highValue)
-        return g_settings->highReadDepthColour;
+    if (depth <= lowValue)
+        return g_settings->lowDepthColour;
+    if (depth >= highValue)
+        return g_settings->highDepthColour;
 
-    double fraction = (readDepth - lowValue) / (highValue - lowValue);
+    double fraction = (depth - lowValue) / (highValue - lowValue);
 
-    int redDifference = g_settings->highReadDepthColour.red() - g_settings->lowReadDepthColour.red();
-    int greenDifference = g_settings->highReadDepthColour.green() - g_settings->lowReadDepthColour.green();
-    int blueDifference = g_settings->highReadDepthColour.blue() - g_settings->lowReadDepthColour.blue();
-    int alphaDifference = g_settings->highReadDepthColour.alpha() - g_settings->lowReadDepthColour.alpha();
+    int redDifference = g_settings->highDepthColour.red() - g_settings->lowDepthColour.red();
+    int greenDifference = g_settings->highDepthColour.green() - g_settings->lowDepthColour.green();
+    int blueDifference = g_settings->highDepthColour.blue() - g_settings->lowDepthColour.blue();
+    int alphaDifference = g_settings->highDepthColour.alpha() - g_settings->lowDepthColour.alpha();
 
-    int red = int(g_settings->lowReadDepthColour.red() + (fraction * redDifference) + 0.5);
-    int green = int(g_settings->lowReadDepthColour.green() + (fraction * greenDifference) + 0.5);
-    int blue = int(g_settings->lowReadDepthColour.blue() + (fraction * blueDifference) + 0.5);
-    int alpha = int(g_settings->lowReadDepthColour.alpha() + (fraction * alphaDifference) + 0.5);
+    int red = int(g_settings->lowDepthColour.red() + (fraction * redDifference) + 0.5);
+    int green = int(g_settings->lowDepthColour.green() + (fraction * greenDifference) + 0.5);
+    int blue = int(g_settings->lowDepthColour.blue() + (fraction * blueDifference) + 0.5);
+    int alpha = int(g_settings->lowDepthColour.alpha() + (fraction * alphaDifference) + 0.5);
 
     return QColor(red, green, blue, alpha);
 }
@@ -884,8 +884,8 @@ QColor GraphicsItemNode::getReadDepthColour()
 
 void GraphicsItemNode::setWidth()
 {
-    m_width = getNodeWidth(m_deBruijnNode->getReadDepthRelativeToMeanDrawnReadDepth(), g_settings->readDepthPower,
-                           g_settings->readDepthEffectOnWidth, g_settings->averageNodeWidth);
+    m_width = getNodeWidth(m_deBruijnNode->getDepthRelativeToMeanDrawnDepth(), g_settings->depthPower,
+                           g_settings->depthEffectOnWidth, g_settings->averageNodeWidth);
     if (m_width < 0.0)
         m_width = 0.0;
 }
@@ -910,12 +910,12 @@ QRectF GraphicsItemNode::boundingRect() const
 }
 
 
-double GraphicsItemNode::getNodeWidth(double readDepthRelativeToMeanDrawnReadDepth, double readDepthPower,
-                                      double readDepthEffectOnWidth, double averageNodeWidth)
+double GraphicsItemNode::getNodeWidth(double depthRelativeToMeanDrawnDepth, double depthPower,
+                                      double depthEffectOnWidth, double averageNodeWidth)
 {
-    if (readDepthRelativeToMeanDrawnReadDepth < 0.0)
-        readDepthRelativeToMeanDrawnReadDepth = 0.0;
-    double widthRelativeToAverage = (pow(readDepthRelativeToMeanDrawnReadDepth, readDepthPower) - 1.0) * readDepthEffectOnWidth + 1.0;
+    if (depthRelativeToMeanDrawnDepth < 0.0)
+        depthRelativeToMeanDrawnDepth = 0.0;
+    double widthRelativeToAverage = (pow(depthRelativeToMeanDrawnDepth, depthPower) - 1.0) * depthEffectOnWidth + 1.0;
     return averageNodeWidth * widthRelativeToAverage;
 }
 
@@ -1139,6 +1139,6 @@ bool GraphicsItemNode::anyNodeDisplayText()
     return g_settings->displayNodeCustomLabels ||
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
-            g_settings->displayNodeReadDepth ||
+            g_settings->displayNodeDepth ||
             g_settings->displayNodeCsvData;
 }

@@ -58,7 +58,7 @@ public:
     QList<Path> extendPathInAllPossibleWays() const;
     bool canNodeFitOnEnd(DeBruijnNode * node, Path * extendedPath) const;
     bool canNodeFitAtStart(DeBruijnNode * node, Path * extendedPath) const;
-    double getMeanReadDepth() const;
+    double getMeanDepth() const;
     bool containsNode(DeBruijnNode * node) const;
     bool containsEntireNode(DeBruijnNode * node) const;
     bool isInMiddleOfPath(DeBruijnNode * node) const;

@@ -30,8 +30,8 @@ public:
 
     int heightForWidth(int w ) const {return w;}
 
-    double m_readDepthPower;
-    double m_readDepthEffectOnWidth;
+    double m_depthPower;
+    double m_depthEffectOnWidth;
 
 protected:
     void paintEvent(QPaintEvent *);

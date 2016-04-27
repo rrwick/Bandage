@@ -94,8 +94,8 @@ int bandageInfo(QStringList arguments)
     int largestComponentLength = 0;
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
 
-    double medianReadDepthByBase = g_assemblyGraph->getMedianReadDepthByBase();
-    long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianReadDepthByBase);
+    double medianDepthByBase = g_assemblyGraph->getMedianDepthByBase();
+    long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianDepthByBase);
 
     if (tsv)
     {
@@ -116,7 +116,7 @@ int bandageInfo(QStringList arguments)
         out << median << "\t";
         out << thirdQuartile << "\t";
         out << longestNode << "\t";
-        out << medianReadDepthByBase << "\n";
+        out << medianDepthByBase << "\n";
         out << estimatedSequenceLength << "\n";
     }
     else
@@ -137,7 +137,7 @@ int bandageInfo(QStringList arguments)
         out << "Median node (bp):               " << median << "\n";
         out << "Upper quartile node (bp):       " << thirdQuartile << "\n";
         out << "Longest node (bp):              " << longestNode << "\n";
-        out << "Median read depth:              " << medianReadDepthByBase << "\n";
+        out << "Median depth:              " << medianDepthByBase << "\n";
         out << "Estimated sequence length (bp): " << estimatedSequenceLength << "\n";
     }
 
@@ -167,8 +167,8 @@ void printInfoUsage(QTextStream * out, bool all)
     text << "* Median node: The median node length for the graph.";
     text << "* Upper quartile node: The median node length for the longer half of the nodes.";
     text << "* Longest node: The length of the longest node in the graph.";
-    text << "* Median read depth: The median read depth of the graph, by base.";
-    text << "* Estimated sequence length: An estimate of the total number of bases in the original sequence, calculated by multiplying each node's length (minus overlaps) by its read depth relative to the median.";
+    text << "* Median depth: The median depth of the graph, by base.";
+    text << "* Estimated sequence length: An estimate of the total number of bases in the original sequence, calculated by multiplying each node's length (minus overlaps) by its depth relative to the median.";
     text << "";
     text << "Usage:    Bandage info <graph> [options]";
     text << "";

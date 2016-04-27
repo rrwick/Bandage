@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>247</width>
-         <height>881</height>
+         <width>289</width>
+         <height>1058</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -551,7 +551,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Read depth range</string>
+                  <string>Depth range</string>
                  </property>
                 </item>
                </widget>
@@ -596,7 +596,7 @@
                </widget>
               </item>
               <item row="4" column="2">
-               <widget class="QDoubleSpinBox" name="minReadDepthSpinBox">
+               <widget class="QDoubleSpinBox" name="minDepthSpinBox">
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
@@ -609,7 +609,7 @@
                </widget>
               </item>
               <item row="4" column="0">
-               <widget class="InfoTextWidget" name="minReadDepthInfoText" native="true">
+               <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -641,7 +641,7 @@
                </widget>
               </item>
               <item row="4" column="1">
-               <widget class="QLabel" name="minReadDepthLabel">
+               <widget class="QLabel" name="minDepthLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -654,7 +654,7 @@
                </widget>
               </item>
               <item row="5" column="0">
-               <widget class="InfoTextWidget" name="maxReadDepthInfoText" native="true">
+               <widget class="InfoTextWidget" name="maxDepthInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -670,7 +670,7 @@
                </widget>
               </item>
               <item row="5" column="1">
-               <widget class="QLabel" name="maxReadDepthLabel">
+               <widget class="QLabel" name="maxDepthLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -683,7 +683,7 @@
                </widget>
               </item>
               <item row="5" column="2">
-               <widget class="QDoubleSpinBox" name="maxReadDepthSpinBox">
+               <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
@@ -867,7 +867,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Colour by read depth</string>
+                  <string>Colour by depth</string>
                  </property>
                 </item>
                 <item>
@@ -1117,9 +1117,9 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QCheckBox" name="nodeReadDepthCheckBox">
+                  <widget class="QCheckBox" name="nodeDepthCheckBox">
                    <property name="text">
-                    <string>Read depth</string>
+                    <string>Depth</string>
                    </property>
                   </widget>
                  </item>
@@ -1355,8 +1355,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>221</width>
-         <height>881</height>
+         <width>249</width>
+         <height>899</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1609,7 +1609,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Mean read depth:</string>
+           <string>Mean depth:</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1775,7 +1775,7 @@
      <x>0</x>
      <y>0</y>
      <width>1465</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1867,7 +1867,7 @@
     <addaction name="actionMerge_all_possible_nodes"/>
     <addaction name="separator"/>
     <addaction name="actionChange_node_name"/>
-    <addaction name="actionChange_node_read_depth"/>
+    <addaction name="actionChange_node_depth"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuManipulate"/>
@@ -2221,9 +2221,9 @@
     <string>Change node name</string>
    </property>
   </action>
-  <action name="actionChange_node_read_depth">
+  <action name="actionChange_node_depth">
    <property name="text">
-    <string>Change node read depth</string>
+    <string>Change node depth</string>
    </property>
   </action>
  </widget>
@@ -2259,7 +2259,7 @@
   <tabstop>nodeCustomLabelsCheckBox</tabstop>
   <tabstop>nodeNamesCheckBox</tabstop>
   <tabstop>nodeLengthsCheckBox</tabstop>
-  <tabstop>nodeReadDepthCheckBox</tabstop>
+  <tabstop>nodeDepthCheckBox</tabstop>
   <tabstop>blastHitsCheckBox</tabstop>
   <tabstop>fontButton</tabstop>
   <tabstop>textOutlineCheckBox</tabstop>

@@ -71,7 +71,7 @@ public:
     void setNodeColour();
     QStringList getNodeText();
     QSize getNodeTextSize(QString text);
-    QColor getReadDepthColour();
+    QColor getDepthColour();
     void setWidth();
     QPainterPath makePartialPath(double startFraction, double endFraction);
     double getNodePathLength();
@@ -79,9 +79,9 @@ public:
     QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value,
                                   double p2Value, double targetValue);
     QRectF boundingRect() const;
-    static double getNodeWidth(double readDepthRelativeToMeanDrawnReadDepth,
-                               double readDepthPower,
-                               double readDepthEffectOnWidth,
+    static double getNodeWidth(double depthRelativeToMeanDrawnDepth,
+                               double depthPower,
+                               double depthEffectOnWidth,
                                double averageNodeWidth);
     void shiftPointsLeft();
     void shiftPointsRight();

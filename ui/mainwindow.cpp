@@ -64,7 +64,7 @@
 #include "pathspecifydialog.h"
 #include "../program/memory.h"
 #include "changenodenamedialog.h"
-#include "changenodereaddepthdialog.h"
+#include "changenodedepthdialog.h"
 #include <limits>
 #include "graphinfodialog.h"
 
@@ -146,7 +146,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
-    connect(ui->nodeReadDepthCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->nodeDepthCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->csvCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->csvComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setTextDisplaySettings()));
     connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
@@ -174,8 +174,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionSelect_not_contiguous_nodes, SIGNAL(triggered()), this, SLOT(selectNotContiguous()));
     connect(ui->actionBandage_online_help, SIGNAL(triggered()), this, SLOT(openBandageUrl()));
     connect(ui->nodeDistanceSpinBox, SIGNAL(valueChanged(int)), this, SLOT(nodeDistanceChanged()));
-    connect(ui->minReadDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(readDepthRangeChanged()));
-    connect(ui->maxReadDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(readDepthRangeChanged()));
+    connect(ui->minDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(depthRangeChanged()));
+    connect(ui->maxDepthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(depthRangeChanged()));
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
@@ -192,7 +192,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionMerge_selected_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeSelectedNodes()));
     connect(ui->actionMerge_all_possible_nodes, SIGNAL(triggered(bool)), this, SLOT(mergeAllPossible()));
     connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
-    connect(ui->actionChange_node_read_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeReadDepth()));
+    connect(ui->actionChange_node_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeDepth()));
     connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
@@ -492,13 +492,13 @@ void MainWindow::selectionChanged()
         {
             ui->selectedNodesTitleLabel->setText("Selected node");
             ui->selectedNodesLengthLabel->setText("Length: " + selectedNodeLengthText);
-            ui->selectedNodesDepthLabel->setText("Read depth: " + selectedNodeDepthText);
+            ui->selectedNodesDepthLabel->setText("Depth: " + selectedNodeDepthText);
         }
         else
         {
             ui->selectedNodesTitleLabel->setText("Selected nodes (" + selectedNodeCountText + ")");
             ui->selectedNodesLengthLabel->setText("Total length: " + selectedNodeLengthText);
-            ui->selectedNodesDepthLabel->setText("Mean read depth: " + selectedNodeDepthText);
+            ui->selectedNodesDepthLabel->setText("Mean depth: " + selectedNodeDepthText);
         }
 
         ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);
@@ -549,7 +549,7 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
     }
 
     selectedNodeLengthText = formatIntForDisplay(totalLength) + " bp";
-    selectedNodeDepthText = formatReadDepthForDisplay(g_assemblyGraph->getMeanReadDepth(selectedNodes));
+    selectedNodeDepthText = formatDepthForDisplay(g_assemblyGraph->getMeanDepth(selectedNodes));
 }
 
 
@@ -589,7 +589,7 @@ void MainWindow::graphScopeChanged()
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
-        setReadDepthRangeWidgetVisibility(false);
+        setDepthRangeWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -604,7 +604,7 @@ void MainWindow::graphScopeChanged()
 
         setStartingNodesWidgetVisibility(true);
         setNodeDistanceWidgetVisibility(true);
-        setReadDepthRangeWidgetVisibility(false);
+        setDepthRangeWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
@@ -634,7 +634,7 @@ void MainWindow::graphScopeChanged()
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(true);
-        setReadDepthRangeWidgetVisibility(false);
+        setDepthRangeWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
@@ -654,18 +654,18 @@ void MainWindow::graphScopeChanged()
         break;
 
     case 3:
-        g_settings->graphScope = READ_DEPTH_RANGE;
+        g_settings->graphScope = DEPTH_RANGE;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
-        setReadDepthRangeWidgetVisibility(true);
+        setDepthRangeWidgetVisibility(true);
 
-        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthInfoText, 1, 0, 1, 1);
-        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthLabel, 1, 1, 1, 1);
-        ui->graphDrawingGridLayout->addWidget(ui->minReadDepthSpinBox, 1, 2, 1, 1);
-        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthInfoText, 2, 0, 1, 1);
-        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthLabel, 2, 1, 1, 1);
-        ui->graphDrawingGridLayout->addWidget(ui->maxReadDepthSpinBox, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->minDepthInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->minDepthLabel, 1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->minDepthSpinBox, 1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxDepthInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxDepthLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->maxDepthSpinBox, 2, 2, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 3, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 3, 1, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 3, 2, 1, 1);
@@ -693,14 +693,14 @@ void MainWindow::setNodeDistanceWidgetVisibility(bool visible)
     ui->nodeDistanceLabel->setVisible(visible);
     ui->nodeDistanceSpinBox->setVisible(visible);
 }
-void MainWindow::setReadDepthRangeWidgetVisibility(bool visible)
+void MainWindow::setDepthRangeWidgetVisibility(bool visible)
 {
-    ui->minReadDepthInfoText->setVisible(visible);
-    ui->minReadDepthLabel->setVisible(visible);
-    ui->minReadDepthSpinBox->setVisible(visible);
-    ui->maxReadDepthInfoText->setVisible(visible);
-    ui->maxReadDepthLabel->setVisible(visible);
-    ui->maxReadDepthSpinBox->setVisible(visible);
+    ui->minDepthInfoText->setVisible(visible);
+    ui->minDepthLabel->setVisible(visible);
+    ui->minDepthSpinBox->setVisible(visible);
+    ui->maxDepthInfoText->setVisible(visible);
+    ui->maxDepthLabel->setVisible(visible);
+    ui->maxDepthSpinBox->setVisible(visible);
 }
 
 
@@ -1045,7 +1045,7 @@ void MainWindow::switchColourScheme()
         ui->contiguityInfoText->setVisible(false);
         break;
     case 2:
-        g_settings->nodeColourScheme = READ_DEPTH_COLOUR;
+        g_settings->nodeColourScheme = DEPTH_COLOUR;
         ui->contiguityButton->setVisible(false);
         ui->contiguityInfoText->setVisible(false);
         break;
@@ -1290,7 +1290,7 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeCustomLabels = ui->nodeCustomLabelsCheckBox->isChecked();
     g_settings->displayNodeNames = ui->nodeNamesCheckBox->isChecked();
     g_settings->displayNodeLengths = ui->nodeLengthsCheckBox->isChecked();
-    g_settings->displayNodeReadDepth = ui->nodeReadDepthCheckBox->isChecked();
+    g_settings->displayNodeDepth = ui->nodeDepthCheckBox->isChecked();
     g_settings->displayBlastHits = ui->blastHitsCheckBox->isChecked();
     g_settings->displayNodeCsvData = ui->csvCheckBox->isChecked();
     g_settings->displayNodeCsvDataCol = ui->csvComboBox->currentIndex();
@@ -1394,19 +1394,19 @@ void MainWindow::openSettingsDialog()
 
         //If the settings affecting node width was changed, reset the width on
         //each GraphicsItemNode.
-        if (settingsBefore.readDepthEffectOnWidth != g_settings->readDepthEffectOnWidth ||
-                settingsBefore.readDepthPower != g_settings->readDepthPower)
+        if (settingsBefore.depthEffectOnWidth != g_settings->depthEffectOnWidth ||
+                settingsBefore.depthPower != g_settings->depthPower)
             g_assemblyGraph->recalculateAllNodeWidths();
 
         //If any of the colours changed, reset the node colours now.
         if (settingsBefore.uniformPositiveNodeColour != g_settings->uniformPositiveNodeColour ||
                 settingsBefore.uniformNegativeNodeColour != g_settings->uniformNegativeNodeColour ||
                 settingsBefore.uniformNodeSpecialColour != g_settings->uniformNodeSpecialColour ||
-                settingsBefore.autoReadDepthValue != g_settings->autoReadDepthValue ||
-                settingsBefore.lowReadDepthColour != g_settings->lowReadDepthColour ||
-                settingsBefore.highReadDepthColour != g_settings->highReadDepthColour ||
-                settingsBefore.lowReadDepthValue != g_settings->lowReadDepthValue ||
-                settingsBefore.highReadDepthValue != g_settings->highReadDepthValue ||
+                settingsBefore.autoDepthValue != g_settings->autoDepthValue ||
+                settingsBefore.lowDepthColour != g_settings->lowDepthColour ||
+                settingsBefore.highDepthColour != g_settings->highDepthColour ||
+                settingsBefore.lowDepthValue != g_settings->lowDepthValue ||
+                settingsBefore.highDepthValue != g_settings->highDepthValue ||
                 settingsBefore.noBlastHitsColour != g_settings->noBlastHitsColour ||
                 settingsBefore.contiguousStrandSpecificColour != g_settings->contiguousStrandSpecificColour ||
                 settingsBefore.contiguousEitherStrandColour != g_settings->contiguousEitherStrandColour ||
@@ -1665,7 +1665,7 @@ void MainWindow::setInfoTexts()
                                   "<li>Holding the " + control + " key and using the mouse wheel over the graph.</li>"
                                   "<li>Clicking on the graph display and then using the '+' and '-' keys.</li></ul>");
     ui->nodeWidthInfoText->setInfoText("This is the average width for each node. The exact width for each node is "
-                                       "also influenced by the node's read depth. The effect of read depth on width "
+                                       "also influenced by the node's depth. The effect of depth on width "
                                        "can be adjusted in Bandage " + settingsDialogTitle + ".");
     ui->nodeColourInfoText->setInfoText("This controls the colour of the nodes in the graph:<ul>"
                                         "<li>'Random colours': Nodes will be coloured randomly. Each time this is "
@@ -1677,8 +1677,8 @@ void MainWindow::setInfoTexts()
                                         "scope, your specified nodes will be drawn in a separate colour. For "
                                         "graphs drawn with the 'Around BLAST hits' scope, nodes with BLAST hits "
                                         "will be drawn in a separate colour.</li>"
-                                        "<li>'Colour by read depth': Node colours will be defined by their "
-                                        "read depth. The details of this relationship are configurable in "
+                                        "<li>'Colour by depth': Node colours will be defined by their "
+                                        "depth. The details of this relationship are configurable in "
                                         "Bandage " + settingsDialogTitle + ".</li>"
                                         "<li>'BLAST hits (rainbow)': Nodes will be drawn in a light grey colour "
                                         "and BLAST hits for the currently selected query will be drawn using a "
@@ -1701,7 +1701,7 @@ void MainWindow::setInfoTexts()
                                         "with your selected node(s).");
     ui->nodeLabelsInfoText->setInfoText("Tick any of the node labelling options to display those labels over "
                                         "nodes in the graph.<br><br>"
-                                        "'Name', 'Length' and 'Read depth' labels are created automatically. "
+                                        "'Name', 'Length' and 'Depth' labels are created automatically. "
                                         "'Custom' labels must be assigned by clicking the 'Set "
                                         "label' button when one or more nodes are selected.<br><br>"
                                         "When 'BLAST hits' labels are shown, they are displayed over any "
@@ -1733,9 +1733,9 @@ void MainWindow::setInfoTexts()
                                                "these buttons. They will only be visible when the colouring "
                                                "mode is set to 'Custom colours' and the 'Custom' label option "
                                                "is ticked.");
-    ui->minReadDepthInfoText->setInfoText("This is the lower bound for the read depth range. Nodes with a read "
+    ui->minDepthInfoText->setInfoText("This is the lower bound for the depth range. Nodes with a read "
                                           "depth less than this value will not be drawn.");
-    ui->maxReadDepthInfoText->setInfoText("This is the uper bound for the read depth range. Nodes with a read "
+    ui->maxDepthInfoText->setInfoText("This is the uper bound for the depth range. Nodes with a read "
                                           "depth greater than this value will not be drawn.");
 }
 
@@ -2037,7 +2037,7 @@ void MainWindow::setWidgetsFromSettings()
 
     ui->nodeNamesCheckBox->setChecked(g_settings->displayNodeNames);
     ui->nodeLengthsCheckBox->setChecked(g_settings->displayNodeLengths);
-    ui->nodeReadDepthCheckBox->setChecked(g_settings->displayNodeReadDepth);
+    ui->nodeDepthCheckBox->setChecked(g_settings->displayNodeDepth);
     ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
 
@@ -2050,8 +2050,8 @@ void MainWindow::setWidgetsFromSettings()
     ui->nodeDistanceSpinBox->setValue(g_settings->nodeDistance);
     ui->startingNodesLineEdit->setText(g_settings->startingNodes);
 
-    ui->minReadDepthSpinBox->setValue(g_settings->minReadDepthRange);
-    ui->maxReadDepthSpinBox->setValue(g_settings->maxReadDepthRange);
+    ui->minDepthSpinBox->setValue(g_settings->minDepthRange);
+    ui->maxDepthSpinBox->setValue(g_settings->maxDepthRange);
 }
 
 
@@ -2062,7 +2062,7 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     {
     case RANDOM_COLOURS: ui->coloursComboBox->setCurrentIndex(0); break;
     case UNIFORM_COLOURS: ui->coloursComboBox->setCurrentIndex(1); break;
-    case READ_DEPTH_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
+    case DEPTH_COLOUR: ui->coloursComboBox->setCurrentIndex(2); break;
     case BLAST_HITS_SOLID_COLOUR: ui->coloursComboBox->setCurrentIndex(3); break;
     case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
     case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
@@ -2077,7 +2077,7 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
     case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
-    case READ_DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
     }
 }
 
@@ -2086,10 +2086,10 @@ void MainWindow::nodeDistanceChanged()
     g_settings->nodeDistance = ui->nodeDistanceSpinBox->value();
 }
 
-void MainWindow::readDepthRangeChanged()
+void MainWindow::depthRangeChanged()
 {
-    g_settings->minReadDepthRange = ui->minReadDepthSpinBox->value();
-    g_settings->maxReadDepthRange = ui->maxReadDepthSpinBox->value();
+    g_settings->minDepthRange = ui->minDepthSpinBox->value();
+    g_settings->maxDepthRange = ui->maxDepthSpinBox->value();
 }
 
 void MainWindow::showEvent(QShowEvent *ev)
@@ -2452,7 +2452,7 @@ void MainWindow::changeNodeName()
     }
 }
 
-void MainWindow::changeNodeReadDepth()
+void MainWindow::changeNodeDepth()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedPositiveNodes();
     if (selectedNodes.size() == 0)
@@ -2461,17 +2461,17 @@ void MainWindow::changeNodeReadDepth()
         return;
     }
 
-    double oldDepth = g_assemblyGraph->getMeanReadDepth(selectedNodes);
-    ChangeNodeReadDepthDialog changeNodeReadDepthDialog(this,
+    double oldDepth = g_assemblyGraph->getMeanDepth(selectedNodes);
+    ChangeNodeDepthDialog changeNodeDepthDialog(this,
                                                         &selectedNodes,
                                                         oldDepth);
 
-    if (changeNodeReadDepthDialog.exec()) //The user clicked OK
+    if (changeNodeDepthDialog.exec()) //The user clicked OK
     {
-        g_assemblyGraph->changeNodeReadDepth(&selectedNodes,
-                                             changeNodeReadDepthDialog.getNewDepth());
+        g_assemblyGraph->changeNodeDepth(&selectedNodes,
+                                             changeNodeDepthDialog.getNewDepth());
         selectionChanged();
-        g_assemblyGraph->recalculateAllReadDepthsRelativeToDrawnMean();
+        g_assemblyGraph->recalculateAllDepthsRelativeToDrawnMean();
         g_assemblyGraph->recalculateAllNodeWidths();
         g_graphicsView->viewport()->update();
     }

@@ -85,8 +85,8 @@ public:
     FloatSetting nodeSegmentLength;
 
     FloatSetting averageNodeWidth;
-    FloatSetting readDepthEffectOnWidth;
-    FloatSetting readDepthPower;
+    FloatSetting depthEffectOnWidth;
+    FloatSetting depthPower;
 
     FloatSetting edgeWidth;
     FloatSetting outlineThickness;
@@ -115,7 +115,7 @@ public:
     bool displayNodeCustomLabels;
     bool displayNodeNames;
     bool displayNodeLengths;
-    bool displayNodeReadDepth;
+    bool displayNodeDepth;
     bool displayNodeCsvData;
     int  displayNodeCsvDataCol;
     bool displayBlastHits;
@@ -153,11 +153,11 @@ public:
 
     QColor noBlastHitsColour;
 
-    bool autoReadDepthValue;
-    FloatSetting lowReadDepthValue;
-    QColor lowReadDepthColour;
-    FloatSetting highReadDepthValue;
-    QColor highReadDepthColour;
+    bool autoDepthValue;
+    FloatSetting lowDepthValue;
+    QColor lowDepthColour;
+    FloatSetting highDepthValue;
+    QColor highDepthColour;
 
     QColor pathHighlightShadingColour;
     QColor pathHighlightOutlineColour;
@@ -194,9 +194,9 @@ public:
     SciNotSetting blastEValueFilter;
     FloatSetting blastBitScoreFilter;
 
-    //These are used for the 'Read depth range' graph scope.
-    FloatSetting minReadDepthRange;
-    FloatSetting maxReadDepthRange;
+    //These are used for the 'Depth range' graph scope.
+    FloatSetting minDepthRange;
+    FloatSetting maxDepthRange;
 };
 
 #endif // SETTINGS_H

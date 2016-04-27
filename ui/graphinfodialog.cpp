@@ -77,11 +77,11 @@ void GraphInfoDialog::setLabels()
     ui->upperQuartileNodeLabel->setText(formatIntForDisplay(thirdQuartile) + " bp");
     ui->longestNodeLabel->setText(formatIntForDisplay(longestNode) + " bp");
 
-    double medianReadDepthByBase = g_assemblyGraph->getMedianReadDepthByBase();
-    long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianReadDepthByBase);
+    double medianDepthByBase = g_assemblyGraph->getMedianDepthByBase();
+    long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianDepthByBase);
 
-    ui->medianReadDepthLabel->setText(formatReadDepthForDisplay(medianReadDepthByBase));
-    if (medianReadDepthByBase == 0.0)
+    ui->medianDepthLabel->setText(formatDepthForDisplay(medianDepthByBase));
+    if (medianDepthByBase == 0.0)
         ui->estimatedSequenceLengthLabel->setText("unavailable");
     else
         ui->estimatedSequenceLengthLabel->setText(formatIntForDisplay(estimatedSequenceLength) + " bp");
@@ -138,9 +138,9 @@ void GraphInfoDialog::setInfoTexts()
                                                "Three quarters of the nodes are shorter than this length and one quarter "
                                                "are longer.");
     ui->longestNodeInfoText->setInfoText("The length of the longest node in the graph.");
-    ui->medianReadDepthInfoText->setInfoText("The median read depth of the graph nodes, by base.<br><br>"
+    ui->medianDepthInfoText->setInfoText("The median depth of the graph nodes, by base.<br><br>"
                                              "For most assemblies (assuming the majority of sequences are not repeats) "
-                                             "this value will indicate the approximate read depth of nodes for "
+                                             "this value will indicate the approximate depth of nodes for "
                                              "sequences that occur once.<br><br>"
                                              "E.g. if this value is 14.5x, then:<ul>"
                                              "<li>a node with depth 14.2x probably represents a sequence which "
@@ -157,7 +157,7 @@ void GraphInfoDialog::setInfoTexts()
                                                      "because a sequence which occurs multiple times may assemble into "
                                                      "a single node.<br><br>"
                                                      "To account for this, Bandage estimates sequence length by using "
-                                                     "median read depth to assign a copy number count to each node. "
+                                                     "median depth to assign a copy number count to each node. "
                                                      "The node lengths are then multipled by this copy number and "
                                                      "totalled (with any overlap sequences removed).<br><br>"
                                                      "Note that this value represents an estimate of the number of "

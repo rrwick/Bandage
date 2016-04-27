@@ -231,9 +231,9 @@ void AssemblyGraph::resetEdges()
 }
 
 
-double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
+double AssemblyGraph::getMeanDepth(bool drawnNodesOnly)
 {
-    long double readDepthSum = 0.0;
+    long double depthSum = 0.0;
     long long totalLength = 0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -246,26 +246,26 @@ double AssemblyGraph::getMeanReadDepth(bool drawnNodesOnly)
             continue;
 
         totalLength += node->getLength();
-        readDepthSum += node->getLength() * node->getReadDepth();
+        depthSum += node->getLength() * node->getDepth();
     }
 
     if (totalLength == 0)
         return 0.0;
     else
-        return readDepthSum / totalLength;
+        return depthSum / totalLength;
 }
 
 
-double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
+double AssemblyGraph::getMeanDepth(std::vector<DeBruijnNode *> nodes)
 {
     if (nodes.size() == 0)
         return 0.0;
 
     if (nodes.size() == 1)
-        return nodes[0]->getReadDepth();
+        return nodes[0]->getDepth();
 
     int nodeCount = 0;
-    long double readDepthSum = 0.0;
+    long double depthSum = 0.0;
     long long totalLength = 0;
 
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -273,27 +273,27 @@ double AssemblyGraph::getMeanReadDepth(std::vector<DeBruijnNode *> nodes)
         DeBruijnNode * node = nodes[i];
         ++nodeCount;
         totalLength += node->getLength();
-        readDepthSum += node->getLength() * node->getReadDepth();
+        depthSum += node->getLength() * node->getDepth();
     }
 
     //If the total length is zero, that means all nodes have a length of zero.
-    //In this case, just return the average node read depth.
+    //In this case, just return the average node depth.
     if (totalLength == 0)
     {
-        long double readDepthSum = 0.0;
+        long double depthSum = 0.0;
         for (size_t i = 0; i < nodes.size(); ++i)
-            readDepthSum += nodes[i]->getReadDepth();
-        return readDepthSum / nodes.size();
+            depthSum += nodes[i]->getDepth();
+        return depthSum / nodes.size();
     }
 
-    return readDepthSum / totalLength;
+    return depthSum / totalLength;
 }
 
 
-double AssemblyGraph::getMeanReadDepth(QList<DeBruijnNode *> nodes)
+double AssemblyGraph::getMeanDepth(QList<DeBruijnNode *> nodes)
 {
     int nodeCount = 0;
-    long double readDepthSum = 0.0;
+    long double depthSum = 0.0;
     long long totalLength = 0;
 
     for (int i = 0; i < nodes.size(); ++i)
@@ -301,13 +301,13 @@ double AssemblyGraph::getMeanReadDepth(QList<DeBruijnNode *> nodes)
         DeBruijnNode * node = nodes[i];
         ++nodeCount;
         totalLength += node->getLength();
-        readDepthSum += node->getLength() * node->getReadDepth();
+        depthSum += node->getLength() * node->getDepth();
     }
 
     if (totalLength == 0)
         return 0.0;
     else
-        return readDepthSum / totalLength;
+        return depthSum / totalLength;
 }
 
 
@@ -351,7 +351,7 @@ void AssemblyGraph::determineGraphInfo()
     m_longestContig = 0;
     int nodeCount = 0;
     long long totalLength = 0;
-    std::vector<double> nodeReadDepths;
+    std::vector<double> nodeDepths;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -371,7 +371,7 @@ void AssemblyGraph::determineGraphInfo()
             ++nodeCount;
         }
 
-        nodeReadDepths.push_back(i.value()->getReadDepth());
+        nodeDepths.push_back(i.value()->getDepth());
     }
 
     //Count up the edges that will be shown in single mode (i.e. positive
@@ -389,17 +389,17 @@ void AssemblyGraph::determineGraphInfo()
     m_nodeCount = nodeCount;
     m_edgeCount = edgeCount;
     m_totalLength = totalLength;
-    m_meanReadDepth = getMeanReadDepth();
+    m_meanDepth = getMeanDepth();
 
-    std::sort(nodeReadDepths.begin(), nodeReadDepths.end());
+    std::sort(nodeDepths.begin(), nodeDepths.end());
 
-    double firstQuartileIndex = (nodeReadDepths.size() - 1) / 4.0;
-    double medianIndex = (nodeReadDepths.size() - 1) / 2.0;
-    double thirdQuartileIndex = (nodeReadDepths.size() - 1) * 3.0 / 4.0;
+    double firstQuartileIndex = (nodeDepths.size() - 1) / 4.0;
+    double medianIndex = (nodeDepths.size() - 1) / 2.0;
+    double thirdQuartileIndex = (nodeDepths.size() - 1) * 3.0 / 4.0;
 
-    m_firstQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, firstQuartileIndex);
-    m_medianReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, medianIndex);
-    m_thirdQuartileReadDepth = getValueUsingFractionalIndex(&nodeReadDepths, thirdQuartileIndex);
+    m_firstQuartileDepth = getValueUsingFractionalIndex(&nodeDepths, firstQuartileIndex);
+    m_medianDepth = getValueUsingFractionalIndex(&nodeDepths, medianIndex);
+    m_thirdQuartileDepth = getValueUsingFractionalIndex(&nodeDepths, thirdQuartileIndex);
 
     //Set the auto node length setting.
     double targetDrawnGraphLength = m_nodeCount * g_settings->meanNodeLength;
@@ -440,10 +440,10 @@ void AssemblyGraph::clearGraphInfo()
     m_shortestContig = 0;
     m_longestContig = 0;
 
-    m_meanReadDepth = 0.0;
-    m_firstQuartileReadDepth = 0.0;
-    m_medianReadDepth = 0.0;
-    m_thirdQuartileReadDepth = 0.0;
+    m_meanDepth = 0.0;
+    m_firstQuartileDepth = 0.0;
+    m_medianDepth = 0.0;
+    m_thirdQuartileDepth = 0.0;
 }
 
 
@@ -487,17 +487,17 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
                 int nodeLength = nodeDetails.at(2).toInt();
 
-                double nodeReadDepth;
+                double nodeDepth;
                 if (nodeLength > 0)
-                    nodeReadDepth = double(nodeDetails.at(3).toInt()) / nodeLength; //IS THIS COLUMN ($COV_SHORT1) THE BEST ONE TO USE?
+                    nodeDepth = double(nodeDetails.at(3).toInt()) / nodeLength; //IS THIS COLUMN ($COV_SHORT1) THE BEST ONE TO USE?
                 else
-                    nodeReadDepth = double(nodeDetails.at(3).toInt());
+                    nodeDepth = double(nodeDetails.at(3).toInt());
 
                 QByteArray sequence = in.readLine().toLocal8Bit();
                 QByteArray revCompSequence = in.readLine().toLocal8Bit();
 
-                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeReadDepth, sequence);
-                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeReadDepth, revCompSequence);
+                DeBruijnNode * node = new DeBruijnNode(posNodeName, nodeDepth, sequence);
+                DeBruijnNode * reverseComplementNode = new DeBruijnNode(negNodeName, nodeDepth, revCompSequence);
                 node->setReverseComplement(reverseComplementNode);
                 reverseComplementNode->setReverseComplement(node);
                 m_deBruijnGraphNodes.insert(posNodeName, node);
@@ -631,7 +631,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 if (sequence == "*" || sequence == "")
                     length = ln;
 
-                //If there is an attribute holding the read depth, we'll use
+                //If there is an attribute holding the depth, we'll use
                 //that. If there isn't, then we'll use zero.
                 //We try to load 'DP' (depth), 'RC' (read count), 'FC'
                 //(fragment count) or 'KC' (k-mer count) in that order of
@@ -639,15 +639,15 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //If we use KC, RC or FC for the depth, then that is really a
                 //count, so we need to divide by the sequence length to get the
                 //depth.
-                double nodeReadDepth = 0.0;
+                double nodeDepth = 0.0;
                 if (dp > 0.0)
-                    nodeReadDepth = dp;
+                    nodeDepth = dp;
                 else if (rc > 0.0)
-                    nodeReadDepth = rc / length;
+                    nodeDepth = rc / length;
                 else if (fc > 0.0)
-                    nodeReadDepth = fc / length;
+                    nodeDepth = fc / length;
                 else if (kc > 0.0)
-                    nodeReadDepth = kc / length;
+                    nodeDepth = kc / length;
 
                 //We check to see if the node ended in a "+" or "-".
                 //If so, we assume that is giving the orientation and leave it.
@@ -680,7 +680,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     labels.insert(getOppositeNodeName(nodeName), l2);
                 }
 
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeDepth, sequence, length);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
@@ -834,7 +834,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
             QApplication::processEvents();
 
             QString nodeName;
-            double nodeReadDepth;
+            double nodeDepth;
 
             QString line = in.readLine();
 
@@ -861,17 +861,17 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                 else
                     nodeName += "+";
 
-                QString nodeReadDepthString = thisNodeDetails.at(5);
+                QString nodeDepthString = thisNodeDetails.at(5);
                 if (negativeNode)
                 {
-                    //It may be necessary to remove a single quote from the end of the read depth
-                    if (nodeReadDepthString.at(nodeReadDepthString.size() - 1) == '\'')
-                        nodeReadDepthString.chop(1);
+                    //It may be necessary to remove a single quote from the end of the depth
+                    if (nodeDepthString.at(nodeDepthString.size() - 1) == '\'')
+                        nodeDepthString.chop(1);
                 }
-                nodeReadDepth = nodeReadDepthString.toDouble();
+                nodeDepth = nodeDepthString.toDouble();
 
                 //Make the node
-                node = new DeBruijnNode(nodeName, nodeReadDepth, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
+                node = new DeBruijnNode(nodeName, nodeDepth, ""); //Sequence string is currently empty - will be added to on subsequent lines of the fastg file
                 m_deBruijnGraphNodes.insert(nodeName, node);
 
                 //The second part of nodeDetails is a comma-delimited list of edge nodes.
@@ -957,7 +957,7 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
-        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->getReadDepth(),
+        DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->getDepth(),
                                                   getReverseComplement(node->getSequence()));
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
@@ -1166,10 +1166,10 @@ int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
                 int length = sequence.length();
 
-                //ASQG files don't seem to include read depth, so just set this to one for every node.
-                double nodeReadDepth = 1.0;
+                //ASQG files don't seem to include depth, so just set this to one for every node.
+                double nodeDepth = 1.0;
 
-                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeReadDepth, sequence, length);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, nodeDepth, sequence, length);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
@@ -1279,16 +1279,16 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         QApplication::processEvents();
 
         QString name = names[i];
-        double readDepth = 1.0;
+        double depth = 1.0;
         QByteArray sequence = sequences[i].toLocal8Bit();
 
         //Check to see if the node name matches the Velvet/SPAdes contig
-        //format.  If so, we can get the read depth and node number.
+        //format.  If so, we can get the depth and node number.
         QStringList thisNodeDetails = name.split("_");
         if (thisNodeDetails.size() >= 6 && thisNodeDetails[2] == "length" && thisNodeDetails[4] == "cov")
         {
             name = thisNodeDetails[1];
-            readDepth = thisNodeDetails[5].toDouble();
+            depth = thisNodeDetails[5].toDouble();
         }
 
         //If it doesn't match, then we will use the sequence name up to the
@@ -1306,7 +1306,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         if (name.length() < 1)
             throw "load error";
 
-        DeBruijnNode * node = new DeBruijnNode(name, readDepth, sequence);
+        DeBruijnNode * node = new DeBruijnNode(name, depth, sequence);
         m_deBruijnGraphNodes.insert(name, node);
         makeReverseComplementNodeIfNecessary(node);
     }
@@ -1653,11 +1653,11 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
                 i.value()->setAsDrawn();
         }
     }
-    else //The scope is either around specified nodes, around nodes with BLAST hits or a read depth range.
+    else //The scope is either around specified nodes, around nodes with BLAST hits or a depth range.
     {
         //Distance is only used for around nodes and around blast scopes, not
-        //for the read depth range scope.
-        if (g_settings->graphScope == READ_DEPTH_RANGE)
+        //for the depth range scope.
+        if (g_settings->graphScope == DEPTH_RANGE)
             nodeDistance = 0;
 
         for (size_t i = 0; i < startingNodes.size(); ++i)
@@ -1702,7 +1702,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 {
     scene->clear();
 
-    double meanDrawnReadDepth = getMeanReadDepth(true);
+    double meanDrawnDepth = getMeanDepth(true);
 
     //First make the GraphicsItemNode objects
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -1713,10 +1713,10 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
         if (node->isDrawn())
         {
-            if (meanDrawnReadDepth == 0)
-                node->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+            if (meanDrawnDepth == 0)
+                node->setDepthRelativeToMeanDrawnDepth(1.0);
             else
-                node->setReadDepthRelativeToMeanDrawnReadDepth(node->getReadDepth() / meanDrawnReadDepth);
+                node->setDepthRelativeToMeanDrawnDepth(node->getDepth() / meanDrawnDepth);
             GraphicsItemNode * graphicsItemNode = new GraphicsItemNode(node, m_graphAttributes);
             node->setGraphicsItemNode(graphicsItemNode);
             graphicsItemNode->setFlag(QGraphicsItem::ItemIsSelectable);
@@ -1799,22 +1799,22 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         }
     }
 
-    else if (g_settings->graphScope == READ_DEPTH_RANGE)
+    else if (g_settings->graphScope == DEPTH_RANGE)
     {
-        if (g_settings->minReadDepthRange > g_settings->maxReadDepthRange)
+        if (g_settings->minDepthRange > g_settings->maxDepthRange)
         {
-            *errorTitle = "Invalid read depth range";
-            *errorMessage = "The maximum read depth must be greater than or equal to the minimum read depth.";
+            *errorTitle = "Invalid depth range";
+            *errorMessage = "The maximum depth must be greater than or equal to the minimum depth.";
             return startingNodes;
         }
 
-        std::vector<DeBruijnNode *> startingNodes = getNodesInReadDepthRange(g_settings->minReadDepthRange,
-                                                                             g_settings->maxReadDepthRange);
+        std::vector<DeBruijnNode *> startingNodes = getNodesInDepthRange(g_settings->minDepthRange,
+                                                                             g_settings->maxDepthRange);
 
         if (startingNodes.size() == 0)
         {
             *errorTitle = "No nodes in range";
-            *errorMessage = "There are no nodes with read depths in the specified range.";
+            *errorMessage = "There are no nodes with depths in the specified range.";
             return startingNodes;
         }
     }
@@ -1826,9 +1826,9 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         startingNodes = getNodesFromString(nodesList, g_settings->startingNodesExactMatch);
     else if (g_settings->graphScope == AROUND_BLAST_HITS)
         startingNodes = getNodesFromBlastHits(blastQueryName);
-    else if (g_settings->graphScope == READ_DEPTH_RANGE)
-        startingNodes = getNodesInReadDepthRange(g_settings->minReadDepthRange,
-                                                 g_settings->maxReadDepthRange);
+    else if (g_settings->graphScope == DEPTH_RANGE)
+        startingNodes = getNodesInDepthRange(g_settings->minDepthRange,
+                                                 g_settings->maxDepthRange);
 
     return startingNodes;
 }
@@ -1990,7 +1990,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryNa
     return returnVector;
 }
 
-std::vector<DeBruijnNode *> AssemblyGraph::getNodesInReadDepthRange(double min,
+std::vector<DeBruijnNode *> AssemblyGraph::getNodesInDepthRange(double min,
                                                                     double max)
 {
     std::vector<DeBruijnNode *> returnVector;
@@ -2001,7 +2001,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesInReadDepthRange(double min,
         i.next();
         DeBruijnNode * node = i.value();
 
-        if (node->isInReadDepthRange(min, max))
+        if (node->isInDepthRange(min, max))
             returnVector.push_back(node);
     }
     return returnVector;
@@ -2207,22 +2207,22 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
 }
 
 
-void AssemblyGraph::recalculateAllReadDepthsRelativeToDrawnMean()
+void AssemblyGraph::recalculateAllDepthsRelativeToDrawnMean()
 {
-    double meanDrawnReadDepth = getMeanReadDepth(true);
+    double meanDrawnDepth = getMeanDepth(true);
     QMapIterator<QString, DeBruijnNode*> k(m_deBruijnGraphNodes);
     while (k.hasNext())
     {
         k.next();
         DeBruijnNode * node = k.value();
 
-        double readDepthRelativeToMeanDrawnReadDepth;
-        if (meanDrawnReadDepth == 0)
-            readDepthRelativeToMeanDrawnReadDepth = 1.0;
+        double depthRelativeToMeanDrawnDepth;
+        if (meanDrawnDepth == 0)
+            depthRelativeToMeanDrawnDepth = 1.0;
         else
-            readDepthRelativeToMeanDrawnReadDepth = node->getReadDepth() / meanDrawnReadDepth;
+            depthRelativeToMeanDrawnDepth = node->getDepth() / meanDrawnDepth;
 
-        node->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+        node->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
     }
 }
 
@@ -2357,7 +2357,7 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
 
 
 //This function assumes it is receiving a positive node.  It will duplicate both
-//the positive and negative node in the pair.  It divided their read depth in
+//the positive and negative node in the pair.  It divided their depth in
 //two, giving half to each node.
 void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene)
 {
@@ -2368,11 +2368,11 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
     QString newPosNodeName = newNodeBaseName + "+";
     QString newNegNodeName = newNodeBaseName + "-";
 
-    double newReadDepth = node->getReadDepth() / 2.0;
+    double newDepth = node->getDepth() / 2.0;
 
     //Create the new nodes.
-    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, newReadDepth, originalPosNode->getSequence());
-    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, newReadDepth, originalNegNode->getSequence());
+    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, newDepth, originalPosNode->getSequence());
+    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, newDepth, originalNegNode->getSequence());
     newPosNode->setReverseComplement(newNegNode);
     newNegNode->setReverseComplement(newPosNode);
 
@@ -2405,20 +2405,20 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
                            edge->getOverlap(), edge->getOverlapType());
     }
 
-    originalPosNode->setReadDepth(newReadDepth);
-    originalNegNode->setReadDepth(newReadDepth);
+    originalPosNode->setDepth(newDepth);
+    originalNegNode->setDepth(newDepth);
 
-    double meanDrawnReadDepth = getMeanReadDepth(true);
-    double readDepthRelativeToMeanDrawnReadDepth;
-    if (meanDrawnReadDepth == 0)
-        readDepthRelativeToMeanDrawnReadDepth = 1.0;
+    double meanDrawnDepth = getMeanDepth(true);
+    double depthRelativeToMeanDrawnDepth;
+    if (meanDrawnDepth == 0)
+        depthRelativeToMeanDrawnDepth = 1.0;
     else
-        readDepthRelativeToMeanDrawnReadDepth = originalPosNode->getReadDepth() / meanDrawnReadDepth;
+        depthRelativeToMeanDrawnDepth = originalPosNode->getDepth() / meanDrawnDepth;
 
-    originalPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-    originalNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-    newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+    originalPosNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
+    originalNegNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
+    newPosNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
+    newPosNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
 
     duplicateGraphicsNode(originalPosNode, newPosNode, scene);
     duplicateGraphicsNode(originalNegNode, newNegNode, scene);
@@ -2482,7 +2482,7 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
 //merged if they are in a simple, unbranching path with no extra edges.  If the
 //merge is successful, it returns true, otherwise false.
 bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
-                               bool recalulateReadDepth)
+                               bool recalulateDepth)
 {
     if (nodes.size() == 0)
         return true;
@@ -2547,7 +2547,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     if (nodes.size() > 0)
         return false;
 
-    double mergedNodeReadDepth = getMeanReadDepth(orderedList);
+    double mergedNodeDepth = getMeanDepth(orderedList);
 
     Path posPath = Path::makeFromOrderedNodes(orderedList, false);
     QByteArray mergedNodePosSequence = posPath.getPathSequence();
@@ -2570,8 +2570,8 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     QString newPosNodeName = newNodeBaseName + "+";
     QString newNegNodeName = newNodeBaseName + "-";
 
-    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, mergedNodeReadDepth, mergedNodePosSequence);
-    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, mergedNodeReadDepth, mergedNodeNegSequence);
+    DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, mergedNodeDepth, mergedNodePosSequence);
+    DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, mergedNodeDepth, mergedNodeNegSequence);
 
     newPosNode->setReverseComplement(newNegNode);
     newNegNode->setReverseComplement(newPosNode);
@@ -2595,22 +2595,22 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
                            enteringEdge->getOverlapType());
     }
 
-    if (recalulateReadDepth)
+    if (recalulateDepth)
     {
-        double meanDrawnReadDepth = getMeanReadDepth(true);
-        double readDepthRelativeToMeanDrawnReadDepth;
-        if (meanDrawnReadDepth == 0)
-            readDepthRelativeToMeanDrawnReadDepth = 1.0;
+        double meanDrawnDepth = getMeanDepth(true);
+        double depthRelativeToMeanDrawnDepth;
+        if (meanDrawnDepth == 0)
+            depthRelativeToMeanDrawnDepth = 1.0;
         else
-            readDepthRelativeToMeanDrawnReadDepth = newPosNode->getReadDepth() / meanDrawnReadDepth;
+            depthRelativeToMeanDrawnDepth = newPosNode->getDepth() / meanDrawnDepth;
 
-        newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
-        newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(readDepthRelativeToMeanDrawnReadDepth);
+        newPosNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
+        newNegNode->setDepthRelativeToMeanDrawnDepth(depthRelativeToMeanDrawnDepth);
     }
     else
     {
-        newPosNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
-        newNegNode->setReadDepthRelativeToMeanDrawnReadDepth(1.0);
+        newPosNode->setDepthRelativeToMeanDrawnDepth(1.0);
+        newNegNode->setDepthRelativeToMeanDrawnDepth(1.0);
     }
 
     mergeGraphicsNodes(&orderedList, &revCompOrderedList, newPosNode, scene);
@@ -2951,7 +2951,7 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
         QApplication::processEvents();
     }
 
-    recalculateAllReadDepthsRelativeToDrawnMean();
+    recalculateAllDepthsRelativeToDrawnMean();
     recalculateAllNodeWidths();
 
     return allMerges.size();
@@ -3121,16 +3121,16 @@ NodeNameStatus AssemblyGraph::checkNodeNameValidity(QString nodeName)
 
 
 
-void AssemblyGraph::changeNodeReadDepth(std::vector<DeBruijnNode *> * nodes,
-                                        double newReadDepth)
+void AssemblyGraph::changeNodeDepth(std::vector<DeBruijnNode *> * nodes,
+                                        double newDepth)
 {
     if (nodes->size() == 0)
         return;
 
     for (size_t i = 0; i < nodes->size(); ++i)
     {
-        (*nodes)[i]->setReadDepth(newReadDepth);
-        (*nodes)[i]->getReverseComplement()->setReadDepth(newReadDepth);
+        (*nodes)[i]->setDepth(newDepth);
+        (*nodes)[i]->getReverseComplement()->setDepth(newDepth);
     }
 }
 
@@ -3293,11 +3293,11 @@ void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componen
     }
 }
 
-bool compareNodeReadDepth(DeBruijnNode * a, DeBruijnNode * b) {return (a->getReadDepth() < b->getReadDepth());}
+bool compareNodeDepth(DeBruijnNode * a, DeBruijnNode * b) {return (a->getDepth() < b->getDepth());}
 
 
 
-double AssemblyGraph::getMedianReadDepthByBase() const
+double AssemblyGraph::getMedianDepthByBase() const
 {
     if (m_totalLength == 0)
         return 0.0;
@@ -3317,33 +3317,33 @@ double AssemblyGraph::getMedianReadDepthByBase() const
         }
     }
 
-    //If there is only one node, then its read depth is the median.
+    //If there is only one node, then its depth is the median.
     if (nodeList.size() == 1)
-        return nodeList[0]->getReadDepth();
+        return nodeList[0]->getDepth();
 
-    //Sort the node list from low to high read depth.
-    std::sort(nodeList.begin(), nodeList.end(), compareNodeReadDepth);
+    //Sort the node list from low to high depth.
+    std::sort(nodeList.begin(), nodeList.end(), compareNodeDepth);
 
     if (totalLength % 2 == 0) //Even total length
     {
         long long medianIndex2 = totalLength / 2;
         long long medianIndex1 = medianIndex2 - 1;
-        double readDepth1 = findReadDepthAtIndex(&nodeList, medianIndex1);
-        double readDepth2 = findReadDepthAtIndex(&nodeList, medianIndex2);
-        return (readDepth1 + readDepth2) / 2.0;
+        double depth1 = findDepthAtIndex(&nodeList, medianIndex1);
+        double depth2 = findDepthAtIndex(&nodeList, medianIndex2);
+        return (depth1 + depth2) / 2.0;
     }
     else //Odd total length
     {
         long long medianIndex = (totalLength - 1) / 2;
-        return findReadDepthAtIndex(&nodeList, medianIndex);
+        return findDepthAtIndex(&nodeList, medianIndex);
     }
 }
 
 
 
-//This function takes a node list sorted by read depth and a target index (in terms of
-//the whole sequence length).  It returns the read depth at that index.
-double AssemblyGraph::findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const
+//This function takes a node list sorted by depth and a target index (in terms of
+//the whole sequence length).  It returns the depth at that index.
+double AssemblyGraph::findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const
 {
     long long lengthSoFar = 0;
     for (int i = 0; i < nodeList->size(); ++i)
@@ -3354,7 +3354,7 @@ double AssemblyGraph::findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, lon
         long long currentIndex = lengthSoFar - 1;
 
         if (currentIndex >= targetIndex)
-            return node->getReadDepth();
+            return node->getDepth();
     }
     return 0.0;
 }
@@ -3363,15 +3363,15 @@ double AssemblyGraph::findReadDepthAtIndex(QList<DeBruijnNode *> * nodeList, lon
 
 long long AssemblyGraph::getEstimatedSequenceLength() const
 {
-    return getEstimatedSequenceLength(getMedianReadDepthByBase());
+    return getEstimatedSequenceLength(getMedianDepthByBase());
 }
 
 
 
-long long AssemblyGraph::getEstimatedSequenceLength(double meanReadDepthByBase) const
+long long AssemblyGraph::getEstimatedSequenceLength(double meanDepthByBase) const
 {
     long long estimatedSequenceLength = 0;
-    if (meanReadDepthByBase == 0.0)
+    if (meanDepthByBase == 0.0)
         return 0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -3383,10 +3383,10 @@ long long AssemblyGraph::getEstimatedSequenceLength(double meanReadDepthByBase) 
         if (node->isPositiveNode())
         {
             int nodeLength = node->getLengthWithoutTrailingOverlap();
-            double relativeReadDepth = node->getReadDepth() / meanReadDepthByBase;
+            double relativeDepth = node->getDepth() / meanDepthByBase;
 
-            int closestIntegerReadDepth = round(relativeReadDepth);
-            int lengthAdjustedForDepth = nodeLength * closestIntegerReadDepth;
+            int closestIntegerDepth = round(relativeDepth);
+            int lengthAdjustedForDepth = nodeLength * closestIntegerDepth;
 
             estimatedSequenceLength += lengthAdjustedForDepth;
         }

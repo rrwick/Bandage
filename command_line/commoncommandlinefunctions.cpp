@@ -87,25 +87,25 @@ void getSettingsUsage(QStringList * text)
     *text << "Node widths are determined using the following formula:";
     *text << "a*b*((c/d)^e-1)+1";
     *text << "  a = average node width";
-    *text << "  b = read depth effect on width";
-    *text << "  c = node read depth";
-    *text << "  d = mean read depth";
-    *text << "  e = power of read depth effect on width";
+    *text << "  b = depth effect on width";
+    *text << "  c = node depth";
+    *text << "  d = mean depth";
+    *text << "  e = power of depth effect on width";
     *text << "--nodewidth <float> Average node width " + getRangeAndDefault(g_settings->averageNodeWidth);
-    *text << "--depwidth <float>  Read depth effect on width " + getRangeAndDefault(g_settings->readDepthEffectOnWidth);
-    *text << "--deppower <float>  Power of read depth effect on width " + getRangeAndDefault(g_settings->readDepthPower);
+    *text << "--depwidth <float>  Depth effect on width " + getRangeAndDefault(g_settings->depthEffectOnWidth);
+    *text << "--deppower <float>  Power of depth effect on width " + getRangeAndDefault(g_settings->depthPower);
     *text << "";
     *text << "Node labels";
     *text << dashes;
     *text << "--names             Label nodes with name (default: off)";
     *text << "--lengths           Label nodes with length (default: off)";
-    *text << "--readdepth         Label nodes with read depth (default: off)";
+    *text << "--depth         Label nodes with depth (default: off)";
     *text << "--blasthits         Label BLAST hits (default: off)";
     *text << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(g_settings->labelFont.pointSize(), 1, 100);
     *text << "";
     *text << "Node colours";
     *text << dashes;
-    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, readdepth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
+    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, depth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
     *text << "";
     *text << "Random colour scheme";
     *text << dashes;
@@ -124,13 +124,13 @@ void getSettingsUsage(QStringList * text)
     *text << "--unicolneg <col>   Negative node colour " + getDefaultColour(g_settings->uniformNegativeNodeColour);
     *text << "--unicolspe <col>   Special node colour " + getDefaultColour(g_settings->uniformNodeSpecialColour);
     *text << "";
-    *text << "Read depth colour scheme";
+    *text << "Depth colour scheme";
     *text << dashes;
-    *text << "These settings only apply when the read depth colour scheme is used.";
-    *text << "--depcollow <col>   Colour for nodes with read depth below the low read depth value " + getDefaultColour(g_settings->lowReadDepthColour);
-    *text << "--depcolhi <col>    Colour for nodes with read depth above the high read depth value " + getDefaultColour(g_settings->highReadDepthColour);
-    *text << "--depvallow <float> Low read depth value " + getRangeAndDefault(g_settings->lowReadDepthValue, "auto");
-    *text << "--depvalhi <float>  High read depth value " + getRangeAndDefault(g_settings->highReadDepthValue, "auto");
+    *text << "These settings only apply when the depth colour scheme is used.";
+    *text << "--depcollow <col>   Colour for nodes with depth below the low depth value " + getDefaultColour(g_settings->lowDepthColour);
+    *text << "--depcolhi <col>    Colour for nodes with depth above the high depth value " + getDefaultColour(g_settings->highDepthColour);
+    *text << "--depvallow <float> Low depth value " + getRangeAndDefault(g_settings->lowDepthValue, "auto");
+    *text << "--depvalhi <float>  High depth value " + getRangeAndDefault(g_settings->highDepthValue, "auto");
     *text << "";
     *text << "BLAST search";
     *text << dashes;
@@ -213,8 +213,8 @@ void getGraphScopeOptions(QStringList * text)
     *text << "--nodes <list>      A comma-separated list of starting nodes for the aroundnodes scope (default: none)";
     *text << "--partial           Use partial node name matching (default: exact node name matching)";
     *text << "--distance <int>    The number of node steps away to draw for the aroundnodes and aroundblast scopes " + getRangeAndDefault(g_settings->nodeDistance);
-    *text << "--mindepth <float>  The minimum allowed read depth for the depthrange scope " + getRangeAndDefault(g_settings->minReadDepthRange);
-    *text << "--maxdepth <float>  The maximum allowed read depth for the depthrange scope "  + getRangeAndDefault(g_settings->maxReadDepthRange);
+    *text << "--mindepth <float>  The minimum allowed depth for the depthrange scope " + getRangeAndDefault(g_settings->minDepthRange);
+    *text << "--maxdepth <float>  The maximum allowed depth for the depthrange scope "  + getRangeAndDefault(g_settings->maxDepthRange);
 }
 
 
@@ -233,8 +233,8 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForString("--nodes", arguments, QStringList(), "a list of node names"); if (error.length() > 0) return error;
     checkOptionWithoutValue("--partial", arguments);
     error = checkOptionForInt("--distance", arguments, g_settings->nodeDistance, false); if (error.length() > 0) return error;
-    error = checkOptionForFloat("--mindepth", arguments, g_settings->minReadDepthRange, false); if (error.length() > 0) return error;
-    error = checkOptionForFloat("--maxdepth", arguments, g_settings->maxReadDepthRange, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--mindepth", arguments, g_settings->minDepthRange, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--maxdepth", arguments, g_settings->maxDepthRange, false); if (error.length() > 0) return error;
     if (isOptionPresent("--query", arguments) && g_memory->commandLineCommand == NO_COMMAND) return "A graph must be given (e.g. via Bandage load) to use the --query option";
     error = checkOptionForFile("--query", arguments); if (error.length() > 0) return error;
     error = checkOptionForString("--blastp", arguments, QStringList(), "blastn/tblastn parameters"); if (error.length() > 0) return error;
@@ -246,13 +246,13 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForInt("--iter", arguments, g_settings->graphLayoutQuality, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--nodseglen", arguments, g_settings->nodeSegmentLength, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--nodewidth", arguments, g_settings->averageNodeWidth, false); if (error.length() > 0) return error;
-    error = checkOptionForFloat("--depwidth", arguments, g_settings->readDepthEffectOnWidth, false); if (error.length() > 0) return error;
-    error = checkOptionForFloat("--deppower", arguments, g_settings->readDepthPower, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--depwidth", arguments, g_settings->depthEffectOnWidth, false); if (error.length() > 0) return error;
+    error = checkOptionForFloat("--deppower", arguments, g_settings->depthPower, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--edgewidth", arguments, g_settings->edgeWidth, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--outline", arguments, g_settings->outlineThickness, false); if (error.length() > 0) return error;
     checkOptionWithoutValue("--names", arguments);
     checkOptionWithoutValue("--lengths", arguments);
-    checkOptionWithoutValue("--readdepth", arguments);
+    checkOptionWithoutValue("--depth", arguments);
     checkOptionWithoutValue("--blasthits", arguments);
     error = checkOptionForInt("--fontsize", arguments, IntSetting(0, 1, 100), false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--toutline", arguments, g_settings->textOutlineThickness, false); if (error.length() > 0) return error;
@@ -264,7 +264,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForColour("--toutcol", arguments); if (error.length() > 0) return error;
     checkOptionWithoutValue("--noaa", arguments);
     QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "readdepth" << "blastsolid" << "blastrainbow";
+    validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow";
     error = checkOptionForString("--colour", arguments, validColourOptions); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatpos", arguments, g_settings->randomColourPositiveSaturation, false); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatneg", arguments, g_settings->randomColourNegativeSaturation, false); if (error.length() > 0) return error;
@@ -277,7 +277,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForColour("--unicolspe", arguments); if (error.length() > 0) return error;
     error = checkOptionForColour("--depcollow", arguments); if (error.length() > 0) return error;
     error = checkOptionForColour("--depcolhi", arguments); if (error.length() > 0) return error;
-    error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, g_settings->lowReadDepthValue, g_settings->highReadDepthValue, true); if (error.length() > 0) return error;
+    error = checkTwoOptionsForFloats("--depvallow", "--depvalhi", arguments, g_settings->lowDepthValue, g_settings->highDepthValue, true); if (error.length() > 0) return error;
     error = checkOptionForInt("--pathnodes", arguments, g_settings->maxQueryPathNodes, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--minpatcov", arguments, g_settings->minQueryCoveredByPath, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--minhitcov", arguments, g_settings->minQueryCoveredByHits, true); if (error.length() > 0) return error;
@@ -293,16 +293,16 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForSciNot("--evfilter", arguments, g_settings->blastEValueFilter, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--bsfilter", arguments, g_settings->blastBitScoreFilter, false); if (error.length() > 0) return error;
 
-    //Make sure that the min read depth is less than or equal to the max read
+    //Make sure that the min depth is less than or equal to the max read
     //depth.
-    double minReadDepth = g_settings->minReadDepthRange;
-    double maxReadDepth = g_settings->maxReadDepthRange;
+    double minDepth = g_settings->minDepthRange;
+    double maxDepth = g_settings->maxDepthRange;
     if (isOptionPresent("--mindepth", &argumentsCopy))
-        minReadDepth = getFloatOption("--mindepth", &argumentsCopy);
+        minDepth = getFloatOption("--mindepth", &argumentsCopy);
     if (isOptionPresent("--maxdepth", &argumentsCopy))
-        maxReadDepth = getFloatOption("--maxdepth", &argumentsCopy);
-    if (minReadDepth > maxReadDepth)
-        return "the maximum read depth must be greater than or equal to the minimum read depth.";
+        maxDepth = getFloatOption("--maxdepth", &argumentsCopy);
+    if (minDepth > maxDepth)
+        return "the maximum depth must be greater than or equal to the minimum depth.";
 
     //Make sure that the min path length is less than or equal to the max path
     //length.
@@ -378,11 +378,11 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     if (nodesScope && !nodesList)
         return "A list of starting nodes must be given with the --nodes option\nwhen the aroundnodes scope is used.";
 
-    bool readDepthScope = isOptionAndValuePresent("--scope", "depthrange", &argumentsCopy);
-    bool minDepth = isOptionPresent("--mindepth", &argumentsCopy);
-    bool maxDepth = isOptionPresent("--maxdepth", &argumentsCopy);
-    if (readDepthScope && !(minDepth && maxDepth))
-        return "A read depth range must be given with the --mindepth and\n--maxdepth options when the aroundnodes scope is used.";
+    bool depthScope = isOptionAndValuePresent("--scope", "depthrange", &argumentsCopy);
+    bool minDepthPresent = isOptionPresent("--mindepth", &argumentsCopy);
+    bool maxDepthPresent = isOptionPresent("--maxdepth", &argumentsCopy);
+    if (depthScope && !(minDepthPresent && maxDepthPresent))
+        return "A depth range must be given with the --mindepth and\n--maxdepth options when the aroundnodes scope is used.";
 
     return checkForExcessArguments(*arguments);
 }
@@ -398,9 +398,9 @@ void parseSettings(QStringList arguments)
         g_settings->nodeDistance = getIntOption("--distance", &arguments);
 
     if (isOptionPresent("--mindepth", &arguments))
-        g_settings->minReadDepthRange = getFloatOption("--mindepth", &arguments);
+        g_settings->minDepthRange = getFloatOption("--mindepth", &arguments);
     if (isOptionPresent("--maxdepth", &arguments))
-        g_settings->maxReadDepthRange = getFloatOption("--maxdepth", &arguments);
+        g_settings->maxDepthRange = getFloatOption("--maxdepth", &arguments);
 
     if (isOptionPresent("--nodes", &arguments))
         g_settings->startingNodes = getStringOption("--nodes", &arguments);
@@ -432,9 +432,9 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--nodewidth", &arguments))
         g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
     if (isOptionPresent("--depwidth", &arguments))
-        g_settings->readDepthEffectOnWidth = getFloatOption("--depwidth", &arguments);
+        g_settings->depthEffectOnWidth = getFloatOption("--depwidth", &arguments);
     if (isOptionPresent("--deppower", &arguments))
-        g_settings->readDepthPower = getFloatOption("--deppower", &arguments);
+        g_settings->depthPower = getFloatOption("--deppower", &arguments);
 
     if (isOptionPresent("--edgewidth", &arguments))
         g_settings->edgeWidth = getFloatOption("--edgewidth", &arguments);
@@ -456,7 +456,7 @@ void parseSettings(QStringList arguments)
 
     g_settings->displayNodeNames = isOptionPresent("--names", &arguments);
     g_settings->displayNodeLengths = isOptionPresent("--lengths", &arguments);
-    g_settings->displayNodeReadDepth = isOptionPresent("--readdepth", &arguments);
+    g_settings->displayNodeDepth = isOptionPresent("--depth", &arguments);
     g_settings->displayBlastHits = isOptionPresent("--blasthits", &arguments);
 
     if (isOptionPresent("--fontsize", &arguments))
@@ -502,18 +502,18 @@ void parseSettings(QStringList arguments)
         g_settings->uniformNodeSpecialColour = getColourOption("--unicolspe", &arguments);
 
     if (isOptionPresent("--depcollow", &arguments))
-        g_settings->lowReadDepthColour = getColourOption("--depcollow", &arguments);
+        g_settings->lowDepthColour = getColourOption("--depcollow", &arguments);
     if (isOptionPresent("--depcolhi", &arguments))
-        g_settings->highReadDepthColour = getColourOption("--depcolhi", &arguments);
+        g_settings->highDepthColour = getColourOption("--depcolhi", &arguments);
     if (isOptionPresent("--depvallow", &arguments))
     {
-        g_settings->lowReadDepthValue = getFloatOption("--depvallow", &arguments);
-        g_settings->autoReadDepthValue = false;
+        g_settings->lowDepthValue = getFloatOption("--depvallow", &arguments);
+        g_settings->autoDepthValue = false;
     }
     if (isOptionPresent("--depvalhi", &arguments))
     {
-        g_settings->highReadDepthValue = getFloatOption("--depvalhi", &arguments);
-        g_settings->autoReadDepthValue = false;
+        g_settings->highDepthValue = getFloatOption("--depvalhi", &arguments);
+        g_settings->autoDepthValue = false;
     }
 
     if (isOptionPresent("--pathnodes", &arguments))
@@ -1031,8 +1031,8 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
         return RANDOM_COLOURS;
     else if (colourString == "uniform")
         return UNIFORM_COLOURS;
-    else if (colourString == "readdepth")
-        return READ_DEPTH_COLOUR;
+    else if (colourString == "depth")
+        return DEPTH_COLOUR;
     else if (colourString == "blastsolid")
         return BLAST_HITS_SOLID_COLOUR;
     else if (colourString == "blastrainbow")
@@ -1061,7 +1061,7 @@ GraphScope getGraphScopeOption(QString option, QStringList * arguments)
     else if (scopeString == "aroundblast")
         return AROUND_BLAST_HITS;
     else if (scopeString == "depthrange")
-        return READ_DEPTH_RANGE;
+        return DEPTH_RANGE;
 
     //Entire graph scope is the default.
     return WHOLE_GRAPH;

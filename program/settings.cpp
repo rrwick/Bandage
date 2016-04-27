@@ -34,8 +34,8 @@ Settings::Settings()
     nodeSegmentLength = FloatSetting(20.0, 1.0, 1000.0);
 
     averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
-    readDepthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
-    readDepthPower = FloatSetting(0.1, 0.0, 1.0);
+    depthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
+    depthPower = FloatSetting(0.1, 0.0, 1.0);
 
     edgeWidth = FloatSetting(1.5, 0.1, 100);
     outlineThickness = FloatSetting(0.0, 0.0, 100.0);
@@ -64,7 +64,7 @@ Settings::Settings()
     displayNodeCustomLabels = false;
     displayNodeNames = false;
     displayNodeLengths = false;
-    displayNodeReadDepth = false;
+    displayNodeDepth = false;
     displayNodeCsvData = false;
     displayNodeCsvDataCol = 0;
     displayBlastHits = false;
@@ -102,11 +102,11 @@ Settings::Settings()
 
     noBlastHitsColour = QColor(220, 220, 220);
 
-    autoReadDepthValue = true;
-    lowReadDepthValue = FloatSetting(5.0, 0.0, 1000000.0);
-    lowReadDepthColour = QColor(0, 0, 0);
-    highReadDepthValue = FloatSetting(50.0, 0.0, 1000000.0);
-    highReadDepthColour = QColor(255, 0, 0);
+    autoDepthValue = true;
+    lowDepthValue = FloatSetting(5.0, 0.0, 1000000.0);
+    lowDepthColour = QColor(0, 0, 0);
+    highDepthValue = FloatSetting(50.0, 0.0, 1000000.0);
+    highDepthColour = QColor(255, 0, 0);
 
     pathHighlightShadingColour = QColor(0, 0, 0, 60);
     pathHighlightOutlineColour = QColor(0, 0, 0);
@@ -134,6 +134,6 @@ Settings::Settings()
     blastEValueFilter = SciNotSetting(SciNot(1.0, -10), SciNot(1.0, -999), SciNot(9.9, 1), false);
     blastBitScoreFilter = FloatSetting(1000.0, 0.0, 1000000.0, false);
 
-    minReadDepthRange = FloatSetting(10.0, 0.0, 1000000.0);
-    maxReadDepthRange = FloatSetting(100.0, 0.0, 1000000.0);
+    minDepthRange = FloatSetting(10.0, 0.0, 1000000.0);
+    maxDepthRange = FloatSetting(100.0, 0.0, 1000000.0);
 }

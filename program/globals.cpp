@@ -76,7 +76,7 @@ QString formatDoubleForDisplay(double num, int decimalPlacesToDisplay)
 }
 
 
-QString formatReadDepthForDisplay(double depth)
+QString formatDepthForDisplay(double depth)
 {
     if (depth == 0.0)
         return "0.0x";

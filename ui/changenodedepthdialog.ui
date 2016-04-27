@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ChangeNodeReadDepthDialog</class>
- <widget class="QDialog" name="ChangeNodeReadDepthDialog">
+ <class>ChangeNodeDepthDialog</class>
+ <widget class="QDialog" name="ChangeNodeDepthDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Change read depth</string>
+   <string>Change depth</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="infoLabel">
      <property name="text">
-      <string>Enter a new read depth. Both the node and its reverse complement will be have their read depth set to the new value.</string>
+      <string>Enter a new depth. Both the node and its reverse complement will be have their depth set to the new value.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -45,28 +45,28 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="currentReadDepthLabel1">
+    <widget class="QLabel" name="currentDepthLabel1">
      <property name="text">
-      <string>Current read depth:</string>
+      <string>Current depth:</string>
      </property>
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLabel" name="currentReadDepthLabel2">
+    <widget class="QLabel" name="currentDepthLabel2">
      <property name="text">
       <string>old_depth</string>
      </property>
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="newReadDepthLabel">
+    <widget class="QLabel" name="newDepthLabel">
      <property name="text">
-      <string>New read depth:</string>
+      <string>New depth:</string>
      </property>
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QDoubleSpinBox" name="newReadDepthSpinBox">
+    <widget class="QDoubleSpinBox" name="newDepthSpinBox">
      <property name="decimals">
       <number>1</number>
      </property>
@@ -118,7 +118,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ChangeNodeReadDepthDialog</receiver>
+   <receiver>ChangeNodeDepthDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -134,7 +134,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ChangeNodeReadDepthDialog</receiver>
+   <receiver>ChangeNodeDepthDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
