@@ -101,7 +101,7 @@ void getSettingsUsage(QStringList * text)
     *text << "--lengths           Label nodes with length (default: off)";
     *text << "--depth         Label nodes with depth (default: off)";
     *text << "--blasthits         Label BLAST hits (default: off)";
-    *text << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(g_settings->labelFont.pointSize(), 1, 100);
+    *text << "--fontsize <int>    Font size for node labels " + getRangeAndDefault(1, 100, g_settings->labelFont.pointSize());
     *text << "";
     *text << "Node colours";
     *text << dashes;
