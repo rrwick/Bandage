@@ -52,7 +52,7 @@ public:
     int getLengthWithoutTrailingOverlap() const;
     QByteArray getFasta(bool sign) const;
     QByteArray getFastaNoNewLinesInSequence(bool sign) const;
-    QByteArray getGfaSegmentLine() const;
+    QByteArray getGfaSegmentLine(QString depthTag) const;
     char getBaseAt(int i) const {if (i >= 0 && i < m_sequence.length()) return m_sequence.at(i); else return '\0';}
     ContiguityStatus getContiguityStatus() const {return m_contiguityStatus;}
     DeBruijnNode * getReverseComplement() const {return m_reverseComplement;}

@@ -356,7 +356,7 @@ QByteArray DeBruijnNode::getFastaNoNewLinesInSequence(bool sign) const
 }
 
 
-QByteArray DeBruijnNode::getGfaSegmentLine() const
+QByteArray DeBruijnNode::getGfaSegmentLine(QString depthTag) const
 {
     QByteArray gfaSequence = getSequenceForGfa();
 
@@ -364,14 +364,26 @@ QByteArray DeBruijnNode::getGfaSegmentLine() const
     gfaSegmentLine += "\t" + getNameWithoutSign();
     gfaSegmentLine += "\t" + gfaSequence;
     gfaSegmentLine += "\tLN:i:" + QString::number(gfaSequence.length());
-    gfaSegmentLine += "\tDP:f:" + QString::number(getDepth());
-    gfaSegmentLine += "\tKC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+
+    //We use the depthTag to guide how we save the node depth.
+    //If it is empty, that implies that the loaded graph did not have depth
+    //information and so we don't save depth.
+    if (depthTag == "DP")
+        gfaSegmentLine += "\tDP:f:" + QString::number(getDepth());
+    else if (depthTag == "KC")
+        gfaSegmentLine += "\tKC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+    else if (depthTag == "RC")
+        gfaSegmentLine += "\tRC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+    else if (depthTag == "FC")
+        gfaSegmentLine += "\tFC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+
+    //If the user has included custom labels or colours, include those.
     if (!m_customLabel.isEmpty())
         gfaSegmentLine += "\tLB:z:" + getCustomLabel();
-    if (hasCustomColour())
-        gfaSegmentLine += "\tCL:z:" + getColourName(getCustomColour());
     if (!m_reverseComplement->m_customLabel.isEmpty())
         gfaSegmentLine += "\tL2:z:" + m_reverseComplement->getCustomLabel();
+    if (hasCustomColour())
+        gfaSegmentLine += "\tCL:z:" + getColourName(getCustomColour());
     if (m_reverseComplement->hasCustomColour())
         gfaSegmentLine += "\tC2:z:" + getColourName(m_reverseComplement->getCustomColour());
     gfaSegmentLine += "\n";

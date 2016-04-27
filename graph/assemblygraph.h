@@ -67,6 +67,7 @@ public:
     GraphFileType m_graphFileType;
     bool m_contiguitySearchDone;
     QString m_filename;
+    QString m_depthTag;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name,

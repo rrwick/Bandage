@@ -455,6 +455,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
     m_graphFileType = LAST_GRAPH;
     m_filename = fullFileName;
+    m_depthTag = "KC";
 
     bool firstLine = true;
     QFile inputFile(fullFileName);
@@ -631,23 +632,37 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 if (sequence == "*" || sequence == "")
                     length = ln;
 
-                //If there is an attribute holding the depth, we'll use
-                //that. If there isn't, then we'll use zero.
-                //We try to load 'DP' (depth), 'RC' (read count), 'FC'
-                //(fragment count) or 'KC' (k-mer count) in that order of
+                //If there is an attribute holding the depth, we'll use that.
+                //If there isn't, then we'll use 1.0.
+                //We try to load 'DP' (depth), 'KC' (k-mer count), 'RC'
+                //(read count) or 'FC'(fragment count) in that order of
                 //preference.
                 //If we use KC, RC or FC for the depth, then that is really a
                 //count, so we need to divide by the sequence length to get the
                 //depth.
-                double nodeDepth = 0.0;
+                //We also remember which tag was used so if the graph is saved
+                //we can use the same tag in the output.
+                double nodeDepth = 1.0;
                 if (dp > 0.0)
+                {
                     nodeDepth = dp;
-                else if (rc > 0.0)
-                    nodeDepth = rc / length;
-                else if (fc > 0.0)
-                    nodeDepth = fc / length;
+                    m_depthTag = "DP";
+                }
                 else if (kc > 0.0)
+                {
                     nodeDepth = kc / length;
+                    m_depthTag = "KC";
+                }
+                else if (rc > 0.0)
+                {
+                    nodeDepth = rc / length;
+                    m_depthTag = "RC";
+                }
+                else if (fc > 0.0)
+                {
+                    nodeDepth = fc / length;
+                    m_depthTag = "FC";
+                }
 
                 //We check to see if the node ended in a "+" or "-".
                 //If so, we assume that is giving the orientation and leave it.
@@ -820,6 +835,7 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
 {
     m_graphFileType = FASTG;
     m_filename = fullFileName;
+    m_depthTag = "KC";
 
     QFile inputFile(fullFileName);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -991,6 +1007,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
 {
     m_graphFileType = TRINITY;
     m_filename = fullFileName;
+    m_depthTag = "";
 
     std::vector<QString> names;
     std::vector<QString> sequences;
@@ -1079,7 +1096,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
                 QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
-                DeBruijnNode * node = new DeBruijnNode(nodeName, 0.0, nodeSequence);
+                DeBruijnNode * node = new DeBruijnNode(nodeName, 1.0, nodeSequence);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
 
@@ -1130,6 +1147,7 @@ int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
 {
     m_graphFileType = ASQG;
     m_filename = fullFileName;
+    m_depthTag = "";
 
     int badEdgeCount = 0;
 
@@ -1269,6 +1287,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 {
     m_graphFileType = PLAIN_FASTA;
     m_filename = fullFileName;
+    m_depthTag = "";
 
     std::vector<QString> names;
     std::vector<QString> sequences;
@@ -1289,6 +1308,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         {
             name = thisNodeDetails[1];
             depth = thisNodeDetails[5].toDouble();
+            m_depthTag = "KC";
         }
 
         //If it doesn't match, then we will use the sequence name up to the
@@ -3002,7 +3022,7 @@ bool AssemblyGraph::saveEntireGraphToGfa(QString filename)
         i.next();
         DeBruijnNode * node = i.value();
         if (node->isPositiveNode())
-            out << node->getGfaSegmentLine();
+            out << node->getGfaSegmentLine(m_depthTag);
     }
 
     QList<DeBruijnEdge*> edgesToSave;
@@ -3038,7 +3058,7 @@ bool AssemblyGraph::saveVisibleGraphToGfa(QString filename)
         i.next();
         DeBruijnNode * node = i.value();
         if (node->thisNodeOrReverseComplementIsDrawn() && node->isPositiveNode())
-            out << node->getGfaSegmentLine();
+            out << node->getGfaSegmentLine(m_depthTag);
     }
 
     QList<DeBruijnEdge*> edgesToSave;
