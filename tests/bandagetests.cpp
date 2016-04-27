@@ -53,7 +53,7 @@ private slots:
     void spadesToGfa();
     void mergeNodesOnGfa();
     void changeNodeNames();
-    void changeNodeReadDepths();
+    void changeNodeDepths();
     void blastQueryPaths();
     void bandageInfo();
 
@@ -522,44 +522,44 @@ void BandageTests::graphScope()
     drawnNodes = g_assemblyGraph->getDrawnNodeCount();
     QCOMPARE(drawnNodes, 10);
 
-    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->graphScope = DEPTH_RANGE;
     g_settings->nodeDistance = 0;
     g_settings->doubleMode = false;
-    g_settings->minReadDepthRange = 0.0;
-    g_settings->maxReadDepthRange = 211.0;
+    g_settings->minDepthRange = 0.0;
+    g_settings->maxDepthRange = 211.0;
     startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     g_assemblyGraph->layoutGraph();
     drawnNodes = g_assemblyGraph->getDrawnNodeCount();
     QCOMPARE(drawnNodes, 43);
 
-    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->graphScope = DEPTH_RANGE;
     g_settings->nodeDistance = 10;
     g_settings->doubleMode = false;
-    g_settings->minReadDepthRange = 0.0;
-    g_settings->maxReadDepthRange = 211.0;
+    g_settings->minDepthRange = 0.0;
+    g_settings->maxDepthRange = 211.0;
     startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     g_assemblyGraph->layoutGraph();
     drawnNodes = g_assemblyGraph->getDrawnNodeCount();
     QCOMPARE(drawnNodes, 43);
 
-    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->graphScope = DEPTH_RANGE;
     g_settings->nodeDistance = 0;
     g_settings->doubleMode = false;
-    g_settings->minReadDepthRange = 211.0;
-    g_settings->maxReadDepthRange = 1000.0;
+    g_settings->minDepthRange = 211.0;
+    g_settings->maxDepthRange = 1000.0;
     startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     g_assemblyGraph->layoutGraph();
     drawnNodes = g_assemblyGraph->getDrawnNodeCount();
     QCOMPARE(drawnNodes, 1);
 
-    g_settings->graphScope = READ_DEPTH_RANGE;
+    g_settings->graphScope = DEPTH_RANGE;
     g_settings->nodeDistance = 0;
     g_settings->doubleMode = false;
-    g_settings->minReadDepthRange = 40.0;
-    g_settings->maxReadDepthRange = 211.0;
+    g_settings->minDepthRange = 40.0;
+    g_settings->maxDepthRange = 211.0;
     startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage, g_settings->doubleMode, g_settings->startingNodes, "");
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     g_assemblyGraph->layoutGraph();
@@ -620,7 +620,7 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--scope depthrange").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->graphScope, READ_DEPTH_RANGE);
+    QCOMPARE(g_settings->graphScope, DEPTH_RANGE);
 
     commandLineSettings = QString("--nodes 5+").split(" ");
     parseSettings(commandLineSettings);
@@ -641,11 +641,11 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--mindepth 1.2").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->minReadDepthRange.val, 1.2);
+    QCOMPARE(g_settings->minDepthRange.val, 1.2);
 
     commandLineSettings = QString("--maxdepth 2.1").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->maxReadDepthRange.val, 2.1);
+    QCOMPARE(g_settings->maxDepthRange.val, 2.1);
 
     QCOMPARE(g_settings->doubleMode, false);
     commandLineSettings = QString("--double").split(" ");
@@ -668,11 +668,11 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--depwidth 0.222").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->readDepthEffectOnWidth.val, 0.222);
+    QCOMPARE(g_settings->depthEffectOnWidth.val, 0.222);
 
     commandLineSettings = QString("--deppower 0.72").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->readDepthPower.val, 0.72);
+    QCOMPARE(g_settings->depthPower.val, 0.72);
 
     QCOMPARE(g_settings->displayNodeNames, false);
     commandLineSettings = QString("--names").split(" ");
@@ -684,10 +684,10 @@ void BandageTests::commandLineSettings()
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->displayNodeLengths, true);
 
-    QCOMPARE(g_settings->displayNodeReadDepth, false);
-    commandLineSettings = QString("--readdepth").split(" ");
+    QCOMPARE(g_settings->displayNodeDepth, false);
+    commandLineSettings = QString("--depth").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->displayNodeReadDepth, true);
+    QCOMPARE(g_settings->displayNodeDepth, true);
 
     QCOMPARE(g_settings->displayBlastHits, false);
     commandLineSettings = QString("--blasthits").split(" ");
@@ -749,9 +749,9 @@ void BandageTests::commandLineSettings()
     parseSettings(commandLineSettings);
     QCOMPARE(g_settings->nodeColourScheme, UNIFORM_COLOURS);
 
-    commandLineSettings = QString("--colour readdepth").split(" ");
+    commandLineSettings = QString("--colour depth").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->nodeColourScheme, READ_DEPTH_COLOUR);
+    QCOMPARE(g_settings->nodeColourScheme, DEPTH_COLOUR);
 
     commandLineSettings = QString("--colour blastsolid").split(" ");
     parseSettings(commandLineSettings);
@@ -799,25 +799,25 @@ void BandageTests::commandLineSettings()
 
     commandLineSettings = QString("--depcollow mediumorchid").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(getColourName(g_settings->lowReadDepthColour), QString("mediumorchid"));
+    QCOMPARE(getColourName(g_settings->lowDepthColour), QString("mediumorchid"));
 
     commandLineSettings = QString("--depcolhi linen").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(getColourName(g_settings->highReadDepthColour), QString("linen"));
+    QCOMPARE(getColourName(g_settings->highDepthColour), QString("linen"));
 
-    QCOMPARE(g_settings->autoReadDepthValue, true);
+    QCOMPARE(g_settings->autoDepthValue, true);
     commandLineSettings = QString("--depvallow 56.7").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->lowReadDepthValue.val, 56.7);
-    QCOMPARE(g_settings->autoReadDepthValue, false);
+    QCOMPARE(g_settings->lowDepthValue.val, 56.7);
+    QCOMPARE(g_settings->autoDepthValue, false);
 
     commandLineSettings = QString("--depvalhi 67.8").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->highReadDepthValue.val, 67.8);
+    QCOMPARE(g_settings->highDepthValue.val, 67.8);
 
     commandLineSettings = QString("--depvalhi 67.8").split(" ");
     parseSettings(commandLineSettings);
-    QCOMPARE(g_settings->highReadDepthValue.val, 67.8);
+    QCOMPARE(g_settings->highDepthValue.val, 67.8);
 
     commandLineSettings = QString("--query queries.fasta").split(" ");
     parseSettings(commandLineSettings);
@@ -1200,7 +1200,7 @@ void BandageTests::changeNodeNames()
     QCOMPARE(nodeCountBefore, nodeCountAfter);
 }
 
-void BandageTests::changeNodeReadDepths()
+void BandageTests::changeNodeDepths()
 {
     createGlobals();
     g_assemblyGraph->loadGraphFromFile(getTestDirectory() + "test.fastg");
@@ -1214,17 +1214,17 @@ void BandageTests::changeNodeReadDepths()
     nodes.push_back(node6Plus);
     nodes.push_back(node7Plus);
 
-    //Complementary pairs should have the same read depth.
-    QCOMPARE(node6Plus->getReadDepth(), node6Minus->getReadDepth());
-    QCOMPARE(node7Plus->getReadDepth(), node7Minus->getReadDepth());
+    //Complementary pairs should have the same depth.
+    QCOMPARE(node6Plus->getDepth(), node6Minus->getDepth());
+    QCOMPARE(node7Plus->getDepth(), node7Minus->getDepth());
 
-    g_assemblyGraph->changeNodeReadDepth(&nodes, 0.5);
+    g_assemblyGraph->changeNodeDepth(&nodes, 0.5);
 
     //Check to make sure the change worked.
-    QCOMPARE(0.5, node6Plus->getReadDepth());
-    QCOMPARE(0.5, node6Minus->getReadDepth());
-    QCOMPARE(0.5, node7Plus->getReadDepth());
-    QCOMPARE(0.5, node7Minus->getReadDepth());
+    QCOMPARE(0.5, node6Plus->getDepth());
+    QCOMPARE(0.5, node6Minus->getDepth());
+    QCOMPARE(0.5, node7Plus->getDepth());
+    QCOMPARE(0.5, node7Minus->getDepth());
 }
 
 void BandageTests::blastQueryPaths()

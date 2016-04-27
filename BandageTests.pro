@@ -77,7 +77,7 @@ SOURCES += \
     ui/blasthitfiltersdialog.cpp \
     program/scinot.cpp \
     ui/changenodenamedialog.cpp \
-    ui/changenodereaddepthdialog.cpp \
+    ui/changenodedepthdialog.cpp \
     ui/querypathsequencecopybutton.cpp \
     command_line/querypaths.cpp \
     command_line/info.cpp \
@@ -170,7 +170,7 @@ HEADERS  += \
     ui/blasthitfiltersdialog.h \
     program/scinot.h \
     ui/changenodenamedialog.h \
-    ui/changenodereaddepthdialog.h \
+    ui/changenodedepthdialog.h \
     ui/querypathsequencecopybutton.h \
     command_line/querypaths.h \
     command_line/info.h \
@@ -255,7 +255,7 @@ FORMS    += \
     ui/querypathsdialog.ui \
     ui/blasthitfiltersdialog.ui \
     ui/changenodenamedialog.ui \
-    ui/changenodereaddepthdialog.ui \
+    ui/changenodedepthdialog.ui \
     ui/graphinfodialog.ui
 
 RESOURCES += \
