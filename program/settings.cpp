@@ -35,7 +35,7 @@ Settings::Settings()
 
     averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
     depthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
-    depthPower = FloatSetting(0.1, 0.0, 1.0);
+    depthPower = FloatSetting(0.5, 0.0, 1.0);
 
     edgeWidth = FloatSetting(1.5, 0.1, 100);
     outlineThickness = FloatSetting(0.0, 0.0, 100.0);
