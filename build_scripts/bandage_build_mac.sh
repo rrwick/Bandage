@@ -7,8 +7,13 @@
 # Find the Qt path automatically. This assumes it is installed in ~/Qt/ and is a 5.* version.
 QT_PATH=$(find $HOME/Qt -maxdepth 1 -name "5*" | sort | tail -n 1)
 
-# Clone and build Bandage from the master branch.
-git clone https://github.com/rrwick/Bandage
+# If a 'Bandage' directory already exists, then this script will use assume it is the Bandage
+# source code and use it. If not, it will clone the master branch from GitHub.
+if [ ! -d "Bandage" ]; then
+  git clone https://github.com/rrwick/Bandage
+fi
+
+# Build Bandage.
 cd Bandage/
 $QT_PATH/clang_64/bin/qmake
 make
