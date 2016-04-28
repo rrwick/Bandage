@@ -5,7 +5,7 @@
 # current directory.
 
 # Find the Qt path automatically. This assumes it is installed in ~/Qt/ and is a 5.* version.
-QT_PATH=$(find $HOME/Qt -name "5*" -maxdepth 1 | tail -n 1)
+QT_PATH=$(find $HOME/Qt -maxdepth 1 -name "5*" | sort | tail -n 1)
 
 # Clone and build Bandage from the master branch.
 git clone https://github.com/rrwick/Bandage
