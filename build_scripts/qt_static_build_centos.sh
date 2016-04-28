@@ -4,8 +4,7 @@
 
 # This script builds a static version of Qt. It was originally writen by Lennart Rolland and taken
 # from here: https://stackoverflow.com/questions/24275551/
-# I modified it work on CentOS and move around some QtSvg stuff so Bandage (which uses QtSvg) can
-# build.
+# I modified it to work with CentOS and Qt 5.6 and move around some QtSvg stuff for Bandage.
 
 # Change this to the desired version.
 VER="5.6.0"
@@ -14,78 +13,62 @@ VER="5.6.0"
 yum install libxcb libxcb-devel libXrender libXrender-devel xcb-util-wm xcb-util-wm-devel xcb-util xcb-util-devel xcb-util-image xcb-util-image-devel xcb-util-keysyms xcb-util-keysyms-devel fontconfig-devel freetype-devel libX11-devel libXext-devel libXfixes-devel libXi-devel
 
 VER2="${VER%.*}"
-WSRC="http://download.qt-project.org/official_releases/qt/$VER2/$VER/single/qt-everywhere-opensource-src-$VER.tar.xz"
-
-# Current dir ( allows this script to be called from another dir)
-B=$(pwd)
-# Base folder for the whole operation
-Q="$B/qt"
-# The uncompressed source
-SRC="$Q/src/$VER"
-# The actual shadow dir
-O="$Q/build/$VER"
-# The tar.xz archive
-XZ="$Q/xz/qt-$VER.tar.xz"
-# Paralelle make, number of cores
-J=$(grep -c ^processor /proc/cpuinfo)
-# Build log file
-LOG="$O/log.txt"
+WSRC="http://download.qt.io/official_releases/qt/$VER2/$VER/single/qt-everywhere-opensource-src-$VER.tar.xz"
+B=$(pwd) # Current dir (allows this script to be called from another dir)
+Q="$B/qt" # Base folder for the whole operation
+SRC="$Q/src/$VER" # The uncompressed source
+O="$Q/build/$VER" # The actual shadow dir
+XZ="$Q/xz/qt-$VER.tar.xz" # The tar.xz archive
+J=$(grep -c ^processor /proc/cpuinfo) # Parallel make, number of cores
+LOG="$O/log.txt" # Build log file
 
 # My configuration options for qt change to your hearts content, but make sure to clean out your current build before using it.
 OPTS=""
 OPTS+=" -release"
+OPTS+=" -optimized-tools" 
 OPTS+=" -opensource"
-OPTS+=" -static" 
 OPTS+=" -confirm-license"
-#OPTS+=" -fully-process" #Breaks my build
-OPTS+=" -c++11"
-OPTS+=" -platform linux-g++"
-OPTS+=" -largefile" 
-#OPTS+=" -continue"
-OPTS+=" -silent"
-#OPTS+=" -optimized-qmake" 
-#OPTS+=" -reduce-relocations"
-#OPTS+=" -qpa xcb"
-#OPTS+=" -declarative"
-#OPTS+=" -opengl desktop"
-#OPTS+=" -svg"
-OPTS+=" -qt-zlib" # ........... Use the zlib bundled with Qt.
-OPTS+=" -qt-libpng" # ......... Use the libpng bundled with Qt.
-OPTS+=" -qt-libjpeg" # ........ Use the libjpeg bundled with Qt.
-OPTS+=" -qt-freetype" # ........ Use the freetype bundled with Qt.
-OPTS+=" -qt-harfbuzz" # ........ Use the freetype bundled with Qt.
-OPTS+=" -qt-pcre" # ........... Use the PCRE library bundled with Qt.
-OPTS+=" -qt-xcb" # ............ Use xcb- libraries bundled with Qt.
-OPTS+=" -qt-xkbcommon" # ...... 
-OPTS+=" -no-gtkstyle"
-OPTS+=" -no-sql-db2" 
-OPTS+=" -no-sql-ibase" 
-OPTS+=" -no-sql-mysql" 
-OPTS+=" -no-sql-oci" 
-OPTS+=" -no-sql-odbc" 
-OPTS+=" -no-sql-psql" 
-OPTS+=" -no-sql-sqlite" 
-OPTS+=" -no-sql-sqlite2" 
+OPTS+=" -c++std c++11"
+OPTS+=" -static"
+OPTS+=" -largefile"
+OPTS+=" -no-sql-db2"
+OPTS+=" -no-sql-ibase"
+OPTS+=" -no-sql-mysql"
+OPTS+=" -no-sql-oci"
+OPTS+=" -no-sql-odbc"
+OPTS+=" -no-sql-psql"
+OPTS+=" -no-sql-sqlite"
+OPTS+=" -no-sql-sqlite2"
 OPTS+=" -no-sql-tds"
+OPTS+=" -platform linux-g++"
+OPTS+=" -qt-zlib"
 OPTS+=" -no-gif"
+OPTS+=" -qt-libpng"
+OPTS+=" -qt-libjpeg"
+OPTS+=" -qt-freetype"
+OPTS+=" -qt-harfbuzz"
+OPTS+=" -qt-pcre"
+OPTS+=" -qt-xcb"
+OPTS+=" -qt-xkbcommon-x11" 
+OPTS+=" -no-glib"
+OPTS+=" -no-gtkstyle"
+OPTS+=" -nomake examples"
+OPTS+=" -nomake tests"
+OPTS+=" -no-compile-examples"
+OPTS+=" -silent"
 OPTS+=" -no-nis"
-OPTS+=" -no-cups" 
+OPTS+=" -no-cups"
 OPTS+=" -no-iconv"
 OPTS+=" -no-dbus"
 OPTS+=" -no-eglfs"
-OPTS+=" -no-directfb" 
-OPTS+=" -no-linuxfb"
-OPTS+=" -no-glib"
 OPTS+=" -no-kms"
-OPTS+=" -nomake examples" 
-#OPTS+=" -nomake demos" NOT AVAILABLE ANYMORE
-OPTS+=" -nomake tests"
-OPTS+=" -skip qtwebkit"
-OPTS+=" -skip qtwebkit-examples"
-#OPTS+=" -no-openssl"
+OPTS+=" -no-directfb"
+OPTS+=" -no-linuxfb"
+OPTS+=" -qpa xcb"
+OPTS+=" -opengl desktop"
 
 # The modules that are relevant for me. Please observe that THE ORDER MATTERS! I would add one module at the time and see how it complains when you try to build it.
-MODS="qtx11extras qtimageformats qtscript qtquick1 qtdeclarative qtquickcontrols qtsvg qtmultimedia"
+MODS="qtx11extras qtimageformats qtquick qtquickcontrols qtsvg qtmultimedia"
 
 # Just echo out the current state before starting the configuration and make
 echo "B: $B"
@@ -103,10 +86,13 @@ mkdir -p "$Q"
 mkdir -p "$Q/xz"
 mkdir -p "$SRC"
 mkdir -p "$O"
+
 # Start log
 date > $LOG
+
 # Download source archive
 [ ! -f $XZ ] && wget "$WSRC" -c -O "$XZ"
+
 # Unpack source archive
 [ ! -x $SRC/configure ] && tar pxf "$XZ" --strip=1 -C "$SRC" "qt-everywhere-opensource-src-$VER" 
 
@@ -138,7 +124,7 @@ do
     make -j$J >> $LOG
 done
 
-# Copy qtsvg stuff into qtbase folder
-cp -r -n $O/qtsvg/* $O/qtbase/
+# Copy qtsvg stuff into qtbase folder. This is specifically for building Bandage.
+cp -r -n "$O/qtsvg/*" "$O/qtbase/"
 
 echo "DONE"
