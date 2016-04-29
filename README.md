@@ -1,5 +1,23 @@
 # <img src="http://rrwick.github.io/Bandage/images/logo.png" alt="Bandage" width="115" height="115" align="middle">Bandage
 
+## Table of Contents
+
+* [Intro](https://github.com/rrwick/Bandage#intro)
+* [Help](https://github.com/rrwick/Bandage#help)
+* [Pre-built binaries](https://github.com/rrwick/Bandage#pre-built-binaries)
+* [Building from source](https://github.com/rrwick/Bandage#building-from-source)
+  * [Ubuntu](https://github.com/rrwick/Bandage#ubuntu)
+  * [Other Linux distributions](https://github.com/rrwick/Bandage#other-linux-distributions)
+  * [Mac](https://github.com/rrwick/Bandage#mac)
+  * [Using Qt Creator](https://github.com/rrwick/Bandage#using-qt-creator)
+* [History](https://github.com/rrwick/Bandage#history)
+* [Contributing](https://github.com/rrwick/Bandage#contributing)
+* [Citation](https://github.com/rrwick/Bandage#citation)
+* [Credits](https://github.com/rrwick/Bandage#credits)
+* [License](https://github.com/rrwick/Bandage#license)
+
+## Intro
+
 Bandage is a GUI program that allows users to interact with the assembly graphs made by *de novo* assemblers such as <a href="https://www.ebi.ac.uk/~zerbino/velvet/" target="_blank">Velvet</a>, <a href="http://bioinf.spbau.ru/spades" target="_blank">SPAdes</a>, <a href="https://github.com/voutcn/megahit" target="_blank">MEGAHIT</a> and others.
 
 *De novo* assembly graphs contain not only assembled contigs but also the connections between those contigs, which were previously not easily accessible. Bandage visualises assembly graphs, with connections, using graph layout algorithms. Nodes in the drawn graph, which represent contigs, can be automatically labelled with their ID, length or depth. Users can interact with the graph by moving, labelling and colouring nodes. Sequence information can also be extracted directly from the graph viewer. By displaying connections between contigs, Bandage opens up new possibilities for analysing and improving *de novo* assemblies that are not possible by looking at contigs alone.
@@ -50,9 +68,7 @@ The following instructions successfully build Bandage on OS X 10.8 and later:
 2. Install Qt 5. This is most easily done using Homebrew: <a href="http://brew.sh/" target="_blank">brew.sh</a>. Install the Qt 5 package with this command: `brew install qt5`.
 3. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
 4. Open a terminal in the Bandage directory.
-5. Run qmake to generate a Makefile:
-  * On OS X 10.8, it is first necessary to remove this line from the Bandage.pro file, `CONFIG += C++11`.
-  * The location of the `qmake` command may vary, depending on how Qt was installed. If you used Homebrew, it should be here: `/usr/local/opt/qt5/bin/qmake`.
+5. Run qmake to generate a Makefile. The location of the `qmake` command may vary, depending on how Qt was installed. If you used Homebrew, it should be here: `/usr/local/opt/qt5/bin/qmake`.
 6. Build the program: `make`
 7. `Bandage` should now be an application bundle.
 8. Optionally, copy the Bandage application bundle into the 'Applications' folder and delete the Bandage build directory.
@@ -117,6 +133,12 @@ v0.3.0 – 19 February 2015
 ## Contributing
 
 New contributors are welcome! If you're interested or have ideas, please contact me (Ryan) at rrwick@gmail.com.
+
+## Citation
+
+If you use Bandage in your research, please cite the following publication:
+
+[Wick R.R., Schultz M.B., Zobel J. & Holt K.E. (2015). Bandage: interactive visualisation of de novo genome assemblies. Bioinformatics, 31(20), 3350-3352.](http://bioinformatics.oxfordjournals.org/content/31/20/3350)
 
 ## Credits
 
