@@ -10,7 +10,7 @@
 VER="5.6.0"
 
 # Dependencies:
-yum install libxcb libxcb-devel libXrender libXrender-devel xcb-util-wm xcb-util-wm-devel xcb-util xcb-util-devel xcb-util-image xcb-util-image-devel xcb-util-keysyms xcb-util-keysyms-devel fontconfig-devel freetype-devel libX11-devel libXext-devel libXfixes-devel libXi-devel
+yum install libxcb libxcb-devel libXrender libXrender-devel xcb-util-wm xcb-util-wm-devel xcb-util xcb-util-devel xcb-util-image xcb-util-image-devel xcb-util-keysyms xcb-util-keysyms-devel fontconfig-devel freetype-devel libX11-devel libXext-devel libXfixes-devel libXi-devel mesa-libGLw gtkglext-devel
 
 VER2="${VER%.*}"
 WSRC="http://download.qt.io/official_releases/qt/$VER2/$VER/single/qt-everywhere-opensource-src-$VER.tar.xz"
