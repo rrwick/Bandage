@@ -76,43 +76,43 @@ For Windows and some Linux distributions, the easiest way to build Bandage from 
 
 ## History
 
-v0.8.0 - usabilty improvements and bug fixes
+v0.8.0 - 30 April 2016
 
-v0.7.1 - bug fixes
+v0.7.1 - 6 December 2015
 
-v0.7.0 - graph editing capabilities
+v0.7.0 - 16 October 2015
 
-v0.6.4 - improvements to BLAST and main GUI
+v0.6.4 - 17 September 2015
 
-v0.6.3 - improvements to BLAST functionality
+v0.6.3 - 31 August 2015
 
-v0.6.2 - new features for working with graph paths
+v0.6.2 - 29 July 2015
 
-v0.6.1 - improvements to BLAST functionality
+v0.6.1 - 15 July 2015
 
-v0.6.0 - new features, including command line functionality
+v0.6.0 - 8 July 2015
 
-v0.5.6 - bug fixes
+v0.5.6 - 26 May 2015
 
-v0.5.5 - bug fixes
+v0.5.5 - 14 May 2015
 
-v0.5.4 - bug fixes
+v0.5.4 - 5 May 2015
 
-v0.5.3 - bug fixes
+v0.5.3 - 30 April 2015
 
-v0.5.2 - performance improvements
+v0.5.2 - 25 April 2015
 
-v0.5.1 - bug fixes
+v0.5.1 - 20 April 2015
 
-v0.5.0 - new features, including Trinity support
+v0.5.0 - 9 April 2015
 
-v0.4.2 - bug fixes
+v0.4.2 - 20 March 2015
 
-v0.4.1 - bug fixes
+v0.4.1 - 12 March 2015
 
-v0.4.0 - new features, including BLAST integration
+v0.4.0 - 10 March 2015
 
-v0.3.0 – initial release on GitHub
+v0.3.0 – 19 February 2015
 
 ## Contributing
 
