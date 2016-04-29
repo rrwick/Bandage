@@ -78,6 +78,7 @@ public:
     double autoNodeLengthPerMegabase;
     FloatSetting manualNodeLengthPerMegabase;
     double meanNodeLength;
+    double minTotalGraphLength;
     IntSetting graphLayoutQuality;
     FloatSetting minimumNodeLength;
     FloatSetting edgeLength;

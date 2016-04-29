@@ -404,10 +404,13 @@ void AssemblyGraph::determineGraphInfo()
     m_medianDepth = getValueUsingFractionalIndex(&nodeDepths, medianIndex);
     m_thirdQuartileDepth = getValueUsingFractionalIndex(&nodeDepths, thirdQuartileIndex);
 
-    //Set the auto node length setting.
-    double targetDrawnGraphLength = m_nodeCount * g_settings->meanNodeLength;
+    //Set the auto node length setting. This is determined by aiming for a
+    //target average node length. But if the graph is small, the value will be
+    //increased (to avoid having an overly small and simple graph layout).
+    double targetDrawnGraphLength = std::max(m_nodeCount * g_settings->meanNodeLength,
+                                             g_settings->minTotalGraphLength);
     double megabases = totalLength / 1000000.0;
-    if (megabases > 0)
+    if (megabases > 0.0)
         g_settings->autoNodeLengthPerMegabase = targetDrawnGraphLength / megabases;
     else
         g_settings->autoNodeLengthPerMegabase = 10000.0;

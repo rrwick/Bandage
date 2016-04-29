@@ -27,6 +27,7 @@ Settings::Settings()
     autoNodeLengthPerMegabase = 1000.0;
     manualNodeLengthPerMegabase = FloatSetting(1000.0, 0, 1000000.0);
     meanNodeLength = 40.0;
+    minTotalGraphLength = 500.0;
     graphLayoutQuality = IntSetting(2, 0, 4);
     minimumNodeLength = FloatSetting(5.0, 1.0, 100.0);
     edgeLength = FloatSetting(5.0, 0.1, 100.0);
