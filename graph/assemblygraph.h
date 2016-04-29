@@ -68,6 +68,7 @@ public:
     bool m_contiguitySearchDone;
     QString m_filename;
     QString m_depthTag;
+    SequencesLoadedFromFasta m_sequencesLoadedFromFasta;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name,
@@ -127,7 +128,7 @@ public:
     void autoDetermineAllEdgesExactOverlap();
 
     static void readFastaFile(QString filename, std::vector<QString> * names,
-                              std::vector<QString> * sequences);
+                              std::vector<QByteArray> * sequences);
 
     int getDrawnNodeCount() const;
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
@@ -162,6 +163,7 @@ public:
     long long getEstimatedSequenceLength(double meanDepthByBase) const;
     long long getTotalLengthMinusEdgeOverlaps() const;
     QPair<int, int> getOverlapRange() const;
+    bool attemptToLoadSequencesFromFasta();
 
 
 private:

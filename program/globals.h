@@ -56,6 +56,7 @@ enum EdgeOverlapType {UNKNOWN_OVERLAP, EXACT_OVERLAP,
 enum NodeNameStatus {NODE_NAME_OKAY, NODE_NAME_TAKEN, NODE_NAME_CONTAINS_TAB,
                      NODE_NAME_CONTAINS_NEWLINE, NODE_NAME_CONTAINS_COMMA,
                      NODE_NAME_CONTAINS_SPACE};
+enum SequencesLoadedFromFasta {NOT_READY, NOT_TRIED, TRIED};
 
 
 //Some of the program's common components are made global so they don't have

@@ -101,6 +101,7 @@ public:
 
     //MODIFERS
     void setDepthRelativeToMeanDrawnDepth(double newVal) {m_depthRelativeToMeanDrawnDepth = newVal;}
+    void setSequence(QByteArray newSeq) {m_sequence = newSeq; m_length = m_sequence.length();}
     void appendToSequence(QByteArray additionalSeq) {m_sequence.append(additionalSeq); m_length = m_sequence.length();}
     void upgradeContiguityStatus(ContiguityStatus newStatus);
     void resetContiguityStatus() {m_contiguityStatus = NOT_CONTIGUOUS;}

@@ -41,6 +41,7 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     QTextStream out(&file);
 
     QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    bool triedToLoadSequencesFromFasta = false;
     while (i.hasNext())
     {
         if (g_blastSearch->m_cancelBuildBlastDatabase)
@@ -51,7 +52,8 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
 
         i.next();
         DeBruijnNode * node = i.value();
-        if (!node->sequenceIsMissing() && node->getLength() > 0)
+
+        if (!node->sequenceIsMissing())
             out << node->getFasta(true);
     }
     file.close();

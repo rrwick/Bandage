@@ -40,9 +40,12 @@
 #include <QQueue>
 #include <QList>
 #include <math.h>
+#include <QFileInfo>
+#include <QDir>
 
 AssemblyGraph::AssemblyGraph() :
-    m_kmer(0), m_contiguitySearchDone(false)
+    m_kmer(0), m_contiguitySearchDone(false),
+    m_sequencesLoadedFromFasta(NOT_READY)
 {
     m_ogdfGraph = new ogdf::Graph();
     m_edgeArray = new ogdf::EdgeArray<double>(*m_ogdfGraph);
@@ -770,6 +773,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
+
+    m_sequencesLoadedFromFasta = NOT_TRIED;
 }
 
 
@@ -1010,7 +1015,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
     m_depthTag = "";
 
     std::vector<QString> names;
-    std::vector<QString> sequences;
+    std::vector<QByteArray> sequences;
     readFastaFile(fullFileName, &names, &sequences);
 
     std::vector<QString> edgeStartingNodeNames;
@@ -1021,7 +1026,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         QApplication::processEvents();
 
         QString name = names[i];
-        QString sequence = sequences[i];
+        QByteArray sequence = sequences[i];
 
         //The header can come in a few different formats:
         // TR1|c0_g1_i1 len=280 path=[274:0-228 275:229-279] [-1, 274, 275, -2]
@@ -1095,7 +1100,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
                 int nodeRangeEnd = nodeRangeParts.at(1).toInt();
                 int nodeLength = nodeRangeEnd - nodeRangeStart + 1;
 
-                QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength).toLocal8Bit();
+                QByteArray nodeSequence = sequence.mid(nodeRangeStart, nodeLength);
                 DeBruijnNode * node = new DeBruijnNode(nodeName, 1.0, nodeSequence);
                 m_deBruijnGraphNodes.insert(nodeName, node);
             }
@@ -1290,7 +1295,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
     m_depthTag = "";
 
     std::vector<QString> names;
-    std::vector<QString> sequences;
+    std::vector<QByteArray> sequences;
     readFastaFile(fullFileName, &names, &sequences);
 
     for (size_t i = 0; i < names.size(); ++i)
@@ -1299,7 +1304,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 
         QString name = names[i];
         double depth = 1.0;
-        QByteArray sequence = sequences[i].toLocal8Bit();
+        QByteArray sequence = sequences[i];
 
         //Check to see if the node name matches the Velvet/SPAdes contig
         //format.  If so, we can get the depth and node number.
@@ -2179,13 +2184,13 @@ QString AssemblyGraph::getOppositeNodeName(QString nodeName)
 }
 
 
-void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QString> * sequences)
+void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> *sequences)
 {
     QFile inputFile(filename);
     if (inputFile.open(QIODevice::ReadOnly))
     {
         QString name = "";
-        QString sequence = "";
+        QByteArray sequence = "";
 
         QTextStream in(&inputFile);
         while (!in.atEnd())
@@ -3465,4 +3470,56 @@ QPair<int, int> AssemblyGraph::getOverlapRange() const
     if (smallestOverlap == std::numeric_limits<int>::max())
         smallestOverlap = 0;
     return QPair<int, int>(smallestOverlap, largestOverlap);
+}
+
+
+
+//This function will look to see if there is a FASTA file (.fa or .fasta) with
+//the same base name as the graph. If so, it will load it and give its
+//sequences to the graph nodes with matching names. This is useful for GFA
+//files which have no sequences (just '*') like ABySS makes.
+//Returns true if any sequences were loaded (doesn't have to be all sequences
+//in the graph).
+bool AssemblyGraph::attemptToLoadSequencesFromFasta()
+{
+    if (m_sequencesLoadedFromFasta == NOT_READY || m_sequencesLoadedFromFasta == TRIED)
+        return false;
+
+    m_sequencesLoadedFromFasta = TRIED;
+
+    QFileInfo gfaFileInfo(m_filename);
+    QString baseName = gfaFileInfo.completeBaseName();
+    QString fastaName = gfaFileInfo.dir().filePath(baseName + ".fa");
+    QFileInfo fastaFileInfo(fastaName);
+    if (!fastaFileInfo.exists())
+    {
+        fastaName = gfaFileInfo.dir().filePath(baseName + ".fasta");
+        fastaFileInfo = QFileInfo(fastaName);
+    }
+    if (!fastaFileInfo.exists())
+        return false;
+
+    bool atLeastOneNodeSequenceLoaded = false;
+    std::vector<QString> names;
+    std::vector<QByteArray> sequences;
+    readFastaFile(fastaName, &names, &sequences);
+
+    for (size_t i = 0; i < names.size(); ++i)
+    {
+        QString name = names[i];
+        name = name.split(QRegExp("\\s+"))[0];
+        if (m_deBruijnGraphNodes.contains(name + "+"))
+        {
+            DeBruijnNode * posNode = m_deBruijnGraphNodes[name + "+"];
+            if (posNode->sequenceIsMissing())
+            {
+                atLeastOneNodeSequenceLoaded = true;
+                posNode->setSequence(sequences[i]);
+                DeBruijnNode * negNode = m_deBruijnGraphNodes[name + "-"];
+                negNode->setSequence(getReverseComplement(sequences[i]));
+            }
+        }
+    }
+
+    return atLeastOneNodeSequenceLoaded;
 }

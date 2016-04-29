@@ -730,12 +730,17 @@ bool DeBruijnNode::sequenceIsMissing() const
 
 QByteArray DeBruijnNode::getSequence() const
 {
-    if (!sequenceIsMissing())
-        return m_sequence;
+    bool a = sequenceIsMissing();
+    bool b = g_assemblyGraph->m_sequencesLoadedFromFasta == NOT_TRIED;
+    if (sequenceIsMissing() && g_assemblyGraph->m_sequencesLoadedFromFasta == NOT_TRIED)
+        g_assemblyGraph->attemptToLoadSequencesFromFasta();
 
-    //If the sequence is missing, return a string of Ns equal to the sequence
-    //length.
-    return QByteArray(m_length, 'N');
+    //If the sequence is still missing, return a string of Ns equal to the
+    //sequence length.
+    if (sequenceIsMissing())
+        return QByteArray(m_length, 'N');
+    else
+        return m_sequence;  
 }
 
 

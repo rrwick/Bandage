@@ -295,7 +295,7 @@ int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
     int queriesBefore = int(g_blastSearch->m_blastQueries.m_queries.size());
 
     std::vector<QString> queryNames;
-    std::vector<QString> querySequences;
+    std::vector<QByteArray> querySequences;
     AssemblyGraph::readFastaFile(fullFileName, &queryNames, &querySequences);
 
     for (size_t i = 0; i < queryNames.size(); ++i)
