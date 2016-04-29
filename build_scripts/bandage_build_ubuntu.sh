@@ -5,8 +5,8 @@
 # sample_LastGraph and dependencies are in the current directory.
 
 # This script needs two copies of Qt: a dynamically-linked and a statically-linked.
-DYNAMIC_QMAKE="$HOME/Qt/5.5/gcc_64/bin/qmake"
-STATIC_QMAKE="$HOME/Desktop/qt/build/5.5.1/qtbase/bin/qmake"
+DYNAMIC_QMAKE="$HOME/Qt/5.6/gcc_64/bin/qmake"
+STATIC_QMAKE="$HOME/Desktop/qt/build/5.6.0/qtbase/bin/qmake"
 
 # If a 'Bandage' directory already exists, then this script will use assume it is the Bandage
 # source code and use it. If not, it will clone the master branch from GitHub.

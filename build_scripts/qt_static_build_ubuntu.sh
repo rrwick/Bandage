@@ -66,7 +66,7 @@ OPTS+=" -qpa xcb"
 OPTS+=" -opengl desktop"
 
 # The modules that are relevant for me. Please observe that THE ORDER MATTERS! I would add one module at the time and see how it complains when you try to build it.
-MODS="qtx11extras qtimageformats qtquick qtquickcontrols qtsvg qtmultimedia"
+MODS="qtx11extras qtimageformats qtsvg qtmultimedia"
 
 # Just echo out the current state before starting the configuration and make
 echo "B: $B"
@@ -122,7 +122,7 @@ do
     make -j$J >> $LOG
 done
 
-# Copy qtsvg stuff into qtbase folder
-cp -r -n "$O/qtsvg/*" "$O/qtbase/"
+# Copy qtsvg stuff into qtbase folder. This is specifically for building Bandage.
+cp -r -n $O/qtsvg/* $O/qtbase/
 
 echo "DONE"
