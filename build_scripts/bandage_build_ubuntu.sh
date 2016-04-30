@@ -28,12 +28,14 @@ cp -r Bandage-static/ Bandage-dynamic/
 cd Bandage-dynamic/
 $DYNAMIC_QMAKE Bandage.pro
 make
+chmod +x Bandage
 cd ..
 
 # Build the statically-linked version of Bandage.
 cd Bandage-static/
 $STATIC_QMAKE Bandage.pro
 make
+chmod +x Bandage
 cd ..
 
 # Zip static Bandage
