@@ -26,6 +26,10 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QPixmap icon = *(ui->iconLabel->pixmap());
+    icon.setDevicePixelRatio(devicePixelRatio());
+    ui->iconLabel->setPixmap(icon);
+
     //Make the word 'Bandage' a larger font size.
     QFont font;
     font.setPointSize(font.pointSize() * 2);
