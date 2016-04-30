@@ -37,9 +37,7 @@ call move Bandage.exe Bandage\Bandage.exe
 
 rem Add the necessary libraries so Bandage can be deployed.
 call "%QT_PATH%\%MSVC_VERSION%\bin\windeployqt.exe" Bandage\Bandage.exe
-call copy "%MSVC_PATH%\VC\redist\x64\Microsoft.VC%MSVC_VERSION_NUM%.CRT\*" Bandage\
-if exist Bandage\vcredist_x64.exe call del Bandage\vcredist_x64.exe
 
 rem Zip Bandage with the sample graph and clean up.
-call "%ZIP_PATH%" a -tzip Bandage_Windows_v%VERSION%.zip Bandage\ sample_LastGraph
+call "%ZIP_PATH%" a -tzip Bandage_Windows_v%VERSION%.zip Bandage\ sample_LastGraph installation.txt
 call rmdir Bandage\ /S /Q
