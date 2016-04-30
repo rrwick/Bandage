@@ -15,8 +15,9 @@ set ZIP_PATH=C:\Program Files\7-Zip\7z.exe
 rem Set up the MSVC compiler.
 call "%MSVC_PATH%\VC\vcvarsall.bat" x86_amd64
 
-rem Clone and build Bandage from the master branch.
-call "%GIT_PATH%" clone https://github.com/rrwick/Bandage.git
+rem If a 'Bandage' directory already exists, then this script will use assume it is the Bandage
+rem source code and use it. If not, it will clone the master branch from GitHub.
+if not exist Bandage\ call "%GIT_PATH%" clone https://github.com/rrwick/Bandage.git
 call cd Bandage\
 call "%QT_PATH%\%MSVC_VERSION%\bin\qmake.exe"
 call "%QT_PATH%\..\Tools\QtCreator\bin\jom.exe"
@@ -36,8 +37,7 @@ call move Bandage.exe Bandage\Bandage.exe
 
 rem Add the necessary libraries so Bandage can be deployed.
 call "%QT_PATH%\%MSVC_VERSION%\bin\windeployqt.exe" Bandage\Bandage.exe
-call copy "%MSVC_PATH%\VC\redist\x64\Microsoft.VC%MSVC_VERSION_NUM%.CRT\msvcp%MSVC_VERSION_NUM%.dll" Bandage\msvcp%MSVC_VERSION_NUM%.dll
-if exist "%MSVC_PATH%\VC\redist\x64\Microsoft.VC%MSVC_VERSION_NUM%.CRT\msvcr%MSVC_VERSION_NUM%.dll" call copy "%MSVC_PATH%\VC\redist\x64\Microsoft.VC%MSVC_VERSION_NUM%.CRT\msvcr%MSVC_VERSION_NUM%.dll" Bandage\msvcr%MSVC_VERSION_NUM%.dll
+call copy "%MSVC_PATH%\VC\redist\x64\Microsoft.VC%MSVC_VERSION_NUM%.CRT\*" Bandage\
 if exist Bandage\vcredist_x64.exe call del Bandage\vcredist_x64.exe
 
 rem Zip Bandage with the sample graph and clean up.
