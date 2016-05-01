@@ -214,6 +214,7 @@ QByteArray AssemblyGraph::getReverseComplement(QByteArray forwardSequence)
         case '.': reverseComplement.append('.'); break;
         case '-': reverseComplement.append('-'); break;
         case '?': reverseComplement.append('?'); break;
+        case '*': reverseComplement.append('*'); break;
         }
     }
 
@@ -981,8 +982,14 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
     DeBruijnNode * reverseComplementNode = m_deBruijnGraphNodes[reverseComplementName];
     if (reverseComplementNode == 0)
     {
+        QByteArray nodeSequence;
+        if (node->sequenceIsMissing())
+            nodeSequence = "*";
+        else
+            nodeSequence = node->getSequence();
         DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->getDepth(),
-                                                  getReverseComplement(node->getSequence()));
+                                                  getReverseComplement(nodeSequence),
+                                                  node->getLength());
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
 }
