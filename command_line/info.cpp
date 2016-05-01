@@ -137,7 +137,7 @@ int bandageInfo(QStringList arguments)
         out << "Median node (bp):               " << median << "\n";
         out << "Upper quartile node (bp):       " << thirdQuartile << "\n";
         out << "Longest node (bp):              " << longestNode << "\n";
-        out << "Median depth:              " << medianDepthByBase << "\n";
+        out << "Median depth:                   " << medianDepthByBase << "\n";
         out << "Estimated sequence length (bp): " << estimatedSequenceLength << "\n";
     }
 
