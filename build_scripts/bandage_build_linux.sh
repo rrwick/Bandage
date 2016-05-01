@@ -43,9 +43,22 @@ IFS='"' read -ra ADDR <<< "$VERSION_LINE"
 VERSION="${ADDR[1]}"
 VERSION=${VERSION//\./_}
 
-# Read the Linux release info (just used for naming the final zip files)
-. /etc/*-release
-BASE_ZIP_NAME="Bandage_$DISTRIB_ID"
+# Determine the Linux distro (just used for naming the final zip files)
+. /etc/lsb-release
+DISTRO=$DISTRIB_ID
+if [ -z "$DISTRO" ] &&  [ -f /etc/debian_version ]; then
+  DISTRO="Debian"
+elif [ -z "$DISTRO" ] &&  [ -f /etc/fedora-release ]; then
+  DISTRO="Fedora"
+elif [ -z "$DISTRO" ] &&  [ -f /etc/centos-release ]; then
+  DISTRO="CentOS"
+elif [ -z "$DISTRO" ] &&  [ -f /etc/gentoo-release ]; then
+  DISTRO="Gentoo"
+fi
+if [ -z "$DISTRO" ]; then
+  DISTRO="Linux"
+fi
+BASE_ZIP_NAME="Bandage_$DISTRO"
 
 if $STATIC_BUILD; then
   # Build the statically-linked version of Bandage.
