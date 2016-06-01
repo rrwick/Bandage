@@ -778,6 +778,18 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 
+    // Now check to see whether all nodes in the graph start with "tig". If so,
+    // this is probably a Canu graph and we can simplify the names a bit.
+    if (allNodesStartWith("tig")) {
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            node->setName(simplifyCanuNodeName(node->getName()));
+        }
+    }
+
     m_sequencesLoadedFromFasta = NOT_TRIED;
 }
 
@@ -3537,4 +3549,42 @@ bool AssemblyGraph::attemptToLoadSequencesFromFasta()
     }
 
     return atLeastOneNodeSequenceLoaded;
+}
+
+// Returns true if every node name in the graph starts with the string.
+bool AssemblyGraph::allNodesStartWith(QString start) const
+{
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (!node->getName().startsWith(start))
+            return false;
+    }
+    return true;
+}
+
+
+QString AssemblyGraph::simplifyCanuNodeName(QString oldName) const
+{
+    QString newName;
+
+    // Remove "tig" from front.
+    if (!oldName.startsWith("tig"))
+        return oldName;
+    newName = oldName.remove(0, 3);
+    if (newName.isEmpty())
+        return oldName;
+
+    // Remove +/- from end.
+    QChar sign = oldName[oldName.length()-1];
+    newName.chop(1);
+    if (newName.isEmpty())
+        return oldName;
+
+    // Remove leading zeros.
+    while (newName.length() > 1 && newName[0] == '0')
+        newName.remove(0, 1);
+    return newName + sign;
 }

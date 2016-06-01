@@ -201,6 +201,8 @@ private:
                                         MyGraphicsScene * scene);
     QString cleanNodeName(QString name);
     double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
+    bool allNodesStartWith(QString start) const;
+    QString simplifyCanuNodeName(QString oldName) const;
 
 signals:
     void setMergeTotalCount(int totalCount);
