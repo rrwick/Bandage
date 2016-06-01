@@ -3507,6 +3507,11 @@ bool AssemblyGraph::attemptToLoadSequencesFromFasta()
         fastaFileInfo = QFileInfo(fastaName);
     }
     if (!fastaFileInfo.exists())
+    {
+        fastaName = gfaFileInfo.dir().filePath(baseName + ".contigs.fasta");
+        fastaFileInfo = QFileInfo(fastaName);
+    }
+    if (!fastaFileInfo.exists())
         return false;
 
     bool atLeastOneNodeSequenceLoaded = false;
