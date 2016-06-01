@@ -1,0 +1,1 @@
+Bandage requires the Visual C++ Redistributable for Visual Studio 2015. If you do not have this already installed, you will get an error message when attempting to run Bandage.exe. In this case, you must first run vcredist_x64.exe to install the required libraries.
