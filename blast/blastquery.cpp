@@ -21,6 +21,8 @@
 #include "../graph/path.h"
 #include "../graph/debruijnnode.h"
 #include <limits>
+#include <vector>
+#include <utility>
 
 BlastQuery::BlastQuery(QString name, QString sequence) :
     m_name(name), m_sequence(sequence), m_searchedFor(false), m_shown(true)
@@ -236,6 +238,7 @@ void BlastQuery::findQueryPaths()
 //This function returns the fraction of the query that is covered by BLAST hits.
 //If a list of BLAST hits is passed to the function, it only looks in those
 //hits.  If no such list is passed, it looks in all hits for this query.
+// http://stackoverflow.com/questions/5276686/merging-ranges-in-c
 double BlastQuery::fractionCoveredByHits(const QList<BlastHit *> * hitsToCheck) const
 {
     int hitBases = 0;
@@ -243,45 +246,38 @@ double BlastQuery::fractionCoveredByHits(const QList<BlastHit *> * hitsToCheck) 
     if (queryLength == 0)
         return 0.0;
 
-    for (int i = 0; i < queryLength; ++i)
-    {
-        //Add one to the index because BLAST results use 1-based indexing.
-        if (hitsToCheck == 0)
-        {
-            if (positionInAnyHit(i+1))
-                ++hitBases;
-        }
-        else
-        {
-            if (positionInHitList(i+1, hitsToCheck))
-                ++hitBases;
+    std::vector<std::pair<int, int> > ranges;
+    if (hitsToCheck == 0) {
+        for (int i = 0; i < m_hits.size(); ++i) {
+            BlastHit * hit = m_hits[i].data();
+            ranges.push_back(std::pair<int,int>(hit->m_queryStart - 1, hit->m_queryEnd));
         }
     }
+    else {
+        for (int i = 0; i < hitsToCheck->size(); ++i) {
+            BlastHit * hit = (*hitsToCheck)[i];
+            ranges.push_back(std::pair<int,int>(hit->m_queryStart - 1, hit->m_queryEnd));
+        }
+    }
+    std::sort(ranges.begin(), ranges.end());
+
+    std::vector<std::pair<int, int> > mergedRanges;
+    std::vector<std::pair<int, int> >::iterator it = ranges.begin();
+    std::pair<int,int> current = *(it)++;
+    while (it != ranges.end())
+    {
+        if (current.second >= it->first) {
+            current.second = std::max(current.second, it->second);
+        } else {
+            mergedRanges.push_back(current);
+            current = *(it);
+        }
+        it++;
+    }
+    mergedRanges.push_back(current);
+
+    for (size_t i = 0; i < mergedRanges.size(); ++i)
+        hitBases += mergedRanges[i].second - mergedRanges[i].first;
 
     return double(hitBases) / queryLength;
-}
-
-
-//This accepts a position with 1-based indexing, which is what BLAST results
-//use.
-bool BlastQuery::positionInAnyHit(int position) const
-{
-    for (int i = 0; i < m_hits.size(); ++i)
-    {
-        BlastHit * hit = m_hits[i].data();
-        if (position >= hit->m_queryStart && position <= hit->m_queryEnd)
-            return true;
-    }
-    return false;
-}
-
-bool BlastQuery::positionInHitList(int position, const QList<BlastHit *> * hitsToCheck) const
-{
-    for (int i = 0; i < hitsToCheck->size(); ++i)
-    {
-        BlastHit * hit = (*hitsToCheck)[i];
-        if (position >= hit->m_queryStart && position <= hit->m_queryEnd)
-            return true;
-    }
-    return false;
 }
