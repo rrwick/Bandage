@@ -820,7 +820,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     long long readEnd = lineParts[4].toLongLong(&conversionOkay);
                     if (!conversionOkay)
                         continue;
-                    long long readLength = abs(readEnd - readStart);
+                    long long readLength = (readEnd < readStart) ? (readStart - readEnd) : (readEnd - readStart);
                     QString nodeName = lineParts[1];
                     if (baseCounts.contains(nodeName))
                         baseCounts[nodeName] += readLength;

@@ -117,6 +117,7 @@ Settings::Settings()
     minAutoFindEdgeOverlap = 10;
     maxAutoFindEdgeOverlap = 200;
 
+    maxHitsForQueryPath = IntSetting(100, 0, 1000000);
     maxQueryPathNodes = IntSetting(6, 1, 50);
     minQueryCoveredByPath = FloatSetting(0.9, 0.3, 1.0);
     minQueryCoveredByHits = FloatSetting(0.9, 0.3, 1.0, true);

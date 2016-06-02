@@ -90,6 +90,10 @@ void BlastQuery::clearSearchResults()
 //This function tries to find the paths through the graph which cover the query.
 void BlastQuery::findQueryPaths()
 {
+    m_paths = QList<BlastQueryPath>();
+    if (m_hits.size() > g_settings->maxHitsForQueryPath)
+        return;
+
     int queryLength = m_sequence.length();
     if (m_sequenceType == PROTEIN)
         queryLength *= 3;
@@ -204,7 +208,6 @@ void BlastQuery::findQueryPaths()
 
     //We now want to throw out any paths which are sub-paths of other, larger
     //paths.
-    m_paths = QList<BlastQueryPath>();
     for (int i = 0; i < sufficientCoveragePaths.size(); ++i)
     {
         bool throwOut = false;

@@ -103,24 +103,24 @@ void setOneWidgetFromSetting(QColor * setting, ColourButton * button) {button->s
 void setOneWidgetFromSetting(bool * setting, QCheckBox * checkBox) {checkBox->setChecked(*setting);}
 void setOneWidgetFromSetting(FloatSetting * setting, QDoubleSpinBox * spinBox, bool percentage)
 {
-    spinBox->setValue(setting->val * (percentage ? 100.0 : 1.0));
     spinBox->setMinimum(setting->min * (percentage ? 100.0 : 1.0));
     spinBox->setMaximum(setting->max * (percentage ? 100.0 : 1.0));
+    spinBox->setValue(setting->val * (percentage ? 100.0 : 1.0));
 }
 void setOneWidgetFromSetting(IntSetting * setting, QSpinBox * spinBox)
 {
-    spinBox->setValue(setting->val);
     spinBox->setMinimum(setting->min);
     spinBox->setMaximum(setting->max);
+    spinBox->setValue(setting->val);
 }
 void setOneWidgetFromSetting(SciNotSetting * setting, QDoubleSpinBox * coefficientSpinBox, QSpinBox * exponentSpinBox)
 {
-    coefficientSpinBox->setValue(setting->val.getCoefficient());
     coefficientSpinBox->setMinimum(setting->min.getCoefficient());
     coefficientSpinBox->setMaximum(setting->max.getCoefficient());
-    exponentSpinBox->setValue(setting->val.getExponent());
+    coefficientSpinBox->setValue(setting->val.getCoefficient());
     exponentSpinBox->setMinimum(setting->min.getExponent());
     exponentSpinBox->setMaximum(setting->max.getExponent());
+    exponentSpinBox->setValue(setting->val.getExponent());
 }
 
 
@@ -205,6 +205,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     colourFunctionPointer(&settings->maybeContiguousColour, ui->maybeContiguousColourButton);
     colourFunctionPointer(&settings->notContiguousColour, ui->notContiguousColourButton);
     colourFunctionPointer(&settings->contiguityStartingColour, ui->contiguityStartingColourButton);
+    intFunctionPointer(&settings->maxHitsForQueryPath, ui->maxHitsForQueryPathSpinBox);
     intFunctionPointer(&settings->maxQueryPathNodes, ui->maxPathNodesSpinBox);
     doubleFunctionPointer(&settings->minQueryCoveredByPath, ui->minQueryCoveredByPathSpinBox, true);
     checkBoxFunctionPointer(&settings->minQueryCoveredByHits.on, ui->minQueryCoveredByHitsCheckBox);
@@ -411,7 +412,12 @@ void SettingsDialog::setInfoTexts()
                                                  "are not determined to be contiguous with the starting node(s).");
     ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the "
                                                       "starting node(s).");
-
+    ui->maxHitsForQueryPathInfoText->setInfoText("Bandage will not attempt to find query paths for BLAST queries with more hits "
+                                                 "than this setting. BLAST query path searches can be very slow when there are "
+                                                 "too many hits, so this setting prevents performance problems.<br><br>"
+                                                 "Set to 0 to turn off all BLAST query path finding.<br><br>"
+                                                 "Set to a larger value to enable query path searches for BLAST queries with "
+                                                 "many hits (can be slow).");
     ui->maxPathNodesInfoText->setInfoText("This controls the maximum number of nodes in BLAST query paths.<br><br>"
                                           "A higher value will allow for paths containing more nodes, at a performance "
                                           "cost.");

@@ -173,6 +173,7 @@ public:
     //These control how Bandage finds the best path in the graph to represent
     //each BLAST query.  Some of these settings can be turned on and off and
     //therefore have a corresponding bool value.
+    IntSetting maxHitsForQueryPath;
     IntSetting maxQueryPathNodes;
     FloatSetting minQueryCoveredByPath;
     FloatSetting minQueryCoveredByHits;
