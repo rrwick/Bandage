@@ -679,6 +679,9 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 if (lastChar != "+" && lastChar != "-")
                     nodeName += "+";
 
+                // Canu nodes start with "tig" which we can remove for simplicity.
+                nodeName = simplifyCanuNodeName(nodeName);
+
                 //Save custom colours and labels to be applied later, after
                 //reverse complement nodes are built.
                 if (cl.isValid())
@@ -719,6 +722,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //Parts 1 and 3 hold the node names and parts 2 and 4 hold the corresponding +/-.
                 QString startingNode = lineParts.at(1) + lineParts.at(2);
                 QString endingNode = lineParts.at(3) + lineParts.at(4);
+                startingNode = simplifyCanuNodeName(startingNode);
+                endingNode = simplifyCanuNodeName(endingNode);
                 edgeStartingNodeNames.push_back(startingNode);
                 edgeEndingNodeNames.push_back(endingNode);
 
@@ -778,21 +783,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
     if (m_deBruijnGraphNodes.size() == 0)
         throw "load error";
 
-    // Now check to see whether all nodes in the graph start with "tig". If so,
-    // this is probably a Canu graph and we can simplify the names a bit.
-    if (allNodesStartWith("tig"))
-    {
-        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
-            i.next();
-            DeBruijnNode * node = i.value();
-            node->setName(simplifyCanuNodeName(node->getName()));
-        }
-    }
-
-    // Also for Canu graphs, if there is a file called *.layout.readToTig, then
-    // we can use that to get better read depth values.
+    // For Canu graphs, if there is a file called *.layout.readToTig, then we
+    // can use that to get better read depth values.
     QFileInfo gfaFileInfo(m_filename);
     QString baseName = gfaFileInfo.completeBaseName();
     QString readToTigFilename = gfaFileInfo.dir().filePath(baseName + ".layout.readToTig");
@@ -3600,6 +3592,7 @@ bool AssemblyGraph::attemptToLoadSequencesFromFasta()
     for (size_t i = 0; i < names.size(); ++i)
     {
         QString name = names[i];
+        name = simplifyCanuNodeName(name);
         name = name.split(QRegExp("\\s+"))[0];
         if (m_deBruijnGraphNodes.contains(name + "+"))
         {

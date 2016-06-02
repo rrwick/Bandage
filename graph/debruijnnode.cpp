@@ -333,25 +333,22 @@ bool DeBruijnNode::isNotOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 }
 
 
-QByteArray DeBruijnNode::getFasta(bool sign) const
+QByteArray DeBruijnNode::getFasta(bool sign, bool newLines, bool evenIfEmpty) const
 {
+    QByteArray sequence = getSequence();
+    if (sequence.isEmpty() and !evenIfEmpty)
+        return QByteArray();
+
     QByteArray fasta = ">";
     fasta += getNodeNameForFasta(sign);
     fasta += "\n";
-    fasta += AssemblyGraph::addNewlinesToSequence(m_sequence);
-    return fasta;
-}
-
-
-QByteArray DeBruijnNode::getFastaNoNewLinesInSequence(bool sign) const
-{
-    QByteArray fasta = ">";
-
-    fasta += getNodeNameForFasta(sign);
-    fasta += "\n";
-    fasta += getSequence();
-    fasta += "\n";
-
+    if (newLines)
+        fasta += AssemblyGraph::addNewlinesToSequence(sequence);
+    else
+    {
+        fasta += sequence;
+        fasta += "\n";
+    }
     return fasta;
 }
 

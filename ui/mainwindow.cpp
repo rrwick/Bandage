@@ -2230,7 +2230,7 @@ void MainWindow::webBlastSelectedNodes()
 
     QByteArray selectedNodesFasta;
     for (size_t i = 0; i < selectedNodes.size(); ++i)
-        selectedNodesFasta += selectedNodes[i]->getFastaNoNewLinesInSequence(true);
+        selectedNodesFasta += selectedNodes[i]->getFasta(true, false);
     selectedNodesFasta.chop(1); //remove last newline
 
     QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
