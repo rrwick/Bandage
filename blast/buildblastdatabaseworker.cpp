@@ -55,6 +55,26 @@ void BuildBlastDatabaseWorker::buildBlastDatabase()
     }
     file.close();
 
+    // Make sure the graph has sequences to BLAST.
+    bool atLeastOneSequence = false;
+    QMapIterator<QString, DeBruijnNode*> j(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnNode * node = j.value();
+        if (!node->sequenceIsMissing())
+        {
+            atLeastOneSequence = true;
+            break;
+        }
+    }
+    if (!atLeastOneSequence)
+    {
+        m_error = "Cannot build the BLAST database as this graph contains no sequences";
+        emit finishedBuild(m_error);
+        return;
+    }
+
     QString fullMakeblastdbCommand = m_makeblastdbCommand + " -in " + g_blastSearch->m_tempDirectory + "all_nodes.fasta " + "-dbtype nucl";
     g_blastSearch->m_makeblastdb = new QProcess();
     g_blastSearch->m_makeblastdb->start(fullMakeblastdbCommand);
