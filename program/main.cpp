@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
                            arguments.contains("--blasthits"));
     bool guiNeeded = (first == "") || (first.toLower() == "load") ||
                      imageWithText;
+    if (checkForHelp(arguments) || checkForHelpAll(arguments))
+        guiNeeded = false;
     if (!guiNeeded)
         qputenv("QT_QPA_PLATFORM", QByteArrayLiteral("minimal"));
     new QApplication(argc, argv);
