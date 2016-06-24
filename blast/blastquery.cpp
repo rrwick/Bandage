@@ -259,6 +259,10 @@ double BlastQuery::fractionCoveredByHits(const QList<BlastHit *> * hitsToCheck) 
             ranges.push_back(std::pair<int,int>(hit->m_queryStart - 1, hit->m_queryEnd));
         }
     }
+
+    if (ranges.size() == 0)
+        return 0.0;
+
     std::sort(ranges.begin(), ranges.end());
 
     std::vector<std::pair<int, int> > mergedRanges;
