@@ -602,6 +602,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
 
                 //Get the tags.
+                bool kcFound = false, rcFound = false, fcFound = false, dpFound = false;
                 double kc = 0.0, rc = 0.0, fc = 0.0, dp = 0.0;
                 int ln = 0;
                 QString lb, l2;
@@ -611,14 +612,22 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
-                    if (part.left(3) == "KC:")
+                    if (part.left(3) == "KC:") {
+                        kcFound = true;
                         kc = part.right(part.length() - 5).toDouble();
-                    if (part.left(3) == "RC:")
+                    }
+                    if (part.left(3) == "RC:") {
+                        rcFound = true;
                         rc = part.right(part.length() - 5).toDouble();
-                    if (part.left(3) == "FC:")
+                    }
+                    if (part.left(3) == "FC:") {
+                        fcFound = true;
                         fc = part.right(part.length() - 5).toDouble();
-                    if (part.left(3) == "DP:")
+                    }
+                    if (part.left(3) == "DP:") {
+                        dpFound = true;
                         dp = part.right(part.length() - 5).toDouble();
+                    }
                     if (part.left(3) == "LN:")
                         ln = part.right(part.length() - 5).toInt();
                     if (part.left(3) == "LB:")
@@ -650,22 +659,22 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //We also remember which tag was used so if the graph is saved
                 //we can use the same tag in the output.
                 double nodeDepth = 1.0;
-                if (dp > 0.0)
+                if (dpFound)
                 {
                     nodeDepth = dp;
                     m_depthTag = "DP";
                 }
-                else if (kc > 0.0)
+                else if (kcFound)
                 {
                     nodeDepth = kc / length;
                     m_depthTag = "KC";
                 }
-                else if (rc > 0.0)
+                else if (rcFound)
                 {
                     nodeDepth = rc / length;
                     m_depthTag = "RC";
                 }
-                else if (fc > 0.0)
+                else if (fcFound)
                 {
                     nodeDepth = fc / length;
                     m_depthTag = "FC";
