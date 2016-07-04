@@ -840,6 +840,12 @@ bool Path::containsEntireNode(DeBruijnNode * node) const
     if (m_nodes.empty())
         return false;
 
+    if (m_nodes.size() == 1) {
+        if (m_nodes.front() != node)
+            return false;
+        return m_startLocation.isAtStartOfNode() && m_endLocation.isAtEndOfNode();
+    }
+
     if (m_nodes.front() == node && m_startLocation.isAtStartOfNode())
         return true;
 
