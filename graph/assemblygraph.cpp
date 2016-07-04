@@ -3487,10 +3487,10 @@ long long AssemblyGraph::getEstimatedSequenceLength() const
 
 
 
-long long AssemblyGraph::getEstimatedSequenceLength(double meanDepthByBase) const
+long long AssemblyGraph::getEstimatedSequenceLength(double medianDepthByBase) const
 {
     long long estimatedSequenceLength = 0;
-    if (meanDepthByBase == 0.0)
+    if (medianDepthByBase == 0.0)
         return 0;
 
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
@@ -3502,7 +3502,7 @@ long long AssemblyGraph::getEstimatedSequenceLength(double meanDepthByBase) cons
         if (node->isPositiveNode())
         {
             int nodeLength = node->getLengthWithoutTrailingOverlap();
-            double relativeDepth = node->getDepth() / meanDepthByBase;
+            double relativeDepth = node->getDepth() / medianDepthByBase;
 
             int closestIntegerDepth = round(relativeDepth);
             int lengthAdjustedForDepth = nodeLength * closestIntegerDepth;

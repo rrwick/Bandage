@@ -160,7 +160,7 @@ public:
     void getGraphComponentCountAndLargestComponentSize(int * componentCount, int * largestComponentLength) const;
     double getMedianDepthByBase() const;
     long long getEstimatedSequenceLength() const;
-    long long getEstimatedSequenceLength(double meanDepthByBase) const;
+    long long getEstimatedSequenceLength(double medianDepthByBase) const;
     long long getTotalLengthMinusEdgeOverlaps() const;
     QPair<int, int> getOverlapRange() const;
     bool attemptToLoadSequencesFromFasta();
