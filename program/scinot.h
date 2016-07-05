@@ -28,7 +28,7 @@
 class SciNot
 {
 public:
-    //CREATORS
+    // CREATORS
     SciNot();
     SciNot(double coefficient, int exponent);
     SciNot(QString sciNotString);
@@ -48,6 +48,9 @@ public:
     bool isPositive() const {return m_coefficient > 0.0;}
     bool isNegative() const {return m_coefficient < 0.0;}
     bool isZero() const {return m_coefficient == 0.0;}
+
+    // MANIPULATORS
+    void power(double p);
 
     // STATIC
     static bool isValidSciNotString(QString sciNotString);

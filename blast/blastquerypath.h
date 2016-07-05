@@ -55,6 +55,7 @@ private:
     QList<BlastHit *> m_hits;
 
     int getHitQueryLength() const;
+    int getHitOverlap(BlastHit * hit1, BlastHit * hit2) const;
 };
 
 #endif // BLASTQUERYPATH_H

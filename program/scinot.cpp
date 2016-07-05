@@ -21,7 +21,7 @@
 #include "math.h"
 
 SciNot::SciNot() :
-    m_coefficient(0.0), m_exponent(0.0)
+    m_coefficient(0.0), m_exponent(0)
 {
     normalise();
 }
@@ -34,7 +34,7 @@ SciNot::SciNot(double coefficient, int exponent) :
 
 
 SciNot::SciNot(QString sciNotString) :
-    m_coefficient(0.0), m_exponent(0.0)
+    m_coefficient(0.0), m_exponent(0)
 {
     QStringList parts = sciNotString.split('e');
     if (parts.size() < 1)
@@ -61,7 +61,7 @@ SciNot::SciNot(QString sciNotString) :
 
 
 SciNot::SciNot(double num) :
-    m_coefficient(num), m_exponent(0.0)
+    m_coefficient(num), m_exponent(0)
 {
     normalise();
 }
@@ -71,7 +71,7 @@ void SciNot::normalise()
 {
     if (m_coefficient == 0.0)
     {
-        m_exponent = 0.0;
+        m_exponent = 0;
         return;
     }
 
@@ -172,4 +172,14 @@ bool SciNot::isValidSciNotString(QString sciNotString)
     parts[1].toInt(&exponentOk);
 
     return coefficientOk && exponentOk;
+}
+
+void SciNot::power(double p) {
+    double newCoefficient = pow(m_coefficient, p);
+    double newExponent = m_exponent * p;
+    int wholePart = int(newExponent);
+    double fractionalPart = newExponent - wholePart;
+    m_coefficient = newCoefficient * pow(10.0, fractionalPart);
+    m_exponent = wholePart;
+    normalise();
 }

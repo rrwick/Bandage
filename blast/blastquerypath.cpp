@@ -20,6 +20,9 @@
 
 #include "blastquery.h"
 #include "../graph/debruijnnode.h"
+#include "../program/globals.h"
+#include "../graph/assemblygraph.h"
+#include "../graph/debruijnedge.h"
 #include <limits>
 
 BlastQueryPath::BlastQueryPath(Path path, BlastQuery * query) :
@@ -99,7 +102,9 @@ double BlastQueryPath::getMeanHitPercIdentity() const
 
 
 //This function looks at all of the hits in the path for this query and
-//multiplies the evalues together.
+//multiplies the e-values together. If the hits overlap each other, then
+//this function reduces the e-values accoringly (effectively to prevent
+//the overlapping region from being counted twice).
 SciNot BlastQueryPath::getEvalueProduct() const
 {
     double coefficientProduct = 1.0;
@@ -107,11 +112,67 @@ SciNot BlastQueryPath::getEvalueProduct() const
 
     for (int i = 0; i < m_hits.size(); ++i)
     {
-        coefficientProduct *= m_hits[i]->m_eValue.getCoefficient();
-        exponentSum += m_hits[i]->m_eValue.getExponent();
+        BlastHit * thisHit = m_hits[i];
+        SciNot thisHitEValue = thisHit->m_eValue;
+        double eValueLenToRemove = 0.0;
+        if (i > 0) {
+            BlastHit * previousHit = m_hits[i-1];
+            int overlap = getHitOverlap(previousHit, thisHit);
+            if (overlap > 0)
+                eValueLenToRemove += overlap / 2.0;
+        }
+        if (i < m_hits.size() - 1) {
+            BlastHit * nextHit = m_hits[i+1];
+            int overlap = getHitOverlap(thisHit, nextHit);
+            if (overlap > 0)
+                eValueLenToRemove += overlap / 2.0;
+        }
+        if (eValueLenToRemove > 0.0) {
+            int thisHitLength = thisHit->getNodeLength();
+            double reduction = (thisHitLength - eValueLenToRemove) / thisHitLength;
+            thisHitEValue.power(reduction);
+        }
+
+        coefficientProduct *= thisHitEValue.getCoefficient();
+        exponentSum += thisHitEValue.getExponent();
     }
 
     return SciNot(coefficientProduct, exponentSum);
+}
+
+
+int BlastQueryPath::getHitOverlap(BlastHit * hit1, BlastHit * hit2) const
+{
+    int hit1Start, hit1End, hit2Start, hit2End;
+    QPair<DeBruijnNode *, DeBruijnNode *> possibleEdge(hit1->m_node, hit2->m_node);
+
+    // Overlap in the same node is simple.
+    if (hit1->m_node == hit2->m_node) {
+        hit1Start = hit1->m_nodeStart;
+        hit1End = hit1->m_nodeEnd;
+        hit2Start = hit2->m_nodeStart;
+        hit2End = hit2->m_nodeEnd;
+    }
+
+    // Overlap in connected nodes is a bit more complex - we need to express
+    // the second hit's coordinates in terms of the first hit's node.
+    else if (g_assemblyGraph->m_deBruijnGraphEdges.contains(possibleEdge)) {
+        DeBruijnEdge * edge = g_assemblyGraph->m_deBruijnGraphEdges[possibleEdge];
+        int overlap = edge->getOverlap();
+        hit1Start = hit1->m_nodeStart;
+        hit1End = hit1->m_nodeEnd;
+        int hit1NodeLen = hit1->m_node->getLength();
+        hit2Start = hit2->m_nodeStart + hit1NodeLen - overlap;
+        hit2End = hit2->m_nodeEnd + hit1NodeLen - overlap;
+    }
+    else
+        return 0;
+
+    int overlap = std::min(hit1End, hit2End) - std::max(hit1Start, hit2Start);
+    if (overlap > 0)
+        return overlap;
+    else
+        return 0;
 }
 
 

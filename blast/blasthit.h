@@ -67,6 +67,7 @@ public:
     GraphLocation getHitStart() const;
     GraphLocation getHitEnd() const;
     QByteArray getNodeSequence() const;
+    int getNodeLength() const {return m_nodeEnd - m_nodeStart + 1;}
 };
 
 #endif // BLASTHIT_H
