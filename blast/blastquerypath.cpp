@@ -148,9 +148,9 @@ int BlastQueryPath::getHitOverlap(BlastHit * hit1, BlastHit * hit2) const
 
     // Overlap in the same node is simple.
     if (hit1->m_node == hit2->m_node) {
-        hit1Start = hit1->m_nodeStart;
+        hit1Start = hit1->m_nodeStart - 1;
         hit1End = hit1->m_nodeEnd;
-        hit2Start = hit2->m_nodeStart;
+        hit2Start = hit2->m_nodeStart - 1;
         hit2End = hit2->m_nodeEnd;
     }
 
