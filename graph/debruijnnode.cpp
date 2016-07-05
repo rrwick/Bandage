@@ -336,7 +336,7 @@ bool DeBruijnNode::isNotOnlyPathInItsDirection(DeBruijnNode * connectedNode,
 QByteArray DeBruijnNode::getFasta(bool sign, bool newLines, bool evenIfEmpty) const
 {
     QByteArray sequence = getSequence();
-    if (sequence.isEmpty() and !evenIfEmpty)
+    if (sequence.isEmpty() && !evenIfEmpty)
         return QByteArray();
 
     QByteArray fasta = ">";
