@@ -92,16 +92,17 @@ int bandageImage(QStringList arguments)
 
     int width = 0;
     int height = 0;
+
+    //Since frame rate performance doesn't matter for a fixed image, set the
+    //default node outline to a nonzero value.
+    g_settings->outlineThickness = 0.3;
+
     parseImageOptions(arguments, &width, &height);
 
     //For Bandage image, it is necessary to position node labels at the
     //centre of the node, not the visible centre(s).  This is because there
     //is no viewport.
     g_settings->positionTextNodeCentre = true;
-
-    //Since frame rate performance doesn't matter for a fixed image, set the
-    //default node outline to a nonzero value.
-    g_settings->outlineThickness = 0.3;
 
     bool blastUsed = isOptionPresent("--query", &arguments);
 
