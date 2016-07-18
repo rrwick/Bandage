@@ -429,6 +429,8 @@ void parseSettings(QStringList arguments)
         g_settings->graphLayoutQuality = quality;
     }
 
+    if (isOptionPresent("--nodseglen", &arguments))
+        g_settings->nodeSegmentLength = getFloatOption("--nodseglen", &arguments);
     if (isOptionPresent("--nodewidth", &arguments))
         g_settings->averageNodeWidth = getFloatOption("--nodewidth", &arguments);
     if (isOptionPresent("--depwidth", &arguments))
