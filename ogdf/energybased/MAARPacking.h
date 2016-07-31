@@ -72,11 +72,10 @@ namespace ogdf {
 		//new down left corner coordinate of each rectangle is calculated and stored in R).
 		//The aspect ratio area and the area of the bounding rectangles are calculated,
 		//too.
-		void pack_rectangles_using_Best_Fit_strategy(List<Rectangle>& R,double
-			aspect_ratio, int presort, int
-			allow_tipping_over,double&
-			aspect_ratio_area,double&
-			bounding_rectangles_area);
+        void pack_rectangles_using_Best_Fit_strategy(List<Rectangle>& R, double
+            aspect_ratio, int presort, double&
+            aspect_ratio_area, double&
+            bounding_rectangles_area);
 
 	private:
 
@@ -96,10 +95,9 @@ namespace ogdf {
 
 		//Creates a new empty row in P and inserts r into this row (by updating P,
 		//row_of_rectangle and total_width_of_row).
-		void  B_F_insert_rectangle_in_new_row(Rectangle r,List<PackingRowInfo>& P, List
-			<ListIterator<PackingRowInfo> >&
-			row_of_rectangle, PQueue&
-			total_width_of_row);
+        void  B_F_insert_rectangle_in_new_row(Rectangle r, List<PackingRowInfo>& P, List
+            <ListIterator<PackingRowInfo> >&
+            row_of_rectangle);
 
 
 		//Finds the Best Fit insert positions of *rect_item and returns the
@@ -108,7 +106,6 @@ namespace ogdf {
 		//the drawing.
 		ListIterator<PackingRowInfo> find_Best_Fit_insert_position(
 			ListIterator<Rectangle> rect_item,
-			int allow_tipping_over,
 			double aspect_ratio,
 			double& aspect_ratio_area,
 			PQueue& total_width_of_row);
@@ -116,10 +113,10 @@ namespace ogdf {
 
 		//Inserts r into the row with corresponding ListIterator B_F_item and updates
 		//total_width_of_row.
-		void B_F_insert_rectangle(Rectangle r,List<PackingRowInfo>& P,List
-			<ListIterator
-			<PackingRowInfo> >& row_of_rectangle,ListIterator
-			<PackingRowInfo> B_F_item, PQueue& total_width_of_row);
+        void B_F_insert_rectangle(Rectangle r, List<PackingRowInfo>& P, List
+            <ListIterator
+            <PackingRowInfo> >& row_of_rectangle, ListIterator
+            <PackingRowInfo> B_F_item);
 
 
 		//The information in P and row_of_rectangle are used to generate the new down left
@@ -140,20 +137,22 @@ namespace ogdf {
 		//Returns true if the aspect_ratio_area of the acual packing becomes better, when
 		//tipping r over bevore inserting it into the new row. best_area holds the aspect
 		//ratio area of the best of the two insertion alternatives.
-		bool better_tipp_rectangle_in_new_row(Rectangle r,double aspect_ratio, int
-			allow_tipping_over,double& best_area);
+        bool better_tipp_rectangle_in_new_row(Rectangle r,double aspect_ratio,
+            double& best_area);
 
 		//Returns true if the aspect_ratio_area of the acual packing becomes better, when
 		//tipping r over bevore inserting it into the existing row B_F_row. best_area holds
 		//the aspect ratio area of the best of the two insertion alternatives.
-		bool better_tipp_rectangle_in_this_row(Rectangle r,double aspect_ratio,int
-			allow_tipping_over,PackingRowInfo B_F_row,
-			double& best_area);
+        bool better_tipp_rectangle_in_this_row(Rectangle r,double aspect_ratio,
+            PackingRowInfo B_F_row,double& best_area);
 
 		//Tipps *rect_item over, by newly calculatting its width, height, and old_dlc
 		//values (Coordinates of the underlying connected subgraph are not recaculated
 		//here!!!). The new values are saved in R[rect_item] and are returned.
 		Rectangle tipp_over(ListIterator<Rectangle> rect_item);
+
+        double getAspectRatio(List<Rectangle>& R, double wrappingWidth);
+        double getAspectRatioAgreement(double ar1, double ar2);
 
 	};
 

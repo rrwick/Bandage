@@ -61,13 +61,9 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
 	List<Rectangle>& R,
 	double aspect_ratio,
 	int presort,
-	int allow_tipping_over,
-	double& aspect_ratio_area,
-	double& bounding_rectangles_area)
+    double& aspect_ratio_area,
+    double& bounding_rectangles_area)
 {
-	Rectangle r;
-	double area;
-	ListIterator<PackingRowInfo> B_F_item;
 	ListIterator<Rectangle> rect_item;
 	List<PackingRowInfo> P; //represents the packing of the rectangles
 	List<ListIterator <PackingRowInfo> > row_of_rectangle; //stores for each rectangle
@@ -75,7 +71,6 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
 	//where r is placed (at pos i in row_of_rectangle)
 	List<ListIterator<Rectangle> > rectangle_order;//holds the order in which the
 	//rectangles are touched
-	PQueue total_width_of_row; //stores for each row the ListIterator of the corresp. list
 	//in R and its total width
 
 	if(presort == FMMMLayout::psDecreasingHeight)
@@ -85,33 +80,119 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
     else if (presort == FMMMLayout::psDecreasingArea)
         presort_rectangles_by_area(R);
 
+    double fullWidth = 0;
+    double widestRect = 0.0;
+    for(rect_item = R.begin(); rect_item.valid(); ++rect_item) {
+        double rectWidth =  (*rect_item).get_width();
+        fullWidth += rectWidth;
+        widestRect = std::max(widestRect, rectWidth);
+    }
+
+    double wrapWidth = fullWidth;
+    double fullWidthAspectRatio = getAspectRatio(R, fullWidth);
+    double bestAspectRatio = fullWidthAspectRatio;
+    double bestAgreement = getAspectRatioAgreement(aspect_ratio, fullWidthAspectRatio);
+
+    if (fullWidthAspectRatio > aspect_ratio) {
+
+        // Binary search our way to a best wrapWidth value.
+        double left = 0.0;
+        double right = fullWidth;
+        while (true) {
+            double mid = (left + right) / 2.0;
+            double midAspectRatio = getAspectRatio(R, mid);
+
+            if (midAspectRatio == aspect_ratio) { // Exact match! (unlikely)
+                bestAspectRatio = midAspectRatio;
+                wrapWidth = mid;
+                break;
+            }
+            else if (midAspectRatio > aspect_ratio)
+                right = mid;
+            else // midAspectRatio < aspect_ratio
+                left = mid;
+
+            double agreement = getAspectRatioAgreement(aspect_ratio, getAspectRatio(R, mid));
+
+            // If the value hasn't changed, then it's not going to get any better.
+            if (agreement == bestAgreement)
+                break;
+
+            if (agreement > bestAgreement) {
+                bestAspectRatio = midAspectRatio;
+                bestAgreement = agreement;
+                wrapWidth = mid;
+            }
+
+            // No point in continuing too long.
+            if (right - left < 1.0)
+                break;
+        }
+    }
+
 	//init rectangle_order
 	for(rect_item = R.begin(); rect_item.valid(); ++rect_item)
 		rectangle_order.pushBack(rect_item);
 
+    // Now we know the wrapping width so we can position the rectangles in rows.
+    double widthOfCurrentRow = 0.0;
 	for(rect_item = R.begin(); rect_item.valid(); ++rect_item)
 	{
-		if (P.empty())
-		{
-			r = *rect_item;
-			if(better_tipp_rectangle_in_new_row(r,aspect_ratio,allow_tipping_over,area))
-				r = tipp_over(rect_item);
-			B_F_insert_rectangle_in_new_row(r,P,row_of_rectangle,total_width_of_row);
-			aspect_ratio_area = calculate_aspect_ratio_area(r.get_width(),r.get_height(),
-				aspect_ratio);
+        Rectangle r = *rect_item;
+        double rectWidth = r.get_width();
+        if (P.empty() || widthOfCurrentRow + rectWidth > wrapWidth || rectWidth > wrapWidth)
+        {
+            B_F_insert_rectangle_in_new_row(r,P,row_of_rectangle);
+            aspect_ratio_area = calculate_aspect_ratio_area(r.get_width(),r.get_height(),
+                aspect_ratio);
+            widthOfCurrentRow = rectWidth;
 		}
-		else
-		{
-			B_F_item = find_Best_Fit_insert_position(rect_item,allow_tipping_over,
-				aspect_ratio,aspect_ratio_area,
-				total_width_of_row);
-
-			r = *rect_item;
-			B_F_insert_rectangle(r,P,row_of_rectangle,B_F_item,total_width_of_row);
+        else // Insert in current row.
+        {
+            ListIterator<PackingRowInfo> B_F_item = row_of_rectangle.back();
+            B_F_insert_rectangle(r,P,row_of_rectangle,B_F_item);
+            widthOfCurrentRow += rectWidth;
 		}
 	}
 	export_new_rectangle_positions(P,row_of_rectangle,rectangle_order);
 	bounding_rectangles_area = calculate_bounding_rectangles_area(R);
+}
+
+
+double MAARPacking::getAspectRatio(List<Rectangle>& R, double wrappingWidth) {
+    double width = 0.0, height = 0.0;
+    double rowWidth = 0.0, rowHeight = 0.0;
+    for(ListIterator<Rectangle> rect_item = R.begin(); rect_item.valid(); ++rect_item) {
+        double rectWidth = (*rect_item).get_width();
+        double rectHeight = (*rect_item).get_height();
+
+        // If the rectangle fits in this row, it goes in this row.
+        if (rowWidth + rectWidth <= wrappingWidth) {
+            rowWidth += rectWidth;
+            rowHeight = std::max(rowHeight, rectHeight);
+        }
+
+        // Otherwise, it goes in a new row.
+        else {
+            width = std::max(width, rowWidth);
+            height += rowHeight;
+            rowWidth = rectWidth;
+            rowHeight = rectHeight;
+        }
+    }
+    width = std::max(width, rowWidth);
+    height += rowHeight;
+    if (height > 0.0)
+        return width / height;
+    else
+        return 1.0;
+}
+
+
+double MAARPacking::getAspectRatioAgreement(double ar1, double ar2) {
+    if (ar1 == 0.0 && ar2 == 0.0)
+        return 1.0;
+    return std::min(ar1, ar2) / std::max(ar1, ar2);
 }
 
 
@@ -139,8 +220,7 @@ inline void MAARPacking::presort_rectangles_by_area(List<Rectangle>& R)
 void MAARPacking::B_F_insert_rectangle_in_new_row(
 	Rectangle r,
 	List<PackingRowInfo>& P,
-	List <ListIterator<PackingRowInfo> >&row_of_rectangle,
-	PQueue& total_width_of_row)
+    List <ListIterator<PackingRowInfo> >&row_of_rectangle)
 {
 	PackingRowInfo p;
 
@@ -155,60 +235,33 @@ void MAARPacking::B_F_insert_rectangle_in_new_row(
 
 	//update area_height,area_width
 	area_width = max(r.get_width(),area_width);
-	area_height += r.get_height();
-
-
-	//update total_width_of_row
-	total_width_of_row.insert(r.get_width(),P.rbegin());
+    area_height += r.get_height();
 }
 
 
 ListIterator<PackingRowInfo> MAARPacking::find_Best_Fit_insert_position(
 	ListIterator<Rectangle> rect_item,
-	int allow_tipping_over,
 	double aspect_ratio,
 	double& aspect_ratio_area,
 	PQueue& total_width_of_row)
 {
 	numexcept N;
 	double area_2;
-	int best_try_index,index_2;
 	Rectangle r = *rect_item;
 
-	if(better_tipp_rectangle_in_new_row(r,aspect_ratio,allow_tipping_over,
-		aspect_ratio_area))
-		best_try_index = 2;
-	else
-		best_try_index = 1;
+    better_tipp_rectangle_in_new_row(r,aspect_ratio,aspect_ratio_area);
 
 	ListIterator<PackingRowInfo> B_F_item = total_width_of_row.find_min();
 	PackingRowInfo B_F_row = *B_F_item;
-	if(better_tipp_rectangle_in_this_row(r,aspect_ratio,allow_tipping_over,B_F_row,area_2))
-		index_2 = 4;
-	else
-		index_2 = 3;
+    better_tipp_rectangle_in_this_row(r,aspect_ratio,B_F_row,area_2);
 
 	if((area_2 <= aspect_ratio_area) || N.nearly_equal(aspect_ratio_area,area_2))
 	{
 		aspect_ratio_area = area_2;
-		best_try_index = index_2;
+        return B_F_item;
 	}
-
-	//return the row and eventually tipp the rectangle with ListIterator rect_item
-	if(best_try_index == 1)
-		return NULL;
-	else if(best_try_index == 2)
-	{
-		tipp_over(rect_item);
-		return NULL;
-	}
-	else if(best_try_index == 3)
-		return B_F_item;
-	else //best_try_index == 4
-	{
-		tipp_over(rect_item);
-		return B_F_item;
-	}
+    else
+        return NULL;
 }
 
 
@@ -216,12 +269,11 @@ void MAARPacking::B_F_insert_rectangle(
 	Rectangle r,
 	List<PackingRowInfo>& P,
 	List<ListIterator<PackingRowInfo> >&row_of_rectangle,
-	ListIterator<PackingRowInfo> B_F_item,
-	PQueue& total_width_of_row)
+    ListIterator<PackingRowInfo> B_F_item)
 {
 	ListIterator<PackingRowInfo> null = NULL;
 	if (B_F_item == null) //insert into a new row
-		B_F_insert_rectangle_in_new_row(r,P,row_of_rectangle,total_width_of_row);
+        B_F_insert_rectangle_in_new_row(r,P,row_of_rectangle);
 	else //insert into an existing row
 	{
 		double old_max_height;
@@ -239,12 +291,6 @@ void MAARPacking::B_F_insert_rectangle(
 		//update area_height,area_width
 		area_width = max(area_width,p.get_total_width());
 		area_height = max(area_height,area_height-old_max_height+r.get_height());
-
-		//update total_width_of_row
-
-		total_width_of_row.del_min();
-		total_width_of_row.insert(p.get_total_width(),B_F_item);
-
 	}
 }
 
@@ -340,10 +386,9 @@ inline double MAARPacking::calculate_aspect_ratio_area(
 bool MAARPacking::better_tipp_rectangle_in_new_row(
 	Rectangle r,
 	double aspect_ratio,
-	int allow_tipping_over,
 	double& best_area)
 {
-	double height,width,act_area;
+    double height,width;
 	bool rotate = false;
 
 	//first try: new row insert position
@@ -351,20 +396,6 @@ bool MAARPacking::better_tipp_rectangle_in_new_row(
 	height = area_height + r.get_height();
 	best_area  = calculate_aspect_ratio_area(width,height,aspect_ratio);
 
-
-	//second try: new row insert position with tipping r over
-	if(allow_tipping_over == FMMMLayout::toNoGrowingRow ||
-		allow_tipping_over == FMMMLayout::toAlways)
-	{
-		width  = max(area_width,r.get_height());
-		height = area_height + r.get_width();
-		act_area  = calculate_aspect_ratio_area(width,height,aspect_ratio);
-		if(act_area < 0.99999 * best_area)
-		{
-			best_area = act_area;
-			rotate = true;
-		}
-	}
 	return rotate;
 }
 
@@ -372,11 +403,10 @@ bool MAARPacking::better_tipp_rectangle_in_new_row(
 bool MAARPacking::better_tipp_rectangle_in_this_row(
 	Rectangle r,
 	double aspect_ratio,
-	int allow_tipping_over,
 	PackingRowInfo B_F_row,
 	double& best_area)
 {
-	double height,width,act_area;
+    double height,width;
 	bool rotate = false;
 
 	//first try: BEST_FIT insert position
@@ -384,19 +414,6 @@ bool MAARPacking::better_tipp_rectangle_in_this_row(
 	height = max(area_height, area_height-B_F_row.get_max_height()+r.get_height());
 	best_area   = calculate_aspect_ratio_area(width,height,aspect_ratio);
 
-	//second try: BEST_FIT insert position  with skipping r over
-	if((allow_tipping_over == FMMMLayout::toNoGrowingRow && r.get_width()
-		<= B_F_row.get_max_height()) || allow_tipping_over == FMMMLayout::toAlways)
-	{
-		width  = max(area_width,B_F_row.get_total_width()+r.get_height());
-		height = max(area_height, area_height-B_F_row.get_max_height()+r.get_width());
-		act_area   = calculate_aspect_ratio_area(width,height,aspect_ratio);
-		if(act_area < 0.99999 * best_area)
-		{
-			best_area = act_area;
-			rotate = true;
-		}
-	}
 	return rotate;
 }
 

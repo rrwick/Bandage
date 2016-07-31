@@ -850,8 +850,7 @@ void FMMMLayout::pack_subGraph_drawings(
 		rotate_components_and_calculate_bounding_rectangles(R,G_sub,A_sub);
 
 	P.pack_rectangles_using_Best_Fit_strategy(R,pageRatio(),presortCCs(),
-		tipOverCCs(),aspect_ratio_area,
-		bounding_rectangles_area);
+        aspect_ratio_area,bounding_rectangles_area);
 	export_node_positions(A,R,G_sub,A_sub);
 }
 
