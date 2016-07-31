@@ -38,6 +38,7 @@ void GraphLayoutWorker::layoutGraph()
     m_fmmm->unitEdgeLength(1.0);
     m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
     m_fmmm->pageRatio(m_aspectRatio);
+    m_fmmm->stepsForRotatingComponents(50); // Helps to make linear graph components more horizontal
 
     switch (m_graphLayoutQuality)
     {
