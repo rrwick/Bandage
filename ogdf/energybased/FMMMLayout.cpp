@@ -298,7 +298,7 @@ void FMMMLayout::initialize_all_options()
 	allowedPositions(apInteger);maxIntPosExponent(40);
 
 	//setting options for the divide et impera step
-    pageRatio(1.1);stepsForRotatingComponents(10);
+    pageRatio(1.0);stepsForRotatingComponents(10);
     tipOverCCs(toNone);minDistCC(100);
     presortCCs(psDecreasingArea);
 
@@ -993,11 +993,9 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 			}
 		}
 
-		//tipp the smallest rectangle over by angle PI/2 around the origin if it makes the
-		//aspect_ratio of r_best more similar to the desired aspect_ratio
+        // If a component is taller than it is wide, rotate it 90 degrees.
 		ratio = r_best.get_width()/r_best.get_height();
-
-		if( (pageRatio() <  1 && ratio > 1) ||  (pageRatio() >= 1 && ratio < 1) )
+        if(ratio < 1)
 		{
 			forall_nodes(v_sub,G_sub[i])
 			{

@@ -23,9 +23,9 @@
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
                                      ogdf::EdgeArray<double> * edgeArray,
-                                     int graphLayoutQuality) :
+                                     int graphLayoutQuality, double aspectRatio) :
     m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray),
-    m_graphLayoutQuality(graphLayoutQuality)
+    m_graphLayoutQuality(graphLayoutQuality), m_aspectRatio(aspectRatio)
 {
 }
 
@@ -37,6 +37,7 @@ void GraphLayoutWorker::layoutGraph()
     m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomRandIterNr);
     m_fmmm->unitEdgeLength(1.0);
     m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
+    m_fmmm->pageRatio(m_aspectRatio);
 
     switch (m_graphLayoutQuality)
     {

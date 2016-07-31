@@ -804,9 +804,11 @@ void MainWindow::layoutGraph()
     m_fmmm = new ogdf::FMMMLayout();
 
     m_layoutThread = new QThread;
+    double aspectRatio = double(g_graphicsView->width()) / g_graphicsView->height();
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
-                                                                  g_settings->graphLayoutQuality);
+                                                                  g_settings->graphLayoutQuality,
+                                                                  aspectRatio);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
     connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));
