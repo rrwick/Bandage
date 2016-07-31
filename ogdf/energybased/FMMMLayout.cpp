@@ -926,7 +926,7 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 {
 	int i,j;
 	double sin_j,cos_j;
-    double angle, act_area, act_area_PI_half_rotated = 0.0, best_area;
+    double angle, act_area, best_area;
 	double ratio,new_width,new_height;
 	Array<NodeArray<DPoint> > best_coords(number_of_components);
 	Array<NodeArray<DPoint> > old_coords(number_of_components);
@@ -941,8 +941,7 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 
 		//init r_best, best_area and best_(old)coords
 		r_best = calculate_bounding_rectangle(G_sub[i],A_sub[i],i);
-		best_area =  calculate_area(r_best.get_width(),r_best.get_height(),
-			number_of_components);
+        best_area =  r_best.get_width() * r_best.get_height();
 		best_coords[i].init(G_sub[i]);
 		old_coords[i].init(G_sub[i]);
 
@@ -966,29 +965,15 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 			}
 
 			r_act = calculate_bounding_rectangle(G_sub[i],A_sub[i],i);
-			act_area =  calculate_area(r_act.get_width(),r_act.get_height(),
-				number_of_components);
-			if(number_of_components == 1)
-				act_area_PI_half_rotated =calculate_area(r_act.get_height(),
-				r_act.get_width(),
-				number_of_components);
+            act_area = r_act.get_width() * r_act.get_height();
 
-			//store placement of the nodes with minimal area (in case that
-			//number_of_components >1) else store placement with minimal aspect ratio area
+            //store placement of the nodes with minimal area
 			if(act_area < best_area)
 			{
 				r_best = r_act;
 				best_area = act_area;
 				forall_nodes(v_sub,G_sub[i])
 					best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
-			}
-			else if ((number_of_components == 1) && (act_area_PI_half_rotated < best_area))
-			{ //test if rotating further with PI_half would be an improvement
-				r_best = r_act;
-				best_area = act_area_PI_half_rotated;
-				forall_nodes(v_sub,G_sub[i])
-					best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
-				//the needed rotation step follows in the next if statement
 			}
 		}
 

@@ -1188,24 +1188,6 @@ private:
 		NodeArray<NodeAttributes> A_sub[]);
 
 	/**
-	 * Returns the area (aspect ratio area) of a rectangle with width w and height h
-	 * if comp_nr > 1 ( comp_nr == 1).
-	 */
-	double calculate_area(double width,double height,int comp_nr) {
-		if (comp_nr == 1)  //calculate aspect ratio area of the rectangle
-		{
-			double  ratio = width/height;
-
-			if(ratio < pageRatio()) //scale width
-				return ( width * height * (pageRatio()/ratio));
-			else //scale height
-				return (width * height * (ratio/pageRatio()));
-		}
-		else  //calculate area of the rectangle
-			return width * height;
-	}
-
-	/**
 	 * The positions of the nodes in the subgraphs are calculated by using the
 	 * information stored in R and are exported to A. (The coordinates of components
 	 * which surrounding rectangles have been tipped over in the packing step are
