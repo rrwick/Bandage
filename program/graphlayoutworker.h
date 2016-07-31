@@ -41,13 +41,6 @@ public:
 public slots:
     void layoutGraph();
 
-private:
-    void fixTwistedSplits(ogdf::GraphAttributes * graphAttributes);
-    std::vector<ogdf::node> getAdjacentNodes(ogdf::node v);
-    std::vector<ogdf::node> getAdjacentNodesExcluding(ogdf::node v, ogdf::node ex);
-    void followNodesUntilBranch(ogdf::node start, ogdf::node first,
-                                ogdf::node * finish, std::vector<ogdf::node> * path, int * steps);
-
 signals:
     void finishedLayout();
 };

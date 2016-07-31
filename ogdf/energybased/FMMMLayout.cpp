@@ -54,6 +54,9 @@
 #include "Rectangle.h"
 #include <time.h>
 
+#include <QPointF>
+#include <QLineF>
+
 namespace ogdf {
 
 
@@ -245,8 +248,10 @@ void FMMMLayout::call_FORCE_CALCULATION_step(
 			iter++;
 		}//while
 
-		if(act_level == 0)
+        if(act_level == 0) {
+            fixTwistedSplits(G, A);
 			call_POSTPROCESSING_step(G,A,E,F,F_attr,F_rep,last_node_movement);
+        }
 
 		deallocate_memory_for_rep_calc_classes();
 	}
@@ -1643,6 +1648,118 @@ void FMMMLayout::adapt_drawing_to_ideal_average_edgelength(
 		new_pos.m_y = resizingScalar() * area_scaling_factor * A[v].get_position().m_y;
 		A[v].set_position(new_pos);
 	}
+}
+
+
+
+void FMMMLayout::fixTwistedSplits(Graph &G, NodeArray<NodeAttributes>& A) {
+    node v;
+    forall_nodes(v, G) {
+
+        // In order to be a simple two-way split, this node must lead to three others, two of which merge back
+        // together in the same number of steps.
+        std::vector<node> adjacentNodes = getAdjacentNodes(v);
+        if (adjacentNodes.size() == 3) {
+            node direction1Finish;
+            std::vector<node> direction1Path;
+            int direction1Steps;
+            followNodesUntilBranch(v, adjacentNodes[0], &direction1Finish, &direction1Path, &direction1Steps);
+            node direction2Finish;
+            std::vector<node> direction2Path;
+            int direction2Steps;
+            followNodesUntilBranch(v, adjacentNodes[1], &direction2Finish, &direction2Path, &direction2Steps);
+            node direction3Finish;
+            std::vector<node> direction3Path;
+            int direction3Steps;
+            followNodesUntilBranch(v, adjacentNodes[2], &direction3Finish, &direction3Path, &direction3Steps);
+
+            std::vector<node> * path1 = 0;
+            std::vector<node> * path2 = 0;
+            if (direction1Finish == direction2Finish && direction1Steps == direction2Steps && direction1Finish != direction3Finish) {
+                path1 = &direction1Path;
+                path2 = &direction1Path;
+            }
+            else if (direction1Finish == direction3Finish && direction1Steps == direction3Steps && direction1Finish != direction2Finish) {
+                path1 = &direction1Path;
+                path2 = &direction3Path;
+            }
+            else if (direction2Finish == direction3Finish && direction2Steps == direction3Steps && direction2Finish != direction1Finish) {
+                path1 = &direction2Path;
+                path2 = &direction3Path;
+            }
+            if (path1 != 0 && path2 != 0 && path1->size() > 1 && path2->size() > 1) {
+                // If we got here, that means we've found a simple split! path1 and path2 store the nodes in order, so
+                // we check if any of them cross, and if so, we swap their positions to uncross them.
+                for (int i = 0; i < path1->size() - 1; ++i) {
+                    node path1Node1 = (*path1)[i];
+                    node path1Node2 = (*path1)[i+1];
+                    node path2Node1 = (*path2)[i];
+                    node path2Node2 = (*path2)[i+1];
+
+                    DPoint path1Node1Position = A[path1Node1].get_position();
+                    DPoint path1Node2Position = A[path1Node2].get_position();
+                    DPoint path2Node1Position = A[path2Node1].get_position();
+                    DPoint path2Node2Position = A[path2Node2].get_position();
+
+                    QPointF path1Node1Point(path1Node1Position.m_x, path1Node1Position.m_y);
+                    QPointF path1Node2Point(path1Node2Position.m_x, path1Node2Position.m_y);
+                    QPointF path2Node1Point(path2Node1Position.m_x, path2Node1Position.m_y);
+                    QPointF path2Node2Point(path2Node2Position.m_x, path2Node2Position.m_y);
+
+                    QLineF line1(path1Node1Point, path1Node2Point);
+                    QLineF line2(path2Node1Point, path2Node2Point);
+                    QPointF intersectionPoint;
+                    if (line1.intersect(line2, &intersectionPoint) == QLineF::BoundedIntersection) {
+                        A[path1Node2].set_position(path2Node2Position);
+                        A[path2Node2].set_position(path1Node2Position);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+std::vector<node> FMMMLayout::getAdjacentNodes(node v) {
+    std::vector<node> adjacentNodes;
+    ogdf::edge e;
+    forall_adj_edges(e, v) {
+        if (e->source() != v)
+            adjacentNodes.push_back(e->source());
+        if (e->target() != v)
+            adjacentNodes.push_back(e->target());
+    }
+    return adjacentNodes;
+}
+
+
+std::vector<node> FMMMLayout::getAdjacentNodesExcluding(node v, node ex) {
+    std::vector<node> adjacentNodes;
+    ogdf::edge e;
+    forall_adj_edges(e, v) {
+        if (e->source() != v && e->source() != ex)
+            adjacentNodes.push_back(e->source());
+        if (e->target() != v && e->source() != ex)
+            adjacentNodes.push_back(e->target());
+    }
+    return adjacentNodes;
+}
+
+void FMMMLayout::followNodesUntilBranch(node start, node first,
+                                               node * finish, std::vector<node> * path, int * steps) {
+    node prev = start;
+    node current = first;
+    *steps = 0;
+    while (true) {
+        std::vector<node> adjacentNodes = getAdjacentNodesExcluding(current, prev);
+        if (adjacentNodes.size() != 1)
+            break;
+        prev = current;
+        current = adjacentNodes[0];
+        *steps += 1;
+        path->push_back(prev);
+    }
+    *finish = current;
 }
 
 

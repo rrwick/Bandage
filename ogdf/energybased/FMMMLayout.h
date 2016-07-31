@@ -1384,6 +1384,12 @@ private:
 
 	//! Sets time_total to zero.
 	void init_time() { time_total = 0; }
+
+    void fixTwistedSplits(Graph &G, NodeArray<NodeAttributes>& A);
+    std::vector<ogdf::node> getAdjacentNodes(ogdf::node v);
+    std::vector<ogdf::node> getAdjacentNodesExcluding(ogdf::node v, ogdf::node ex);
+    void followNodesUntilBranch(ogdf::node start, ogdf::node first,
+                                ogdf::node * finish, std::vector<ogdf::node> * path, int * steps);
 };
 
 } //end namespace ogdf
