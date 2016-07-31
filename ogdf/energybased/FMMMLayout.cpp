@@ -298,9 +298,9 @@ void FMMMLayout::initialize_all_options()
 	allowedPositions(apInteger);maxIntPosExponent(40);
 
 	//setting options for the divide et impera step
-	pageRatio(1.0);stepsForRotatingComponents(10);
-	tipOverCCs(toNoGrowingRow);minDistCC(100);
-	presortCCs(psDecreasingHeight);
+    pageRatio(1.1);stepsForRotatingComponents(10);
+    tipOverCCs(toNone);minDistCC(100);
+    presortCCs(psDecreasingArea);
 
 	//setting options for the multilevel step
 	minGraphSize(50);galaxyChoice(gcNonUniformProbLowerMass);randomTries(20);

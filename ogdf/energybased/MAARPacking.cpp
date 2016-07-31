@@ -82,6 +82,8 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
 		presort_rectangles_by_height(R);
 	else if (presort == FMMMLayout::psDecreasingWidth)
 		presort_rectangles_by_width(R);
+    else if (presort == FMMMLayout::psDecreasingArea)
+        presort_rectangles_by_area(R);
 
 	//init rectangle_order
 	for(rect_item = R.begin(); rect_item.valid(); ++rect_item)
@@ -124,6 +126,13 @@ inline void MAARPacking::presort_rectangles_by_width(List<Rectangle>& R)
 {
 	RectangleComparerWidth comp_width;
 	R.quicksort(comp_width);
+}
+
+
+inline void MAARPacking::presort_rectangles_by_area(List<Rectangle>& R)
+{
+    RectangleComparerArea comp_area;
+    R.quicksort(comp_area);
 }
 
 

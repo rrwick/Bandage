@@ -291,7 +291,8 @@ public:
 	enum PreSort {
 		psNone, //!< Do not presort.
 		psDecreasingHeight, //!< Presort by decreasing height of components.
-		psDecreasingWidth   //!< Presort by decreasing width of components.
+        psDecreasingWidth,   //!< Presort by decreasing width of components.
+        psDecreasingArea   //!< Presort by decreasing area of components.
 	};
 
 	//! Specifies how sun nodes of galaxies are selected.
@@ -587,6 +588,7 @@ public:
 	 *   - \a psNone: no sorting
 	 *   - \a psDecreasingHeight: sorted by decreasing height
 	 *   - \a psDecreasingWidth: sorted by decreasing width
+     *   - \a psDecreasingArea: sorted by decreasing area
 	 */
 	PreSort presortCCs() const { return m_presortCCs; }
 

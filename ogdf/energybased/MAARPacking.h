@@ -91,6 +91,9 @@ namespace ogdf {
 		//Sorts elemets of R with momotonously decreasing width.
 		void presort_rectangles_by_width(List<Rectangle>& R);
 
+        //Sorts elemets of R with momotonously decreasing area.
+        void presort_rectangles_by_area(List<Rectangle>& R);
+
 		//Creates a new empty row in P and inserts r into this row (by updating P,
 		//row_of_rectangle and total_width_of_row).
 		void  B_F_insert_rectangle_in_new_row(Rectangle r,List<PackingRowInfo>& P, List

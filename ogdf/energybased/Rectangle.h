@@ -202,6 +202,38 @@ namespace ogdf {
 		}
 	};
 
+
+    class RectangleComparerArea
+    {
+    public:
+        RectangleComparerArea() { }
+        ~RectangleComparerArea() { }
+
+        bool less(const Rectangle& A,const Rectangle & B) const
+        {
+            if(A.get_height() * A.get_width() > B.get_height() * B.get_width() )
+                return  true;
+            else
+                return false;
+        }
+
+        bool leq(const Rectangle& A,const Rectangle & B) const
+        {
+            if(A.get_height() * A.get_width() >= B.get_height() * B.get_width() )
+                return  true;
+            else
+                return false;
+        }
+
+        bool equal(const Rectangle& A,const Rectangle & B) const
+        {
+            if(A.get_height() * A.get_width() == B.get_height() * B.get_width() )
+                return  true;
+            else
+                return false;
+        }
+    };
+
 }//namespace ogdf
 #endif
 
