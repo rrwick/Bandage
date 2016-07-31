@@ -87,46 +87,73 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
         fullWidth += rectWidth;
         widestRect = std::max(widestRect, rectWidth);
     }
+    double secondWidestRect = 0.0;
+    for(rect_item = R.begin(); rect_item.valid(); ++rect_item) {
+        double rectWidth =  (*rect_item).get_width();
+        if (rectWidth < widestRect)
+            secondWidestRect = std::max(secondWidestRect, rectWidth);
+    }
 
-    double wrapWidth = fullWidth;
-    double fullWidthAspectRatio = getAspectRatio(R, fullWidth);
-    double bestAspectRatio = fullWidthAspectRatio;
-    double bestAgreement = getAspectRatioAgreement(aspect_ratio, fullWidthAspectRatio);
+    double wrapWidth;
 
-    if (fullWidthAspectRatio > aspect_ratio) {
+    // If there's only one rectangle, then our job is easy: the wrap width is its width.
+    if (secondWidestRect == 0.0)
+        wrapWidth = widestRect;
 
-        // Binary search our way to a best wrapWidth value.
-        double left = 0.0;
-        double right = fullWidth;
-        while (true) {
-            double mid = (left + right) / 2.0;
-            double midAspectRatio = getAspectRatio(R, mid);
+    // If the widest rectangle is much wider than the second widest, we again use the widest as the wrap width. This
+    // is largely for bacterial genome cases, where there will be one very large component and many small ones. In
+    // such a case, it looks weird for the rows of small ones to extend past the big one, regardless of the aspect
+    // ratio.
+    else if (widestRect / secondWidestRect > 5.0)
+        wrapWidth = widestRect;
 
-            if (midAspectRatio == aspect_ratio) { // Exact match! (unlikely)
-                bestAspectRatio = midAspectRatio;
-                wrapWidth = mid;
-                break;
+    // If neither of the above two cases apply, then we binary search our way to a wrap width which brings up closest
+    // to the desired aspect ratio.
+    else {
+        wrapWidth = fullWidth;
+        double fullWidthAspectRatio = getAspectRatio(R, fullWidth);
+        double bestAspectRatio = fullWidthAspectRatio;
+        double bestAgreement = getAspectRatioAgreement(aspect_ratio, fullWidthAspectRatio);
+
+        if (fullWidthAspectRatio > aspect_ratio) {
+            double left = 0.0;
+            double right = fullWidth;
+            while (true) {
+                double mid = (left + right) / 2.0;
+                double midAspectRatio = getAspectRatio(R, mid);
+
+                if (midAspectRatio == aspect_ratio) { // Exact match! (unlikely)
+                    bestAspectRatio = midAspectRatio;
+                    wrapWidth = mid;
+                    break;
+                }
+                else if (midAspectRatio > aspect_ratio)
+                    right = mid;
+                else // midAspectRatio < aspect_ratio
+                    left = mid;
+
+                // We can't let the wrap width become less than the widest rectangle.
+                if (wrapWidth < widestRect) {
+                    wrapWidth = widestRect;
+                    break;
+                }
+
+                double agreement = getAspectRatioAgreement(aspect_ratio, getAspectRatio(R, mid));
+
+                // If the value hasn't changed, then it's not going to get any better.
+                if (agreement == bestAgreement)
+                    break;
+
+                if (agreement > bestAgreement) {
+                    bestAspectRatio = midAspectRatio;
+                    bestAgreement = agreement;
+                    wrapWidth = mid;
+                }
+
+                // No point in continuing too long.
+                if (right - left < 1.0)
+                    break;
             }
-            else if (midAspectRatio > aspect_ratio)
-                right = mid;
-            else // midAspectRatio < aspect_ratio
-                left = mid;
-
-            double agreement = getAspectRatioAgreement(aspect_ratio, getAspectRatio(R, mid));
-
-            // If the value hasn't changed, then it's not going to get any better.
-            if (agreement == bestAgreement)
-                break;
-
-            if (agreement > bestAgreement) {
-                bestAspectRatio = midAspectRatio;
-                bestAgreement = agreement;
-                wrapWidth = mid;
-            }
-
-            // No point in continuing too long.
-            if (right - left < 1.0)
-                break;
         }
     }
 
