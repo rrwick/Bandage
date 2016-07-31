@@ -57,12 +57,12 @@ void GraphLayoutWorker::layoutGraph()
         break;
     case 3:
         m_fmmm->fixedIterations(60);
-        m_fmmm->fineTuningIterations(40);
+        m_fmmm->fineTuningIterations(20);
         m_fmmm->nmPrecision(6);
         break;
     case 4:
         m_fmmm->fixedIterations(120);
-        m_fmmm->fineTuningIterations(80);
+        m_fmmm->fineTuningIterations(20);
         m_fmmm->nmPrecision(8);
         break;
     }
