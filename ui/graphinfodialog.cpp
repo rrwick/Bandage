@@ -58,10 +58,22 @@ void GraphInfoDialog::setLabels()
     int componentCount = 0;
     int largestComponentLength = 0;
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+    QString percentageLargestComponent;
+    if (g_assemblyGraph->m_totalLength > 0)
+        percentageLargestComponent = formatDoubleForDisplay(100.0 * double(largestComponentLength) / g_assemblyGraph->m_totalLength, 2);
+    else
+        percentageLargestComponent = "n/a";
+
+    long long totalLengthOrphanedNodes = g_assemblyGraph->getTotalLengthOrphanedNodes();
+    QString percentageOrphaned;
+    if (g_assemblyGraph->m_totalLength > 0)
+        percentageOrphaned = formatDoubleForDisplay(100.0 * double(totalLengthOrphanedNodes) / g_assemblyGraph->m_totalLength, 2);
+    else
+        percentageOrphaned = "n/a";
 
     ui->connectedComponentsLabel->setText(formatIntForDisplay(componentCount));
-    ui->largestComponentLabel->setText(formatIntForDisplay(largestComponentLength) + " bp");
-    ui->orphanedLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->getTotalLengthOrphanedNodes()) + " bp");
+    ui->largestComponentLabel->setText(formatIntForDisplay(largestComponentLength) + " bp (" + percentageLargestComponent + "%)");
+    ui->orphanedLengthLabel->setText(formatIntForDisplay(totalLengthOrphanedNodes) + " bp (" + percentageOrphaned + "%)");
 
     int n50 = 0;
     int shortestNode = 0;
@@ -125,9 +137,9 @@ void GraphInfoDialog::setInfoTexts()
                                                  "other nodes in the subgraph but disconnected from the rest of the "
                                                  "graph.");
     ui->largestComponentInfoText->setInfoText("The total length of nodes in the largest connected component in the "
-                                              "graph.");
-    ui->orphanedLengthInfoText->setInfoText("The total length of all nodes which have no edges (i.e. a dead end on "
-                                            "both sides).");
+                                              "graph (and the proportion of the total length in this component).");
+    ui->orphanedLengthInfoText->setInfoText("The total length of all nodes which have no edges, i.e. a dead end on "
+                                            "both sides (and the proportion of the total length in orphaned nodes).");
     ui->n50InfoText->setInfoText("The N50 node length.<br><br>"
                                  "The sum of lengths for nodes this size and larger is at least 50% of the total "
                                  "length.");
