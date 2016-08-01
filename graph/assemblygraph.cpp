@@ -3656,3 +3656,16 @@ QString AssemblyGraph::simplifyCanuNodeName(QString oldName) const
         newName.remove(0, 1);
     return newName + sign;
 }
+
+long long AssemblyGraph::getTotalLengthOrphanedNodes() const {
+    long long total = 0;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->isPositiveNode() && node->getDeadEndCount() == 2)
+            total += node->getLength();
+    }
+    return total;
+}

@@ -164,6 +164,7 @@ public:
     long long getTotalLengthMinusEdgeOverlaps() const;
     QPair<int, int> getOverlapRange() const;
     bool attemptToLoadSequencesFromFasta();
+    long long getTotalLengthOrphanedNodes() const;
 
 
 private:

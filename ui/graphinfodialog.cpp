@@ -61,6 +61,7 @@ void GraphInfoDialog::setLabels()
 
     ui->connectedComponentsLabel->setText(formatIntForDisplay(componentCount));
     ui->largestComponentLabel->setText(formatIntForDisplay(largestComponentLength) + " bp");
+    ui->orphanedLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->getTotalLengthOrphanedNodes()) + " bp");
 
     int n50 = 0;
     int shortestNode = 0;
@@ -125,6 +126,8 @@ void GraphInfoDialog::setInfoTexts()
                                                  "graph.");
     ui->largestComponentInfoText->setInfoText("The total length of nodes in the largest connected component in the "
                                               "graph.");
+    ui->orphanedLengthInfoText->setInfoText("The total length of all nodes which have no edges (i.e. a dead end on "
+                                            "both sides).");
     ui->n50InfoText->setInfoText("The N50 node length.<br><br>"
                                  "The sum of lengths for nodes this size and larger is at least 50% of the total "
                                  "length.");

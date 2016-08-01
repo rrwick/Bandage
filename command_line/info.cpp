@@ -93,6 +93,7 @@ int bandageInfo(QStringList arguments)
     int componentCount = 0;
     int largestComponentLength = 0;
     g_assemblyGraph->getGraphComponentCountAndLargestComponentSize(&componentCount, &largestComponentLength);
+    long long totalLengthOrphanedNodes = g_assemblyGraph->getTotalLengthOrphanedNodes();
 
     double medianDepthByBase = g_assemblyGraph->getMedianDepthByBase();
     long long estimatedSequenceLength = g_assemblyGraph->getEstimatedSequenceLength(medianDepthByBase);
@@ -110,6 +111,7 @@ int bandageInfo(QStringList arguments)
         out << percentageDeadEnds << "%\t";
         out << componentCount << "\t";
         out << largestComponentLength << "\t";
+        out << totalLengthOrphanedNodes << "\t";
         out << n50 << "\t";
         out << shortestNode << "\t";
         out << firstQuartile << "\t";
@@ -121,24 +123,25 @@ int bandageInfo(QStringList arguments)
     }
     else
     {
-        out << "Node count:                     " << nodeCount << "\n";
-        out << "Edge count:                     " << edgeCount << "\n";
-        out << "Smallest edge overlap (bp):     " << smallestOverlap << "\n";
-        out << "Largest edge overlap (bp):      " << largestOverlap << "\n";
-        out << "Total length (bp):              " << totalLength << "\n";
-        out << "Total length no overlaps (bp):  " << totalLengthNoOverlaps << "\n";
-        out << "Dead ends:                      " << deadEnds << "\n";
-        out << "Percentage dead ends:           " << percentageDeadEnds << "%\n";
-        out << "Connected components:           " << componentCount << "\n";
-        out << "Largest component (bp):         " << largestComponentLength << "\n";
-        out << "N50 (bp):                       " << n50 << "\n";
-        out << "Shortest node (bp):             " << shortestNode << "\n";
-        out << "Lower quartile node (bp):       " << firstQuartile << "\n";
-        out << "Median node (bp):               " << median << "\n";
-        out << "Upper quartile node (bp):       " << thirdQuartile << "\n";
-        out << "Longest node (bp):              " << longestNode << "\n";
-        out << "Median depth:                   " << medianDepthByBase << "\n";
-        out << "Estimated sequence length (bp): " << estimatedSequenceLength << "\n";
+        out << "Node count:                       " << nodeCount << "\n";
+        out << "Edge count:                       " << edgeCount << "\n";
+        out << "Smallest edge overlap (bp):       " << smallestOverlap << "\n";
+        out << "Largest edge overlap (bp):        " << largestOverlap << "\n";
+        out << "Total length (bp):                " << totalLength << "\n";
+        out << "Total length no overlaps (bp):    " << totalLengthNoOverlaps << "\n";
+        out << "Dead ends:                        " << deadEnds << "\n";
+        out << "Percentage dead ends:             " << percentageDeadEnds << "%\n";
+        out << "Connected components:             " << componentCount << "\n";
+        out << "Largest component (bp):           " << largestComponentLength << "\n";
+        out << "Total length orphaned nodes (bp): " << largestComponentLength << "\n";
+        out << "N50 (bp):                         " << n50 << "\n";
+        out << "Shortest node (bp):               " << shortestNode << "\n";
+        out << "Lower quartile node (bp):         " << firstQuartile << "\n";
+        out << "Median node (bp):                 " << median << "\n";
+        out << "Upper quartile node (bp):         " << thirdQuartile << "\n";
+        out << "Longest node (bp):                " << longestNode << "\n";
+        out << "Median depth:                     " << medianDepthByBase << "\n";
+        out << "Estimated sequence length (bp):   " << estimatedSequenceLength << "\n";
     }
 
     return 0;
