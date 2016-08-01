@@ -189,7 +189,7 @@
               </font>
              </property>
              <property name="text">
-              <string>De Bruijn graph information</string>
+              <string>Graph information</string>
              </property>
             </widget>
            </item>
