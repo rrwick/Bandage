@@ -22,6 +22,7 @@
 #include <QByteArray>
 #include <vector>
 #include "../ogdf/basic/Graph.h"
+#include "../ogdf/basic/GraphAttributes.h"
 #include "../program/globals.h"
 #include <QColor>
 #include "../blast/blasthitpart.h"
@@ -115,7 +116,8 @@ public:
     void resetNode();
     void addEdge(DeBruijnEdge * edge);
     void removeEdge(DeBruijnEdge * edge);
-    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray);
+    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
+                        ogdf::EdgeArray<double> * edgeArray, double xPos);
     void determineContiguity();
     void clearBlastHits() {m_blastHits.clear();}
     void addBlastHit(BlastHit * newHit) {m_blastHits.push_back(newHit);}

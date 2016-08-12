@@ -40,6 +40,7 @@ void GraphLayoutWorker::layoutGraph()
     m_fmmm->pageRatio(m_aspectRatio);
     m_fmmm->stepsForRotatingComponents(50); // Helps to make linear graph components more horizontal.
     m_fmmm->minDistCC(50); // Let graph components be a little bit closer to each other.
+    m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfKeepPositions);
 
     switch (m_graphLayoutQuality)
     {

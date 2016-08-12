@@ -90,7 +90,8 @@ void DeBruijnNode::resetNode()
 }
 
 
-void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray)
+void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
+                                  ogdf::EdgeArray<double> * edgeArray, double xPos)
 {
     //If this node or its reverse complement is already in OGDF, then
     //it's not necessary to make the node.
@@ -114,6 +115,9 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     {
         newNode = ogdfGraph->newNode();
         m_ogdfNode->addOgdfNode(newNode);
+        graphAttributes->x(newNode) = xPos;
+        graphAttributes->y(newNode) = 0.0;
+        xPos += 1.0;
 
         if (i > 0)
         {

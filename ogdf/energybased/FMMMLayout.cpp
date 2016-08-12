@@ -1098,7 +1098,7 @@ inline void FMMMLayout::calculate_forces(
 	calculate_repulsive_forces(G,A,F_rep);
 	add_attr_rep_forces(G,F_attr,F_rep,F,iter,fine_tuning_step);
 	prevent_oscilations(G,F,last_node_movement,iter);
-	move_nodes(G,A,F);
+    move_nodes(G,A,F);
 	update_boxlength_and_cornercoordinate(G,A);
 }
 
@@ -1672,7 +1672,7 @@ void FMMMLayout::fixTwistedSplits(Graph &G, NodeArray<NodeAttributes>& A) {
             if (path1 != 0 && path2 != 0 && path1->size() > 1 && path2->size() > 1) {
                 // If we got here, that means we've found a simple split! path1 and path2 store the nodes in order, so
                 // we check if any of them cross, and if so, we swap their positions to uncross them.
-                for (int i = 0; i < path1->size() - 1; ++i) {
+                for (size_t i = 0; i < path1->size() - 1; ++i) {
                     node path1Node1 = (*path1)[i];
                     node path1Node2 = (*path1)[i+1];
                     node path2Node1 = (*path2)[i];

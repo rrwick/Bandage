@@ -612,41 +612,49 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
-                    if (part.left(3) == "KC:") {
+                    if (part.at(2) != ':')
+                        continue;
+                    QString tag = part.left(2).toUpper();
+                    QString valString = part.right(part.length() - 5);
+                    if (tag == "KC") {
                         kcFound = true;
-                        kc = part.right(part.length() - 5).toDouble();
+                        kc = valString.toDouble();
                     }
-                    if (part.left(3) == "RC:") {
+                    if (tag == "RC") {
                         rcFound = true;
-                        rc = part.right(part.length() - 5).toDouble();
+                        rc = valString.toDouble();
                     }
-                    if (part.left(3) == "FC:") {
+                    if (tag == "FC") {
                         fcFound = true;
-                        fc = part.right(part.length() - 5).toDouble();
+                        fc = valString.toDouble();
                     }
-                    if (part.left(3) == "DP:") {
+                    if (tag == "DP") {
                         dpFound = true;
-                        dp = part.right(part.length() - 5).toDouble();
+                        dp = valString.toDouble();
                     }
-                    if (part.left(3) == "LN:")
-                        ln = part.right(part.length() - 5).toInt();
-                    if (part.left(3) == "LB:")
-                        lb = part.right(part.length() - 5);
-                    if (part.left(3) == "CL:")
-                        cl = QColor(part.right(part.length() - 5));
-                    if (part.left(3) == "L2:")
-                        l2 = part.right(part.length() - 5);
-                    if (part.left(3) == "C2:")
-                        c2 = QColor(part.right(part.length() - 5));
+                    if (tag == "LN")
+                        ln = valString.toInt();
+                    if (tag == "LB")
+                        lb = valString;
+                    if (tag == "CL")
+                        cl = QColor(valString);
+                    if (tag == "L2")
+                        l2 = valString;
+                    if (tag == "C2")
+                        c2 = QColor(valString);
                 }
 
                 //GFA can use * to indicate that the sequence is not in the
                 //file.  In this case, try to use the LN tag for length.  If
                 //that's not available, use a length of 0.
                 //If there is a sequence, then the LN tag will be ignored.
-                int length = sequence.length();
-                if (sequence == "*" || sequence == "")
+                int length;
+                if (sequence == "*" || sequence == "") {
                     length = ln;
+                    sequence = "";
+                }
+                else
+                    length = sequence.length();
 
                 //If there is an attribute holding the depth, we'll use that.
                 //If there isn't, then we'll use 1.0.
@@ -1789,12 +1797,24 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
     }
 
     //First loop through each node, adding it to OGDF if it is drawn.
+    QList<QPair<int, DeBruijnNode *>> drawnNodes;
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
         i.next();
-        if (i.value()->isDrawn())
-            i.value()->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        DeBruijnNode * node = i.value();
+        if (i.value()->isDrawn()) {
+            int nodeInt = node->getNameWithoutSign().toInt();
+            drawnNodes.push_back(QPair<int, DeBruijnNode*>(nodeInt, node));
+        }
+    }
+    std::sort(drawnNodes.begin(), drawnNodes.end(),
+        [](const QPair<int, DeBruijnNode *> & a, const QPair<int, DeBruijnNode *> & b) {return a.first < b.first; });
+
+    double xPos = 0.0;
+    for (int i = 0; i < drawnNodes.size(); ++i) {
+        drawnNodes[i].second->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos);
+        xPos += 100.0;
     }
 
     //Then loop through each edge determining its drawn status and adding it
