@@ -27,7 +27,6 @@
 #include "../command_line/image.h"
 #include "../command_line/querypaths.h"
 #include "../command_line/reduce.h"
-#include "../command_line/contiguous.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include "../program/settings.h"
 #include "../program/memory.h"
@@ -53,7 +52,6 @@ void printUsage(QTextStream * out, bool all)
     text << "image        Generate an image file of a graph";
     text << "querypaths   Output graph paths for BLAST queries";
     text << "reduce       Save a subgraph of a larger graph";
-//    text << "          contiguous   extract all sequences contiguous with a target sequence";
     text << "";
     text << "Options:  --help       View this help message";
     text << "--helpall    View all command line settings";
@@ -85,18 +83,13 @@ int main(int argc, char *argv[])
             first = arguments[0];
     }
 
-    //Create the application. Some ways of running Bandage require the normal
-    //platform while other command line only ways use the minimal platform.
-    //Frustratingly, Bandage image cannot render text properly with the minimal
-    //platform (at least on OS X), so we need to use the full platform in that
-    //case.
+    // Create the application. Some ways of running Bandage require the normal platform while other command line only
+    // ways use the minimal platform. Frustratingly, Bandage image cannot render text properly with the minimal
+    // platform, so we need to use the full platform if Bandage image is run with text labels.
     bool imageWithText = (first.toLower() == "image") &&
-                          (arguments.contains("--names") ||
-                           arguments.contains("--lengths") ||
-                           arguments.contains("--depth") ||
-                           arguments.contains("--blasthits"));
-    bool guiNeeded = (first == "") || (first.toLower() == "load") ||
-                     imageWithText;
+                         (arguments.contains("--names") || arguments.contains("--lengths") ||
+                          arguments.contains("--depth") || arguments.contains("--blasthits"));
+    bool guiNeeded = (first == "") || (first.toLower() == "load") || imageWithText;
     if (checkForHelp(arguments) || checkForHelpAll(arguments))
         guiNeeded = false;
     if (!guiNeeded)
@@ -133,7 +126,6 @@ int main(int argc, char *argv[])
             out << "Version: " << QApplication::applicationVersion() << endl;
             return 0;
         }
-
         if (first.toLower() == "load")
         {
             arguments.pop_front();
@@ -164,11 +156,6 @@ int main(int argc, char *argv[])
             g_memory->commandLineCommand = BANDAGE_REDUCE;
             return bandageReduce(arguments);
         }
-//        else if (first == "contiguous")
-//        {
-//            arguments.pop_front();
-//            return bandageContiguous(arguments);
-//        }
 
         //Since a recognised command was not seen, we now check to see if the user
         //was looking for help information.

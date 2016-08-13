@@ -54,7 +54,6 @@ SOURCES += \
     ui/myprogressdialog.cpp \
     ui/nodewidthvisualaid.cpp \
     ui/verticallabel.cpp \
-    command_line/contiguous.cpp \
     command_line/load.cpp \
     command_line/image.cpp \
     command_line/commoncommandlinefunctions.cpp \
@@ -148,7 +147,6 @@ HEADERS  += \
     ui/myprogressdialog.h \
     ui/nodewidthvisualaid.h \
     ui/verticallabel.h \
-    command_line/contiguous.h \
     command_line/load.h \
     command_line/image.h \
     command_line/commoncommandlinefunctions.h \

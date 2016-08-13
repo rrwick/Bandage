@@ -808,7 +808,7 @@ void MainWindow::layoutGraph()
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
                                                                   g_settings->graphLayoutQuality,
-                                                                  aspectRatio);
+                                                                  g_settings->linearLayout, aspectRatio);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
     connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));

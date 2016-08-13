@@ -80,6 +80,7 @@ public:
     double meanNodeLength;
     double minTotalGraphLength;
     IntSetting graphLayoutQuality;
+    bool linearLayout;
     FloatSetting minimumNodeLength;
     FloatSetting edgeLength;
     FloatSetting doubleModeNodeSeparation;

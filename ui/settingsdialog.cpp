@@ -228,6 +228,9 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     if (setWidgets)
     {
         ui->graphLayoutQualitySlider->setValue(settings->graphLayoutQuality);
+        ui->linearLayoutOffRadioButton->setChecked(!settings->linearLayout);
+        ui->linearLayoutOnRadioButton->setChecked(settings->linearLayout);
+        ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
         ui->depthValueAutoRadioButton->setChecked(settings->autoDepthValue);
@@ -244,6 +247,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     else
     {
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
+        settings->linearLayout = ui->linearLayoutOnRadioButton->isChecked();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
         settings->autoDepthValue = ui->depthValueAutoRadioButton->isChecked();
         if (ui->nodeLengthPerMegabaseAutoRadioButton->isChecked())
@@ -306,6 +310,9 @@ void SettingsDialog::setInfoTexts()
                                                 "positioning the graph components.<br><br>"
                                                 "Low values are faster and recommended for big assembly graphs. Higher values may "
                                                 "result in smoother, more pleasing layouts.");
+    ui->linearLayoutInfoText->setInfoText("Enable this option if the graph is ordered in a linear fashion, e.g. for a MSA graph.<br><br>"
+                                          "When on, Bandage will sort the nodes by name (numerically or alphabetically and initialise "
+                                          "the graph layout left-to-right, resulting in a more linear layout.");
 
     ui->depthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
     ui->depthEffectOnWidthInfoText->setInfoText("This controls the degree to which a node's depth affects its width.<br><br>"

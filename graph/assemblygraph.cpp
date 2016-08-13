@@ -1796,29 +1796,45 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         }
     }
 
-    //First loop through each node, adding it to OGDF if it is drawn.
-    QList<QPair<int, DeBruijnNode *>> drawnNodes;
-    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
-    while (i.hasNext())
-    {
-        i.next();
-        DeBruijnNode * node = i.value();
-        if (i.value()->isDrawn()) {
-            int nodeInt = node->getNameWithoutSign().toInt();
-            drawnNodes.push_back(QPair<int, DeBruijnNode*>(nodeInt, node));
+    // If performing a linear layout, we first sort the drawn nodes (either numerically or alphabetically) and add
+    // them left-to-right.
+    if (g_settings->linearLayout) {
+        QList<QPair<int, DeBruijnNode *>> drawnNodes;
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            if (node->isDrawn()) {
+                int nodeInt = node->getNameWithoutSign().toInt();
+                drawnNodes.push_back(QPair<int, DeBruijnNode*>(nodeInt, node));
+            }
+        }
+        std::sort(drawnNodes.begin(), drawnNodes.end(),
+            [](const QPair<int, DeBruijnNode *> & a, const QPair<int, DeBruijnNode *> & b) {return a.first < b.first; });
+
+        // TO DO: TRY TO SORT ALPHABETICALLY IF NUMERICALLY DIDN'T WORK!
+
+        double xPos = 0.0;
+        for (int i = 0; i < drawnNodes.size(); ++i) {
+            drawnNodes[i].second->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos);
+            xPos += 100.0;
         }
     }
-    std::sort(drawnNodes.begin(), drawnNodes.end(),
-        [](const QPair<int, DeBruijnNode *> & a, const QPair<int, DeBruijnNode *> & b) {return a.first < b.first; });
 
-    double xPos = 0.0;
-    for (int i = 0; i < drawnNodes.size(); ++i) {
-        drawnNodes[i].second->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos);
-        xPos += 100.0;
+    // If the layout isn't linear, then we don't worry about the initial positions because they'll be randomised anyway.
+    else {
+        QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        while (i.hasNext())
+        {
+            i.next();
+            DeBruijnNode * node = i.value();
+            if (node->isDrawn())
+                node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0);
+        }
     }
 
-    //Then loop through each edge determining its drawn status and adding it
-    //to OGDF if it is drawn.
+    //Then loop through each edge determining its drawn status and adding it to OGDF if it is drawn.
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
     while (j.hasNext())
     {
@@ -2156,19 +2172,15 @@ QStringList AssemblyGraph::removeNullStringsFromList(QStringList in)
 }
 
 
-
-
-
-
 //Unlike the equivalent function in MainWindow, this does the graph layout in the main thread.
 void AssemblyGraph::layoutGraph()
 {
     ogdf::FMMMLayout fmmm;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes, m_edgeArray,
-                                                                  g_settings->graphLayoutQuality);
+                                                                  g_settings->graphLayoutQuality,
+                                                                  g_settings->linearLayout);
     graphLayoutWorker->layoutGraph();
 }
-
 
 
 void AssemblyGraph::setAllEdgesExactOverlap(int overlap)

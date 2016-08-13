@@ -29,6 +29,7 @@ Settings::Settings()
     meanNodeLength = 40.0;
     minTotalGraphLength = 500.0;
     graphLayoutQuality = IntSetting(2, 0, 4);
+    linearLayout = false;
     minimumNodeLength = FloatSetting(5.0, 1.0, 100.0);
     edgeLength = FloatSetting(5.0, 0.1, 100.0);
     doubleModeNodeSeparation = FloatSetting(2.0, 0.0, 100.0);

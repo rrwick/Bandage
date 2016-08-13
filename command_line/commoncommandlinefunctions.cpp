@@ -62,10 +62,11 @@ void getSettingsUsage(QStringList * text)
     *text << "--edgewidth <float> Edge width " + getRangeAndDefault(g_settings->edgeWidth);
     *text << "--doubsep <float>   Double mode separation " + getRangeAndDefault(g_settings->doubleModeNodeSeparation);
     *text << "";
-    *text << "Graph layout quality";
+    *text << "Graph layout";
     *text << dashes;
     *text << "--nodseglen <float> Node segment length " + getRangeAndDefault(g_settings->nodeSegmentLength);
     *text << "--iter <int>        Graph layout iterations " + getRangeAndDefault(g_settings->graphLayoutQuality);
+    *text << "--linear            Linear graph layout (default: off)" ;
     *text << "";
     *text << "Graph appearance";
     *text << dashes;
@@ -244,6 +245,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForFloat("--edgelen", arguments, g_settings->edgeLength, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--doubsep", arguments, g_settings->doubleModeNodeSeparation, false); if (error.length() > 0) return error;
     error = checkOptionForInt("--iter", arguments, g_settings->graphLayoutQuality, false); if (error.length() > 0) return error;
+    checkOptionWithoutValue("--linear", arguments);
     error = checkOptionForFloat("--nodseglen", arguments, g_settings->nodeSegmentLength, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--nodewidth", arguments, g_settings->averageNodeWidth, false); if (error.length() > 0) return error;
     error = checkOptionForFloat("--depwidth", arguments, g_settings->depthEffectOnWidth, false); if (error.length() > 0) return error;
@@ -428,6 +430,7 @@ void parseSettings(QStringList arguments)
             quality = 4;
         g_settings->graphLayoutQuality = quality;
     }
+    g_settings->linearLayout = isOptionPresent("--linear", &arguments);
 
     if (isOptionPresent("--nodseglen", &arguments))
         g_settings->nodeSegmentLength = getFloatOption("--nodseglen", &arguments);

@@ -22,10 +22,10 @@
 #include <QLineF>
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
-                                     ogdf::EdgeArray<double> * edgeArray,
-                                     int graphLayoutQuality, double aspectRatio) :
+                                     ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
+                                     double aspectRatio) :
     m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray),
-    m_graphLayoutQuality(graphLayoutQuality), m_aspectRatio(aspectRatio)
+    m_graphLayoutQuality(graphLayoutQuality), m_aspectRatio(aspectRatio), m_linearLayout(linearLayout)
 {
 }
 
@@ -40,7 +40,11 @@ void GraphLayoutWorker::layoutGraph()
     m_fmmm->pageRatio(m_aspectRatio);
     m_fmmm->stepsForRotatingComponents(50); // Helps to make linear graph components more horizontal.
     m_fmmm->minDistCC(50); // Let graph components be a little bit closer to each other.
-    m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfKeepPositions);
+
+    if (m_linearLayout)
+        m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfKeepPositions);
+    else
+        m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomTime);
 
     switch (m_graphLayoutQuality)
     {
