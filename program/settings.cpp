@@ -43,6 +43,7 @@ Settings::Settings()
     outlineThickness = FloatSetting(0.0, 0.0, 100.0);
     selectionThickness = 1.0;
     arrowheadSize = 0.01;
+    arrowheadsInSingleMode = false;
     textOutlineThickness = FloatSetting(1.5, 0.0, 10.0);
 
     blastRainbowPartsPerQuery = 100;

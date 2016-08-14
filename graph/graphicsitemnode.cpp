@@ -48,7 +48,7 @@
 GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
                                    ogdf::GraphAttributes * graphAttributes, QGraphicsItem * parent) :
     QGraphicsItem(parent), m_deBruijnNode(deBruijnNode),
-    m_hasArrow(g_settings->doubleMode)
+    m_hasArrow(g_settings->doubleMode || g_settings->arrowheadsInSingleMode)
 
 {
     setWidth();

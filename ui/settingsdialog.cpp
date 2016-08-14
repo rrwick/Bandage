@@ -233,6 +233,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
         ui->antialiasingOnRadioButton->setChecked(settings->antialiasing);
         ui->antialiasingOffRadioButton->setChecked(!settings->antialiasing);
+        ui->singleNodeArrowHeadsOnRadioButton ->setChecked(settings->arrowheadsInSingleMode);
+        ui->singleNodeArrowHeadsOffRadioButton ->setChecked(!settings->arrowheadsInSingleMode);
         ui->depthValueAutoRadioButton->setChecked(settings->autoDepthValue);
         ui->depthValueManualRadioButton->setChecked(!settings->autoDepthValue);
         nodeLengthPerMegabaseManualChanged();
@@ -249,6 +251,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         settings->graphLayoutQuality = ui->graphLayoutQualitySlider->value();
         settings->linearLayout = ui->linearLayoutOnRadioButton->isChecked();
         settings->antialiasing = ui->antialiasingOnRadioButton->isChecked();
+        settings->arrowheadsInSingleMode = ui->singleNodeArrowHeadsOnRadioButton->isChecked();
         settings->autoDepthValue = ui->depthValueAutoRadioButton->isChecked();
         if (ui->nodeLengthPerMegabaseAutoRadioButton->isChecked())
             settings->nodeLengthMode = AUTO_NODE_LENGTH;
