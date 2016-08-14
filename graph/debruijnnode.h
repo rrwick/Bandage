@@ -117,7 +117,7 @@ public:
     void addEdge(DeBruijnEdge * edge);
     void removeEdge(DeBruijnEdge * edge);
     void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
-                        ogdf::EdgeArray<double> * edgeArray, double xPos);
+                        ogdf::EdgeArray<double> * edgeArray, double xPos, double yPos);
     void determineContiguity();
     void clearBlastHits() {m_blastHits.clear();}
     void addBlastHit(BlastHit * newHit) {m_blastHits.push_back(newHit);}

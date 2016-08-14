@@ -42,6 +42,7 @@
 #include <math.h>
 #include <QFileInfo>
 #include <QDir>
+#include "ogdfnode.h"
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false),
@@ -1796,29 +1797,72 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         }
     }
 
-    // If performing a linear layout, we first sort the drawn nodes (either numerically or alphabetically) and add
-    // them left-to-right.
+    // If performing a linear layout, we first sort the drawn nodes and add them left-to-right.
     if (g_settings->linearLayout) {
-        QList<QPair<int, DeBruijnNode *>> drawnNodes;
+        QList<DeBruijnNode *> sortedDrawnNodes;
+
+        // We first try to sort the nodes numerically.
+        QList<QPair<int, DeBruijnNode *>> numericallySortedDrawnNodes;
         QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+        bool successfulIntConversion = true;
         while (i.hasNext())
         {
             i.next();
             DeBruijnNode * node = i.value();
             if (node->isDrawn()) {
-                int nodeInt = node->getNameWithoutSign().toInt();
-                drawnNodes.push_back(QPair<int, DeBruijnNode*>(nodeInt, node));
+                int nodeInt = node->getNameWithoutSign().toInt(&successfulIntConversion);
+                if (!successfulIntConversion)
+                    break;
+                numericallySortedDrawnNodes.push_back(QPair<int, DeBruijnNode*>(nodeInt, node));
             }
         }
-        std::sort(drawnNodes.begin(), drawnNodes.end(),
-            [](const QPair<int, DeBruijnNode *> & a, const QPair<int, DeBruijnNode *> & b) {return a.first < b.first; });
+        if (successfulIntConversion) {
+            std::sort(numericallySortedDrawnNodes.begin(), numericallySortedDrawnNodes.end(),
+                [](const QPair<int, DeBruijnNode *> & a, const QPair<int, DeBruijnNode *> & b) {return a.first < b.first;});
+            for (int i = 0; i < numericallySortedDrawnNodes.size(); ++i) {
+                sortedDrawnNodes.reserve(numericallySortedDrawnNodes.size());
+                sortedDrawnNodes.push_back(numericallySortedDrawnNodes[i].second);
+            }
+        }
 
-        // TO DO: TRY TO SORT ALPHABETICALLY IF NUMERICALLY DIDN'T WORK!
+        // If any of the conversions from node name to integer failed, then we instead sort the nodes alphabetically.
+        else {
+            i = QMapIterator<QString, DeBruijnNode*>(m_deBruijnGraphNodes);
+            while (i.hasNext())
+            {
+                i.next();
+                DeBruijnNode * node = i.value();
+                if (node->isDrawn())
+                sortedDrawnNodes.push_back(node);
+            }
+            std::sort(sortedDrawnNodes.begin(), sortedDrawnNodes.end(),
+                [](DeBruijnNode * a, DeBruijnNode * b) {return QString::localeAwareCompare(a->getNameWithoutSign().toUpper(), b->getNameWithoutSign().toUpper()) < 0;});
+        }
 
-        double xPos = 0.0;
-        for (int i = 0; i < drawnNodes.size(); ++i) {
-            drawnNodes[i].second->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos);
-            xPos += 100.0;
+        // Now we add the drawn nodes to the OGDF graph, given them initial positions based on their sort order.
+        QSet<QPair<double, double> > usedStartPositions;
+        double lastXPos = 0.0;
+        for (int i = 0; i < sortedDrawnNodes.size(); ++i) {
+            DeBruijnNode * node = sortedDrawnNodes[i];
+            std::vector<DeBruijnNode *> upstreamNodes = node->getUpstreamNodes();
+            for (size_t j = 0; j < upstreamNodes.size(); ++j) {
+                DeBruijnNode * upstreamNode = upstreamNodes[j];
+                if (!upstreamNode->inOgdf())
+                    continue;
+                ogdf::node upstreamEnd = upstreamNode->getOgdfNode()->getLast();
+                double upstreamEndPos = m_graphAttributes->x(upstreamEnd);
+                if (j == 0)
+                    lastXPos = upstreamEndPos;
+                else
+                    lastXPos = std::max(lastXPos, upstreamEndPos);
+            }
+            double xPos = lastXPos + g_settings->edgeLength;
+            double yPos = 0.0;
+            while (usedStartPositions.contains(QPair<double, double>(xPos, yPos)))
+                yPos += g_settings->edgeLength;
+            node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos, yPos);
+            usedStartPositions.insert(QPair<double, double>(xPos, yPos));
+            lastXPos = m_graphAttributes->x(node->getOgdfNode()->getLast());
         }
     }
 
@@ -1830,7 +1874,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
             i.next();
             DeBruijnNode * node = i.value();
             if (node->isDrawn())
-                node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0);
+                node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0, 0.0);
         }
     }
 

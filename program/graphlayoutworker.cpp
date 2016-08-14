@@ -75,7 +75,7 @@ void GraphLayoutWorker::layoutGraph()
         break;
     }
 
-    m_fmmm->call(*m_graphAttributes, *m_edgeArray);
+//    m_fmmm->call(*m_graphAttributes, *m_edgeArray);
 
     emit finishedLayout();
 }
