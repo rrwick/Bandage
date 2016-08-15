@@ -75,6 +75,7 @@ void getSettingsUsage(QStringList * text)
     *text << "--outline <float>   Node outline thickness " + getRangeAndDefault(g_settings->outlineThickness);
     *text << "--selcol <col>      Colour for selections " + getDefaultColour(g_settings->selectionColour);
     *text << "--noaa              Disable antialiasing (default: antialiasing on)";
+    *text << "--singlearr         Show node arrowheads in single mode (default: nodes are only displayed with arrowheads in double mode)";
     *text << "";
     *text << "Text appearance";
     *text << dashes;
@@ -265,6 +266,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     error = checkOptionForColour("--textcol", arguments); if (error.length() > 0) return error;
     error = checkOptionForColour("--toutcol", arguments); if (error.length() > 0) return error;
     checkOptionWithoutValue("--noaa", arguments);
+    checkOptionWithoutValue("--singlearr", arguments);
     QStringList validColourOptions;
     validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow";
     error = checkOptionForString("--colour", arguments, validColourOptions); if (error.length() > 0) return error;
@@ -446,6 +448,8 @@ void parseSettings(QStringList arguments)
     if (isOptionPresent("--outline", &arguments))
         g_settings->outlineThickness = getFloatOption("--outline", &arguments);
     g_settings->antialiasing = !isOptionPresent("--noaa", &arguments);
+    g_settings->arrowheadsInSingleMode = isOptionPresent("--singlearr", &arguments);
+
 
     if (isOptionPresent("--edgecol", &arguments))
         g_settings->edgeColour = getColourOption("--edgecol", &arguments);

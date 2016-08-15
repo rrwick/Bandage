@@ -335,6 +335,13 @@ void SettingsDialog::setInfoTexts()
 
     ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing "
                                           "if you are experiencing slow performance when viewing large graphs.");
+    ui->singleNodeArrowHeadsInfoText->setInfoText("When on, this will draw nodes with arrowheads, even when Bandage is in single "
+                                                  "node style.<br><br>"
+                                                  "This makes sense for graphs where the positive-negative distinction is meaningful "
+                                                  ", e.g. a MSA graph of gene sequences where the positive nodes are the coding "
+                                                  "strands. It does not make sense for graphs where the positive-negative distinction "
+                                                  "is arbitrary, e.g. a SPAdes assembly graph.");
+
     ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the "
                                                        "'Uniform colour' option.");
     ui->uniformNegativeNodeColourInfoText->setInfoText("This is the colour of all negative nodes when Bandage is set to the "

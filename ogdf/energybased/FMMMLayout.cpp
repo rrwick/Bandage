@@ -948,11 +948,12 @@ void FMMMLayout::rotate_components_and_calculate_bounding_rectangles(
 		forall_nodes(v_sub,G_sub[i])
 			old_coords[i][v_sub] = best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
 
-		//rotate the components
-		for(j=1;j<=stepsForRotatingComponents();j++)
+        //rotate the components
+        double pi_4 = Math::pi_2 / 2.0;
+        for(j=0;j<=stepsForRotatingComponents();j++)
 		{
 			//calculate new positions for the nodes, the new rectangle and area
-			angle = Math::pi_2 * (double(j)/double(stepsForRotatingComponents()+1));
+            angle = Math::pi_2 * (double(j)/double(stepsForRotatingComponents()+1)) - pi_4;
 			sin_j = sin(angle);
 			cos_j = cos(angle);
 			forall_nodes(v_sub,G_sub[i])

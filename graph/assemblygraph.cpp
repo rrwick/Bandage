@@ -1809,7 +1809,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         {
             i.next();
             DeBruijnNode * node = i.value();
-            if (node->isDrawn()) {
+            if (node->isDrawn() && node->thisOrReverseComplementNotInOgdf()) {
                 int nodeInt = node->getNameWithoutSign().toInt(&successfulIntConversion);
                 if (!successfulIntConversion)
                     break;
@@ -1844,6 +1844,8 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         double lastXPos = 0.0;
         for (int i = 0; i < sortedDrawnNodes.size(); ++i) {
             DeBruijnNode * node = sortedDrawnNodes[i];
+            if (node->thisOrReverseComplementInOgdf())
+                continue;
             std::vector<DeBruijnNode *> upstreamNodes = node->getUpstreamNodes();
             for (size_t j = 0; j < upstreamNodes.size(); ++j) {
                 DeBruijnNode * upstreamNode = upstreamNodes[j];
@@ -1873,7 +1875,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         {
             i.next();
             DeBruijnNode * node = i.value();
-            if (node->isDrawn())
+            if (node->isDrawn() && node->thisOrReverseComplementNotInOgdf())
                 node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0, 0.0);
         }
     }
