@@ -422,6 +422,8 @@ void parseSettings(QStringList arguments)
         g_settings->manualNodeLengthPerMegabase = getIntOption("--nodelen", &arguments);
         g_settings->nodeLengthMode = MANUAL_NODE_LENGTH;
     }
+    if (isOptionPresent("--edgelen", &arguments))
+        g_settings->edgeLength = getFloatOption("--edgelen", &arguments);
 
     if (isOptionPresent("--iter", &arguments))
     {

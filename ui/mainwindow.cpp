@@ -397,7 +397,9 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         else if (graphFileType == GFA)
         {
             bool unsupportedCigar = false;
-            g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName, &unsupportedCigar, &customLabels, &customColours);
+            QString bandageOptionsError;
+            g_assemblyGraph->buildDeBruijnGraphFromGfa(fullFileName, &unsupportedCigar, &customLabels, &customColours,
+                                                       &bandageOptionsError);
             if (unsupportedCigar)
                 QMessageBox::warning(this, "Unsupported CIGAR", "This GFA file contains "
                                      "links with complex CIGAR strings (containing "
@@ -405,6 +407,10 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
                                      "Bandage does not support edge overlaps that are not "
                                      "perfect, so the behaviour of such edges in this graph "
                                      "is undefined.");
+            if (bandageOptionsError.length() > 0)
+                QMessageBox::warning(this, "Bad Bandage options", "This GFA file contains Bandage options but they "
+                                     "were not used because of this error:\n\n" + bandageOptionsError);
+
         }
         else if (graphFileType == TRINITY)
             g_assemblyGraph->buildDeBruijnGraphFromTrinityFasta(fullFileName);

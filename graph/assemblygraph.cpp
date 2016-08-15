@@ -43,6 +43,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include "ogdfnode.h"
+#include "../command_line/commoncommandlinefunctions.h"
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false),
@@ -560,7 +561,7 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 //encountered an unsupported CIGAR string, whether the GFA has custom labels
 //and whether it has custom colours.
 void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupportedCigar,
-                                              bool *customLabels, bool *customColours)
+                                              bool *customLabels, bool *customColours, QString *bandageOptionsError)
 {
     m_graphFileType = GFA;
     m_filename = fullFileName;
@@ -568,10 +569,10 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
     *unsupportedCigar = false;
     *customLabels = false;
     *customColours = false;
+    *bandageOptionsError = "";
 
     QFile inputFile(fullFileName);
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
+    if (inputFile.open(QIODevice::ReadOnly)) {
         std::vector<QString> edgeStartingNodeNames;
         std::vector<QString> edgeEndingNodeNames;
         std::vector<int> edgeOverlaps;
@@ -580,8 +581,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
         QMap<QString, QString> labels;
 
         QTextStream in(&inputFile);
-        while (!in.atEnd())
-        {
+        while (!in.atEnd()) {
             QApplication::processEvents();
             QString line = in.readLine();
 
@@ -590,9 +590,27 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             if (lineParts.size() < 1)
                 continue;
 
-            //Lines beginning with "S" are sequence (node) lines
-            if (lineParts.at(0) == "S")
-            {
+            //Lines beginning with "H" are sequence (node) lines.
+            if (lineParts.at(0) == "H") {
+
+                // Check for a tag containing Bandage options.
+                for (int i = 1; i < lineParts.size(); ++i) {
+                    QString part = lineParts.at(i);
+                    if (part.size() < 6)
+                        continue;
+                    if (part.left(5) != "bn:Z:")
+                        continue;
+                    QString bandageOptionsString = part.right(part.length() - 5);
+                    QStringList bandageOptions = bandageOptionsString.split(' ', QString::SkipEmptyParts);
+                    QStringList bandageOptionsCopy = bandageOptions;
+                    *bandageOptionsError = checkForInvalidOrExcessSettings(&bandageOptionsCopy);
+                    if (bandageOptionsError->length() == 0)
+                        parseSettings(bandageOptions);
+                }
+            }
+
+            //Lines beginning with "S" are sequence (node) lines.
+            if (lineParts.at(0) == "S") {
                 if (lineParts.size() < 3)
                     throw "load error";
 
@@ -608,8 +626,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 int ln = 0;
                 QString lb, l2;
                 QColor cl, c2;
-                for (int i = 3; i < lineParts.size(); ++i)
-                {
+                for (int i = 3; i < lineParts.size(); ++i) {
                     QString part = lineParts.at(i);
                     if (part.size() < 6)
                         continue;
@@ -668,23 +685,19 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //We also remember which tag was used so if the graph is saved
                 //we can use the same tag in the output.
                 double nodeDepth = 1.0;
-                if (dpFound)
-                {
+                if (dpFound) {
                     nodeDepth = dp;
                     m_depthTag = "DP";
                 }
-                else if (kcFound)
-                {
+                else if (kcFound) {
                     nodeDepth = kc / length;
                     m_depthTag = "KC";
                 }
-                else if (rcFound)
-                {
+                else if (rcFound) {
                     nodeDepth = rc / length;
                     m_depthTag = "RC";
                 }
-                else if (fcFound)
-                {
+                else if (fcFound) {
                     nodeDepth = fc / length;
                     m_depthTag = "FC";
                 }
@@ -702,23 +715,19 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
                 //Save custom colours and labels to be applied later, after
                 //reverse complement nodes are built.
-                if (cl.isValid())
-                {
+                if (cl.isValid()) {
                     *customColours = true;
                     colours.insert(nodeName, cl);
                 }
-                if (c2.isValid())
-                {
+                if (c2.isValid()) {
                     *customColours = true;
                     colours.insert(getOppositeNodeName(nodeName), c2);
                 }
-                if (!lb.isEmpty())
-                {
+                if (!lb.isEmpty()) {
                     *customLabels = true;
                     labels.insert(nodeName, lb);
                 }
-                if (!l2.isEmpty())
-                {
+                if (!l2.isEmpty()) {
                     *customLabels = true;
                     labels.insert(getOppositeNodeName(nodeName), l2);
                 }
@@ -728,8 +737,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             }
 
             //Lines beginning with "L" are link (edge) lines
-            else if (lineParts.at(0) == "L")
-            {
+            else if (lineParts.at(0) == "L") {
                 //Edges aren't made now, in case their sequence hasn't yet been specified.
                 //Instead, we save the starting and ending nodes and make the edges after
                 //we're done looking at the file.
@@ -752,8 +760,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     edgeOverlaps.push_back(0);
                 if (cigarContainsOnlyM(cigar))
                     edgeOverlaps.push_back(getLengthFromSimpleCigar(cigar));
-                else
-                {
+                else {
                     edgeOverlaps.push_back(getLengthFromCigar(cigar));
                     *unsupportedCigar = true;
                 }
@@ -762,8 +769,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
         //Pair up reverse complements, creating them if necessary.
         QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
-        while (i.hasNext())
-        {
+        while (i.hasNext()) {
             i.next();
             DeBruijnNode * node = i.value();
             makeReverseComplementNodeIfNecessary(node);
@@ -772,16 +778,14 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
         //Add any custom colours or labels that were loaded.
         QMapIterator<QString, QColor> j(colours);
-        while (j.hasNext())
-        {
+        while (j.hasNext()) {
             j.next();
             QString nodeName = j.key();
             if (m_deBruijnGraphNodes.contains(nodeName))
                 m_deBruijnGraphNodes[nodeName]->setCustomColour(j.value());
         }
         QMapIterator<QString, QString> k(labels);
-        while (k.hasNext())
-        {
+        while (k.hasNext()) {
             k.next();
             QString nodeName = k.key();
             if (m_deBruijnGraphNodes.contains(nodeName))
@@ -789,8 +793,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
         }
 
         //Create all of the edges.
-        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i)
-        {
+        for (size_t i = 0; i < edgeStartingNodeNames.size(); ++i) {
             QString node1Name = edgeStartingNodeNames[i];
             QString node2Name = edgeEndingNodeNames[i];
             int overlap = edgeOverlaps[i];
@@ -807,16 +810,13 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
     QString baseName = gfaFileInfo.completeBaseName();
     QString readToTigFilename = gfaFileInfo.dir().filePath(baseName + ".layout.readToTig");
     QFileInfo readToTigFileInfo(readToTigFilename);
-    if (readToTigFileInfo.exists())
-    {
+    if (readToTigFileInfo.exists()) {
         QFile readToTigFile(readToTigFilename);
-        if (readToTigFile.open(QIODevice::ReadOnly))
-        {
+        if (readToTigFile.open(QIODevice::ReadOnly)) {
             // Keep track of how many bases are put into each node.
             QMap<QString, long long> baseCounts;
             QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
-            while (i.hasNext())
-            {
+            while (i.hasNext()) {
                 i.next();
                 DeBruijnNode * node = i.value();
                 if (node->isPositiveNode())
@@ -824,13 +824,11 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             }
 
             QTextStream in(&readToTigFile);
-            while (!in.atEnd())
-            {
+            while (!in.atEnd()) {
                 QApplication::processEvents();
                 QString line = in.readLine();
                 QStringList lineParts = line.split(QRegExp("\t"));
-                if (lineParts.length() >= 5)
-                {
+                if (lineParts.length() >= 5) {
                     bool conversionOkay;
                     long long readStart = lineParts[3].toLongLong(&conversionOkay);
                     if (!conversionOkay)
@@ -847,12 +845,10 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
             // A node's depth is its total bases divided by its length.
             QMapIterator<QString, DeBruijnNode*> j(m_deBruijnGraphNodes);
-            while (j.hasNext())
-            {
+            while (j.hasNext()) {
                 j.next();
                 DeBruijnNode * node = j.value();
-                if (node->isPositiveNode())
-                {
+                if (node->isPositiveNode()) {
                     QString nodeName = node->getNameWithoutSign();
                     double depth;
                     if (node->getLength() > 0)
@@ -1737,7 +1733,8 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
         if (graphFileType == GFA)
         {
             bool unsupportedCigar, customLabels, customColours;
-            buildDeBruijnGraphFromGfa(filename, &unsupportedCigar, &customLabels, &customColours);
+            QString bandageOptionsError;
+            buildDeBruijnGraphFromGfa(filename, &unsupportedCigar, &customLabels, &customColours, &bandageOptionsError);
         }
         if (graphFileType == TRINITY)
             buildDeBruijnGraphFromTrinityFasta(filename);

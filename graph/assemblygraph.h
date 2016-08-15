@@ -86,7 +86,8 @@ public:
     void determineGraphInfo();
     void clearGraphInfo();
     void buildDeBruijnGraphFromLastGraph(QString fullFileName);
-    void buildDeBruijnGraphFromGfa(QString fullFileName, bool * unsupportedCigar, bool * customLabels, bool * customColours);
+    void buildDeBruijnGraphFromGfa(QString fullFileName, bool * unsupportedCigar, bool * customLabels,
+                                   bool * customColours, QString *bandageOptionsError);
     void buildDeBruijnGraphFromFastg(QString fullFileName);
     void buildDeBruijnGraphFromTrinityFasta(QString fullFileName);
     int buildDeBruijnGraphFromAsqg(QString fullFileName);
