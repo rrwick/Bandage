@@ -38,7 +38,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-575</y>
+        <y>-372</y>
         <width>400</width>
         <height>3432</height>
        </rect>
@@ -1160,7 +1160,7 @@ per megabase:</string>
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Arrow heads in
+             <string>Arrowheads in
 single node style:</string>
             </property>
            </widget>
