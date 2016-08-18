@@ -686,20 +686,23 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                 //we can use the same tag in the output.
                 double nodeDepth = 1.0;
                 if (dpFound) {
-                    nodeDepth = dp;
                     m_depthTag = "DP";
+                    nodeDepth = dp;
                 }
                 else if (kcFound) {
-                    nodeDepth = kc / length;
                     m_depthTag = "KC";
+                    if (length > 0)
+                        nodeDepth = kc / length;
                 }
                 else if (rcFound) {
-                    nodeDepth = rc / length;
                     m_depthTag = "RC";
+                    if (length > 0)
+                        nodeDepth = rc / length;
                 }
                 else if (fcFound) {
-                    nodeDepth = fc / length;
                     m_depthTag = "FC";
+                    if (length > 0)
+                        nodeDepth = fc / length;
                 }
 
                 //We check to see if the node ended in a "+" or "-".
