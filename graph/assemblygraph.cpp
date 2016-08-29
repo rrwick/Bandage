@@ -590,7 +590,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             if (lineParts.size() < 1)
                 continue;
 
-            //Lines beginning with "H" are sequence (node) lines.
+            //Lines beginning with "H" are header lines.
             if (lineParts.at(0) == "H") {
 
                 // Check for a tag containing Bandage options.
