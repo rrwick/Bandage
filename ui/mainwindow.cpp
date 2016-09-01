@@ -436,17 +436,17 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         g_memory->clearGraphSpecificMemory();
 
         // If the graph has custom colours, automatically switch the colour scheme to custom colours.
-        if (customColours)
-            ui->coloursComboBox->setCurrentIndex(6);
+        if (customColours) {
+            if (ui->coloursComboBox->currentIndex() != 6)
+                ui->coloursComboBox->setCurrentIndex(6);
+            else
+                switchColourScheme();
+        }
 
         // If the graph doesn't have custom colours, but the colour scheme is on 'Custom', automatically switch it back
         // to the default of 'Random colours'.
         if (!customColours && ui->coloursComboBox->currentIndex() == 6)
             ui->coloursComboBox->setCurrentIndex(0);
-
-        // If the graph has custom labels, automatically turn them on.
-        if (customLabels)
-            ui->nodeCustomLabelsCheckBox->setChecked(true);
     }
 
     catch (...)
