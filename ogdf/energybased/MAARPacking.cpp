@@ -107,7 +107,7 @@ void MAARPacking::pack_rectangles_using_Best_Fit_strategy(
     else if (widestRect / secondWidestRect > 5.0)
         wrapWidth = widestRect;
 
-    // If neither of the above two cases apply, then we binary search our way to a wrap width which brings up closest
+    // If neither of the above two cases apply, then we binary search our way to a wrap width which brings us closest
     // to the desired aspect ratio.
     else {
         wrapWidth = fullWidth;

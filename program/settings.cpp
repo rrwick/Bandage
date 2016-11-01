@@ -34,6 +34,7 @@ Settings::Settings()
     edgeLength = FloatSetting(5.0, 0.1, 100.0);
     doubleModeNodeSeparation = FloatSetting(2.0, 0.0, 100.0);
     nodeSegmentLength = FloatSetting(20.0, 1.0, 1000.0);
+    componentSeparation = FloatSetting(50.0, 0, 1000.0);
 
     averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
     depthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);

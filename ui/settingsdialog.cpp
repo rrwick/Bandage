@@ -175,6 +175,7 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     doubleFunctionPointer(&settings->edgeLength, ui->edgeLengthSpinBox, false);
     doubleFunctionPointer(&settings->doubleModeNodeSeparation, ui->doubleModeNodeSeparationSpinBox, false);
     doubleFunctionPointer(&settings->nodeSegmentLength, ui->nodeSegmentLengthSpinBox, false);
+    doubleFunctionPointer(&settings->componentSeparation, ui->componentSeparationSpinBox, false);
     doubleFunctionPointer(&settings->depthEffectOnWidth, ui->depthEffectOnWidthSpinBox, true);
     doubleFunctionPointer(&settings->depthPower, ui->depthPowerSpinBox, false);
     doubleFunctionPointer(&settings->edgeWidth, ui->edgeWidthSpinBox, false);
@@ -276,26 +277,16 @@ void SettingsDialog::restoreDefaults()
 
 void SettingsDialog::setInfoTexts()
 {
-    ui->nodeLengthPerMegabaseInfoText->setInfoText("This controls the length of the drawn nodes relative to the nodes' "
-                                                   "sequence lengths.<br><br>"
-                                                   "Set to a larger number for longer nodes and set to a smaller number for "
-                                                   "shorter nodes.<br><br>"
-                                                   "Specifically, a node's length is determined by multiplying its sequence "
-                                                   "length (in Megabases) by this number. If the resulting value is less than "
-                                                   "the 'Minimum node length' setting, the node's length will be increased to "
-                                                   "that value.<br><br>"
-                                                   "Note that node lengths are not exact, but are rather used as targets for the "
-                                                   "graph layout algorithm.<br><br>"
+    ui->nodeLengthPerMegabaseInfoText->setInfoText("This controls the length of the drawn nodes relative to the nodes' sequence lengths.<br><br>"
+                                                   "Set to a larger number for longer nodes and set to a smaller number for shorter nodes.<br><br>"
+                                                   "Specifically, a node's length is determined by multiplying its sequence length (in Megabases) by this number. If the resulting value is less than the 'Minimum node length' setting, the node's length will be increased to that value.<br><br>"
+                                                   "Note that node lengths are not exact, but are rather used as targets for the graph layout algorithm.<br><br>"
                                                    "The graph must be redrawn to see the effect of changing this setting.");
-    ui->minimumNodeLengthInfoText->setInfoText("This controls the minimum node length, regardless of the length of a node's "
-                                               "sequence.<br><br>"
-                                               "Setting this to a smaller value will give a tighter correlation between sequence "
-                                               "lengths and node lengths. Setting this to a larger will make smaller nodes "
-                                               "easier to see and work with.<br><br>"
+    ui->minimumNodeLengthInfoText->setInfoText("This controls the minimum node length, regardless of the length of a node's sequence.<br><br>"
+                                               "Setting this to a smaller value will give a tighter correlation between sequence lengths and node lengths. Setting this to a larger will make smaller nodes easier to see and work with.<br><br>"
                                                "The graph must be redrawn to see the effect of changing this setting.");
     ui->edgeLengthInfoText->setInfoText("This controls the length of the edges that connect nodes.<br><br>"
-                                        "Set to a larger value for more separate nodes. Set to a smaller value for more tightly "
-                                        "packed nodes.<br><br>"
+                                        "Set to a larger value for more separate nodes. Set to a smaller value for more tightly packed nodes.<br><br>"
                                         "The graph must be redrawn to see the effect of changing this setting.");
     ui->edgeWidthInfoText->setInfoText("This controls the width of the edges that connect nodes.<br><br>"
                                        "The graph does not need to be redrawn to see the effect of changing this setting.");
@@ -304,178 +295,94 @@ void SettingsDialog::setInfoTexts()
                                                       "The graph must be redrawn to see the effect of changing this setting.");
 
     ui->nodeSegmentLengthInfoText->setInfoText("This controls the length of the line segments which make up a drawn node.<br><br>"
-                                               "Setting this to a smaller value will produce higher quality nodes with smoother "
-                                               "curves, but graph layout will take longer and graphical performance will be slower. "
-                                               "Setting this to a larger value will produce nodes with more obvious angles, but "
-                                               "graph layout and graphical performance will be faster.<br><br>"
+                                               "Setting this to a smaller value will produce higher quality nodes with smoother curves, but graph layout will take longer and graphical performance will be slower. Setting this to a larger value will produce nodes with more obvious angles, but graph layout and graphical performance will be faster.<br><br>"
                                                "The graph must be redrawn to see the effect of changing this setting.");
-    ui->graphLayoutQualityInfoText->setInfoText("This controls how much time the graph layout algorithm spends on "
-                                                "positioning the graph components.<br><br>"
-                                                "Low values are faster and recommended for big assembly graphs. Higher values may "
-                                                "result in smoother, more pleasing layouts.");
+    ui->componentSeparationInfoText->setInfoText("When the graph contains separate connected components, this will be the distance between the components.<br><br>"
+                                                 "A low value will give a dense, more tightly packed layout. A high value will give a more spaced-out layout.<br><br>"
+                                                 "The graph must be redrawn to see the effect of changing this setting.");
+    ui->graphLayoutQualityInfoText->setInfoText("This controls how much time the graph layout algorithm spends on positioning the graph components.<br><br>"
+                                                "Low values are faster and recommended for big assembly graphs. Higher values may result in smoother, more pleasing layouts.<br><br>"
+                                                "The graph must be redrawn to see the effect of changing this setting.");
     ui->linearLayoutInfoText->setInfoText("Enable this option if the graph is ordered in a linear fashion, e.g. for a MSA graph.<br><br>"
-                                          "When on, Bandage will sort the nodes by name (numerically or alphabetically) and initialise "
-                                          "the graph layout left-to-right, resulting in a more linear layout.");
+                                          "When on, Bandage will sort the nodes by name (numerically or alphabetically) and initialise the graph layout left-to-right, resulting in a more linear layout.");
 
     ui->depthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
     ui->depthEffectOnWidthInfoText->setInfoText("This controls the degree to which a node's depth affects its width.<br><br>"
-                                                   "If set to 0%, all nodes will have the same width (equal to the average "
-                                                   "node width).");
+                                                   "If set to 0%, all nodes will have the same width (equal to the average node width).");
     ui->outlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around each node.<br><br>"
-                                              "Drawing outlines can result in slow performance, so set this to zero "
-                                              "to improve performance.");
-    ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around node labels "
-                                                  "when the 'Text outline' option is ticked.<br><br>"
-                                                  "Large values can make text easier to read, but may "
-                                                  "obscure more of the graph.");
-    ui->positionTextInfoText->setInfoText("When 'Over visible regions' is selected, node labels will move based on the position "
-                                          "of the view to stay visible.<br><br>"
-                                          "When 'On node centre' is selected, node labels will always be displayed at the centre "
-                                          "of each node, regardless of the view's position.");
+                                              "Drawing outlines is somewhat CPU-intensive, so set this to zero to improve performance.");
+    ui->textOutlineThicknessInfoText->setInfoText("This is the thickness of the outline drawn around node labels when the 'Text outline' option is ticked.<br><br>"
+                                                  "Large values can make text easier to read, but may obscure more of the graph.");
+    ui->positionTextInfoText->setInfoText("When 'Over visible regions' is selected, node labels will move based on the position of the view to stay visible.<br><br>"
+                                          "When 'On node centre' is selected, node labels will always be displayed at the centre of each node, regardless of the view's position.");
 
-    ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing "
-                                          "if you are experiencing slow performance when viewing large graphs.");
-    ui->singleNodeArrowHeadsInfoText->setInfoText("When on, this will draw nodes with arrowheads, even when Bandage is in single "
-                                                  "node style.<br><br>"
-                                                  "This makes sense for graphs where the positive-negative distinction is meaningful "
-                                                  ", e.g. a MSA graph of gene sequences where the positive nodes are the coding "
-                                                  "strands. It does not make sense for graphs where the positive-negative distinction "
-                                                  "is arbitrary, e.g. a SPAdes assembly graph.");
+    ui->antialiasingInfoText->setInfoText("Antialiasing makes the display smoother and more pleasing. Disable antialiasing if you are experiencing slow performance when viewing large graphs.");
+    ui->singleNodeArrowHeadsInfoText->setInfoText("When on, this will draw nodes with arrowheads, even when Bandage is in single node style.<br><br>"
+                                                  "This makes sense for graphs where the positive-negative distinction is meaningful, e.g. a MSA graph of gene sequences where the positive nodes are the coding strands. It does not make sense for graphs where the positive-negative distinction is arbitrary, e.g. a SPAdes assembly graph.");
 
-    ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the "
-                                                       "'Uniform colour' option.");
-    ui->uniformNegativeNodeColourInfoText->setInfoText("This is the colour of all negative nodes when Bandage is set to the "
-                                                       "'Uniform colour' option. Negative nodes are only displayed when the "
-                                                       "graph is drawn in 'Double' mode.");
-    ui->uniformNodeSpecialColourInfoText->setInfoText("When Bandage is set to the 'Uniform colour' option, this colour is "
-                                                      "used for limited graph scopes:<ul>"
-                                                      "<li>When the graph scope is set to 'Around node(s)', this colour is "
-                                                      "used for the user-specified nodes.</li>"
-                                                      "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour is "
-                                                      "used for nodes that contain at least one BLAST hit.</li></ul>");
+    ui->uniformPositiveNodeColourInfoText->setInfoText("This is the colour of all positive nodes when Bandage is set to the 'Uniform colour' option.");
+    ui->uniformNegativeNodeColourInfoText->setInfoText("This is the colour of all negative nodes when Bandage is set to the 'Uniform colour' option. Negative nodes are only displayed when the graph is drawn in 'Double' mode.");
+    ui->uniformNodeSpecialColourInfoText->setInfoText("When Bandage is set to the 'Uniform colour' option, this colour is used for limited graph scopes:<ul>"
+                                                      "<li>When the graph scope is set to 'Around node(s)', this colour is used for the user-specified nodes.</li>"
+                                                      "<li>When the graph scope is set to 'Around BLAST hit(s)', this colour is used for nodes that contain at least one BLAST hit.</li></ul>");
     ui->edgeColourInfoText->setInfoText("This colour is used for all edges connecting nodes.");
     ui->outlineColourInfoText->setInfoText("This colour is used to outline nodes that are not currently selected by the user.");
-    ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. "
-                                             "Selected edges will also be displayed in this colour.");
+    ui->selectionColourInfoText->setInfoText("This colour is used to outline nodes that are currently selected by the user. Selected edges will also be displayed in this colour.");
     ui->textColourInfoText->setInfoText("This colour is used for the text of node labels.");
-    ui->textOutlineColourInfoText->setInfoText("If the text outline thickness setting has a nonzero value, then a text outline "
-                                               "will be displayed with this colour.");
+    ui->textOutlineColourInfoText->setInfoText("If the text outline thickness setting has a nonzero value, then a text outline will be displayed with this colour.");
 
-    ui->randomColourPositiveSaturationInfoText->setInfoText("This controls the colour saturation of the positive nodes when the "
-                                                            "'Random colours' option is used.<br><br>"
-                                                            "The minimum value will result in colourless (grey) nodes "
-                                                            "while high values will result in brightly coloured nodes.");
-    ui->randomColourNegativeSaturationInfoText->setInfoText("This controls the colour saturation of the negative nodes when the "
-                                                            "'Random colours' option is used.<br><br>"
-                                                            "The minimum value will result in colourless (grey) nodes "
-                                                            "while high values will result in brightly coloured nodes.<br><br>"
-                                                            "Note that negative nodes are only visible when the graph is drawn "
-                                                            "in double mode.");
-    ui->randomColourPositiveLightnessInfoText->setInfoText("This controls the colour lightness of the positive nodes when the "
-                                                           "'Random colours' option is used.<br><br>"
-                                                           "Low values will result in dark nodes while high values result in "
-                                                           "light nodes");
-    ui->randomColourNegativeLightnessInfoText->setInfoText("This controls the colour lightness of the negative nodes when the "
-                                                           "'Random colours' option is used.<br><br>"
-                                                           "Low values will result in dark nodes while high values result in "
-                                                           "light nodes.<br><br>"
-                                                           "Note that negative nodes are only visible when the graph is drawn "
-                                                           "in double mode.");
-    ui->randomColourPositiveOpacityInfoText->setInfoText("This controls how opaque the positive nodes are when the 'Random colours' "
-                                                         "option is used.<br><br>"
-                                                         "Set to the minimum value for fully transparent nodes. Set to the "
-                                                         "maximum value for completely opaque nodes.");
-    ui->randomColourNegativeOpacityInfoText->setInfoText("This controls how opaque the negative nodes are when the 'Random colours' "
-                                                         "option is used.<br><br>"
-                                                         "Set to the minimum value for fully transparent nodes. Set to the "
-                                                         "maximum value for completely opaque nodes.<br><br>"
-                                                         "Note that negative nodes are only visible when the graph is drawn "
-                                                         "in double mode.");
+    ui->randomColourPositiveSaturationInfoText->setInfoText("This controls the colour saturation of the positive nodes when the 'Random colours' option is used.<br><br>"
+                                                            "The minimum value will result in colourless (grey) nodes while high values will result in brightly coloured nodes.");
+    ui->randomColourNegativeSaturationInfoText->setInfoText("This controls the colour saturation of the negative nodes when the 'Random colours' option is used.<br><br>"
+                                                            "The minimum value will result in colourless (grey) nodes while high values will result in brightly coloured nodes.<br><br>"
+                                                            "Note that negative nodes are only visible when the graph is drawn in double mode.");
+    ui->randomColourPositiveLightnessInfoText->setInfoText("This controls the colour lightness of the positive nodes when the 'Random colours' option is used.<br><br>"
+                                                           "Low values will result in dark nodes while high values result in light nodes");
+    ui->randomColourNegativeLightnessInfoText->setInfoText("This controls the colour lightness of the negative nodes when the 'Random colours' option is used.<br><br>"
+                                                           "Low values will result in dark nodes while high values result in light nodes.<br><br>"
+                                                           "Note that negative nodes are only visible when the graph is drawn in double mode.");
+    ui->randomColourPositiveOpacityInfoText->setInfoText("This controls how opaque the positive nodes are when the 'Random colours' option is used.<br><br>"
+                                                         "Set to the minimum value for fully transparent nodes. Set to the maximum value for completely opaque nodes.");
+    ui->randomColourNegativeOpacityInfoText->setInfoText("This controls how opaque the negative nodes are when the 'Random colours' option is used.<br><br>"
+                                                         "Set to the minimum value for fully transparent nodes. Set to the maximum value for completely opaque nodes.<br><br>"
+                                                         "Note that negative nodes are only visible when the graph is drawn in double mode.");
 
-    ui->lowDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by depth' option, this colour is used for "
-                                               "nodes with depth at or below the low depth value.<br><br>"
-                                               "Nodes with depth between the low and high depth values will get an "
-                                               "intermediate colour.");
-    ui->highDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by depth' option, this colour is used for "
-                                                "nodes with depth above the high depth value.<br><br>"
-                                                "Nodes with depth between the low and high depth values will get an "
-                                                "intermediate colour.");
-    ui->depthAutoValuesInfoText->setInfoText("When set to 'Auto', the low depth value is set to the first quartile and the high "
-                                                 "depth value is set to the third quartile.");
+    ui->lowDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by depth' option, this colour is used for nodes with depth at or below the low depth value.<br><br>"
+                                            "Nodes with depth between the low and high depth values will get an intermediate colour.");
+    ui->highDepthColourInfoText->setInfoText("When Bandage is set to the 'Colour by depth' option, this colour is used for nodes with depth above the high depth value.<br><br>"
+                                             "Nodes with depth between the low and high depth values will get an intermediate colour.");
+    ui->depthAutoValuesInfoText->setInfoText("When set to 'Auto', the low depth value is set to the first quartile and the high depth value is set to the third quartile.");
     ui->depthManualValuesInfoText->setInfoText("When set to 'Manual', you can specify the values used for depth colouring.");
-    ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is "
-                                               "used for nodes that do not have any BLAST hits. It is also used for any region "
-                                               "of a node without BLAST hits, even if there are BLAST hits in other regions of "
-                                               "that node.");
-    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take. Larger "
-                                                   "values will find more distant contiguous nodes, at a performance cost.<br><br>"
-                                                   "The time taken to complete the search can grow rapidly as values increase, "
-                                                   "so use values above 20 with caution.");
-    ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
-                                                            "nodes that are determined to be contiguous with the starting "
-                                                            "node(s).<br><br>"
-                                                            "This colour is used for strand-specific matches. It is only used "
-                                                            "for nodes that are determined to be on the same strand as the "
-                                                            "starting node");
-    ui->contiguousEitherStrandColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to "
-                                                          "nodes that are determined to be contiguous with the starting "
-                                                          "node(s).<br><br>"
-                                                          "This colour is used for nodes where either the node or its reverse "
-                                                          "complement are contiguous with the starting node, but it cannot be "
-                                                          "determined which.");
-    ui->maybeContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
-                                                   "are determined to be possibly contiguous with the starting node(s).");
-    ui->notContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that "
-                                                 "are not determined to be contiguous with the starting node(s).");
-    ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the "
-                                                      "starting node(s).");
-    ui->maxHitsForQueryPathInfoText->setInfoText("Bandage will not attempt to find query paths for BLAST queries with more hits "
-                                                 "than this setting. BLAST query path searches can be very slow when there are "
-                                                 "too many hits, so this setting prevents performance problems.<br><br>"
+    ui->noBlastHitsColourInfoText->setInfoText("When Bandage is set to the 'Colour using BLAST hits' option, this colour is used for nodes that do not have any BLAST hits. It is also used for any region of a node without BLAST hits, even if there are BLAST hits in other regions of that node.");
+    ui->contiguitySearchDepthInfoText->setInfoText("This is the number of steps the contiguity search will take. Larger values will find more distant contiguous nodes, at a performance cost.<br><br>"
+                                                   "The time taken to complete the search can grow rapidly as values increase, so use values above 20 with caution.");
+    ui->contiguousStrandSpecificColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that are determined to be contiguous with the starting node(s).<br><br>"
+                                                            "This colour is used for strand-specific matches. It is only used for nodes that are determined to be on the same strand as the starting node");
+    ui->contiguousEitherStrandColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that are determined to be contiguous with the starting node(s).<br><br>"
+                                                          "This colour is used for nodes where either the node or its reverse complement are contiguous with the starting node, but it cannot be determined which.");
+    ui->maybeContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that are determined to be possibly contiguous with the starting node(s).");
+    ui->notContiguousColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to nodes that are not determined to be contiguous with the starting node(s).");
+    ui->contiguityStartingColourInfoText->setInfoText("When a contiguity search is conducted, this is the colour given to the starting node(s).");
+    ui->maxHitsForQueryPathInfoText->setInfoText("Bandage will not attempt to find query paths for BLAST queries with more hits than this setting. BLAST query path searches can be very slow when there are too many hits, so this setting prevents performance problems.<br><br>"
                                                  "Set to 0 to turn off all BLAST query path finding.<br><br>"
-                                                 "Set to a larger value to enable query path searches for BLAST queries with "
-                                                 "many hits (can be slow).");
+                                                 "Set to a larger value to enable query path searches for BLAST queries with many hits (can be slow).");
     ui->maxPathNodesInfoText->setInfoText("This controls the maximum number of nodes in BLAST query paths.<br><br>"
-                                          "A higher value will allow for paths containing more nodes, at a performance "
-                                          "cost.");
-    ui->minQueryCoveredByPathInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which "
-                                                   "is covered by a BLAST query path. Paths that cover less of the "
-                                                   "query than this setting will not be included in the query's "
-                                                   "paths.<br><br>"
+                                          "A higher value will allow for paths containing more nodes, at a performance cost.");
+    ui->minQueryCoveredByPathInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which is covered by a BLAST query path. Paths that cover less of the query than this setting will not be included in the query's paths.<br><br>"
                                                    "Set to a higher value to make BLAST query paths more stringent.");
-    ui->minQueryCoveredByHitsInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which "
-                                                   "is covered by the hits in a BLAST query path. Paths with hits that "
-                                                   "cover less of the query than this setting will not be included in "
-                                                   "the query's paths.<br><br>"
+    ui->minQueryCoveredByHitsInfoText->setInfoText("This is a minimum value for the fraction of a BLAST query which is covered by the hits in a BLAST query path. Paths with hits that cover less of the query than this setting will not be included in the query's paths.<br><br>"
                                                    "Set to a higher value to make BLAST query paths more stringent.");
-    ui->minMeanHitIdentityInfoText->setInfoText("This is a minimum value for the mean of the percent identity for the "
-                                                "hits in a BLAST query path, weighted by the hits' lengths. Paths with "
-                                                "a mean hit percent identity less than this setting will not be included "
-                                                "in the query's paths.<br><br>"
+    ui->minMeanHitIdentityInfoText->setInfoText("This is a minimum value for the mean of the percent identity for the hits in a BLAST query path, weighted by the hits' lengths. Paths with a mean hit percent identity less than this setting will not be included in the query's paths.<br><br>"
                                                 "Set to a higher value to make BLAST query paths more stringent.");
-    ui->maxEvalueProductInfoText->setInfoText("This is a maximum value for the product of the e-values of all the "
-                                              "hits in a BLAST query path. Paths with an e-value product greater "
-                                              "than this setting will not be included in the query's paths.<br><br>"
+    ui->maxEvalueProductInfoText->setInfoText("This is a maximum value for the product of the e-values of all the hits in a BLAST query path. Paths with an e-value product greater than this setting will not be included in the query's paths.<br><br>"
                                               "Set to a lower value to make BLAST query paths more stringent.");
-    ui->minLengthPercentageInfoText->setInfoText("This is a minimum value for the relative length between a BLAST "
-                                                 "query and its path in the graph. Paths with a relative length "
-                                                 "less than this setting will not be included in the query's "
-                                                 "paths.<br><br>"
+    ui->minLengthPercentageInfoText->setInfoText("This is a minimum value for the relative length between a BLAST query and its path in the graph. Paths with a relative length less than this setting will not be included in the query's paths.<br><br>"
                                                  "Set to a value closer to 100% to make BLAST query paths more stringent.");
-    ui->maxLengthPercentageInfoText->setInfoText("This is a maximum value for the relative length between a BLAST "
-                                                 "query and its path in the graph. Paths with a relative length "
-                                                 "greater than this setting will not be included in the query's "
-                                                 "paths.<br><br>"
+    ui->maxLengthPercentageInfoText->setInfoText("This is a maximum value for the relative length between a BLAST query and its path in the graph. Paths with a relative length greater than this setting will not be included in the query's paths.<br><br>"
                                                  "Set to a value closer to 100% to make BLAST query paths more stringent.");
-    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the minimum length difference (in bases) between a BLAST "
-                                                      "query and its path in the graph.  Paths with a length difference "
-                                                      "less than this setting will not be included in the query's "
-                                                      "paths.<br><br>"
+    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the minimum length difference (in bases) between a BLAST query and its path in the graph.  Paths with a length difference less than this setting will not be included in the query's paths.<br><br>"
                                                       "Set to a value closer to 0 to make BLAST query paths more stringent.");
-    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the maximum length difference (in bases) between a BLAST "
-                                                      "query and its path in the graph.  Paths with a length difference "
-                                                      "greater than this setting will not be included in the query's "
-                                                      "paths.<br><br>"
+    ui->minLengthBaseDiscrepancyInfoText->setInfoText("This is the maximum length difference (in bases) between a BLAST query and its path in the graph.  Paths with a length difference greater than this setting will not be included in the query's paths.<br><br>"
                                                       "Set to a value closer to 0 to make BLAST query paths more stringent.");
 }
 

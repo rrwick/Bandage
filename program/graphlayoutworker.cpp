@@ -23,9 +23,10 @@
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
                                      ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
-                                     double aspectRatio) :
-    m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray),
-    m_graphLayoutQuality(graphLayoutQuality), m_aspectRatio(aspectRatio), m_linearLayout(linearLayout)
+                                     double graphLayoutComponentSeparation, double aspectRatio) :
+    m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray), m_graphLayoutQuality(graphLayoutQuality),
+    m_linearLayout(linearLayout), m_graphLayoutComponentSeparation(graphLayoutComponentSeparation),
+    m_aspectRatio(aspectRatio)
 {
 }
 
@@ -38,8 +39,8 @@ void GraphLayoutWorker::layoutGraph()
     m_fmmm->unitEdgeLength(1.0);
     m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
     m_fmmm->pageRatio(m_aspectRatio);
+    m_fmmm->minDistCC(m_graphLayoutComponentSeparation);
     m_fmmm->stepsForRotatingComponents(50); // Helps to make linear graph components more horizontal.
-    m_fmmm->minDistCC(50); // Let graph components be a little bit closer to each other.
 
     if (m_linearLayout)
         m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfKeepPositions);

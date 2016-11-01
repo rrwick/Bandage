@@ -85,6 +85,7 @@ public:
     FloatSetting edgeLength;
     FloatSetting doubleModeNodeSeparation;
     FloatSetting nodeSegmentLength;
+    FloatSetting componentSeparation;
 
     FloatSetting averageNodeWidth;
     FloatSetting depthEffectOnWidth;
