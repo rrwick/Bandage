@@ -2868,9 +2868,16 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
                                        DeBruijnNode * newNode,
                                        MyGraphicsScene * scene)
 {
-    mergeGraphicsNodes2(originalNodes, newNode, scene);
-    if (g_settings->doubleMode)
-        mergeGraphicsNodes2(revCompOriginalNodes, newNode->getReverseComplement(), scene);
+    bool success = mergeGraphicsNodes2(originalNodes, newNode, scene);
+    if (success)
+        newNode->setAsDrawn();
+
+    if (g_settings->doubleMode) {
+        DeBruijnNode * newRevComp = newNode->getReverseComplement();
+        bool revCompSuccess = mergeGraphicsNodes2(revCompOriginalNodes, newRevComp, scene);
+        if (revCompSuccess)
+            newRevComp->setAsDrawn();
+    }
 
     std::vector<DeBruijnNode *> nodesToRemove;
     for (int i = 0; i < originalNodes->size(); ++i)
@@ -2879,11 +2886,11 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
 }
 
 
-void AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
+bool AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
                                         DeBruijnNode * newNode,
                                         MyGraphicsScene * scene)
 {
-    bool failed = false;
+    bool success = true;
     std::vector<QPointF> linePoints;
 
     for (int i = 0; i < originalNodes->size(); ++i)
@@ -2902,7 +2909,7 @@ void AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
         GraphicsItemNode * originalGraphicsItemNode = node->getGraphicsItemNode();
         if (originalGraphicsItemNode == 0)
         {
-            failed = true;
+            success = false;
             break;
         }
 
@@ -2922,7 +2929,7 @@ void AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
         }
     }
 
-    if (!failed)
+    if (success)
     {
         GraphicsItemNode * newGraphicsItemNode = new GraphicsItemNode(newNode, linePoints);
 
@@ -2945,7 +2952,7 @@ void AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
             scene->addItem(graphicsItemEdge);
         }
     }
-
+    return success;
 }
 
 

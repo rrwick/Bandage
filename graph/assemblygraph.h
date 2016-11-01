@@ -196,7 +196,7 @@ private:
     void mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
                             QList<DeBruijnNode *> * revCompOriginalNodes,
                             DeBruijnNode * newNode, MyGraphicsScene * scene);
-    void mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
+    bool mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
                              DeBruijnNode * newNode, MyGraphicsScene * scene);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node,
                                         bool reverseComplement,
