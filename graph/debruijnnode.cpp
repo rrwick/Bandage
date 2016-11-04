@@ -816,12 +816,15 @@ void DeBruijnNode::setCustomLabel(QString newLabel)
 QStringList DeBruijnNode::getCustomLabelForDisplay() const
 {
     QStringList customLabelLines;
-    if (!getCustomLabel().isEmpty())
-        customLabelLines << getCustomLabel();
-    if (!g_settings->doubleMode)
-    {
-        if (!m_reverseComplement->getCustomLabel().isEmpty())
-            customLabelLines << m_reverseComplement->getCustomLabel();
+    if (!getCustomLabel().isEmpty()) {
+        QStringList labelLines = getCustomLabel().split("\\n");
+        for (int i = 0; i < labelLines.size(); ++i)
+            customLabelLines << labelLines[i];
+    }
+    if (!g_settings->doubleMode && !m_reverseComplement->getCustomLabel().isEmpty()) {
+        QStringList labelLines2 = m_reverseComplement->getCustomLabel().split("\n");
+        for (int i = 0; i < labelLines2.size(); ++i)
+            customLabelLines << labelLines2[i];
     }
     return customLabelLines;
 }
