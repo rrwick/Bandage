@@ -304,7 +304,8 @@ void SettingsDialog::setInfoTexts()
                                                 "Low values are faster and recommended for big assembly graphs. Higher values may result in smoother, more pleasing layouts.<br><br>"
                                                 "The graph must be redrawn to see the effect of changing this setting.");
     ui->linearLayoutInfoText->setInfoText("Enable this option if the graph is ordered in a linear fashion, e.g. for a MSA graph.<br><br>"
-                                          "When on, Bandage will sort the nodes by name (numerically or alphabetically) and initialise the graph layout left-to-right, resulting in a more linear layout.");
+                                          "When on, Bandage will sort the nodes by name (numerically or alphabetically) and initialise the graph layout left-to-right, resulting in a more linear layout.<br><br>"
+                                          "This type of layout is automatically used when viewing plain FASTA files in Bandage.");
 
     ui->depthPowerInfoText->setInfoText("This is the power used in the function for determining node widths.");
     ui->depthEffectOnWidthInfoText->setInfoText("This controls the degree to which a node's depth affects its width.<br><br>"

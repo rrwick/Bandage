@@ -2224,7 +2224,7 @@ void AssemblyGraph::layoutGraph()
     ogdf::FMMMLayout fmmm;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes, m_edgeArray,
                                                                   g_settings->graphLayoutQuality,
-                                                                  g_settings->linearLayout,
+                                                                  useLinearLayout(),
                                                                   g_settings->componentSeparation);
     graphLayoutWorker->layoutGraph();
 }
@@ -3754,4 +3754,9 @@ long long AssemblyGraph::getTotalLengthOrphanedNodes() const {
             total += node->getLength();
     }
     return total;
+}
+
+
+bool AssemblyGraph::useLinearLayout() const {
+    return g_settings->linearLayout || m_graphFileType == PLAIN_FASTA;
 }

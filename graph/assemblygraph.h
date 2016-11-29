@@ -166,6 +166,7 @@ public:
     QPair<int, int> getOverlapRange() const;
     bool attemptToLoadSequencesFromFasta();
     long long getTotalLengthOrphanedNodes() const;
+    bool useLinearLayout() const;
 
 
 private:
