@@ -1403,20 +1403,29 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         double depth = 1.0;
         QByteArray sequence = sequences[i];
 
-        //Check to see if the node name matches the Velvet/SPAdes contig
-        //format.  If so, we can get the depth and node number.
+        // Check to see if the node name matches the Velvet/SPAdes contig format.  If so, we can get the depth and node
+        // number.
         QStringList thisNodeDetails = name.split("_");
-        if (thisNodeDetails.size() >= 6 && thisNodeDetails[2] == "length" && thisNodeDetails[4] == "cov")
-        {
+        if (thisNodeDetails.size() >= 6 && thisNodeDetails[2] == "length" && thisNodeDetails[4] == "cov") {
             name = thisNodeDetails[1];
             depth = thisNodeDetails[5].toDouble();
             m_depthTag = "KC";
         }
 
-        //If it doesn't match, then we will use the sequence name up to the
-        //first space.
-        else
-        {
+        // If it doesn't match, then we will use the sequence name up to the first space. We'll then look for "depth="
+        // in the rest of the header and use it if possible.
+        else {
+            if (name.contains("depth=")) {
+                QString depthString = name.split("depth=")[1].toLower();
+                if (depthString.contains("x"))
+                    depthString = depthString.split("x")[0];
+                else
+                    depthString = depthString.split(" ")[0];
+                bool ok;
+                double depthFromString = depthString.toFloat(&ok);
+                if (ok)
+                    depth = depthFromString;
+            }
             QStringList nameParts = name.split(" ");
             if (nameParts.size() > 0)
                 name = nameParts[0];
