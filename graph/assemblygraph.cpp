@@ -1849,7 +1849,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         }
 
         // Now we add the drawn nodes to the OGDF graph, given them initial positions based on their sort order.
-        QSet<QPair<double, double> > usedStartPositions;
+        QSet<QPair<long long, long long> > usedStartPositions;
         double lastXPos = 0.0;
         for (int i = 0; i < sortedDrawnNodes.size(); ++i) {
             DeBruijnNode * node = sortedDrawnNodes[i];
@@ -1869,10 +1869,14 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
             }
             double xPos = lastXPos + g_settings->edgeLength;
             double yPos = 0.0;
-            while (usedStartPositions.contains(QPair<double, double>(xPos, yPos)))
+            long long intXPos = (long long)(xPos * 100.0);
+            long long intYPos = (long long)(yPos * 100.0);
+            while (usedStartPositions.contains(QPair<long long, long long>(intXPos, intYPos))) {
                 yPos += g_settings->edgeLength;
+                intYPos = (long long)(yPos * 100.0);
+            }
             node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos, yPos);
-            usedStartPositions.insert(QPair<double, double>(xPos, yPos));
+            usedStartPositions.insert(QPair<long long, long long>(intXPos, intYPos));
             lastXPos = m_graphAttributes->x(node->getOgdfNode()->getLast());
         }
     }
