@@ -1395,11 +1395,13 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
     std::vector<QByteArray> sequences;
     readFastaFile(fullFileName, &names, &sequences);
 
+    std::vector<QString> circularNodeNames;
     for (size_t i = 0; i < names.size(); ++i)
     {
         QApplication::processEvents();
 
         QString name = names[i];
+        QString lowerName = name.toLower();
         double depth = 1.0;
         QByteArray sequence = sequences[i];
 
@@ -1412,20 +1414,8 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
             m_depthTag = "KC";
         }
 
-        // If it doesn't match, then we will use the sequence name up to the first space. We'll then look for "depth="
-        // in the rest of the header and use it if possible.
+        // If it doesn't match, then we will use the sequence name up to the first space.
         else {
-            if (name.contains("depth=")) {
-                QString depthString = name.split("depth=")[1].toLower();
-                if (depthString.contains("x"))
-                    depthString = depthString.split("x")[0];
-                else
-                    depthString = depthString.split(" ")[0];
-                bool ok;
-                double depthFromString = depthString.toFloat(&ok);
-                if (ok)
-                    depth = depthFromString;
-            }
             QStringList nameParts = name.split(" ");
             if (nameParts.size() > 0)
                 name = nameParts[0];
@@ -1433,6 +1423,21 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 
         name = cleanNodeName(name);
         name = getUniqueNodeName(name) + "+";
+
+        //  Look for "depth=" and "circular=" in the full header and use them if possible.
+        if (lowerName.contains("depth=")) {
+            QString depthString = lowerName.split("depth=")[1];
+            if (depthString.contains("x"))
+                depthString = depthString.split("x")[0];
+            else
+                depthString = depthString.split(" ")[0];
+            bool ok;
+            double depthFromString = depthString.toFloat(&ok);
+            if (ok)
+                depth = depthFromString;
+        }
+        if (lowerName.contains("circular=true"))
+            circularNodeNames.push_back(name);
 
         if (name.length() < 1)
             throw "load error";
@@ -1442,6 +1447,11 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         makeReverseComplementNodeIfNecessary(node);
     }
     pointEachNodeToItsReverseComplement();
+
+    // For any circular nodes, make an edge connecting them to themselves.
+    for (auto circularNodeName : circularNodeNames) {
+        createDeBruijnEdge(circularNodeName, circularNodeName, 0, EXACT_OVERLAP);
+    }
 }
 
 
@@ -3771,5 +3781,9 @@ long long AssemblyGraph::getTotalLengthOrphanedNodes() const {
 
 
 bool AssemblyGraph::useLinearLayout() const {
-    return g_settings->linearLayout || m_graphFileType == PLAIN_FASTA;
+    // If the graph has no edges, then we use a linear layout. Otherwise check the setting.
+    if (m_edgeCount == 0)
+        return true;
+    else
+        return g_settings->linearLayout;
 }
