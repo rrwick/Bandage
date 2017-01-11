@@ -1,4 +1,4 @@
-//Copyright 2016 Ryan Wick
+//Copyright 2017 Ryan Wick
 
 //This file is part of Bandage.
 
@@ -35,7 +35,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     font.setPointSize(font.pointSize() * 2);
     ui->titleLabel->setFont(font);
 
-    QString versionCopyrightText = "<html><head/><body><p>Version: " + QApplication::applicationVersion() + "</p><p>Copyright 2016 Ryan Wick</p><p><a href=\"http://rrwick.github.io/Bandage/\"><span style=\" text-decoration: underline; color:#0000ff;\">http://rrwick.github.io/Bandage/</span></a></p></body></html>";
+    QString versionCopyrightText = "<html><head/><body><p>Version: " + QApplication::applicationVersion() + "</p><p>Copyright 2017 Ryan Wick</p><p><a href=\"http://rrwick.github.io/Bandage/\"><span style=\" text-decoration: underline; color:#0000ff;\">http://rrwick.github.io/Bandage/</span></a></p></body></html>";
     ui->versionCopyrightLabel->setText(versionCopyrightText);
 
     layout()->setSizeConstraint(QLayout::SetFixedSize);

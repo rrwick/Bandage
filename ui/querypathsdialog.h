@@ -1,4 +1,4 @@
-//Copyright 2016 Ryan Wick
+//Copyright 2017 Ryan Wick
 
 //This file is part of Bandage.
 
