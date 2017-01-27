@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     bool imageWithText = (first.toLower() == "image") &&
                          (arguments.contains("--names") || arguments.contains("--lengths") ||
                           arguments.contains("--depth") || arguments.contains("--blasthits"));
-    bool guiNeeded = (first == "") || (first.toLower() == "load") || imageWithText;
+    bool guiNeeded = (first == "") || first.startsWith("-") || (first.toLower() == "load") || imageWithText;
     if (checkForHelp(arguments) || checkForHelpAll(arguments))
         guiNeeded = false;
     if (!guiNeeded)
