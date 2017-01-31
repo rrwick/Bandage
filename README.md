@@ -86,46 +86,6 @@ For Windows and some Linux distributions, the easiest way to build Bandage from 
 6. Build and run Bandage by clicking the green arrow in the bottom left area of Qt Creator. Bandage should open when the build has finished.
 7. You will find the executable file in a new folder that begins with 'build-Bandage-Desktop'.
 
-## History
-
-v0.8.0 - 30 April 2016
-
-v0.7.1 - 6 December 2015
-
-v0.7.0 - 16 October 2015
-
-v0.6.4 - 17 September 2015
-
-v0.6.3 - 31 August 2015
-
-v0.6.2 - 29 July 2015
-
-v0.6.1 - 15 July 2015
-
-v0.6.0 - 8 July 2015
-
-v0.5.6 - 26 May 2015
-
-v0.5.5 - 14 May 2015
-
-v0.5.4 - 5 May 2015
-
-v0.5.3 - 30 April 2015
-
-v0.5.2 - 25 April 2015
-
-v0.5.1 - 20 April 2015
-
-v0.5.0 - 9 April 2015
-
-v0.4.2 - 20 March 2015
-
-v0.4.1 - 12 March 2015
-
-v0.4.0 - 10 March 2015
-
-v0.3.0 – 19 February 2015
-
 ## Contributing
 
 New contributors are welcome! If you're interested or have ideas, please contact me (Ryan) at rrwick@gmail.com.
