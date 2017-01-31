@@ -122,6 +122,7 @@ int bandageReduce(QStringList arguments)
         return 1;
     }
 
+    deleteBlastTempDirectory();
     return 0;
 }
 
