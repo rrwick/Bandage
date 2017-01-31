@@ -6,7 +6,6 @@
 * [Help](https://github.com/rrwick/Bandage#help)
 * [Pre-built binaries](https://github.com/rrwick/Bandage#pre-built-binaries)
 * [Building from source](https://github.com/rrwick/Bandage#building-from-source)
-* [History](https://github.com/rrwick/Bandage#history)
 * [Contributing](https://github.com/rrwick/Bandage#contributing)
 * [Citation](https://github.com/rrwick/Bandage#citation)
 * [Credits](https://github.com/rrwick/Bandage#credits)
