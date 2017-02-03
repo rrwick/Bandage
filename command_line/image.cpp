@@ -130,6 +130,26 @@ int bandageImage(QStringList arguments)
                                                                                   g_settings->startingNodes,
                                                                                   "all");
 
+    QString errormsg;
+    QStringList columns;
+    bool coloursLoaded = false;
+    QString csvPath = parseColorsOption(arguments);
+    if (csvPath != "")
+    {
+        if(!g_assemblyGraph->loadCSV(csvPath, &columns, &errormsg, &coloursLoaded))
+        {
+            err << errormsg << endl;
+            return 1;
+        }
+
+        if(coloursLoaded == false)
+        {
+            err << csvPath << " didn't contains color" << endl;
+            return 1;
+        }
+         g_settings->nodeColourScheme = CUSTOM_COLOURS;
+    }
+
     if (errorMessage != "")
     {
         err << errorMessage << endl;
@@ -212,6 +232,7 @@ void printImageUsage(QTextStream * out, bool all)
     text << "";
     text << "Options:  --height <int>      Image height (default: 1000)";
     text << "--width <int>       Image width (default: not set)";
+    text << "--color <file>       csv file with 2 column first the node name second the node color";
     text << "";
     text << "If only height or width is set, the other will be determined automatically. If both are set, the image will be exactly that size.";
     text << "";
@@ -230,6 +251,9 @@ QString checkForInvalidImageOptions(QStringList arguments)
     if (error.length() > 0) return error;
 
     error = checkOptionForInt("--width", &arguments, IntSetting(0, 1, 32767), false);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForString("--colors", &arguments, QStringList(), "a path of csv file");
     if (error.length() > 0) return error;
 
     return checkForInvalidOrExcessSettings(&arguments);
@@ -251,3 +275,15 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
     parseSettings(arguments);
 }
 
+//This function parses the command line options. It assumes that the options
+//have already been checked for correctness.
+QString parseColorsOption(QStringList arguments)
+{
+    QString path = "";
+    if (isOptionPresent("--colors", &arguments))
+        path = getStringOption("--colors", &arguments);
+
+    parseSettings(arguments);
+
+    return path;
+}
