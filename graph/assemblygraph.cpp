@@ -616,7 +616,9 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
                 QString nodeName = lineParts.at(1);
                 if (nodeName.isEmpty())
-                    nodeName = "node";
+                    nodeName = getUniqueNodeName("node");
+                if (m_deBruijnGraphNodes.contains(nodeName + "+"))
+                    throw "load error";
 
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
 
@@ -972,6 +974,8 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                     nodeName += "-";
                 else
                     nodeName += "+";
+                if (m_deBruijnGraphNodes.contains(nodeName))
+                    throw "load error";
 
                 QString nodeDepthString = thisNodeDetails.at(5);
                 if (negativeNode)
