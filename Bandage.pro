@@ -259,10 +259,6 @@ FORMS    += \
 RESOURCES += \
     images/images.qrc
 
-
-unix:INCLUDEPATH += /usr/include/
-unix:LIBS += -L/usr/lib
-
 # The following settings are compatible with OGDF being built in 64 bit release mode using Visual Studio 2013
 win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
