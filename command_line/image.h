@@ -28,5 +28,6 @@ int bandageImage(QStringList arguments);
 void printImageUsage(QTextStream * out, bool all);
 QString checkForInvalidImageOptions(QStringList arguments);
 void parseImageOptions(QStringList arguments, int * width, int * height);
+QString parseColorsOption(QStringList arguments);
 
 #endif // IMAGE_H
