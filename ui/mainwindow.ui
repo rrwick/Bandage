@@ -1828,6 +1828,7 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
     <addaction name="menuSelect_nodes_based_on_contiguity"/>
+    <addaction name="actionSelect_nodes_with_dead_ends"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -2224,6 +2225,11 @@
   <action name="actionChange_node_depth">
    <property name="text">
     <string>Change node depth</string>
+   </property>
+  </action>
+  <action name="actionSelect_nodes_with_dead_ends">
+   <property name="text">
+    <string>Select nodes with dead ends</string>
    </property>
   </action>
  </widget>
