@@ -2379,7 +2379,25 @@ QString AssemblyGraph::getOppositeNodeName(QString nodeName)
 }
 
 
-void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> *sequences)
+void AssemblyGraph::readFastaOrFastqFile(QString filename, std::vector<QString> * names,
+                                         std::vector<QByteArray> * sequences) {
+    QChar firstChar = 0;
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly)) {
+        QTextStream in(&inputFile);
+        QString firstLine = in.readLine();
+        firstChar = firstLine.at(0);
+        inputFile.close();
+    }
+    if (firstChar == '>')
+        readFastaFile(filename, names, sequences);
+    else if (firstChar == '@')
+        readFastqFile(filename, names, sequences);
+}
+
+
+
+void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> * sequences)
 {
     QFile inputFile(filename);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -2422,6 +2440,36 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
             sequences->push_back(sequence);
         }
 
+        inputFile.close();
+    }
+}
+
+
+void AssemblyGraph::readFastqFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> * sequences)
+{
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+
+            QString name = in.readLine().simplified();
+            QByteArray sequence = in.readLine().simplified().toLocal8Bit();
+            in.readLine();  // separator
+            in.readLine();  // qualities
+
+            if (name.length() == 0)
+                continue;
+            if (sequence.length() == 0)
+                continue;
+            if (name.at(0) != '@')
+                continue;
+            name.remove(0, 1); //Remove '@' from start
+            names->push_back(name);
+            sequences->push_back(sequence);
+        }
         inputFile.close();
     }
 }
