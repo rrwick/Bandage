@@ -1696,6 +1696,12 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 //If the node name it finds does not end in a '+' or '-', it will add '+'.
 QString AssemblyGraph::getNodeNameFromString(QString string)
 {
+    // First check for the most obvious case, where the string is already a node name.
+    if (m_deBruijnGraphNodes.contains(string))
+        return string;
+    if (m_deBruijnGraphNodes.contains(string + "+"))
+        return string + "+";
+
     QStringList parts = string.split("_");
     if (parts.size() == 0)
         return "";
