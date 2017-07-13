@@ -118,7 +118,7 @@ int bandageInfo(QStringList arguments)
         out << median << "\t";
         out << thirdQuartile << "\t";
         out << longestNode << "\t";
-        out << medianDepthByBase << "\n";
+        out << medianDepthByBase << "\t";
         out << estimatedSequenceLength << "\n";
     }
     else
