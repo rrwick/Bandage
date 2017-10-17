@@ -67,6 +67,7 @@
 #include "changenodedepthdialog.h"
 #include <limits>
 #include "graphinfodialog.h"
+#include "program/dotplot.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -194,6 +195,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
     connect(ui->actionChange_node_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeDepth()));
     connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
+    connect(ui->drawDotplotButton, SIGNAL(clicked()), this, SLOT(drawDotplot()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -737,6 +739,134 @@ void MainWindow::drawGraph()
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     layoutGraph();
 }
+
+void MainWindow::drawDotplot()
+{
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+
+    if (selectedNodes.size() != 2) {
+        QString infoTitle = "Draw dotplot";
+        QString infoMessage = "Select exactly two nodes to dotplot.";
+        QMessageBox::information(this, infoTitle, infoMessage);
+        return;
+    }
+
+    std::vector<std::string> seqs;
+    std::vector<std::string> headers;
+    for (size_t i=0; i<selectedNodes.size(); i++) {
+        auto& node = selectedNodes[i];
+
+        if (node->sequenceIsMissing()) {
+            QString infoTitle = "Draw dotplot";
+            QString infoMessage = "Error: The GFA node does not contain a valid sequence!";
+            QMessageBox::information(this, infoTitle, infoMessage);
+            return;
+        }
+
+        QByteArray nodeSequence = node->getSequence();
+        QString nodeHeader = node->getName();
+        std::string seq(nodeSequence.constData(), nodeSequence.length());
+        std::string header = nodeHeader.toLocal8Bit().constData();
+
+        seqs.push_back(seq);
+        headers.push_back(header);
+    }
+
+    // Parse the k-mer size.
+    int32_t k = 15;
+    std::stringstream iss(std::string(ui->kmerSizeInput->text().toLocal8Bit().constData()));
+    iss >> k;
+
+    if (k > 31) {
+        QString infoTitle = "Draw dotplot";
+        QString infoMessage = "Error: k-mer size should not exceed 31.";
+        QMessageBox::information(this, infoTitle, infoMessage);
+        return;
+    }
+
+    // Calculate the dotplot.
+    auto hits = findKmerMatches(seqs[0], seqs[1], k);
+
+    // The rest of the method is just plotting.
+    m_dotplotScene = std::shared_ptr<QGraphicsScene>(new QGraphicsScene());
+    ui->graphicsView->setScene(m_dotplotScene.get());
+
+    // Calculate the starts and ends of the dotplot coordinate system.
+    int32_t max_len = std::max(seqs[0].size(), seqs[1].size());
+    double begin_offset = 40;
+    double x_begin = begin_offset;
+    double y_begin = begin_offset;
+    double max_size = (float) std::min(ui->graphicsView->maximumWidth(), ui->graphicsView->maximumHeight()) - 10 - begin_offset;
+    double scale = max_size / ((double) max_len);
+    double x_end = x_begin + seqs[0].size() * scale;
+    double y_end = y_begin + seqs[1].size() * scale;
+
+    // Make the scene not move.
+    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_dotplotScene->setSceneRect(0, 0, 300, 300);
+
+    // Add bounds to the dotplot graph.
+    double overhang = 5;
+    m_dotplotScene->addLine(x_begin - overhang, y_begin, x_end, y_begin);
+    m_dotplotScene->addLine(x_end, y_begin - overhang, x_end, y_end);
+    m_dotplotScene->addLine(x_begin - overhang, y_end, x_end, y_end);
+    m_dotplotScene->addLine(x_begin, y_begin - overhang, x_begin, y_end);
+
+    // Annotate the graph.
+    QFont font;
+    font.setPixelSize(8);
+    font.setFamily("Monospace");
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(seqs[0].size()));
+        text->setFont(font);
+        text->setPos(x_end - text->boundingRect().width(), y_begin - text->boundingRect().height());
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(0));
+        text->setFont(font);
+        text->setPos(x_begin + 1, y_begin - text->boundingRect().height());
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(0));
+        text->setFont(font);
+        text->setPos(x_begin - text->boundingRect().width(), y_begin);
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(seqs[1].size()));
+        text->setFont(font);
+        text->setPos(x_begin - text->boundingRect().width(), y_end - text->boundingRect().height());
+    }
+
+    {
+        std::string trimmed_header = (headers[0].size() > 20) ? headers[0].substr(0, 20) : headers[0];
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString(trimmed_header.c_str()));
+        text->setFont(font);
+        text->setPos((x_end + x_begin - text->boundingRect().width()) / 2.0, y_begin - text->boundingRect().height());
+    }
+
+    {
+        std::string trimmed_header = (headers[1].size() > 20) ? (headers[1].substr(0, 20)) : (headers[1]);
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString(trimmed_header.c_str()));
+        text->setFont(font);
+        QTransform t;
+        t.rotate(270);
+        text->setTransform(t);
+        text->setPos(x_begin - text->boundingRect().height(), (y_begin + y_end + text->boundingRect().width()) / 2.0);
+    }
+
+    // Generate the actual dotplot.
+    for (auto& hit: hits) {
+        m_dotplotScene->addEllipse(hit.x * scale + x_begin, hit.y * scale + y_begin, 2.0 * scale, 2.0 * scale);
+    }
+
+    ui->graphicsView->show();
+}
+
 
 
 void MainWindow::graphLayoutFinished()
@@ -2252,7 +2382,7 @@ void MainWindow::webBlastSelectedNodes()
 
     QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
     QByteArray url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
-    
+
     if (url.length() < 8190)
         QDesktopServices::openUrl(QUrl(url));
 
