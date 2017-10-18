@@ -37,6 +37,10 @@ struct KmerHit {
   int32_t y;
 };
 
+std::string reverseComplement(const std::string& seq);
+std::vector<KmerPos> hashKmers(const std::string& seq, int32_t k, bool seq_is_rev);
+std::vector<KmerHit> findHits(const std::vector<KmerPos>& sorted_kmers_seq1, const std::vector<KmerPos>& sorted_kmers_seq2);
+std::vector<KmerHit> findKmerMatches(const std::string& seq1, const std::string& seq2, int32_t k);
 std::vector<KmerHit> findKmerMatches(const std::string& seq1, const std::string& seq2, int32_t k);
 
 #endif
