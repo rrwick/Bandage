@@ -744,17 +744,24 @@ void MainWindow::drawDotplot()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
 
-    if (selectedNodes.size() != 2) {
+    if (selectedNodes.size() < 1 || selectedNodes.size() > 2) {
         QString infoTitle = "Draw dotplot";
-        QString infoMessage = "Select exactly two nodes to dotplot.";
+        QString infoMessage = "Select either one (for self-dotplot) or two nodes to dotplot.";
         QMessageBox::information(this, infoTitle, infoMessage);
         return;
     }
 
     std::vector<std::string> seqs;
     std::vector<std::string> headers;
-    for (size_t i=0; i<selectedNodes.size(); i++) {
-        auto& node = selectedNodes[i];
+
+    // Enable self-dotplots.
+    std::vector<DeBruijnNode *> nodes_to_process = selectedNodes;
+    if (selectedNodes.size() == 1) {
+        nodes_to_process.push_back(selectedNodes[0]);
+    }
+
+    for (size_t i=0; i<nodes_to_process.size(); i++) {
+        auto& node = nodes_to_process[i];
 
         if (node->sequenceIsMissing()) {
             QString infoTitle = "Draw dotplot";
