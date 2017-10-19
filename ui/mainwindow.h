@@ -160,6 +160,7 @@ private slots:
     void changeNodeName();
     void changeNodeDepth();
     void openGraphInfoDialog();
+    void drawDotplotPoweredByLogo(double x, double y, double w);
     void drawDotplot();
 
 protected:

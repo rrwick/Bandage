@@ -719,6 +719,60 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthSpinBox->setVisible(visible);
 }
 
+void MainWindow::drawDotplotPoweredByLogo(double x, double y, double w) {
+    QPen pen;
+    pen.setWidth(0);
+    pen.setColor(QColor("#BBBBBB"));
+    QBrush brush(QColor("#BBBBBB"));
+
+    QPen outline;
+    outline.setWidth(1);
+    outline.setColor(QColor("#888888"));
+
+    m_dotplotScene->addRect(x + w, y, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 3*w, y, w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + w, 5 * w, w, pen, brush);
+    m_dotplotScene->addRect(x + w, y + 2 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 3*w, y + 2 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + 3 * w, 5 * w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + 4 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 2*w, y + 4 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 4*w, y + 4 * w, w, w, pen, brush);
+
+    m_dotplotScene->addLine(x + 1 * w, y + 0 * w, x + 2 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 0 * w, x + 2 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 1 * w, x + 3 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 1 * w, x + 3 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 0 * w, x + 4 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 0 * w, x + 4 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 1 * w, x + 5 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 1 * w, x + 5 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 2 * w, x + 4 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 2 * w, x + 4 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 3 * w, x + 5 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 3 * w, x + 5 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 5 * w, x + 4 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 5 * w, x + 4 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 4 * w, x + 3 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 4 * w, x + 3 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 5 * w, x + 2 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 5 * w, x + 2 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 4 * w, x + 1 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 4 * w, x + 1 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 5 * w, x + 0 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 5 * w, x + 0 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 3 * w, x + 1 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 3 * w, x + 1 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 2 * w, x + 0 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 2 * w, x + 0 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 1 * w, x + 1 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 1 * w, x + 1 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 2 * w, x + 3 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 2 * w, x + 3 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 3 * w, x + 2 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 3 * w, x + 2 * w, y + 2 * w, outline);
+
+}
 
 void MainWindow::drawGraph()
 {
@@ -742,8 +796,10 @@ void MainWindow::drawGraph()
 
 void MainWindow::drawDotplot()
 {
+    // Fetch the selected nodes.
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
 
+    // Limit the number of nodes that need to be selected, and notify the user.
     if (selectedNodes.size() < 1 || selectedNodes.size() > 2) {
         QString infoTitle = "Draw dotplot";
         QString infoMessage = "Select either one (for self-dotplot) or two nodes to dotplot.";
@@ -751,8 +807,9 @@ void MainWindow::drawDotplot()
         return;
     }
 
-    std::vector<std::string> seqs;
+    // Placeholder for the sequences which will be dotplotted.
     std::vector<std::string> headers;
+    std::vector<std::string> seqs;
 
     // Enable self-dotplots.
     std::vector<DeBruijnNode *> nodes_to_process = selectedNodes;
@@ -760,6 +817,7 @@ void MainWindow::drawDotplot()
         nodes_to_process.push_back(selectedNodes[0]);
     }
 
+    // Get the sequences and the headers of the nodes to draw.
     for (size_t i=0; i<nodes_to_process.size(); i++) {
         auto& node = nodes_to_process[i];
 
@@ -784,9 +842,10 @@ void MainWindow::drawDotplot()
     std::stringstream iss(std::string(ui->kmerSizeInput->text().toLocal8Bit().constData()));
     iss >> k;
 
-    if (k > 30) {
+    // Sanity check for the k-mer size.
+    if (k <= 0 || k > 30) {
         QString infoTitle = "Draw dotplot";
-        QString infoMessage = "Error: k-mer size should not exceed 30.";
+        QString infoMessage = "Error: k-mer size should be > 0 and <= 30.";
         QMessageBox::information(this, infoTitle, infoMessage);
         return;
     }
@@ -794,16 +853,17 @@ void MainWindow::drawDotplot()
     // Calculate the dotplot.
     auto hits = findKmerMatches(seqs[0], seqs[1], k);
 
-    // The rest of the method is just plotting.
+    // Prepare the scene and plot.
     m_dotplotScene = std::shared_ptr<QGraphicsScene>(new QGraphicsScene());
     ui->graphicsView->setScene(m_dotplotScene.get());
 
     // Calculate the starts and ends of the dotplot coordinate system.
     int32_t max_len = std::max(seqs[0].size(), seqs[1].size());
     double begin_offset = 40;
+    double end_offset = 10;
     double x_begin = begin_offset;
     double y_begin = begin_offset;
-    double max_size = (float) std::min(ui->graphicsView->maximumWidth(), ui->graphicsView->maximumHeight()) - 10 - begin_offset;
+    double max_size = (float) std::min(ui->graphicsView->maximumWidth(), ui->graphicsView->maximumHeight()) - end_offset - begin_offset;
     double scale = max_size / ((double) max_len);
     double x_end = x_begin + seqs[0].size() * scale;
     double y_end = y_begin + seqs[1].size() * scale;
@@ -819,6 +879,11 @@ void MainWindow::drawDotplot()
     m_dotplotScene->addLine(x_end, y_begin - overhang, x_end, y_end);
     m_dotplotScene->addLine(x_begin - overhang, y_end, x_end, y_end);
     m_dotplotScene->addLine(x_begin, y_begin - overhang, x_begin, y_end);
+
+    double logo_w = 2;
+    double logo_x = x_begin - 0 - 6 * logo_w;
+    double logo_y = x_begin - 0 - 6 * logo_w;
+    drawDotplotPoweredByLogo(logo_x, logo_y, logo_w);
 
     // Annotate the graph.
     QFont font;
