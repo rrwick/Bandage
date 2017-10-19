@@ -784,9 +784,9 @@ void MainWindow::drawDotplot()
     std::stringstream iss(std::string(ui->kmerSizeInput->text().toLocal8Bit().constData()));
     iss >> k;
 
-    if (k > 31) {
+    if (k > 30) {
         QString infoTitle = "Draw dotplot";
-        QString infoMessage = "Error: k-mer size should not exceed 31.";
+        QString infoMessage = "Error: k-mer size should not exceed 30.";
         QMessageBox::information(this, infoTitle, infoMessage);
         return;
     }
