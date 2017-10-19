@@ -24,6 +24,12 @@ class KmerPos {
  public:
   KmerPos() : kmer(0), pos(0) {}
   KmerPos(int64_t _kmer, int32_t _pos) : kmer(_kmer), pos(_pos) { }
+  bool operator==(const KmerPos& b) const {
+    return (this->kmer == b.kmer && this->pos == b.pos);
+  }
+  bool operator<(const KmerPos& b) const {
+    return (this->kmer < b.kmer || (this->kmer == b.kmer && this->pos < b.pos));
+  }
 
   int64_t kmer;
   int32_t pos;
@@ -32,6 +38,12 @@ class KmerPos {
 struct KmerHit {
   KmerHit() : x(0), y(0) { }
   KmerHit(int32_t _x, int32_t _y) : x(_x), y(_y) { }
+  bool operator==(const KmerHit& b) const {
+    return (this->x == b.x && this->y == b.y);
+  }
+  bool operator<(const KmerHit& b) const {
+    return (this->x < b.x || (this->x == b.x && this->y < b.y));
+  }
 
   int32_t x;
   int32_t y;

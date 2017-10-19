@@ -70,6 +70,23 @@ std::string reverseComplement(const std::string& seq) {
 std::vector<KmerPos> hashKmers(const std::string& seq, int32_t k, bool seq_is_rev) {
   std::vector<KmerPos> ret;
 
+  if (((int32_t) seq.size()) < k) {
+    return ret;
+  }
+
+  if (k <= 0 || k >= 31) {
+    return ret;
+  }
+
+  // Pre-scan the sequence and check whether it contains
+  // only [ACTG] bases. We do not allow other bases, because
+  // they will be packed as 2-bit values in a hash key.
+  for (size_t i = 0; i < seq.size(); i++) {
+    if (nuc_to_2bit[(int32_t) seq[i]] > 3) {
+      return ret;
+    }
+  }
+
   int64_t buff = 0x0;
   int64_t buff_mask = (((int64_t) 1) << (2 * k)) - 1; // Clear the upper bits.
 
@@ -78,18 +95,16 @@ std::vector<KmerPos> hashKmers(const std::string& seq, int32_t k, bool seq_is_re
   // Initialize the buffer.
   for (int32_t i = 0; i < (k - 1); i++) {
     int64_t conv_val = nuc_to_2bit[(int32_t) seq[i]];
-    assert(conv_val < 4);
     buff = (((int64_t) buff) << 2) | (conv_val & 0x03);
   }
 
   for (int32_t i = (k - 1); i < (int32_t) seq.size(); i++) {
     // Update the buffer
     int64_t conv_val = nuc_to_2bit[(int32_t) seq[i]];
-    assert(conv_val < 4);
     buff = (((int64_t) buff) << 2) | (conv_val & 0x03);
     buff &= buff_mask;
 
-    int32_t pos = (seq_is_rev == false) ? (i - k) : (seq.size() - (i - k + 1));
+    int32_t pos = (seq_is_rev == false) ? (i - k + 1) : (seq.size() - (i - k + 1) - 1);
     ret.emplace_back(KmerPos(buff, pos));
   }
 
@@ -104,6 +119,18 @@ std::vector<KmerHit> findHits(const std::vector<KmerPos>& sorted_kmers_seq1, con
 
   std::vector<KmerHit> hits;
 
+  // Check the sortedness of input.
+  for (size_t i = 1; i < sorted_kmers_seq1.size(); i++) {
+    if(sorted_kmers_seq1[i].kmer < sorted_kmers_seq1[i - 1].kmer) {
+      return hits;
+    }
+  }
+  for (size_t i = 1; i < sorted_kmers_seq2.size(); i++) {
+    if(sorted_kmers_seq2[i].kmer < sorted_kmers_seq2[i - 1].kmer) {
+      return hits;
+    }
+  }
+
   while (k1 < n_kmers1 && k2 < n_kmers2) {
     while (k1 < n_kmers1 && sorted_kmers_seq1[k1].kmer < sorted_kmers_seq2[k2].kmer) {
       k1 += 1;
@@ -114,6 +141,11 @@ std::vector<KmerHit> findHits(const std::vector<KmerPos>& sorted_kmers_seq1, con
       k2 += 1;
     }
     if (k2 >= n_kmers2) { break; }
+
+    // If the values are not the same, just keep on gliding.
+    if (sorted_kmers_seq1[k1].kmer != sorted_kmers_seq2[k2].kmer) {
+      continue;
+    }
 
     hits.emplace_back(KmerHit(sorted_kmers_seq1[k1].pos, sorted_kmers_seq2[k2].pos));
     k1 += 1;
