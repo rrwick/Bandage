@@ -1356,7 +1356,7 @@
          <x>0</x>
          <y>0</y>
          <width>326</width>
-         <height>1201</height>
+         <height>1204</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1553,6 +1553,19 @@
             <number>0</number>
            </property>
            <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
             <widget class="QLabel" name="kmerSizeLabel">
              <property name="text">
               <string>k-mer size:</string>
@@ -1560,14 +1573,30 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="kmerSizeInput">
-             <property name="text">
-              <string>15</string>
+            <widget class="QSpinBox" name="kmerSizeInput">
+             <property name="minimum">
+              <number>1</number>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             <property name="maximum">
+              <number>30</number>
+             </property>
+             <property name="value">
+              <number>15</number>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
