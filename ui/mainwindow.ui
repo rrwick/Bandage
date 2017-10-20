@@ -1354,9 +1354,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>249</width>
-         <height>899</height>
+         <y>-294</y>
+         <width>324</width>
+         <height>1158</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1512,6 +1512,68 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="drawDotplotButton">
+          <property name="text">
+           <string>Draw dotplot</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <widget class="QLabel" name="kmerSizeLabel">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>1</y>
+             <width>71</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>k-mer size:</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="kmerSizeInput">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>0</y>
+             <width>131</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>15</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGraphicsView" name="graphicsView">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QWidget" name="selectedNodesSpacerWidget" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="leftMargin">
@@ -1526,22 +1588,6 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
-            <spacer name="selectedNodesSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>60</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </widget>
         </item>
@@ -1692,22 +1738,6 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
-            <spacer name="selectedEdgesSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>60</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </widget>
         </item>

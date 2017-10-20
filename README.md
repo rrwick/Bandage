@@ -42,7 +42,7 @@ If the compiled binaries do not work for you, the instructions below should help
 The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04:
 
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
-2. Install prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev`
+2. Install prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev libqt5svg5-dev`
 3. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
 4. Open a terminal in the Bandage directory.
 5. Set the environment variable to specify that you will be using Qt 5, not Qt 4: `export QT_SELECT=5`
