@@ -838,10 +838,7 @@ void MainWindow::drawDotplot()
         headers.push_back(header);
     }
 
-    // Parse the k-mer size.
-    int32_t k = 15;
-    std::stringstream iss(std::string(ui->kmerSizeInput->text().toLocal8Bit().constData()));
-    iss >> k;
+    int32_t k = ui->kmerSizeInput->value();
 
     // Sanity check for the k-mer size.
     if (k <= 0 || k > 30) {
