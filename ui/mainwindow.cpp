@@ -108,6 +108,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
 
+    ui->dotplotGraphicsView->setRenderHint(QPainter::Antialiasing, true);
+
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
@@ -856,7 +858,7 @@ void MainWindow::drawDotplot()
 
     // Prepare the scene and plot.
     m_dotplotScene = std::shared_ptr<QGraphicsScene>(new QGraphicsScene());
-    ui->graphicsView->setScene(m_dotplotScene.get());
+    ui->dotplotGraphicsView->setScene(m_dotplotScene.get());
 
     // Calculate the starts and ends of the dotplot coordinate system.
     int32_t max_len = std::max(seqs[0].size(), seqs[1].size());
@@ -864,14 +866,14 @@ void MainWindow::drawDotplot()
     double end_offset = 10;
     double x_begin = begin_offset;
     double y_begin = begin_offset;
-    double max_size = (float) std::min(ui->graphicsView->maximumWidth(), ui->graphicsView->maximumHeight()) - end_offset - begin_offset;
+    double max_size = (float) std::min(ui->dotplotGraphicsView->maximumWidth(), ui->dotplotGraphicsView->maximumHeight()) - end_offset - begin_offset;
     double scale = max_size / ((double) max_len);
     double x_end = x_begin + seqs[0].size() * scale;
     double y_end = y_begin + seqs[1].size() * scale;
 
     // Make the scene not move.
-    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->dotplotGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->dotplotGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_dotplotScene->setSceneRect(0, 0, 300, 300);
 
     // Add bounds to the dotplot graph.
@@ -937,7 +939,7 @@ void MainWindow::drawDotplot()
         m_dotplotScene->addEllipse(hit.x * scale + x_begin, hit.y * scale + y_begin, 2.0 * scale, 2.0 * scale);
     }
 
-    ui->graphicsView->show();
+    ui->dotplotGraphicsView->show();
 }
 
 
