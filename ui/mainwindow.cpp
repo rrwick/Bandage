@@ -108,8 +108,6 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
 
-    ui->dotplotGraphicsView->setRenderHint(QPainter::Antialiasing, true);
-
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
 
@@ -874,7 +872,7 @@ void MainWindow::drawDotplot()
     // Make the scene not move.
     ui->dotplotGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->dotplotGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_dotplotScene->setSceneRect(0, 0, 300, 300);
+    m_dotplotScene->setSceneRect(0, 0, 290, 290);
 
     // Add bounds to the dotplot graph.
     double overhang = 5;
@@ -935,9 +933,18 @@ void MainWindow::drawDotplot()
     }
 
     // Generate the actual dotplot.
+    QPen pen(Qt::black);
+    QBrush brush(Qt::black);
     for (auto& hit: hits) {
-        m_dotplotScene->addEllipse(hit.x * scale + x_begin, hit.y * scale + y_begin, 2.0 * scale, 2.0 * scale);
+        m_dotplotScene->addEllipse(hit.x * scale + x_begin, hit.y * scale + y_begin, 2.0 * scale, 2.0 * scale,
+                                   pen, brush);
     }
+
+    // Scale the dotplot so it fits in the view with just a bit of margin.
+    QRectF sceneRectangle = m_dotplotScene->sceneRect();
+    sceneRectangle.setWidth(sceneRectangle.width() * 1.05);
+    sceneRectangle.setHeight(sceneRectangle.height() * 1.05);
+    ui->dotplotGraphicsView->fitInView(sceneRectangle);
 
     ui->dotplotGraphicsView->show();
 }

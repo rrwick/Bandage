@@ -1611,6 +1611,9 @@
               <height>300</height>
              </size>
             </property>
+            <property name="renderHints">
+             <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+            </property>
            </widget>
           </item>
           <item>
