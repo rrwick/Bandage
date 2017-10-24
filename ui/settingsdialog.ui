@@ -31,6 +31,9 @@
    </property>
    <item>
     <widget class="VerticalScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -38,8 +41,8 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-62</y>
-        <width>400</width>
+        <y>-2839</y>
+        <width>402</width>
         <height>3466</height>
        </rect>
       </property>
@@ -155,6 +158,9 @@ per megabase:</string>
              </property>
              <item row="0" column="0">
               <widget class="QRadioButton" name="nodeLengthPerMegabaseAutoRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Auto</string>
                </property>
@@ -165,6 +171,9 @@ per megabase:</string>
              </item>
              <item row="1" column="0">
               <widget class="QRadioButton" name="nodeLengthPerMegabaseManualRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Manual</string>
                </property>
@@ -187,6 +196,9 @@ per megabase:</string>
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -253,6 +265,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -304,6 +319,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -328,6 +346,9 @@ per megabase:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -473,6 +494,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -593,6 +617,9 @@ per megabase:</string>
              </property>
              <item>
               <widget class="QRadioButton" name="linearLayoutOnRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>On</string>
                </property>
@@ -603,6 +630,9 @@ per megabase:</string>
              </item>
              <item>
               <widget class="QRadioButton" name="linearLayoutOffRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Off</string>
                </property>
@@ -647,6 +677,9 @@ per megabase:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -718,6 +751,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="maximum">
              <number>4</number>
             </property>
@@ -784,6 +820,9 @@ per megabase:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -935,6 +974,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -1009,6 +1051,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -1067,6 +1112,9 @@ per megabase:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -1079,6 +1127,9 @@ per megabase:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1114,6 +1165,9 @@ per megabase:</string>
              </property>
              <item>
               <widget class="QRadioButton" name="singleNodeArrowHeadsOnRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>On</string>
                </property>
@@ -1124,6 +1178,9 @@ per megabase:</string>
              </item>
              <item>
               <widget class="QRadioButton" name="singleNodeArrowHeadsOffRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Off</string>
                </property>
@@ -1158,6 +1215,9 @@ per megabase:</string>
              </property>
              <item>
               <widget class="QRadioButton" name="antialiasingOnRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>On</string>
                </property>
@@ -1168,6 +1228,9 @@ per megabase:</string>
              </item>
              <item>
               <widget class="QRadioButton" name="antialiasingOffRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Off</string>
                </property>
@@ -1397,6 +1460,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -1426,6 +1492,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -1450,6 +1519,9 @@ single node style:</string>
               <width>100</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="text">
              <string/>
@@ -1555,6 +1627,9 @@ single node style:</string>
              </property>
              <item>
               <widget class="QRadioButton" name="positionVisibleRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Over visible regions</string>
                </property>
@@ -1565,6 +1640,9 @@ single node style:</string>
              </item>
              <item>
               <widget class="QRadioButton" name="positionCentreRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>On node centre</string>
                </property>
@@ -1709,6 +1787,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -1736,6 +1817,9 @@ single node style:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -2076,6 +2160,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="maximum">
              <number>255</number>
             </property>
@@ -2091,6 +2178,9 @@ single node style:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="maximum">
              <number>255</number>
@@ -2163,6 +2253,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="maximum">
              <number>255</number>
             </property>
@@ -2173,6 +2266,9 @@ single node style:</string>
           </item>
           <item row="2" column="4">
            <widget class="QSpinBox" name="randomColourPositiveLightnessSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2201,6 +2297,9 @@ single node style:</string>
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="maximum">
              <number>255</number>
@@ -2257,6 +2356,9 @@ single node style:</string>
           </item>
           <item row="1" column="4">
            <widget class="QSpinBox" name="randomColourNegativeSaturationSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2267,6 +2369,9 @@ single node style:</string>
           </item>
           <item row="0" column="4">
            <widget class="QSpinBox" name="randomColourPositiveSaturationSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2299,6 +2404,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="maximum">
              <number>255</number>
             </property>
@@ -2309,6 +2417,9 @@ single node style:</string>
           </item>
           <item row="4" column="4">
            <widget class="QSpinBox" name="randomColourPositiveOpacitySpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2319,6 +2430,9 @@ single node style:</string>
           </item>
           <item row="3" column="4">
            <widget class="QSpinBox" name="randomColourNegativeLightnessSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2364,6 +2478,9 @@ single node style:</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="maximum">
              <number>255</number>
             </property>
@@ -2374,6 +2491,9 @@ single node style:</string>
           </item>
           <item row="5" column="4">
            <widget class="QSpinBox" name="randomColourNegativeOpacitySpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -2483,6 +2603,9 @@ single node style:</string>
           </item>
           <item row="2" column="3">
            <widget class="ColourButton" name="uniformNodeSpecialColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -2519,6 +2642,9 @@ single node style:</string>
           </item>
           <item row="1" column="3">
            <widget class="ColourButton" name="uniformNegativeNodeColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -2547,6 +2673,9 @@ single node style:</string>
               <width>100</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="text">
              <string/>
@@ -2739,6 +2868,9 @@ single node style:</string>
               <height>0</height>
              </size>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -2791,6 +2923,9 @@ single node style:</string>
           </item>
           <item row="1" column="3">
            <widget class="ColourButton" name="highDepthColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -2944,6 +3079,9 @@ single node style:</string>
                 </property>
                 <item row="0" column="1">
                  <widget class="QDoubleSpinBox" name="lowDepthValueSpinBox">
+                  <property name="focusPolicy">
+                   <enum>Qt::StrongFocus</enum>
+                  </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
@@ -2957,6 +3095,9 @@ single node style:</string>
                 </item>
                 <item row="1" column="1">
                  <widget class="QDoubleSpinBox" name="highDepthValueSpinBox">
+                  <property name="focusPolicy">
+                   <enum>Qt::StrongFocus</enum>
+                  </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
@@ -2987,6 +3128,9 @@ single node style:</string>
              </item>
              <item row="0" column="1">
               <widget class="QRadioButton" name="depthValueAutoRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Auto</string>
                </property>
@@ -2997,6 +3141,9 @@ single node style:</string>
              </item>
              <item row="2" column="1">
               <widget class="QRadioButton" name="depthValueManualRadioButton">
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
                <property name="text">
                 <string>Manual</string>
                </property>
@@ -3143,6 +3290,9 @@ single node style:</string>
               <width>100</width>
               <height>0</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
             </property>
             <property name="text">
              <string/>
@@ -3333,6 +3483,9 @@ single node style:</string>
               <height>0</height>
              </size>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -3401,6 +3554,9 @@ single node style:</string>
           </item>
           <item row="5" column="3">
            <widget class="ColourButton" name="contiguityStartingColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -3447,6 +3603,9 @@ single node style:</string>
           </item>
           <item row="3" column="3">
            <widget class="ColourButton" name="maybeContiguousColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -3467,6 +3626,9 @@ single node style:</string>
           </item>
           <item row="4" column="3">
            <widget class="ColourButton" name="notContiguousColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -3487,6 +3649,9 @@ single node style:</string>
           </item>
           <item row="2" column="3">
            <widget class="ColourButton" name="contiguousEitherStrandColourButton">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -3494,6 +3659,9 @@ single node style:</string>
           </item>
           <item row="0" column="3">
            <widget class="QSpinBox" name="contiguitySearchDepthSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3590,6 +3758,9 @@ single node style:</string>
           </property>
           <item row="2" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="minQueryCoveredByPathSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3622,6 +3793,9 @@ single node style:</string>
           </item>
           <item row="3" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="minQueryCoveredByHitsSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3641,6 +3815,9 @@ single node style:</string>
           </item>
           <item row="1" column="3" colspan="2">
            <widget class="QSpinBox" name="maxPathNodesSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3654,6 +3831,9 @@ single node style:</string>
           </item>
           <item row="4" column="2">
            <widget class="QCheckBox" name="minMeanHitIdentityCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Min mean hit identity:</string>
             </property>
@@ -3661,6 +3841,9 @@ single node style:</string>
           </item>
           <item row="3" column="2">
            <widget class="QCheckBox" name="minQueryCoveredByHitsCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Min query path hit coverage:</string>
             </property>
@@ -3668,6 +3851,9 @@ single node style:</string>
           </item>
           <item row="10" column="2">
            <widget class="QCheckBox" name="maxLengthBaseDiscrepancyCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Maximum length
 discrepancy (bases):</string>
@@ -3676,6 +3862,9 @@ discrepancy (bases):</string>
           </item>
           <item row="6" column="2">
            <widget class="QCheckBox" name="maxEValueProductCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Max e-value product:</string>
             </property>
@@ -3683,6 +3872,9 @@ discrepancy (bases):</string>
           </item>
           <item row="8" column="2">
            <widget class="QCheckBox" name="maxLengthPercentageCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Maximum path length:</string>
             </property>
@@ -3697,6 +3889,9 @@ discrepancy (bases):</string>
           </item>
           <item row="7" column="2">
            <widget class="QCheckBox" name="minLengthPercentageCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Minimum path length:</string>
             </property>
@@ -3704,6 +3899,9 @@ discrepancy (bases):</string>
           </item>
           <item row="9" column="2">
            <widget class="QCheckBox" name="minLengthBaseDiscrepancyCheckBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="text">
              <string>Minimum length
 discrepancy (bases):</string>
@@ -3712,6 +3910,9 @@ discrepancy (bases):</string>
           </item>
           <item row="9" column="3" colspan="2">
            <widget class="QSpinBox" name="minLengthBaseDiscrepancySpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3725,6 +3926,9 @@ discrepancy (bases):</string>
           </item>
           <item row="7" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="minLengthPercentageSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3747,6 +3951,9 @@ discrepancy (bases):</string>
           </item>
           <item row="10" column="3" colspan="2">
            <widget class="QSpinBox" name="maxLengthBaseDiscrepancySpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3760,6 +3967,9 @@ discrepancy (bases):</string>
           </item>
           <item row="8" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="maxLengthPercentageSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3936,6 +4146,9 @@ discrepancy (bases):</string>
           </item>
           <item row="6" column="4">
            <widget class="QSpinBox" name="maxEValueExponentSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -3971,6 +4184,9 @@ discrepancy (bases):</string>
           </item>
           <item row="6" column="3">
            <widget class="QDoubleSpinBox" name="maxEValueCoefficientSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="decimals">
              <number>1</number>
             </property>
@@ -3981,6 +4197,9 @@ discrepancy (bases):</string>
           </item>
           <item row="4" column="3" colspan="2">
            <widget class="QDoubleSpinBox" name="minMeanHitIdentitySpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -4010,6 +4229,9 @@ discrepancy (bases):</string>
           </item>
           <item row="0" column="3" colspan="2">
            <widget class="QSpinBox" name="maxHitsForQueryPathSpinBox">
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
@@ -4072,6 +4294,9 @@ discrepancy (bases):</string>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QPushButton" name="restoreDefaultsButton">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
         <property name="text">
          <string>Restore defaults</string>
         </property>
@@ -4079,6 +4304,9 @@ discrepancy (bases):</string>
       </item>
       <item>
        <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -4123,12 +4351,79 @@ discrepancy (bases):</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>scrollArea</tabstop>
+  <tabstop>nodeLengthPerMegabaseAutoRadioButton</tabstop>
+  <tabstop>nodeLengthPerMegabaseManualRadioButton</tabstop>
+  <tabstop>nodeLengthPerMegabaseManualSpinBox</tabstop>
+  <tabstop>minimumNodeLengthSpinBox</tabstop>
+  <tabstop>edgeLengthSpinBox</tabstop>
+  <tabstop>edgeWidthSpinBox</tabstop>
+  <tabstop>doubleModeNodeSeparationSpinBox</tabstop>
+  <tabstop>nodeSegmentLengthSpinBox</tabstop>
+  <tabstop>graphLayoutQualitySlider</tabstop>
+  <tabstop>linearLayoutOnRadioButton</tabstop>
+  <tabstop>linearLayoutOffRadioButton</tabstop>
+  <tabstop>componentSeparationSpinBox</tabstop>
+  <tabstop>edgeColourButton</tabstop>
+  <tabstop>outlineColourButton</tabstop>
+  <tabstop>outlineThicknessSpinBox</tabstop>
+  <tabstop>selectionColourButton</tabstop>
   <tabstop>antialiasingOnRadioButton</tabstop>
   <tabstop>antialiasingOffRadioButton</tabstop>
+  <tabstop>singleNodeArrowHeadsOnRadioButton</tabstop>
+  <tabstop>singleNodeArrowHeadsOffRadioButton</tabstop>
+  <tabstop>textColourButton</tabstop>
+  <tabstop>textOutlineThicknessSpinBox</tabstop>
+  <tabstop>textOutlineColourButton</tabstop>
   <tabstop>positionVisibleRadioButton</tabstop>
   <tabstop>positionCentreRadioButton</tabstop>
+  <tabstop>depthEffectOnWidthSpinBox</tabstop>
+  <tabstop>depthPowerSpinBox</tabstop>
+  <tabstop>randomColourPositiveSaturationSlider</tabstop>
+  <tabstop>randomColourPositiveSaturationSpinBox</tabstop>
+  <tabstop>randomColourNegativeSaturationSlider</tabstop>
+  <tabstop>randomColourNegativeSaturationSpinBox</tabstop>
+  <tabstop>randomColourPositiveLightnessSlider</tabstop>
+  <tabstop>randomColourPositiveLightnessSpinBox</tabstop>
+  <tabstop>randomColourNegativeLightnessSlider</tabstop>
+  <tabstop>randomColourNegativeLightnessSpinBox</tabstop>
+  <tabstop>randomColourPositiveOpacitySlider</tabstop>
+  <tabstop>randomColourPositiveOpacitySpinBox</tabstop>
+  <tabstop>randomColourNegativeOpacitySlider</tabstop>
+  <tabstop>randomColourNegativeOpacitySpinBox</tabstop>
+  <tabstop>uniformPositiveNodeColourButton</tabstop>
+  <tabstop>uniformNegativeNodeColourButton</tabstop>
+  <tabstop>uniformNodeSpecialColourButton</tabstop>
+  <tabstop>lowDepthColourButton</tabstop>
+  <tabstop>highDepthColourButton</tabstop>
   <tabstop>depthValueAutoRadioButton</tabstop>
+  <tabstop>depthValueManualRadioButton</tabstop>
+  <tabstop>lowDepthValueSpinBox</tabstop>
+  <tabstop>highDepthValueSpinBox</tabstop>
+  <tabstop>noBlastHitsColourButton</tabstop>
+  <tabstop>contiguitySearchDepthSpinBox</tabstop>
+  <tabstop>contiguousStrandSpecificColourButton</tabstop>
+  <tabstop>contiguousEitherStrandColourButton</tabstop>
+  <tabstop>maybeContiguousColourButton</tabstop>
+  <tabstop>notContiguousColourButton</tabstop>
+  <tabstop>contiguityStartingColourButton</tabstop>
+  <tabstop>maxHitsForQueryPathSpinBox</tabstop>
+  <tabstop>maxPathNodesSpinBox</tabstop>
+  <tabstop>minQueryCoveredByPathSpinBox</tabstop>
+  <tabstop>minQueryCoveredByHitsCheckBox</tabstop>
+  <tabstop>minQueryCoveredByHitsSpinBox</tabstop>
+  <tabstop>minMeanHitIdentityCheckBox</tabstop>
+  <tabstop>minMeanHitIdentitySpinBox</tabstop>
+  <tabstop>maxEValueProductCheckBox</tabstop>
+  <tabstop>maxEValueCoefficientSpinBox</tabstop>
+  <tabstop>maxEValueExponentSpinBox</tabstop>
+  <tabstop>minLengthPercentageCheckBox</tabstop>
+  <tabstop>minLengthPercentageSpinBox</tabstop>
+  <tabstop>maxLengthPercentageCheckBox</tabstop>
+  <tabstop>maxLengthPercentageSpinBox</tabstop>
+  <tabstop>minLengthBaseDiscrepancyCheckBox</tabstop>
+  <tabstop>minLengthBaseDiscrepancySpinBox</tabstop>
+  <tabstop>maxLengthBaseDiscrepancyCheckBox</tabstop>
+  <tabstop>maxLengthBaseDiscrepancySpinBox</tabstop>
   <tabstop>restoreDefaultsButton</tabstop>
  </tabstops>
  <resources/>
