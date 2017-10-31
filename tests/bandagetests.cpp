@@ -1434,7 +1434,6 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query7Paths.size(), 1);
 }
 
-
 void BandageTests::bandageInfo()
 {
     int n50 = 0;
@@ -1636,6 +1635,15 @@ void BandageTests::testFindHits()
         QCOMPARE(result, expected);
     }
 
+    {   // Test multiple successive hits.
+        std::vector<KmerPos> sorted_kmers_seq1 = {  KmerPos(2, 0), KmerPos(3, 1), KmerPos(4, 2) };
+        std::vector<KmerPos> sorted_kmers_seq2 = {  KmerPos(0, 0), KmerPos(1, 1),
+                                                    KmerPos(3, 3), KmerPos(3, 7),
+                                                    KmerPos(3, 8), KmerPos(5, 9) };
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        std::vector<KmerHit> expected = { KmerHit(1, 3), KmerHit(1, 7), KmerHit(1, 8)};
+        QCOMPARE(result, expected);
+    }
 }
 
 void BandageTests::testFindKmerMatches()
