@@ -147,9 +147,11 @@ std::vector<KmerHit> findHits(const std::vector<KmerPos>& sorted_kmers_seq1, con
       continue;
     }
 
-    hits.emplace_back(KmerHit(sorted_kmers_seq1[k1].pos, sorted_kmers_seq2[k2].pos));
+    // Find n^2 exact hits.
+    for (int32_t i = k2; i < n_kmers2 && sorted_kmers_seq2[i].kmer == sorted_kmers_seq1[k1].kmer; i++) {
+      hits.emplace_back(KmerHit(sorted_kmers_seq1[k1].pos, sorted_kmers_seq2[i].pos));
+    }
     k1 += 1;
-    k2 += 1;
   }
 
   return hits;
