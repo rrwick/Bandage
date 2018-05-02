@@ -50,6 +50,8 @@ public:
     //pointers.
     QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_deBruijnGraphEdges;
 
+    QMap<QString, Path*> m_deBruijnGraphPaths;
+    
     ogdf::Graph * m_ogdfGraph;
     ogdf::EdgeArray<double> * m_edgeArray;
     ogdf::GraphAttributes * m_graphAttributes;
@@ -57,6 +59,7 @@ public:
     int m_kmer;
     int m_nodeCount;
     int m_edgeCount;
+    int m_pathCount;
     long long m_totalLength;
     long long m_shortestContig;
     long long m_longestContig;
