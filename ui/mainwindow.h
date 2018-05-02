@@ -126,6 +126,9 @@ private slots:
     void hideNodes();
     void openSettingsDialog();
     void openAboutDialog();
+    void doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
+                       const std::vector<QString> &nodesNotInGraph);
+    void selectPathNodes();
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
     void openBlastSearchDialog();

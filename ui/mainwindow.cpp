@@ -157,6 +157,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
     connect(ui->actionSettings, SIGNAL(triggered()), this, SLOT(openSettingsDialog()));
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
+    connect(ui->pathSelectButton, SIGNAL(clicked()), this, SLOT(selectPathNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
@@ -450,6 +451,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         // to the default of 'Random colours'.
         if (!customColours && ui->coloursComboBox->currentIndex() == 6)
             ui->coloursComboBox->setCurrentIndex(0);
+        setupPathSelectionComboBox();
     }
 
     catch (...)
@@ -653,7 +655,6 @@ void MainWindow::graphScopeChanged()
     case 2:
         g_settings->graphScope = AROUND_PATHS;
 
-        setupPathSelectionComboBox();
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
@@ -763,6 +764,7 @@ void MainWindow::setPathSelectionWidgetVisibility(bool visible)
 
 void MainWindow::setupPathSelectionComboBox() {
     ui->pathSelectionComboBox->clear();
+    ui->pathSelectionComboBox2->clear();
 
     QStringList comboBoxItems;
     for (QMap<QString, Path*>::key_iterator it = g_assemblyGraph->m_deBruijnGraphPaths.keyBegin();
@@ -775,6 +777,8 @@ void MainWindow::setupPathSelectionComboBox() {
     {
         ui->pathSelectionComboBox->addItems(comboBoxItems);
         ui->pathSelectionComboBox->setEnabled(true);
+        ui->pathSelectionComboBox2->addItems(comboBoxItems);
+        ui->pathSelectionComboBox2->setEnabled(true);
     }
 }
 
@@ -1714,28 +1718,10 @@ void MainWindow::openSettingsDialog()
     }
 }
 
-void MainWindow::selectUserSpecifiedNodes()
-{
-    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
-    {
-        QMessageBox::information(this, "No starting nodes",
-                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
-                                 "Separate multiple nodes with commas.");
-        return;
-    }
-
-    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
-    {
-        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
-        return;
-    }
-
+void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
+                               const std::vector<QString> &nodesNotInGraph) {
     m_scene->blockSignals(true);
     m_scene->clearSelection();
-    std::vector<QString> nodesNotInGraph;
-    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
-                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
-                                                                     &nodesNotInGraph);
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
@@ -1789,6 +1775,42 @@ void MainWindow::selectUserSpecifiedNodes()
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
+}
+
+void MainWindow::selectUserSpecifiedNodes()
+{
+    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
+    {
+        QMessageBox::information(this, "No starting nodes",
+                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
+                                 "Separate multiple nodes with commas.");
+        return;
+    }
+
+    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
+    {
+        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
+        return;
+    }
+
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
+                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
+                                                                     &nodesNotInGraph);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph);
+}
+
+void MainWindow::selectPathNodes()
+{
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect;
+
+    QList<DeBruijnNode *> nodes = g_assemblyGraph->m_deBruijnGraphPaths[ui->pathSelectionComboBox2->currentText()]->getNodes();
+    for (QList<DeBruijnNode *>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        nodesToSelect.push_back(*i);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph);
 }
 
 
