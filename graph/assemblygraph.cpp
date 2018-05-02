@@ -2041,7 +2041,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
 
 std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,
-                                                            QString nodesList, QString blastQueryName)
+                                                            QString nodesList, QString blastQueryName, QString pathName)
 {
     std::vector<DeBruijnNode *> startingNodes;
 
@@ -2101,6 +2101,16 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         }
     }
 
+    else if (g_settings->graphScope == AROUND_PATHS)
+    {
+        if (m_deBruijnGraphPaths.count(pathName) == 0)
+        {
+            *errorTitle = "Invalid path";
+            *errorMessage = "No path with such name is loaded";
+            return startingNodes;
+        }
+    }
+
     g_settings->doubleMode = doubleMode;
     clearOgdfGraphAndResetNodes();
 
@@ -2111,6 +2121,12 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
     else if (g_settings->graphScope == DEPTH_RANGE)
         startingNodes = getNodesInDepthRange(g_settings->minDepthRange,
                                                  g_settings->maxDepthRange);
+    else if (g_settings->graphScope == AROUND_PATHS) {
+        QList<DeBruijnNode *> nodes = m_deBruijnGraphPaths[pathName]->getNodes();
+
+        for (QList<DeBruijnNode *>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+            startingNodes.push_back(*i);
+    }
 
     return startingNodes;
 }
