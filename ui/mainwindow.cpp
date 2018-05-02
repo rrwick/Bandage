@@ -470,12 +470,14 @@ void MainWindow::displayGraphDetails()
 {
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_nodeCount));
     ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
+    ui->pathCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_pathCount));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
 void MainWindow::clearGraphDetails()
 {
     ui->nodeCountLabel->setText("0");
     ui->edgeCountLabel->setText("0");
+    ui->pathCountLabel->setText("0");
     ui->totalLengthLabel->setText("0");
 }
 
