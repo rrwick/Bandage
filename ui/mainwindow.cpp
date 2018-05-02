@@ -1511,7 +1511,8 @@ void MainWindow::openSettingsDialog()
 }
 
 void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
-                               const std::vector<QString> &nodesNotInGraph) {
+                               const std::vector<QString> &nodesNotInGraph,
+                               bool recolor) {
     m_scene->blockSignals(true);
     m_scene->clearSelection();
 
@@ -1519,6 +1520,7 @@ void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
     //rectangle so the viewport can focus on the selected node.
     std::vector<QString> nodesNotFound;
     int foundNodes = 0;
+    QColor color;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
         GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->getGraphicsItemNode();
@@ -1530,6 +1532,14 @@ void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
 
         if (graphicsItemNode != 0)
         {
+            if (recolor)
+            {
+                if (i == 0)
+                    color = graphicsItemNode->m_colour;
+                else
+                    graphicsItemNode->m_colour = color;
+            }
+
             graphicsItemNode->setSelected(true);
             ++foundNodes;
         }
@@ -1602,7 +1612,7 @@ void MainWindow::selectPathNodes()
     for (QList<DeBruijnNode *>::iterator i = nodes.begin(); i != nodes.end(); ++i)
         nodesToSelect.push_back(*i);
 
-    doSelectNodes(nodesToSelect, nodesNotInGraph);
+    doSelectNodes(nodesToSelect, nodesNotInGraph, ui->pathSelectionRecolorRadioButton->isChecked());
 }
 
 
