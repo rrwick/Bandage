@@ -127,7 +127,8 @@ private slots:
     void openSettingsDialog();
     void openAboutDialog();
     void doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
-                       const std::vector<QString> &nodesNotInGraph);
+                       const std::vector<QString> &nodesNotInGraph,
+                       bool recolor = false);
     void selectPathNodes();
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
