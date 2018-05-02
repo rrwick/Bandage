@@ -1518,24 +1518,32 @@ void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
     //rectangle so the viewport can focus on the selected node.
     std::vector<QString> nodesNotFound;
     int foundNodes = 0;
-    QColor color;
+    QColor color1, color2;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
         GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->getGraphicsItemNode();
+        GraphicsItemNode * rcgraphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
 
         //If the GraphicsItemNode isn't found, try the reverse complement.  This
         //is only done for single node mode.
         if (graphicsItemNode == 0 && !g_settings->doubleMode)
-            graphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
+            graphicsItemNode = rcgraphicsItemNode;
 
         if (graphicsItemNode != 0)
         {
             if (recolor)
             {
                 if (i == 0)
-                    color = graphicsItemNode->m_colour;
-                else
-                    graphicsItemNode->m_colour = color;
+                {
+                    color1 = graphicsItemNode->m_colour;
+                    if (g_settings->doubleMode)
+                        color2 = rcgraphicsItemNode->m_colour;
+                } else {
+                    graphicsItemNode->m_colour = color1;
+                    if (g_settings->doubleMode)
+                        rcgraphicsItemNode->m_colour = color2;
+                }
+
             }
 
             graphicsItemNode->setSelected(true);
