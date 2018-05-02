@@ -400,6 +400,51 @@
                </widget>
               </item>
               <item row="3" column="0">
+               <widget class="InfoTextWidget" name="pathSelectionInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="pathSelectionLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Path:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QComboBox" name="pathSelectionComboBox">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
                <widget class="InfoTextWidget" name="nodeDistanceInfoText" native="true">
                 <property name="enabled">
                  <bool>true</bool>
@@ -418,7 +463,39 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="4" column="1">
+               <widget class="QLabel" name="nodeDistanceLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Distance:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QSpinBox" name="nodeDistanceSpinBox">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
                <widget class="InfoTextWidget" name="nodeStyleInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -434,7 +511,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="2">
+              <item row="7" column="2">
                <widget class="QWidget" name="nodeStyleWidget" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="spacing">
@@ -500,7 +577,7 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
+              <item row="7" column="1">
                <widget class="QLabel" name="nodeStyleLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -510,28 +587,6 @@
                 </property>
                 <property name="text">
                  <string>Style:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QSpinBox" name="nodeDistanceSpinBox">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="maximum">
-                 <number>10000</number>
                 </property>
                </widget>
               </item>
@@ -590,6 +645,11 @@
                 </item>
                 <item>
                  <property name="text">
+                  <string>Around paths</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>Around BLAST hits</string>
                  </property>
                 </item>
@@ -613,16 +673,6 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="nodeDistanceLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Distance:</string>
-                </property>
-               </widget>
-              </item>
               <item row="2" column="1">
                <widget class="QLabel" name="startingNodesMatchTypeLabel">
                 <property name="enabled">
@@ -639,7 +689,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="2">
+              <item row="5" column="2">
                <widget class="QDoubleSpinBox" name="minDepthSpinBox">
                 <property name="focusPolicy">
                  <enum>Qt::StrongFocus</enum>
@@ -655,7 +705,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
+              <item row="5" column="0">
                <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -687,7 +737,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
+              <item row="5" column="1">
                <widget class="QLabel" name="minDepthLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -700,7 +750,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
+              <item row="6" column="0">
                <widget class="InfoTextWidget" name="maxDepthInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -716,7 +766,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="1">
+              <item row="6" column="1">
                <widget class="QLabel" name="maxDepthLabel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -729,7 +779,7 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="2">
+              <item row="6" column="2">
                <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
                 <property name="focusPolicy">
                  <enum>Qt::StrongFocus</enum>
