@@ -607,6 +607,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -622,6 +623,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(true);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
@@ -647,11 +649,41 @@ void MainWindow::graphScopeChanged()
         break;
 
     case 2:
+        g_settings->graphScope = AROUND_PATHS;
+
+        setupPathSelectionComboBox();
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(true);
+        setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(true);
+
+        ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
+                                              "within this many steps of those nodes.<br><br>"
+                                              "A value of 0 will result in only the specified nodes being drawn. "
+                                              "A large value will result in large sections of the graph around "
+                                              "the specified nodes being drawn.");
+
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionLabel,    1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionComboBox,  1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceSpinBox, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 3, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 3, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 4, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 4, 1, 1, 2);
+
+        break;
+
+    case 3:
         g_settings->graphScope = AROUND_BLAST_HITS;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
@@ -670,12 +702,13 @@ void MainWindow::graphScopeChanged()
 
         break;
 
-    case 3:
+    case 4:
         g_settings->graphScope = DEPTH_RANGE;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(true);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->minDepthInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->minDepthLabel, 1, 1, 1, 1);
@@ -719,6 +752,30 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthLabel->setVisible(visible);
     ui->maxDepthSpinBox->setVisible(visible);
 }
+void MainWindow::setPathSelectionWidgetVisibility(bool visible)
+{
+    ui->pathSelectionInfoText->setVisible(visible);
+    ui->pathSelectionLabel->setVisible(visible);
+    ui->pathSelectionComboBox->setVisible(visible);
+}
+
+void MainWindow::setupPathSelectionComboBox() {
+    ui->pathSelectionComboBox->clear();
+
+    QStringList comboBoxItems;
+    for (QMap<QString, Path*>::key_iterator it = g_assemblyGraph->m_deBruijnGraphPaths.keyBegin();
+         it != g_assemblyGraph->m_deBruijnGraphPaths.keyEnd(); ++it)
+    {
+        comboBoxItems.push_back(*it);
+    }
+
+    if (comboBoxItems.size() > 0)
+    {
+        ui->pathSelectionComboBox->addItems(comboBoxItems);
+        ui->pathSelectionComboBox->setEnabled(true);
+    }
+}
+
 
 
 void MainWindow::drawGraph()
@@ -728,7 +785,8 @@ void MainWindow::drawGraph()
     std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
                                                                                   ui->doubleNodesRadioButton->isChecked(),
                                                                                   ui->startingNodesLineEdit->text(),
-                                                                                  ui->blastQueryComboBox->currentText());
+                                                                                  ui->blastQueryComboBox->currentText(),
+                                                                                  ui->pathSelectionComboBox->currentText());
 
     if (errorMessage != "")
     {
@@ -2144,8 +2202,9 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     {
     case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
-    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
-    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case AROUND_PATHS: ui->graphScopeComboBox->setCurrentIndex(2); break;
+    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(4); break;
     }
 }
 

@@ -118,7 +118,8 @@ public:
                                                  QString * errorMessage,
                                                  bool doubleMode,
                                                  QString nodesList,
-                                                 QString blastQueryName);
+                                                 QString blastQueryName,
+                                                 QString pathName);
 
     bool checkIfStringHasNodes(QString nodesString);
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph,
