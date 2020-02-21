@@ -1418,6 +1418,16 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
             m_depthTag = "KC";
         }
 
+        // Check to see if the name matches SKESA format, in which case we can get the depth and node number.
+        else if (thisNodeDetails.size() >= 3 && thisNodeDetails[0] == "Contig" && thisNodeDetails[1].toInt() > 0) {
+            name = thisNodeDetails[1];
+            bool ok;
+            double convertedDepth = thisNodeDetails[2].toDouble(&ok);
+            if (ok)
+                depth = convertedDepth;
+            m_depthTag = "KC";
+        }
+
         // If it doesn't match, then we will use the sequence name up to the first space.
         else {
             QStringList nameParts = name.split(" ");
@@ -1441,6 +1451,10 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
                 depth = depthFromString;
         }
         if (lowerName.contains("circular=true"))
+            circularNodeNames.push_back(name);
+
+        // SKESA circularity
+        if (thisNodeDetails.size() == 4 and thisNodeDetails[3] == "Circ")
             circularNodeNames.push_back(name);
 
         if (name.length() < 1)
