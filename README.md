@@ -37,16 +37,26 @@ The Linux binaries comes in two varieties: dynamically-linked and statically-lin
 
 If the compiled binaries do not work for you, the instructions below should help you build Bandage on most common OSs. If you are having difficulties building Bandage for your OS, feel free to contact me (Ryan) at rrwick@gmail.com and I'll do my best to help you out!
 
-### <img src="http://rrwick.github.io/Bandage/images/OS/ubuntu.png" alt="" width="34" height="40" align="middle"> Ubuntu
+### <img src="http://rrwick.github.io/Bandage/images/OS/ubuntu.png" alt="" width="34" height="40" align="middle"> Ubuntu & Fedora
 
-The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04:
+The following instructions successfully build Bandage on a fresh installation of Ubuntu 14.04 or fedora 33:
 
 1. Ensure the package lists are up-to-date: `sudo apt-get update`
-2. Install prerequisite packages: `sudo apt-get install build-essential git qtbase5-dev libqt5svg5-dev`
+2. Install prerequisite packages: 
+    
+    For Ubuntu:
+    ```
+    sudo apt-get install build-essential git qtbase5-dev libqt5svg5-dev
+    ```
+    For Fedora:
+    ```
+    sudo dnf groupinstall "Development Tools" "Development Libraries"
+    sudo dnf install qt5-qtsvg-devel git qt5-qtbase-devel
+    ```
 3. Download the Bandage code from GitHub: `git clone https://github.com/rrwick/Bandage.git`
 4. Open a terminal in the Bandage directory.
 5. Set the environment variable to specify that you will be using Qt 5, not Qt 4: `export QT_SELECT=5`
-6. Run qmake to generate a Makefile: `qmake`
+6. Run qmake to generate a Makefile: `qmake` or in Fedora `qmake-qt5`
 7. Build the program: `make`
 8. `Bandage` should now be an executable file.
 9. Optionally, copy the program into /usr/local/bin: `sudo make install`. The Bandage build directory can then be deleted.
