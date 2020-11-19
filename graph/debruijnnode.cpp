@@ -347,7 +347,7 @@ QByteArray DeBruijnNode::getFasta(bool sign, bool newLines, bool evenIfEmpty) co
         return QByteArray();
 
     QByteArray fasta = ">";
-    fasta += getNodeNameForFasta(sign);
+    fasta += getNodeNameForFasta(sign).toUtf8();
     fasta += "\n";
     if (newLines)
         fasta += AssemblyGraph::addNewlinesToSequence(sequence);
@@ -365,31 +365,31 @@ QByteArray DeBruijnNode::getGfaSegmentLine(QString depthTag) const
     QByteArray gfaSequence = getSequenceForGfa();
 
     QByteArray gfaSegmentLine = "S";
-    gfaSegmentLine += "\t" + getNameWithoutSign();
+    gfaSegmentLine += "\t" + getNameWithoutSign().toUtf8();
     gfaSegmentLine += "\t" + gfaSequence;
-    gfaSegmentLine += "\tLN:i:" + QString::number(gfaSequence.length());
+    gfaSegmentLine += "\tLN:i:" + QString::number(gfaSequence.length()).toUtf8();
 
     //We use the depthTag to guide how we save the node depth.
     //If it is empty, that implies that the loaded graph did not have depth
     //information and so we don't save depth.
     if (depthTag == "DP")
-        gfaSegmentLine += "\tDP:f:" + QString::number(getDepth());
+        gfaSegmentLine += "\tDP:f:" + QString::number(getDepth()).toUtf8();
     else if (depthTag == "KC")
-        gfaSegmentLine += "\tKC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+        gfaSegmentLine += "\tKC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5)).toUtf8();
     else if (depthTag == "RC")
-        gfaSegmentLine += "\tRC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+        gfaSegmentLine += "\tRC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5)).toUtf8();
     else if (depthTag == "FC")
-        gfaSegmentLine += "\tFC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5));
+        gfaSegmentLine += "\tFC:i:" + QString::number(int(getDepth() * gfaSequence.length() + 0.5)).toUtf8();
 
     //If the user has included custom labels or colours, include those.
     if (!m_customLabel.isEmpty())
-        gfaSegmentLine += "\tLB:z:" + getCustomLabel();
+        gfaSegmentLine += "\tLB:z:" + getCustomLabel().toUtf8();
     if (!m_reverseComplement->m_customLabel.isEmpty())
-        gfaSegmentLine += "\tL2:z:" + m_reverseComplement->getCustomLabel();
+        gfaSegmentLine += "\tL2:z:" + m_reverseComplement->getCustomLabel().toUtf8();
     if (hasCustomColour())
-        gfaSegmentLine += "\tCL:z:" + getColourName(getCustomColour());
+        gfaSegmentLine += "\tCL:z:" + getColourName(getCustomColour()).toUtf8();
     if (m_reverseComplement->hasCustomColour())
-        gfaSegmentLine += "\tC2:z:" + getColourName(m_reverseComplement->getCustomColour());
+        gfaSegmentLine += "\tC2:z:" + getColourName(m_reverseComplement->getCustomColour()).toUtf8();
     gfaSegmentLine += "\n";
     return gfaSegmentLine;
 }

@@ -26,7 +26,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QPixmap icon = *(ui->iconLabel->pixmap());
+    QPixmap icon = ui->iconLabel->pixmap(Qt::ReturnByValue);
     icon.setDevicePixelRatio(devicePixelRatio());
     ui->iconLabel->setPixmap(icon);
 

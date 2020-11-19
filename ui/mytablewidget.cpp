@@ -105,7 +105,7 @@ void MyTableWidget::keyPressEvent(QKeyEvent* event)
     if (event->key() == Qt::Key_C && (event->modifiers() & Qt::ControlModifier))
     {
         QModelIndexList cells = selectedIndexes();
-        qSort(cells); // Necessary, otherwise they are in column order
+        std::sort(cells.begin(), cells.end()); // Necessary, otherwise they are in column order
 
         QString text;
         int currentRow = 0; // To determine when to insert newlines
