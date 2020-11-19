@@ -198,11 +198,11 @@ void outputText(QStringList text, QTextStream * out)
             wrapped << wrapText(line, g_memory->terminalWidth, 10, 10);
     }
 
-    *out << endl;
+    *out << Qt::endl;
     for (int i = 0; i < wrapped.size(); ++i)
     {
         *out << wrapped[i];
-        *out << endl;
+        *out << Qt::endl;
     }
 }
 

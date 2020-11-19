@@ -68,7 +68,7 @@ int bandageInfo(QStringList arguments)
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
     {
-        err << "Bandage error: could not load " << graphFilename << endl;
+        err << "Bandage error: could not load " << graphFilename << Qt::endl;
         return 1;
     }
 
