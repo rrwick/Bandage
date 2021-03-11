@@ -107,7 +107,7 @@ void getSettingsUsage(QStringList * text)
     *text << "";
     *text << "Node colours";
     *text << dashes;
-    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, depth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
+    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, depth, blastsolid, blastrainbow, custom (default: random if --query option not used, blastsolid if --query option used)";
     *text << "";
     *text << "Random colour scheme";
     *text << dashes;
@@ -268,7 +268,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--noaa", arguments);
     checkOptionWithoutValue("--singlearr", arguments);
     QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow";
+    validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow" << "custom";
     error = checkOptionForString("--colour", arguments, validColourOptions); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatpos", arguments, g_settings->randomColourPositiveSaturation, false); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatneg", arguments, g_settings->randomColourNegativeSaturation, false); if (error.length() > 0) return error;
@@ -1048,6 +1048,8 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
         return BLAST_HITS_SOLID_COLOUR;
     else if (colourString == "blastrainbow")
         return BLAST_HITS_RAINBOW_COLOUR;
+    else if (colourString == "custom")
+        return CUSTOM_COLOURS;
 
     //Random colours is the default
     return defaultScheme;
