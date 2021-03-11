@@ -33,7 +33,6 @@ SOURCES += \
     program/settings.cpp \
     program/globals.cpp \
     program/graphlayoutworker.cpp \
-		program/dotplot.cpp \
     graph/debruijnnode.cpp \
     graph/debruijnedge.cpp \
     graph/graphicsitemnode.cpp \
@@ -124,7 +123,6 @@ HEADERS  += \
     program/settings.h \
     program/globals.h \
     program/graphlayoutworker.h \
-		program/dotplot.h \
     graph/debruijnnode.h \
     graph/debruijnedge.h \
     graph/graphicsitemnode.h \

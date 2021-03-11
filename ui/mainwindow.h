@@ -62,7 +62,6 @@ private:
     UiState m_uiState;
     BlastSearchDialog * m_blastSearchDialog;
     bool m_alreadyShown;
-    std::shared_ptr<QGraphicsScene> m_dotplotScene;
 
     void cleanUp();
     void displayGraphDetails();
@@ -161,8 +160,6 @@ private slots:
     void changeNodeName();
     void changeNodeDepth();
     void openGraphInfoDialog();
-    void drawDotplotPoweredByLogo(double x, double y, double w);
-    void drawDotplot();
 
 protected:
       void showEvent(QShowEvent *ev);

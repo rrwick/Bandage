@@ -29,7 +29,6 @@ INCLUDEPATH += ui
 
 SOURCES += \
     program/main.cpp\
-    program/dotplot.cpp \
     program/settings.cpp \
     program/globals.cpp \
     program/graphlayoutworker.cpp \
@@ -120,7 +119,6 @@ SOURCES += \
 
 HEADERS  += \
     program/settings.h \
-    program/dotplot.h \
     program/globals.h \
     program/graphlayoutworker.h \
     graph/debruijnnode.h \
