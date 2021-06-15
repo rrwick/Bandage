@@ -110,7 +110,7 @@ int bandageImage(QStringList arguments)
     {
         if (!createBlastTempDirectory())
         {
-            err << "Error creating temporary directory for BLAST files" << endl;
+            err << "Error creating temporary directory for BLAST files" << Qt::endl;
             return 1;
         }
 
@@ -118,7 +118,7 @@ int bandageImage(QStringList arguments)
 
         if (blastError != "")
         {
-            err << blastError << endl;
+            err << blastError << Qt::endl;
             return 1;
         }
     }
@@ -128,11 +128,31 @@ int bandageImage(QStringList arguments)
     std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
                                                                                   g_settings->doubleMode,
                                                                                   g_settings->startingNodes,
-                                                                                  "all");
+                                                                                  "all", "");
+
+    QString errormsg;
+    QStringList columns;
+    bool coloursLoaded = false;
+    QString csvPath = parseColorsOption(arguments);
+    if (csvPath != "")
+    {
+        if(!g_assemblyGraph->loadCSV(csvPath, &columns, &errormsg, &coloursLoaded))
+        {
+            err << errormsg << Qt::endl;
+            return 1;
+        }
+
+        if(coloursLoaded == false)
+        {
+            err << csvPath << " didn't contain color" << Qt::endl;
+            return 1;
+        }
+         g_settings->nodeColourScheme = CUSTOM_COLOURS;
+    }
 
     if (errorMessage != "")
     {
-        err << errorMessage << endl;
+        err << errorMessage << Qt::endl;
         return 1;
     }
 
@@ -185,7 +205,7 @@ int bandageImage(QStringList arguments)
     int returnCode;
     if (!success)
     {
-        out << "There was an error writing the image to file." << endl;
+        out << "There was an error writing the image to file." << Qt::endl;
         returnCode = 1;
     }
     else
@@ -212,6 +232,7 @@ void printImageUsage(QTextStream * out, bool all)
     text << "";
     text << "Options:  --height <int>      Image height (default: 1000)";
     text << "--width <int>       Image width (default: not set)";
+    text << "--color <file>       csv file with 2 column first the node name second the node color";
     text << "";
     text << "If only height or width is set, the other will be determined automatically. If both are set, the image will be exactly that size.";
     text << "";
@@ -230,6 +251,9 @@ QString checkForInvalidImageOptions(QStringList arguments)
     if (error.length() > 0) return error;
 
     error = checkOptionForInt("--width", &arguments, IntSetting(0, 1, 32767), false);
+    if (error.length() > 0) return error;
+
+    error = checkOptionForString("--colors", &arguments, QStringList(), "a path of csv file");
     if (error.length() > 0) return error;
 
     return checkForInvalidOrExcessSettings(&arguments);
@@ -251,3 +275,15 @@ void parseImageOptions(QStringList arguments, int * width, int * height)
     parseSettings(arguments);
 }
 
+//This function parses the command line options. It assumes that the options
+//have already been checked for correctness.
+QString parseColorsOption(QStringList arguments)
+{
+    QString path = "";
+    if (isOptionPresent("--colors", &arguments))
+        path = getStringOption("--colors", &arguments);
+
+    parseSettings(arguments);
+
+    return path;
+}

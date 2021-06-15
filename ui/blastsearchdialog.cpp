@@ -159,6 +159,7 @@ void BlastSearchDialog::clearBlastHits()
     ui->blastHitsTableWidget->clearContents();
     while (ui->blastHitsTableWidget->rowCount() > 0)
         ui->blastHitsTableWidget->removeRow(0);
+    g_assemblyGraph->clearAllBlastHitPointers();
 }
 
 void BlastSearchDialog::fillTablesAfterBlastSearch()

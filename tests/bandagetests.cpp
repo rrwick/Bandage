@@ -29,6 +29,7 @@
 #include "../graph/debruijnedge.h"
 #include "../program/globals.h"
 #include "../command_line/commoncommandlinefunctions.h"
+#include "../program/dotplot.h"
 
 class BandageTests : public QObject
 {
@@ -58,7 +59,10 @@ private slots:
     void changeNodeDepths();
     void blastQueryPaths();
     void bandageInfo();
-
+    void testReverseComplement();
+    void testHashKmers();
+    void testFindHits();
+    void testFindKmerMatches();
 
 private:
     void createGlobals();
@@ -1430,7 +1434,6 @@ void BandageTests::blastQueryPaths()
     QCOMPARE(query7Paths.size(), 1);
 }
 
-
 void BandageTests::bandageInfo()
 {
     int n50 = 0;
@@ -1480,6 +1483,236 @@ void BandageTests::bandageInfo()
     QCOMPARE(9398, largestComponentLength);
 }
 
+void BandageTests::testReverseComplement()
+{
+    QCOMPARE( reverseComplement("A"), std::string("T"));
+    QCOMPARE( reverseComplement("C"), std::string("G"));
+    QCOMPARE( reverseComplement("T"), std::string("A"));
+    QCOMPARE( reverseComplement("G"), std::string("C"));
+    QCOMPARE( reverseComplement(""), std::string(""));
+    QCOMPARE( reverseComplement("ACTG"), std::string("CAGT"));
+}
+
+void BandageTests::testHashKmers()
+{
+    {   // Test for an empty string.
+        std::string seq = "";
+        int32_t k = 10;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE((int64_t) kmers.size(), (int64_t) 0);
+    }
+
+    {   // Test the behaviour when a non [ACTG] character is given.
+        std::string seq = "AAAAANAAAAA";
+        int32_t k = 10;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE((int64_t) kmers.size(), (int64_t) 0);
+    }
+
+    {   // A simple normal test case. Entire seq should be only one kmer.
+        std::string seq = "AAAAAAAAAA";
+        int32_t k = 10;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x0, 0) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+
+    {   // Similar to before, but 6 kmers.
+        std::string seq = "AAAAAAAAAAAAAAA";
+        int32_t k = 10;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x0, 0), KmerPos(0x0, 1),
+                                                KmerPos(0x0, 2), KmerPos(0x0, 3),
+                                                KmerPos(0x0, 4), KmerPos(0x0, 5) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+
+    {   // Test the reverse complement.
+        std::string seq = "AAAAAAAAAA";
+        int32_t k = 10;
+        bool seq_is_rev = true;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x0, 9) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+
+    {   // Test what happens if an invalid kmer size is given.
+        std::string seq = "AAAAAAAAAA";
+        int32_t k = 0;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE((int64_t) kmers.size(), (int64_t) 0);
+    }
+
+    {   // Test for a normal sequence, but a more complex variation.
+        std::string seq = "ACTGAAAGACT";
+        int32_t k = 10;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x1E021, 0), KmerPos(0x78087, 1) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+
+    {   // Similar as before, but in reverse. Hash keys should be same, but positions different.
+        std::string seq = "ACTGAAAGACT";
+        int32_t k = 10;
+        bool seq_is_rev = true;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x1E021, 10), KmerPos(0x78087, 9) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+
+    {   // Test a normal sequence and a normal (smaller) kmer size.
+        std::string seq = "ACTGAAAGACT";
+        int32_t k = 4;
+        bool seq_is_rev = false;
+        std::vector<KmerPos> expected_kmers = { KmerPos(0x1E, 0), KmerPos(0x78, 1), KmerPos(0xE0, 2),
+                                                KmerPos(0x80, 3), KmerPos(0x2, 4), KmerPos(0x8, 5),
+                                                KmerPos(0x21, 6), KmerPos(0x87, 7) };
+        std::vector<KmerPos> kmers = hashKmers(seq, k, seq_is_rev);
+        QCOMPARE(kmers, expected_kmers);
+    }
+}
+
+void BandageTests::testFindHits()
+{
+    {   // Test on empty inputs.
+        std::vector<KmerPos> sorted_kmers_seq1 = { };
+        std::vector<KmerPos> sorted_kmers_seq2 = { };
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        QCOMPARE((int64_t) result.size(), (int64_t) 0);
+    }
+
+    {   // No hits are output if any of the input arrays are not sorted.
+        std::vector<KmerPos> sorted_kmers_seq1 = {KmerPos(1, 0), KmerPos(0, 1)};
+        std::vector<KmerPos> sorted_kmers_seq2 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        QCOMPARE((int64_t) result.size(), (int64_t) 0);
+    }
+
+    {   /// Sorted but no hits.
+        std::vector<KmerPos> sorted_kmers_seq1 = {KmerPos(2, 0), KmerPos(3, 1)};
+        std::vector<KmerPos> sorted_kmers_seq2 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        QCOMPARE((int64_t) result.size(), (int64_t) 0);
+    }
+
+    {   // There should be two hits.
+        std::vector<KmerPos> sorted_kmers_seq1 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerPos> sorted_kmers_seq2 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        std::vector<KmerHit> expected = {KmerHit(0, 0), KmerHit(1, 1)};
+        QCOMPARE(result, expected);
+    }
+
+    {   // One is empty, the other is not.
+        std::vector<KmerPos> sorted_kmers_seq1 = { };
+        std::vector<KmerPos> sorted_kmers_seq2 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        QCOMPARE((int64_t) result.size(), (int64_t) 0);
+    }
+
+    {   // One is empty, the other is not.
+        std::vector<KmerPos> sorted_kmers_seq1 = {KmerPos(0, 0), KmerPos(1, 1)};
+        std::vector<KmerPos> sorted_kmers_seq2 = { };
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        QCOMPARE((int64_t) result.size(), (int64_t) 0);
+    }
+
+    {   // Only a subset matches.
+        std::vector<KmerPos> sorted_kmers_seq1 = {KmerPos(3, 1), KmerPos(4, 2)};
+        std::vector<KmerPos> sorted_kmers_seq2 = {KmerPos(0, 0), KmerPos(1, 1),
+                                                  KmerPos(3, 3), KmerPos(4, 7),
+                                                  KmerPos(5, 8) };
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        std::vector<KmerHit> expected = {KmerHit(1, 3), KmerHit(2, 7)};
+        QCOMPARE(result, expected);
+    }
+
+    {   // Test multiple successive hits.
+        std::vector<KmerPos> sorted_kmers_seq1 = {  KmerPos(2, 0), KmerPos(3, 1), KmerPos(4, 2) };
+        std::vector<KmerPos> sorted_kmers_seq2 = {  KmerPos(0, 0), KmerPos(1, 1),
+                                                    KmerPos(3, 3), KmerPos(3, 7),
+                                                    KmerPos(3, 8), KmerPos(5, 9) };
+        std::vector<KmerHit> result = findHits(sorted_kmers_seq1, sorted_kmers_seq2);
+        std::vector<KmerHit> expected = { KmerHit(1, 3), KmerHit(1, 7), KmerHit(1, 8)};
+        QCOMPARE(result, expected);
+    }
+}
+
+void BandageTests::testFindKmerMatches()
+{
+    {   // Test a simple basic match case.
+        std::string seq1 = "CT";
+        std::string seq2 = "CT";
+        int32_t k = 2;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = {KmerHit(0, 0)};
+        QCOMPARE(result, expected);
+    }
+
+    {   // Test a case with no hits.
+        std::string seq1 = "AAAAA";
+        std::string seq2 = "CT";
+        int32_t k = 2;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = { };
+        QCOMPARE((int64_t) result.size(), (int64_t) expected.size());
+    }
+
+    {   // Test a normal one-hit case.
+        std::string seq1 = "ACTTGGGA";
+        std::string seq2 =  "CT";
+        int32_t k = 2;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = {KmerHit(1, 0)};
+        QCOMPARE((int64_t) result.size(), (int64_t) expected.size());
+        QCOMPARE(result, expected);
+    }
+
+    {   // Test matching empty sequences.
+        std::string seq1 = "";
+        std::string seq2 = "";
+        int32_t k = 10;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = { };
+        QCOMPARE((int64_t) result.size(), (int64_t) expected.size());
+        QCOMPARE(result, expected);
+    }
+
+    {   // Test finding of hits in a larger sequence.
+        std::string seq1 = "CTCGCACTTGGGGAATCGCGCAGACCTCACCCGGTTTGCAGGCTTGCGCCGGGCGGTAGATGCGCCGCCAGGCGAAAAACAGCGCGACCAGCGCTGCGCC";
+        std::string seq2 = "CTCGCACTTG"         "AGACCTCACC"                       "TAGATGCGCCG";
+        // Reverse complement:
+        // CGGCGCATCTA GGTGAGGTCT CAAGTGCGAG
+        int32_t k = 10;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = {KmerHit(0, 0),  KmerHit(21, 10),
+                                         KmerHit(56, 20), KmerHit(57, 21) };
+        std::sort(result.begin(), result.end());
+        std::sort(expected.begin(), expected.end());
+        QCOMPARE((int64_t) result.size(), (int64_t) expected.size());
+        QCOMPARE(result, expected);
+    }
+
+    {   // Test the reverse complement matching.
+        std::string seq1 = "CTCGCACTTG";
+        std::string seq2 = "CAAGTGCGAG";
+        int32_t k = 10;
+        std::vector<KmerHit> result = findKmerMatches(seq1, seq2, k);
+        std::vector<KmerHit> expected = {KmerHit(0, 9) };
+        std::sort(result.begin(), result.end());
+        std::sort(expected.begin(), expected.end());
+        QCOMPARE((int64_t) result.size(), (int64_t) expected.size());
+        QCOMPARE(result, expected);
+    }
+}
 
 
 

@@ -67,6 +67,7 @@
 #include "changenodedepthdialog.h"
 #include <limits>
 #include "graphinfodialog.h"
+#include "program/dotplot.h"
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -156,6 +157,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
     connect(ui->actionSettings, SIGNAL(triggered()), this, SLOT(openSettingsDialog()));
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
+    connect(ui->pathSelectButton, SIGNAL(clicked()), this, SLOT(selectPathNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
@@ -165,6 +167,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
     connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
     connect(ui->actionSelect_nodes_with_BLAST_hits, SIGNAL(triggered()), this, SLOT(selectNodesWithBlastHits()));
+    connect(ui->actionSelect_nodes_with_dead_ends, SIGNAL(triggered()), this, SLOT(selectNodesWithDeadEnds()));
     connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
     connect(ui->actionSelect_none, SIGNAL(triggered()), this, SLOT(selectNone()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
@@ -194,6 +197,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
     connect(ui->actionChange_node_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeDepth()));
     connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
+    connect(ui->drawDotplotButton, SIGNAL(clicked()), this, SLOT(drawDotplot()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -447,6 +451,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         // to the default of 'Random colours'.
         if (!customColours && ui->coloursComboBox->currentIndex() == 6)
             ui->coloursComboBox->setCurrentIndex(0);
+        setupPathSelectionComboBox();
     }
 
     catch (...)
@@ -469,12 +474,14 @@ void MainWindow::displayGraphDetails()
 {
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_nodeCount));
     ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
+    ui->pathCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_pathCount));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
 void MainWindow::clearGraphDetails()
 {
     ui->nodeCountLabel->setText("0");
     ui->edgeCountLabel->setText("0");
+    ui->pathCountLabel->setText("0");
     ui->totalLengthLabel->setText("0");
 }
 
@@ -604,6 +611,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -619,6 +627,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(true);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
@@ -644,11 +653,40 @@ void MainWindow::graphScopeChanged()
         break;
 
     case 2:
+        g_settings->graphScope = AROUND_PATHS;
+
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(true);
+        setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(true);
+
+        ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
+                                              "within this many steps of those nodes.<br><br>"
+                                              "A value of 0 will result in only the specified nodes being drawn. "
+                                              "A large value will result in large sections of the graph around "
+                                              "the specified nodes being drawn.");
+
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionLabel,    1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionComboBox,  1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceSpinBox, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 3, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 3, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 4, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 4, 1, 1, 2);
+
+        break;
+
+    case 3:
         g_settings->graphScope = AROUND_BLAST_HITS;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
@@ -667,12 +705,13 @@ void MainWindow::graphScopeChanged()
 
         break;
 
-    case 3:
+    case 4:
         g_settings->graphScope = DEPTH_RANGE;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(true);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->minDepthInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->minDepthLabel, 1, 1, 1, 1);
@@ -716,7 +755,88 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthLabel->setVisible(visible);
     ui->maxDepthSpinBox->setVisible(visible);
 }
+void MainWindow::setPathSelectionWidgetVisibility(bool visible)
+{
+    ui->pathSelectionInfoText->setVisible(visible);
+    ui->pathSelectionLabel->setVisible(visible);
+    ui->pathSelectionComboBox->setVisible(visible);
+}
 
+void MainWindow::setupPathSelectionComboBox() {
+    ui->pathSelectionComboBox->clear();
+    ui->pathSelectionComboBox2->clear();
+
+    QStringList comboBoxItems;
+    for (QMap<QString, Path*>::key_iterator it = g_assemblyGraph->m_deBruijnGraphPaths.keyBegin();
+         it != g_assemblyGraph->m_deBruijnGraphPaths.keyEnd(); ++it)
+    {
+        comboBoxItems.push_back(*it);
+    }
+
+    if (comboBoxItems.size() > 0)
+    {
+        ui->pathSelectionComboBox->addItems(comboBoxItems);
+        ui->pathSelectionComboBox->setEnabled(true);
+        ui->pathSelectionComboBox2->addItems(comboBoxItems);
+        ui->pathSelectionComboBox2->setEnabled(true);
+    }
+}
+
+
+void MainWindow::drawDotplotPoweredByLogo(double x, double y, double w) {
+    QPen pen;
+    pen.setWidth(0);
+    pen.setColor(QColor("#BBBBBB"));
+    QBrush brush(QColor("#BBBBBB"));
+
+    QPen outline;
+    outline.setWidth(1);
+    outline.setColor(QColor("#888888"));
+
+    m_dotplotScene->addRect(x + w, y, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 3*w, y, w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + w, 5 * w, w, pen, brush);
+    m_dotplotScene->addRect(x + w, y + 2 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 3*w, y + 2 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + 3 * w, 5 * w, w, pen, brush);
+    m_dotplotScene->addRect(x, y + 4 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 2*w, y + 4 * w, w, w, pen, brush);
+    m_dotplotScene->addRect(x + 4*w, y + 4 * w, w, w, pen, brush);
+
+    m_dotplotScene->addLine(x + 1 * w, y + 0 * w, x + 2 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 0 * w, x + 2 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 1 * w, x + 3 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 1 * w, x + 3 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 0 * w, x + 4 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 0 * w, x + 4 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 1 * w, x + 5 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 1 * w, x + 5 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 2 * w, x + 4 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 2 * w, x + 4 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 3 * w, x + 5 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 3 * w, x + 5 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 5 * w, y + 5 * w, x + 4 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 5 * w, x + 4 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 4 * w, y + 4 * w, x + 3 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 4 * w, x + 3 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 5 * w, x + 2 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 5 * w, x + 2 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 4 * w, x + 1 * w, y + 4 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 4 * w, x + 1 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 5 * w, x + 0 * w, y + 5 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 5 * w, x + 0 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 3 * w, x + 1 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 3 * w, x + 1 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 2 * w, x + 0 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 2 * w, x + 0 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 0 * w, y + 1 * w, x + 1 * w, y + 1 * w, outline);
+    m_dotplotScene->addLine(x + 1 * w, y + 1 * w, x + 1 * w, y + 0 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 2 * w, x + 3 * w, y + 2 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 2 * w, x + 3 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 3 * w, y + 3 * w, x + 2 * w, y + 3 * w, outline);
+    m_dotplotScene->addLine(x + 2 * w, y + 3 * w, x + 2 * w, y + 2 * w, outline);
+
+}
 
 void MainWindow::drawGraph()
 {
@@ -725,7 +845,8 @@ void MainWindow::drawGraph()
     std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
                                                                                   ui->doubleNodesRadioButton->isChecked(),
                                                                                   ui->startingNodesLineEdit->text(),
-                                                                                  ui->blastQueryComboBox->currentText());
+                                                                                  ui->blastQueryComboBox->currentText(),
+                                                                                  ui->pathSelectionComboBox->currentText());
 
     if (errorMessage != "")
     {
@@ -737,6 +858,158 @@ void MainWindow::drawGraph()
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
     layoutGraph();
 }
+
+void MainWindow::drawDotplot()
+{
+    // Fetch the selected nodes.
+    std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+
+    // Limit the number of nodes that need to be selected, and notify the user.
+    if (selectedNodes.size() < 1 || selectedNodes.size() > 2) {
+        QString infoTitle = "Draw dotplot";
+        QString infoMessage = "Select either one (for self-dotplot) or two nodes to dotplot.";
+        QMessageBox::information(this, infoTitle, infoMessage);
+        return;
+    }
+
+    // Placeholder for the sequences which will be dotplotted.
+    std::vector<std::string> headers;
+    std::vector<std::string> seqs;
+
+    // Enable self-dotplots.
+    std::vector<DeBruijnNode *> nodes_to_process = selectedNodes;
+    if (selectedNodes.size() == 1) {
+        nodes_to_process.push_back(selectedNodes[0]);
+    }
+
+    // Get the sequences and the headers of the nodes to draw.
+    for (size_t i=0; i<nodes_to_process.size(); i++) {
+        auto& node = nodes_to_process[i];
+
+        if (node->sequenceIsMissing()) {
+            QString infoTitle = "Draw dotplot";
+            QString infoMessage = "Error: The GFA node does not contain a valid sequence!";
+            QMessageBox::information(this, infoTitle, infoMessage);
+            return;
+        }
+
+        QByteArray nodeSequence = node->getSequence();
+        QString nodeHeader = node->getName();
+        std::string seq(nodeSequence.constData(), nodeSequence.length());
+        std::string header = nodeHeader.toLocal8Bit().constData();
+
+        seqs.push_back(seq);
+        headers.push_back(header);
+    }
+
+    int32_t k = ui->kmerSizeInput->value();
+
+    // Sanity check for the k-mer size.
+    if (k <= 0 || k > 30) {
+        QString infoTitle = "Draw dotplot";
+        QString infoMessage = "Error: k-mer size should be > 0 and <= 30.";
+        QMessageBox::information(this, infoTitle, infoMessage);
+        return;
+    }
+
+    // Calculate the dotplot.
+    auto hits = findKmerMatches(seqs[0], seqs[1], k);
+
+    // Prepare the scene and plot.
+    m_dotplotScene = std::shared_ptr<QGraphicsScene>(new QGraphicsScene());
+    ui->dotplotGraphicsView->setScene(m_dotplotScene.get());
+
+    // Calculate the starts and ends of the dotplot coordinate system.
+    int32_t max_len = std::max(seqs[0].size(), seqs[1].size());
+    double begin_offset = 40;
+    double end_offset = 10;
+    double x_begin = begin_offset;
+    double y_begin = begin_offset;
+    double max_size = (float) std::min(ui->dotplotGraphicsView->maximumWidth(), ui->dotplotGraphicsView->maximumHeight()) - end_offset - begin_offset;
+    double scale = max_size / ((double) max_len);
+    double x_end = x_begin + seqs[0].size() * scale;
+    double y_end = y_begin + seqs[1].size() * scale;
+
+    // Make the scene not move.
+    ui->dotplotGraphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->dotplotGraphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_dotplotScene->setSceneRect(0, 0, 290, 290);
+
+    // Add bounds to the dotplot graph.
+    double overhang = 5;
+    m_dotplotScene->addLine(x_begin - overhang, y_begin, x_end, y_begin);
+    m_dotplotScene->addLine(x_end, y_begin - overhang, x_end, y_end);
+    m_dotplotScene->addLine(x_begin - overhang, y_end, x_end, y_end);
+    m_dotplotScene->addLine(x_begin, y_begin - overhang, x_begin, y_end);
+
+    double logo_w = 2;
+    double logo_x = x_begin - 0 - 6 * logo_w;
+    double logo_y = x_begin - 0 - 6 * logo_w;
+    drawDotplotPoweredByLogo(logo_x, logo_y, logo_w);
+
+    // Annotate the graph.
+    QFont font;
+    font.setPixelSize(8);
+    font.setFamily("Monospace");
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(seqs[0].size()));
+        text->setFont(font);
+        text->setPos(x_end - text->boundingRect().width(), y_begin - text->boundingRect().height());
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(0));
+        text->setFont(font);
+        text->setPos(x_begin + 1, y_begin - text->boundingRect().height());
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(0));
+        text->setFont(font);
+        text->setPos(x_begin - text->boundingRect().width(), y_begin);
+    }
+
+    {
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString("%1").arg(seqs[1].size()));
+        text->setFont(font);
+        text->setPos(x_begin - text->boundingRect().width(), y_end - text->boundingRect().height());
+    }
+
+    {
+        std::string trimmed_header = (headers[0].size() > 20) ? headers[0].substr(0, 20) : headers[0];
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString(trimmed_header.c_str()));
+        text->setFont(font);
+        text->setPos((x_end + x_begin - text->boundingRect().width()) / 2.0, y_begin - text->boundingRect().height());
+    }
+
+    {
+        std::string trimmed_header = (headers[1].size() > 20) ? (headers[1].substr(0, 20)) : (headers[1]);
+        QGraphicsTextItem *text = m_dotplotScene->addText(QString(trimmed_header.c_str()));
+        text->setFont(font);
+        QTransform t;
+        t.rotate(270);
+        text->setTransform(t);
+        text->setPos(x_begin - text->boundingRect().height(), (y_begin + y_end + text->boundingRect().width()) / 2.0);
+    }
+
+    // Generate the actual dotplot.
+    QPen pen(Qt::black);
+    QBrush brush(Qt::black);
+    for (auto& hit: hits) {
+        m_dotplotScene->addEllipse(hit.x * scale + x_begin, hit.y * scale + y_begin, 2.0 * scale, 2.0 * scale,
+                                   pen, brush);
+    }
+
+    // Scale the dotplot so it fits in the view with just a bit of margin.
+    QRectF sceneRectangle = m_dotplotScene->sceneRect();
+    sceneRectangle.setWidth(sceneRectangle.width() * 1.05);
+    sceneRectangle.setHeight(sceneRectangle.height() * 1.05);
+    ui->dotplotGraphicsView->fitInView(sceneRectangle);
+
+    ui->dotplotGraphicsView->show();
+}
+
 
 
 void MainWindow::graphLayoutFinished()
@@ -1445,44 +1718,44 @@ void MainWindow::openSettingsDialog()
     }
 }
 
-void MainWindow::selectUserSpecifiedNodes()
-{
-    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
-    {
-        QMessageBox::information(this, "No starting nodes",
-                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
-                                 "Separate multiple nodes with commas.");
-        return;
-    }
-
-    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
-    {
-        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
-        return;
-    }
-
+void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
+                               const std::vector<QString> &nodesNotInGraph,
+                               bool recolor) {
     m_scene->blockSignals(true);
     m_scene->clearSelection();
-    std::vector<QString> nodesNotInGraph;
-    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
-                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
-                                                                     &nodesNotInGraph);
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
     std::vector<QString> nodesNotFound;
     int foundNodes = 0;
+    QColor color1, color2;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
         GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->getGraphicsItemNode();
+        GraphicsItemNode * rcgraphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
 
         //If the GraphicsItemNode isn't found, try the reverse complement.  This
         //is only done for single node mode.
         if (graphicsItemNode == 0 && !g_settings->doubleMode)
-            graphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
+            graphicsItemNode = rcgraphicsItemNode;
 
         if (graphicsItemNode != 0)
         {
+            if (recolor)
+            {
+                if (i == 0)
+                {
+                    color1 = graphicsItemNode->m_colour;
+                    if (g_settings->doubleMode)
+                        color2 = rcgraphicsItemNode->m_colour;
+                } else {
+                    graphicsItemNode->m_colour = color1;
+                    if (g_settings->doubleMode)
+                        rcgraphicsItemNode->m_colour = color2;
+                }
+
+            }
+
             graphicsItemNode->setSelected(true);
             ++foundNodes;
         }
@@ -1520,6 +1793,42 @@ void MainWindow::selectUserSpecifiedNodes()
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
+}
+
+void MainWindow::selectUserSpecifiedNodes()
+{
+    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
+    {
+        QMessageBox::information(this, "No starting nodes",
+                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
+                                 "Separate multiple nodes with commas.");
+        return;
+    }
+
+    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
+    {
+        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
+        return;
+    }
+
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
+                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
+                                                                     &nodesNotInGraph);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph);
+}
+
+void MainWindow::selectPathNodes()
+{
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect;
+
+    QList<DeBruijnNode *> nodes = g_assemblyGraph->m_deBruijnGraphPaths[ui->pathSelectionComboBox2->currentText()]->getNodes();
+    for (QList<DeBruijnNode *>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        nodesToSelect.push_back(*i);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph, ui->pathSelectionRecolorRadioButton->isChecked());
 }
 
 
@@ -1897,6 +2206,54 @@ void MainWindow::selectNodesWithBlastHits()
 }
 
 
+void MainWindow::selectNodesWithDeadEnds()
+{
+    m_scene->blockSignals(true);
+    m_scene->clearSelection();
+
+    bool atLeastOneNodeHasDeadEnd = false;
+    bool atLeastOneNodeSelected = false;
+
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        bool nodeHasDeadEnd = node->getDeadEndCount() > 0;
+        if (nodeHasDeadEnd)
+            atLeastOneNodeHasDeadEnd = true;
+
+        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
+
+        if (graphicsItemNode == 0)
+            continue;
+
+        if (nodeHasDeadEnd)
+        {
+            graphicsItemNode->setSelected(true);
+            atLeastOneNodeSelected = true;
+        }
+    }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+    selectionChanged();
+
+    if (!atLeastOneNodeHasDeadEnd)
+    {
+        QMessageBox::information(this, "No dead ends", "Nothing was selected because this graph has no dead ends.");
+        return;
+    }
+
+    if (!atLeastOneNodeSelected)
+        QMessageBox::information(this, "No dead ends in visible nodes",
+                                       "Nothing was selected because no dead ends are currently visible. "
+                                       "Adjust the graph scope to make the nodes with dead ends hits visible.");
+    else
+        zoomToSelection();
+}
+
+
 void MainWindow::selectAll()
 {
     m_scene->blockSignals(true);
@@ -2093,8 +2450,9 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     {
     case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
-    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
-    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case AROUND_PATHS: ui->graphScopeComboBox->setCurrentIndex(2); break;
+    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(4); break;
     }
 }
 
@@ -2252,7 +2610,7 @@ void MainWindow::webBlastSelectedNodes()
 
     QByteArray urlSafeFasta = makeStringUrlSafe(selectedNodesFasta);
     QByteArray url = "http://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome&QUERY=" + urlSafeFasta;
-    
+
     if (url.length() < 8190)
         QDesktopServices::openUrl(QUrl(url));
 

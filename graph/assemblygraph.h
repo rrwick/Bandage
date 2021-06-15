@@ -50,6 +50,8 @@ public:
     //pointers.
     QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_deBruijnGraphEdges;
 
+    QMap<QString, Path*> m_deBruijnGraphPaths;
+    
     ogdf::Graph * m_ogdfGraph;
     ogdf::EdgeArray<double> * m_edgeArray;
     ogdf::GraphAttributes * m_graphAttributes;
@@ -57,6 +59,7 @@ public:
     int m_kmer;
     int m_nodeCount;
     int m_edgeCount;
+    int m_pathCount;
     long long m_totalLength;
     long long m_shortestContig;
     long long m_longestContig;
@@ -115,7 +118,8 @@ public:
                                                  QString * errorMessage,
                                                  bool doubleMode,
                                                  QString nodesList,
-                                                 QString blastQueryName);
+                                                 QString blastQueryName,
+                                                 QString pathName);
 
     bool checkIfStringHasNodes(QString nodesString);
     QString generateNodesNotFoundErrorMessage(std::vector<QString> nodesNotInGraph,
@@ -128,7 +132,11 @@ public:
     void setAllEdgesExactOverlap(int overlap);
     void autoDetermineAllEdgesExactOverlap();
 
+    static void readFastaOrFastqFile(QString filename, std::vector<QString> * names,
+                                     std::vector<QByteArray> * sequences);
     static void readFastaFile(QString filename, std::vector<QString> * names,
+                              std::vector<QByteArray> * sequences);
+    static void readFastqFile(QString filename, std::vector<QString> * names,
                               std::vector<QByteArray> * sequences);
 
     int getDrawnNodeCount() const;

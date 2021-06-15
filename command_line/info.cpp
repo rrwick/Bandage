@@ -68,7 +68,7 @@ int bandageInfo(QStringList arguments)
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
     {
-        err << "Bandage error: could not load " << graphFilename << endl;
+        err << "Bandage error: could not load " << graphFilename << Qt::endl;
         return 1;
     }
 
@@ -118,7 +118,7 @@ int bandageInfo(QStringList arguments)
         out << median << "\t";
         out << thirdQuartile << "\t";
         out << longestNode << "\t";
-        out << medianDepthByBase << "\n";
+        out << medianDepthByBase << "\t";
         out << estimatedSequenceLength << "\n";
     }
     else

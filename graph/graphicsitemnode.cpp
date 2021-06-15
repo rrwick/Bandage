@@ -219,7 +219,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         {
             QString text = nodeText.at(i);
             int stepsUntilLast = nodeText.size() - 1 - i;
-            double shiftLeft = -metrics.width(text) / 2.0;
+            double shiftLeft = -metrics.boundingRect(text).width() / 2.0;
             textPath.addText(shiftLeft, -stepsUntilLast * fontHeight, g_settings->labelFont, text);
         }
 
@@ -251,7 +251,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 
             QPainterPath textPath;
             QFontMetrics metrics(g_settings->labelFont);
-            double shiftLeft = -metrics.width(text) / 2.0;
+            double shiftLeft = -metrics.boundingRect(text).width() / 2.0;
             textPath.addText(shiftLeft, 0.0, g_settings->labelFont, text);
 
             drawTextPathAtLocation(painter, textPath, centre);

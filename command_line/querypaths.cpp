@@ -67,7 +67,7 @@ int bandageQueryPaths(QStringList arguments)
     //queries file that is a positional argument.
     if (isOptionPresent("--query", &arguments))
     {
-        err << "Bandage error: the --query option cannot be used with Bandage querypaths." << endl;
+        err << "Bandage error: the --query option cannot be used with Bandage querypaths." << Qt::endl;
         return 1;
     }
 
@@ -110,28 +110,28 @@ int bandageQueryPaths(QStringList arguments)
 
     QDateTime startTime = QDateTime::currentDateTime();
 
-    out << endl << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Loading graph...        " << flush;
+    out << Qt::endl << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Loading graph...        " << Qt::flush;
 
     bool loadSuccess = g_assemblyGraph->loadGraphFromFile(graphFilename);
     if (!loadSuccess)
         return 1;
-    out << "done" << endl;
+    out << "done" << Qt::endl;
 
     if (!createBlastTempDirectory())
     {
-        err << "Error creating temporary directory for BLAST files" << endl;
+        err << "Error creating temporary directory for BLAST files" << Qt::endl;
         return 1;
     }
 
-    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Running BLAST search... " << flush;
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Running BLAST search... " << Qt::flush;
     QString blastError = g_blastSearch->doAutoBlastSearch();
     if (blastError != "")
     {
-        err << endl << blastError << endl;
+        err << Qt::endl << blastError << Qt::endl;
         return 1;
     }
-    out << "done" << endl;
-    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Saving results...       " << flush;
+    out << "done" << Qt::endl;
+    out << "(" << QDateTime::currentDateTime().toString("dd MMM yyyy hh:mm:ss") << ") Saving results...       " << Qt::flush;
 
     //Create the table file.
     tableFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -247,19 +247,19 @@ int bandageQueryPaths(QStringList arguments)
         }
     }
 
-    out << "done" << endl;
+    out << "done" << Qt::endl;
 
-    out << endl << "Results:      " + tableFilename << endl;
+    out << Qt::endl << "Results:      " + tableFilename << Qt::endl;
     if (pathFasta)
-        out << "              " + pathFastaFilename << endl;
+        out << "              " + pathFastaFilename << Qt::endl;
     if (hitsFasta)
-        out << "              " + hitsFastaFilename << endl;
+        out << "              " + hitsFastaFilename << Qt::endl;
 
-    out << endl << "Summary: Total BLAST queries:           " << g_blastSearch->m_blastQueries.getQueryCount() << endl;
-    out << "         Queries with found paths:      " << g_blastSearch->m_blastQueries.getQueryCountWithAtLeastOnePath() << endl;
-    out << "         Total query paths:             " << g_blastSearch->m_blastQueries.getQueryPathCount() << endl;
+    out << Qt::endl << "Summary: Total BLAST queries:           " << g_blastSearch->m_blastQueries.getQueryCount() << Qt::endl;
+    out << "         Queries with found paths:      " << g_blastSearch->m_blastQueries.getQueryCountWithAtLeastOnePath() << Qt::endl;
+    out << "         Total query paths:             " << g_blastSearch->m_blastQueries.getQueryPathCount() << Qt::endl;
 
-    out << endl << "Elapsed time: " << getElapsedTime(startTime, QDateTime::currentDateTime()) << endl;
+    out << Qt::endl << "Elapsed time: " << getElapsedTime(startTime, QDateTime::currentDateTime()) << Qt::endl;
 
     deleteBlastTempDirectory();
     return 0;
