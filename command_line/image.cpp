@@ -138,26 +138,6 @@ int bandageImage(QStringList arguments)
     {
         if(!g_assemblyGraph->loadCSV(csvPath, &columns, &errormsg, &coloursLoaded))
         {
-            err << errormsg << endl;
-            return 1;
-        }
-
-        if(coloursLoaded == false)
-        {
-            err << csvPath << " didn't contains color" << endl;
-            return 1;
-        }
-         g_settings->nodeColourScheme = CUSTOM_COLOURS;
-    }
-
-    QString errormsg;
-    QStringList columns;
-    bool coloursLoaded = false;
-    QString csvPath = parseColorsOption(arguments);
-    if (csvPath != "")
-    {
-        if(!g_assemblyGraph->loadCSV(csvPath, &columns, &errormsg, &coloursLoaded))
-        {
             err << errormsg << Qt::endl;
             return 1;
         }
