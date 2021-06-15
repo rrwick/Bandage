@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     {
         if (checkForVersion(arguments))
         {
-            out << "Version: " << QApplication::applicationVersion() << endl;
+            out << "Version: " << QApplication::applicationVersion() << Qt::endl;
             return 0;
         }
         if (first.toLower() == "load")
@@ -161,16 +161,16 @@ int main(int argc, char *argv[])
         //was looking for help information.
         else if (checkForHelp(arguments))
         {
-            out << endl;
-            out << getBandageTitleAsciiArt() << endl;
+            out << Qt::endl;
+            out << getBandageTitleAsciiArt() << Qt::endl;
             out << "Version: " << QApplication::applicationVersion();
             printUsage(&out, false);
             return 0;
         }
         else if (checkForHelpAll(arguments))
         {
-            out << endl;
-            out << getBandageTitleAsciiArt() << endl;
+            out << Qt::endl;
+            out << getBandageTitleAsciiArt() << Qt::endl;
             out << "Version: " << QApplication::applicationVersion();
             printUsage(&out, true);
             return 0;

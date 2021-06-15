@@ -142,7 +142,7 @@ Path Path::makeFromString(QString pathString, bool circular,
     }
 
     //Make sure there is at least one proposed node name listed.
-    QStringList nodeNameList = nodeListString.simplified().split(",", QString::SkipEmptyParts);
+    QStringList nodeNameList = nodeListString.simplified().split(",", Qt::SkipEmptyParts);
     if (nodeNameList.empty())
     {
         *pathStringFailure = "the text is not formatted correctly";

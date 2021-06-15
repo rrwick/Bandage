@@ -58,7 +58,7 @@ void BlastSearch::cleanUp()
 //defined thresholds.
 void BlastSearch::buildHitsFromBlastOutput()
 {
-    QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
+    QStringList blastHitList = m_blastOutput.split("\n", Qt::SkipEmptyParts);
 
     for (int i = 0; i < blastHitList.size(); ++i)
     {
@@ -167,9 +167,8 @@ QString BlastSearch::getNodeNameFromString(QString nodeString)
 //On Windows, we use the WHERE command to find a program.
 bool BlastSearch::findProgram(QString programName, QString * command)
 {
-    QString findCommand = "WHERE " + programName;
     QProcess find;
-    find.start(findCommand);
+    find.start("WHERE", QStringList(programName));
     find.waitForFinished();
     *command = programName;
     return (find.exitCode() == 0);
@@ -179,7 +178,6 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 //On Mac/Linux we use the which command to find a program.
 bool BlastSearch::findProgram(QString programName, QString * command)
 {
-    QString findCommand = "which " + programName;
     QProcess find;
 
     //On Mac, it's necessary to adjust the PATH variable in order
@@ -197,12 +195,14 @@ bool BlastSearch::findProgram(QString programName, QString * command)
                                                                    "/opt/local/bin:"
                                                                    "/usr/local/bin:"
                                                                    "$HOME/bin:"
+                                                                   "$HOME/.local/bin:"
+                                                                   "$HOME/miniconda3/bin:"
                                                                    "/usr/local/ncbi/blast/bin:"
                                                                    "\\1");
     find.setEnvironment(envlist);
 #endif
 
-    find.start(findCommand);
+    find.start("which", QStringList(programName));
     find.waitForFinished();
 
     //On a Mac, we need to use the full path to the program.

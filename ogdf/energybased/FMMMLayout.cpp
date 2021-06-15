@@ -1692,7 +1692,7 @@ void FMMMLayout::fixTwistedSplits(Graph &G, NodeArray<NodeAttributes>& A) {
                     QLineF line1(path1Node1Point, path1Node2Point);
                     QLineF line2(path2Node1Point, path2Node2Point);
                     QPointF intersectionPoint;
-                    if (line1.intersect(line2, &intersectionPoint) == QLineF::BoundedIntersection) {
+                    if (line1.intersects(line2, &intersectionPoint) == QLineF::BoundedIntersection) {
                         A[path1Node2].set_position(path2Node2Position);
                         A[path2Node2].set_position(path1Node2Position);
                     }

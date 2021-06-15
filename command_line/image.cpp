@@ -110,7 +110,7 @@ int bandageImage(QStringList arguments)
     {
         if (!createBlastTempDirectory())
         {
-            err << "Error creating temporary directory for BLAST files" << endl;
+            err << "Error creating temporary directory for BLAST files" << Qt::endl;
             return 1;
         }
 
@@ -118,7 +118,7 @@ int bandageImage(QStringList arguments)
 
         if (blastError != "")
         {
-            err << blastError << endl;
+            err << blastError << Qt::endl;
             return 1;
         }
     }
@@ -150,9 +150,29 @@ int bandageImage(QStringList arguments)
          g_settings->nodeColourScheme = CUSTOM_COLOURS;
     }
 
+    QString errormsg;
+    QStringList columns;
+    bool coloursLoaded = false;
+    QString csvPath = parseColorsOption(arguments);
+    if (csvPath != "")
+    {
+        if(!g_assemblyGraph->loadCSV(csvPath, &columns, &errormsg, &coloursLoaded))
+        {
+            err << errormsg << Qt::endl;
+            return 1;
+        }
+
+        if(coloursLoaded == false)
+        {
+            err << csvPath << " didn't contain color" << Qt::endl;
+            return 1;
+        }
+         g_settings->nodeColourScheme = CUSTOM_COLOURS;
+    }
+
     if (errorMessage != "")
     {
-        err << errorMessage << endl;
+        err << errorMessage << Qt::endl;
         return 1;
     }
 
@@ -205,7 +225,7 @@ int bandageImage(QStringList arguments)
     int returnCode;
     if (!success)
     {
-        out << "There was an error writing the image to file." << endl;
+        out << "There was an error writing the image to file." << Qt::endl;
         returnCode = 1;
     }
     else
