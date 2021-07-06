@@ -156,6 +156,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
     connect(ui->actionSettings, SIGNAL(triggered()), this, SLOT(openSettingsDialog()));
     connect(ui->selectNodesButton, SIGNAL(clicked()), this, SLOT(selectUserSpecifiedNodes()));
+    connect(ui->pathSelectButton, SIGNAL(clicked()), this, SLOT(selectPathNodes()));
     connect(ui->selectionSearchNodesLineEdit, SIGNAL(returnPressed()), this, SLOT(selectUserSpecifiedNodes()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
     connect(ui->blastSearchButton, SIGNAL(clicked()), this, SLOT(openBlastSearchDialog()));
@@ -448,6 +449,7 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         // to the default of 'Random colours'.
         if (!customColours && ui->coloursComboBox->currentIndex() == 6)
             ui->coloursComboBox->setCurrentIndex(0);
+        setupPathSelectionComboBox();
     }
 
     catch (...)
@@ -470,12 +472,14 @@ void MainWindow::displayGraphDetails()
 {
     ui->nodeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_nodeCount));
     ui->edgeCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_edgeCount));
+    ui->pathCountLabel->setText(formatIntForDisplay(g_assemblyGraph->m_pathCount));
     ui->totalLengthLabel->setText(formatIntForDisplay(g_assemblyGraph->m_totalLength));
 }
 void MainWindow::clearGraphDetails()
 {
     ui->nodeCountLabel->setText("0");
     ui->edgeCountLabel->setText("0");
+    ui->pathCountLabel->setText("0");
     ui->totalLengthLabel->setText("0");
 }
 
@@ -605,6 +609,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -620,6 +625,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(true);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
                                               "within this many steps of those nodes.<br><br>"
@@ -645,11 +651,40 @@ void MainWindow::graphScopeChanged()
         break;
 
     case 2:
+        g_settings->graphScope = AROUND_PATHS;
+
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(true);
+        setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(true);
+
+        ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
+                                              "within this many steps of those nodes.<br><br>"
+                                              "A value of 0 will result in only the specified nodes being drawn. "
+                                              "A large value will result in large sections of the graph around "
+                                              "the specified nodes being drawn.");
+
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionInfoText, 1, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionLabel,    1, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->pathSelectionComboBox,  1, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 2, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 2, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceSpinBox, 2, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 3, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 3, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->nodeStyleWidget, 3, 2, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphInfoText, 4, 0, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 4, 1, 1, 2);
+
+        break;
+
+    case 3:
         g_settings->graphScope = AROUND_BLAST_HITS;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setPathSelectionWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
                                               "many steps of nodes with a BLAST hit.<br><br>"
@@ -668,12 +703,13 @@ void MainWindow::graphScopeChanged()
 
         break;
 
-    case 3:
+    case 4:
         g_settings->graphScope = DEPTH_RANGE;
 
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(true);
+        setPathSelectionWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->minDepthInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->minDepthLabel, 1, 1, 1, 1);
@@ -717,6 +753,33 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthLabel->setVisible(visible);
     ui->maxDepthSpinBox->setVisible(visible);
 }
+void MainWindow::setPathSelectionWidgetVisibility(bool visible)
+{
+    ui->pathSelectionInfoText->setVisible(visible);
+    ui->pathSelectionLabel->setVisible(visible);
+    ui->pathSelectionComboBox->setVisible(visible);
+}
+
+void MainWindow::setupPathSelectionComboBox() {
+    ui->pathSelectionComboBox->clear();
+    ui->pathSelectionComboBox2->clear();
+
+    QStringList comboBoxItems;
+    for (QMap<QString, Path*>::key_iterator it = g_assemblyGraph->m_deBruijnGraphPaths.keyBegin();
+         it != g_assemblyGraph->m_deBruijnGraphPaths.keyEnd(); ++it)
+    {
+        comboBoxItems.push_back(*it);
+    }
+
+    if (comboBoxItems.size() > 0)
+    {
+        ui->pathSelectionComboBox->addItems(comboBoxItems);
+        ui->pathSelectionComboBox->setEnabled(true);
+        ui->pathSelectionComboBox2->addItems(comboBoxItems);
+        ui->pathSelectionComboBox2->setEnabled(true);
+    }
+}
+
 
 
 void MainWindow::drawGraph()
@@ -726,7 +789,8 @@ void MainWindow::drawGraph()
     std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
                                                                                   ui->doubleNodesRadioButton->isChecked(),
                                                                                   ui->startingNodesLineEdit->text(),
-                                                                                  ui->blastQueryComboBox->currentText());
+                                                                                  ui->blastQueryComboBox->currentText(),
+                                                                                  ui->pathSelectionComboBox->currentText());
 
     if (errorMessage != "")
     {
@@ -1446,44 +1510,44 @@ void MainWindow::openSettingsDialog()
     }
 }
 
-void MainWindow::selectUserSpecifiedNodes()
-{
-    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
-    {
-        QMessageBox::information(this, "No starting nodes",
-                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
-                                 "Separate multiple nodes with commas.");
-        return;
-    }
-
-    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
-    {
-        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
-        return;
-    }
-
+void MainWindow::doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
+                               const std::vector<QString> &nodesNotInGraph,
+                               bool recolor) {
     m_scene->blockSignals(true);
     m_scene->clearSelection();
-    std::vector<QString> nodesNotInGraph;
-    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
-                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
-                                                                     &nodesNotInGraph);
 
     //Select each node that actually has a GraphicsItemNode, and build a bounding
     //rectangle so the viewport can focus on the selected node.
     std::vector<QString> nodesNotFound;
     int foundNodes = 0;
+    QColor color1, color2;
     for (size_t i = 0; i < nodesToSelect.size(); ++i)
     {
         GraphicsItemNode * graphicsItemNode = nodesToSelect[i]->getGraphicsItemNode();
+        GraphicsItemNode * rcgraphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
 
         //If the GraphicsItemNode isn't found, try the reverse complement.  This
         //is only done for single node mode.
         if (graphicsItemNode == 0 && !g_settings->doubleMode)
-            graphicsItemNode = nodesToSelect[i]->getReverseComplement()->getGraphicsItemNode();
+            graphicsItemNode = rcgraphicsItemNode;
 
         if (graphicsItemNode != 0)
         {
+            if (recolor)
+            {
+                if (i == 0)
+                {
+                    color1 = graphicsItemNode->m_colour;
+                    if (g_settings->doubleMode)
+                        color2 = rcgraphicsItemNode->m_colour;
+                } else {
+                    graphicsItemNode->m_colour = color1;
+                    if (g_settings->doubleMode)
+                        rcgraphicsItemNode->m_colour = color2;
+                }
+
+            }
+
             graphicsItemNode->setSelected(true);
             ++foundNodes;
         }
@@ -1521,6 +1585,42 @@ void MainWindow::selectUserSpecifiedNodes()
     m_scene->blockSignals(false);
     g_graphicsView->viewport()->update();
     selectionChanged();
+}
+
+void MainWindow::selectUserSpecifiedNodes()
+{
+    if (g_assemblyGraph->checkIfStringHasNodes(ui->selectionSearchNodesLineEdit->text()))
+    {
+        QMessageBox::information(this, "No starting nodes",
+                                 "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
+                                 "Separate multiple nodes with commas.");
+        return;
+    }
+
+    if (ui->selectionSearchNodesLineEdit->text().length() == 0)
+    {
+        QMessageBox::information(this, "No nodes given", "Please enter the numbers of the nodes to find, separated by commas.");
+        return;
+    }
+
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect = getNodesFromLineEdit(ui->selectionSearchNodesLineEdit,
+                                                                     ui->selectionSearchNodesExactMatchRadioButton->isChecked(),
+                                                                     &nodesNotInGraph);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph);
+}
+
+void MainWindow::selectPathNodes()
+{
+    std::vector<QString> nodesNotInGraph;
+    std::vector<DeBruijnNode *> nodesToSelect;
+
+    QList<DeBruijnNode *> nodes = g_assemblyGraph->m_deBruijnGraphPaths[ui->pathSelectionComboBox2->currentText()]->getNodes();
+    for (QList<DeBruijnNode *>::iterator i = nodes.begin(); i != nodes.end(); ++i)
+        nodesToSelect.push_back(*i);
+
+    doSelectNodes(nodesToSelect, nodesNotInGraph, ui->pathSelectionRecolorRadioButton->isChecked());
 }
 
 
@@ -2142,8 +2242,9 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     {
     case WHOLE_GRAPH: ui->graphScopeComboBox->setCurrentIndex(0); break;
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
-    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
-    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case AROUND_PATHS: ui->graphScopeComboBox->setCurrentIndex(2); break;
+    case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(4); break;
     }
 }
 

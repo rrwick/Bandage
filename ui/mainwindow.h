@@ -85,6 +85,7 @@ private:
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
     void setGraphScopeComboBox(GraphScope graphScope);
     void setupBlastQueryComboBox();
+    void setupPathSelectionComboBox();
     bool checkForImageSave();
     QString convertGraphFileTypeToString(GraphFileType graphFileType);
     void setSelectedNodesWidgetsVisibility(bool visible);
@@ -92,6 +93,7 @@ private:
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
     void setDepthRangeWidgetVisibility(bool visible);
+    void setPathSelectionWidgetVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
@@ -123,6 +125,10 @@ private slots:
     void hideNodes();
     void openSettingsDialog();
     void openAboutDialog();
+    void doSelectNodes(const std::vector<DeBruijnNode *> &nodesToSelect,
+                       const std::vector<QString> &nodesNotInGraph,
+                       bool recolor = false);
+    void selectPathNodes();
     void selectUserSpecifiedNodes();
     void graphLayoutFinished();
     void openBlastSearchDialog();
