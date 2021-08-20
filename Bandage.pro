@@ -264,7 +264,9 @@ win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
 
 macx:ICON = images/application.icns
-macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13
+
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
 # Each target platform needs the native platform as well as Qt's minimal platform.
 win32: QTPLUGIN.platforms += qwindows qminimal
