@@ -24,6 +24,7 @@
 #include "runblastsearchworker.h"
 #include "../program/settings.h"
 #include <QApplication>
+#include <QRegularExpression>
 #include "../graph/debruijnnode.h"
 #include "../program/memory.h"
 #include <math.h>

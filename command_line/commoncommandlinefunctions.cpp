@@ -1305,4 +1305,3 @@ void getOnlineHelpMessage(QStringList * text)
     *text << "Online Bandage help: https://github.com/rrwick/Bandage/wiki";
     *text << "";
 }
-

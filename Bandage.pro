@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
-QT       += core gui svg widgets
+QT       += core gui svg widgets core5compat
 
 TARGET = Bandage
 TEMPLATE = app
@@ -264,7 +264,7 @@ win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
 
 macx:ICON = images/application.icns
-macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.13
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
