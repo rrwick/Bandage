@@ -177,6 +177,7 @@ void AssemblyGraph::clearOgdfGraphAndResetNodes()
 QByteArray AssemblyGraph::getReverseComplement(QByteArray forwardSequence)
 {
     QByteArray reverseComplement;
+    reverseComplement.reserve(forwardSequence.length());
 
     for (int i = forwardSequence.length() - 1; i >= 0; --i)
     {
