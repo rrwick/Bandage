@@ -54,7 +54,13 @@ void GraphicsItemEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         penColour = g_settings->selectionColour;
     else
         penColour = g_settings->edgeColour;
-    QPen edgePen(QBrush(penColour), edgeWidth, Qt::SolidLine, Qt::RoundCap);
+    Qt::PenStyle s = Qt::SolidLine;
+    if (m_deBruijnEdge->isHiC()) {
+        //int dark = m_deBruijnEdge->getWeight();
+        //penColour.setRgb(dark, dark, dark);
+        s = Qt::DotLine;
+    }
+    QPen edgePen(QBrush(penColour), edgeWidth, s, Qt::RoundCap);
     painter->setPen(edgePen);
     painter->drawPath(path());
 }
@@ -128,24 +134,63 @@ void GraphicsItemEdge::setControlPointLocations()
 
     if (startingNode->hasGraphicsItem())
     {
-        m_startingLocation = startingNode->getGraphicsItemNode()->getLast();
-        m_beforeStartingLocation = startingNode->getGraphicsItemNode()->getSecondLast();
+        if (m_deBruijnEdge->isHiC() && startingNode->getGraphicsItemNode() -> isBig()) {
+            m_startingLocation = startingNode->getGraphicsItemNode()->getMiddle();
+            m_beforeStartingLocation = startingNode->getGraphicsItemNode()->getBeforeMiddle();
+            /*std::ofstream vmdelet_out;
+            vmdelet_out.open("C\:\\Users\\anastasia\\study\\maga\\Bandage\\addGraphicsItemsToScene.txt", std::ios::app);
+            vmdelet_out << "setControlPointLocations  startingNode" << startingNode->getName().toUtf8().constData() << '\n';
+            vmdelet_out.close();*/
+        } else {
+            m_startingLocation = startingNode->getGraphicsItemNode()->getLast();
+            m_beforeStartingLocation = startingNode->getGraphicsItemNode()->getSecondLast();
+        }
     }
     else if (startingNode->getReverseComplement()->hasGraphicsItem())
     {
-        m_startingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getFirst();
-        m_beforeStartingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getSecond();
+        if (m_deBruijnEdge->isHiC() && startingNode->getReverseComplement()->getGraphicsItemNode() -> isBig()) {
+            m_startingLocation = startingNode->getReverseComplement() -> getGraphicsItemNode()->getMiddle();
+            m_beforeStartingLocation = startingNode->getReverseComplement() -> getGraphicsItemNode()->getAfterMiddle();
+            /*std::ofstream vmdelet_out;
+            vmdelet_out.open("C\:\\Users\\anastasia\\study\\maga\\Bandage\\addGraphicsItemsToScene.txt", std::ios::app);
+            vmdelet_out << "setControlPointLocations  startingNode" << startingNode->getName().toUtf8().constData() << '\n';
+            vmdelet_out.close();*/
+        }
+        else {
+            m_startingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getFirst();
+            m_beforeStartingLocation = startingNode->getReverseComplement()->getGraphicsItemNode()->getSecond();
+        }
     }
 
     if (endingNode->hasGraphicsItem())
     {
-        m_endingLocation = endingNode->getGraphicsItemNode()->getFirst();
-        m_afterEndingLocation = endingNode->getGraphicsItemNode()->getSecond();
+        if (m_deBruijnEdge->isHiC() && endingNode->getGraphicsItemNode() -> isBig()) {
+            m_endingLocation = endingNode->getGraphicsItemNode()->getMiddle();
+            m_afterEndingLocation = endingNode->getGraphicsItemNode()->getAfterMiddle();
+            /*std::ofstream vmdelet_out;
+            vmdelet_out.open("C\:\\Users\\anastasia\\study\\maga\\Bandage\\addGraphicsItemsToScene.txt", std::ios::app);
+            vmdelet_out << "setControlPointLocations  endingNode" << endingNode->getName().toUtf8().constData() << '\n';
+            vmdelet_out.close();*/
+        }
+        else {
+            m_endingLocation = endingNode->getGraphicsItemNode()->getFirst();
+            m_afterEndingLocation = endingNode->getGraphicsItemNode()->getSecond();
+        }
     }
     else if (endingNode->getReverseComplement()->hasGraphicsItem())
     {
-        m_endingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getLast();
-        m_afterEndingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getSecondLast();
+        if (m_deBruijnEdge->isHiC() && endingNode->getReverseComplement()->getGraphicsItemNode() -> isBig()) {
+            m_endingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getMiddle();
+            m_afterEndingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getBeforeMiddle();
+            std::ofstream vmdelet_out;
+            vmdelet_out.open("C\:\\Users\\anastasia\\study\\maga\\Bandage\\addGraphicsItemsToScene.txt", std::ios::app);
+            vmdelet_out << "setControlPointLocations  endingNode" << endingNode->getName().toUtf8().constData() << '\n';
+            vmdelet_out.close();
+        }
+        else {
+            m_endingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getLast();
+            m_afterEndingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getSecondLast();
+        }
     }
 }
 

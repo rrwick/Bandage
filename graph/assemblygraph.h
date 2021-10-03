@@ -24,6 +24,7 @@
 
 #include "../ogdf/basic/Graph.h"
 #include "../ogdf/basic/GraphAttributes.h"
+#include "HiCSettings.h"
 #include <QString>
 #include <QMap>
 #include "../program/globals.h"
@@ -49,9 +50,11 @@ public:
     //Edges are stored in a map with a key of the starting and ending node
     //pointers.
     QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_deBruijnGraphEdges;
+    QMap<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> m_hiCDeBruijnGraphEdges;
 
     ogdf::Graph * m_ogdfGraph;
     ogdf::EdgeArray<double> * m_edgeArray;
+    ogdf::EdgeArray<double> * m_hiCEdgeArray;
     ogdf::GraphAttributes * m_graphAttributes;
 
     int m_kmer;
@@ -69,11 +72,12 @@ public:
     QString m_filename;
     QString m_depthTag;
     SequencesLoadedFromFasta m_sequencesLoadedFromFasta;
+    HiCSettings hiC;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name,
                             int overlap = 0,
-                            EdgeOverlapType overlapType = UNKNOWN_OVERLAP);
+                            EdgeOverlapType overlapType = UNKNOWN_OVERLAP, bool hiC = false, int weight = 0);
     void clearOgdfGraphAndResetNodes();
     static QByteArray getReverseComplement(QByteArray forwardSequence);
     void resetEdges();
@@ -206,6 +210,12 @@ private:
     double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
     bool allNodesStartWith(QString start) const;
     QString simplifyCanuNodeName(QString oldName) const;
+    QList<DeBruijnNode*> AssemblyGraph::findHiC(QByteArray hiC);
+    void AssemblyGraph::loadHiC();
+    void AssemblyGraph::addHiCEdges(QList<DeBruijnNode*> biggestNodesList, QList<DeBruijnNode*> smallestNodesList);
+    QList<DeBruijnNode*> AssemblyGraph::dfs(DeBruijnNode* curNode, QByteArray hiC);
+    QList<int> AssemblyGraph::getNewStartIndexes(QByteArray wgs, QByteArray hiC);
+    bool AssemblyGraph::isBeginWith(QByteArray wgs, QByteArray hiC);
 
 signals:
     void setMergeTotalCount(int totalCount);

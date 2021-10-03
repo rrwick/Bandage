@@ -29,6 +29,8 @@
 #include <QString>
 #include <QPainterPath>
 #include <QStringList>
+#include <algorithm>
+#include <iostream>
 
 class DeBruijnNode;
 class Path;
@@ -66,6 +68,22 @@ public:
     QPointF getSecond() const {return m_linePoints[1];}
     QPointF getLast() const {return m_linePoints[m_linePoints.size()-1];}
     QPointF getSecondLast() const {return m_linePoints[m_linePoints.size()-2];}
+    bool isBig() const { return m_linePoints.size() >= 3; }
+    QPointF getMiddle() const { return m_linePoints[m_linePoints.size() / 2]; }
+    QPointF getBeforeMiddle() const 
+    { 
+        if (m_linePoints.size() >= 3)
+            return m_linePoints[(m_linePoints.size() / 2) - 1];
+        else
+            return m_linePoints[0];
+    }
+    QPointF getAfterMiddle() const 
+    {
+        if (m_linePoints.size() >= 3)
+            return m_linePoints[(m_linePoints.size() / 2) + 1];
+        else
+            return m_linePoints[1];
+    }
     std::vector<QPointF> getCentres() const;
     QPointF getCentre(std::vector<QPointF> linePoints) const;
     void setNodeColour();

@@ -37,6 +37,15 @@ public:
     ogdf::node getSecond() {if (m_ogdfNodes.size() < 2) return 0; else return m_ogdfNodes[1];}
     ogdf::node getLast() {if (m_ogdfNodes.size() == 0) return 0; else return m_ogdfNodes[m_ogdfNodes.size()-1];}
     ogdf::node getSecondLast() {if (m_ogdfNodes.size() < 2) return 0; else return m_ogdfNodes[m_ogdfNodes.size()-2];}
+    ogdf::node getMiddle() {
+        if (m_ogdfNodes.size() == 0) return 0; else {
+            std::ofstream vmdelet_out;
+            vmdelet_out.open("C\:\\Users\\anastasia\\study\\maga\\Bandage\\HiC_log.txt", std::ios::app);
+            vmdelet_out << "getMiddle "<< m_ogdfNodes.size()<<" "<< m_ogdfNodes.size() / 2<<"\n";
+            vmdelet_out.close();
+            return m_ogdfNodes[m_ogdfNodes.size() / 2];
+        }
+    }
 };
 
 #endif // OGDFNODE_H
