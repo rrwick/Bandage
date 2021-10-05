@@ -552,8 +552,6 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         }
         inputFile.close();
 
-        loadHiC();
-
         setAllEdgesExactOverlap(0);
     }
 
@@ -561,112 +559,42 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         throw "load error";
 }
 
-void AssemblyGraph::loadHiC() {
-    QFile logFile("C\:\\Users\\anastasia\\study\\maga\\Bandage\\my_test_data\\hic_1_1.log");
-    logFile.open(QIODevice::WriteOnly);
-    QFile settingsFile("C\:\\Users\\anastasia\\study\\maga\\Bandage\\my_test_data\\settings_1.txt");
-    settingsFile.open(QIODevice::ReadOnly);
-    QTextStream inSettings(&settingsFile);
-    QString filePath = inSettings.readLine();
-    while (!inSettings.atEnd()) {
-        QStringList settings = inSettings.readLine().split(QRegExp(" "));
-        if (settings.length() < 2) {
-            continue;
-        }
-        if (settings.at(0) == "weight") {
-            hiC.minWeight = settings.at(1).toInt();
-        }
-        if (settings.at(0) == "length") {
-            hiC.minLength = settings.at(1).toInt();
-        }
-        if (settings.at(0) == "dist") {
-            hiC.minDist = settings.at(1).toInt();
-        }
-        
-    }
+bool AssemblyGraph::loadHiC(QString filename, QString* errormsg)
+{
 
-    QFile hiCMatrix("C\:\\Users\\anastasia\\study\\maga\\Bandage\\my_test_data\\hic_1_2.txt");
-    if (hiCMatrix.open(QIODevice::ReadOnly))
+    QFile hiCMatrix(filename);
+    if (!hiCMatrix.open(QIODevice::ReadOnly))
     {
-        QTextStream in(&hiCMatrix);
-        QApplication::processEvents();
-        QString line1 = in.readLine();
-        hiC.numOfNodes = line1.toInt();
-        logFile.write("Kontigs: \n");
-        logFile.write(hiC.numOfNodes + "\n");
-        for (int i = 0; i < hiC.numOfNodes; i++) {
-            hiC.kontigNames.push_back(convertNormalNumberStringToBandageNodeName(in.readLine()));
-            logFile.write(hiC.kontigNames.at(hiC.kontigNames.length() - 1).toUtf8() + "\n");
-        }
-        logFile.write("Edges: \n");
-        for (int i = 0; i < hiC.numOfNodes; i++) {
-            QStringList weights = in.readLine().split(QRegExp("\t"));
-            QVector<int> tempWeights;
-            if (weights.length() == hiC.numOfNodes) {
-                for (int j = 0; j <= i; j++) {
-                    int weight = weights.at(j).toInt();
-                    tempWeights.push_back(weight);
-                    QString firstNodeName = hiC.kontigNames.at(i);
-                    QString secondNodeName = hiC.kontigNames.at(j);
-                    if (weight > 0 && firstNodeName != secondNodeName) {
-                        createDeBruijnEdge(firstNodeName, secondNodeName, 0, UNKNOWN_OVERLAP, true, weight);
-                        logFile.write(firstNodeName.toUtf8() + " " + secondNodeName.toUtf8() + "\n");
-                    }
+        *errormsg = "Unable to read from specified file.";
+        return false;
+    }
+
+    QTextStream in(&hiCMatrix);
+    QApplication::processEvents();
+    QString line1 = in.readLine();
+    hiC.numOfNodes = line1.toInt();
+    for (int i = 0; i < hiC.numOfNodes; i++) {
+        hiC.kontigNames.push_back(convertNormalNumberStringToBandageNodeName(in.readLine()));
+    }
+    for (int i = 0; i < hiC.numOfNodes; i++) {
+        QStringList weights = in.readLine().split(QRegExp("\t"));
+        QVector<int> tempWeights;
+        if (weights.length() == hiC.numOfNodes) {
+            for (int j = 0; j <= i; j++) {
+                int weight = weights.at(j).toInt();
+                tempWeights.push_back(weight);
+                QString firstNodeName = hiC.kontigNames.at(i);
+                QString secondNodeName = hiC.kontigNames.at(j);
+                if (weight > 0 && firstNodeName != secondNodeName) {
+                    createDeBruijnEdge(firstNodeName, secondNodeName, 0, UNKNOWN_OVERLAP, true, weight);
                 }
-                hiC.weightMatrix.push_back(tempWeights);
             }
-        }
-        logFile.close();
-    }
-}
-
-//first List of nodes has more nodes than second List of nodes
-/*void AssemblyGraph::addHiCEdges(QList<DeBruijnNode*> biggestNodesList, QList<DeBruijnNode*> smallestNodesList) {
-    if (biggestNodesList.length() >= smallestNodesList.length()) {
-        int bigSize = biggestNodesList.length();
-        int smallSizeHalf = smallestNodesList.length() / 2;
-        int middlePart = biggestNodesList.length() - (smallestNodesList.length() / 2) * 2;
-
-
-        QList<DeBruijnNode*>::iterator startBigListIter = biggestNodesList.begin();
-        QList<DeBruijnNode*>::iterator endBigListIter = biggestNodesList.end();
-        endBigListIter--;
-        QList<DeBruijnNode*>::iterator startSmallListIter = smallestNodesList.begin();
-        QList<DeBruijnNode*>::iterator endSmallListIter = smallestNodesList.end();
-        endSmallListIter--;
-        for (int i = 0; i < smallSizeHalf; i++) {
-            QString firstNodeName = (*startBigListIter)->getName();
-            QString secondNodeName = (*startSmallListIter)->getName();
-            if (firstNodeName != secondNodeName) {
-                createDeBruijnEdge(firstNodeName, secondNodeName, 0, UNKNOWN_OVERLAP, true);
-                createDeBruijnEdge(secondNodeName, firstNodeName, 0, UNKNOWN_OVERLAP, true);
-            }
-
-            firstNodeName = (*endBigListIter)->getName();
-            secondNodeName = (*endSmallListIter)->getName();
-            if (firstNodeName != secondNodeName) {
-                createDeBruijnEdge(firstNodeName, secondNodeName, 0, UNKNOWN_OVERLAP, true);
-                createDeBruijnEdge(secondNodeName, firstNodeName, 0, UNKNOWN_OVERLAP, true);
-            }
-            startBigListIter++;
-            startSmallListIter++;
-            endBigListIter--;
-            endSmallListIter--;
-
-        }
-
-        QString middleNodeName = smallestNodesList.at(smallestNodesList.length() / 2) -> getName();
-        for (int i = 0; i < middlePart; i++) {
-            QString curNodeName = (*startBigListIter)->getName();
-            if (middleNodeName != curNodeName) {
-                createDeBruijnEdge(middleNodeName, curNodeName, 0, UNKNOWN_OVERLAP, true);
-                createDeBruijnEdge(curNodeName, middleNodeName, 0, UNKNOWN_OVERLAP, true);
-            }
-            startBigListIter++;
+            hiC.weightMatrix.push_back(tempWeights);
         }
     }
+    return true;
 }
-*/
+
 
 //This function takes a normal number string like "5" or "-6" and changes
 //it to "5+" or "6-" - the format of Bandage node names.
@@ -992,7 +920,6 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
     }
 
     m_sequencesLoadedFromFasta = NOT_TRIED;
-    loadHiC();
 }
 
 

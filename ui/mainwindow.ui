@@ -59,8 +59,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>289</width>
-         <height>1058</height>
+         <width>251</width>
+         <height>976</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -259,443 +259,554 @@
            </item>
            <item>
             <widget class="QWidget" name="graphDrawingWidget_2" native="true">
-             <layout class="QGridLayout" name="graphDrawingGridLayout">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <item row="2" column="0">
-               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="InfoTextWidget" name="graphScopeInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QWidget" name="startingNodesMatchTypeWidget" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Exact</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Partial</string>
-                   </property>
-                  </widget>
-                 </item>
+                <layout class="QGridLayout" name="graphDrawingGridLayout">
+                    <property name="leftMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                        <number>0</number>
+                    </property>
+                    <item row="2" column="0">
+                        <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="0">
+                        <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="0" column="0">
+                        <widget class="InfoTextWidget" name="graphScopeInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="2" column="2">
+                        <widget class="QWidget" name="startingNodesMatchTypeWidget" native="true">
+                            <layout class="QHBoxLayout" name="horizontalLayout_5">
+                                <property name="spacing">
+                                    <number>0</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Exact</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Partial</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <item row="3" column="0">
+                        <widget class="InfoTextWidget" name="nodeDistanceInfoText" native="true">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="6" column="0">
+                        <widget class="InfoTextWidget" name="nodeStyleInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="6" column="2">
+                        <widget class="QWidget" name="nodeStyleWidget" native="true">
+                            <layout class="QHBoxLayout" name="horizontalLayout_6">
+                                <property name="spacing">
+                                    <number>0</number>
+                                </property>
+                                <property name="leftMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <widget class="QRadioButton" name="singleNodesRadioButton">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Single</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="doubleNodesRadioButton">
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Double</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </item>
+                    <item row="9" column="1" colspan="2">
+                        <widget class="QPushButton" name="drawGraphButton">
+                            <property name="text">
+                                <string>Draw graph</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="6" column="1">
+                        <widget class="QLabel" name="nodeStyleLabel">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Style:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="3" column="2">
+                        <widget class="QSpinBox" name="nodeDistanceSpinBox">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="maximum">
+                                <number>10000</number>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="1">
+                        <widget class="QLabel" name="startingNodesLabel">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Node(s):</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="2">
+                        <widget class="QLineEdit" name="startingNodesLineEdit">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="0" column="2">
+                        <widget class="QComboBox" name="graphScopeComboBox">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <item>
+                                <property name="text">
+                                    <string>Entire graph</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Around nodes</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Around BLAST hits</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Depth range</string>
+                                </property>
+                            </item>
+                        </widget>
+                    </item>
+                    <item row="0" column="1">
+                        <widget class="QLabel" name="graphScopeLabel">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Scope:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="3" column="1">
+                        <widget class="QLabel" name="nodeDistanceLabel">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="text">
+                                <string>Distance:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="2" column="1">
+                        <widget class="QLabel" name="startingNodesMatchTypeLabel">
+                            <property name="enabled">
+                                <bool>true</bool>
+                            </property>
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Match:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="4" column="2">
+                        <widget class="QDoubleSpinBox" name="minDepthSpinBox">
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="maximum">
+                                <double>1000000.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="4" column="0">
+                        <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="7" column="0">
+                        <widget class="InfoTextWidget" name="hicWeightInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="7" column="1">
+                        <widget class="QLabel" name="label_15">
+                            <property name="text">
+                                <string>HiC min weight:</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignLeft</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="7" column="2">
+                        <widget class="QDoubleSpinBox" name="hicWeightSpinBox">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="suffix">
+                                <string />
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="minimum">
+                                <double>0.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                                <double>1000.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                                <double>1.000000000000000</double>
+                            </property>
+                            <property name="value">
+                                <double>1.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="8" column="0">
+                        <widget class="InfoTextWidget" name="hicSeqLenInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="8" column="1">
+                        <widget class="QLabel" name="label_15">
+                            <property name="text">
+                                <string>HiC min sequence length:</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignLeft</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="8" column="2">
+                        <widget class="QDoubleSpinBox" name="hicSeqLenSpinBox">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="suffix">
+                                <string />
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="minimum">
+                                <double>0.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                                <double>1.000000000000000</double>
+                            </property>
+                            <property name="value">
+                                <double>5.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="9" column="0">
+                        <widget class="InfoTextWidget" name="drawGraphInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="4" column="1">
+                        <widget class="QLabel" name="minDepthLabel">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Min:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="5" column="0">
+                        <widget class="InfoTextWidget" name="maxDepthInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="5" column="1">
+                        <widget class="QLabel" name="maxDepthLabel">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="text">
+                                <string>Max:</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="5" column="2">
+                        <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="maximum">
+                                <double>1000000.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
                 </layout>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="InfoTextWidget" name="nodeDistanceInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="InfoTextWidget" name="nodeStyleInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="2">
-               <widget class="QWidget" name="nodeStyleWidget" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QRadioButton" name="singleNodesRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Single</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="doubleNodesRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Double</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="9" column="1" colspan="2">
-               <widget class="QPushButton" name="drawGraphButton">
-                <property name="text">
-                 <string>Draw graph</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLabel" name="nodeStyleLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Style:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QSpinBox" name="nodeDistanceSpinBox">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="maximum">
-                 <number>10000</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="startingNodesLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Node(s):</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLineEdit" name="startingNodesLineEdit">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QComboBox" name="graphScopeComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Entire graph</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Around nodes</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Around BLAST hits</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Depth range</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="graphScopeLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Scope:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="nodeDistanceLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Distance:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="startingNodesMatchTypeLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Match:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="QDoubleSpinBox" name="minDepthSpinBox">
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="InfoTextWidget" name="drawGraphInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLabel" name="minDepthLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Min:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="InfoTextWidget" name="maxDepthInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QLabel" name="maxDepthLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Max:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
           </layout>
@@ -757,209 +868,209 @@
            </item>
            <item>
             <widget class="QWidget" name="widget_2" native="true">
-             <layout class="QGridLayout" name="gridLayout_8">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <item row="2" column="0">
-               <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="InfoTextWidget" name="zoomInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="InfoTextWidget" name="contiguityInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QDoubleSpinBox" name="zoomSpinBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="suffix">
-                 <string>%</string>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="minimum">
-                 <double>5.000000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>500.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>5.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>100.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1" colspan="2">
-               <widget class="QPushButton" name="contiguityButton">
-                <property name="text">
-                 <string>Determine contiguity</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1" colspan="2">
-               <widget class="QComboBox" name="coloursComboBox">
-                <item>
-                 <property name="text">
-                  <string>Random colours</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Uniform colour</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Colour by depth</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>BLAST hits (solid)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>BLAST hits (rainbow)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Colour by contiguity</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Custom colours</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_13">
-                <property name="text">
-                 <string>Zoom:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="InfoTextWidget" name="nodeWidthInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>Node width:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QDoubleSpinBox" name="nodeWidthSpinBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="suffix">
-                 <string/>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="minimum">
-                 <double>0.500000000000000</double>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.500000000000000</double>
-                </property>
-                <property name="value">
-                 <double>5.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
+                <layout class="QGridLayout" name="gridLayout_8">
+                    <property name="leftMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                        <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                        <number>0</number>
+                    </property>
+                    <item row="2" column="0">
+                        <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="0" column="0">
+                        <widget class="InfoTextWidget" name="zoomInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="3" column="0">
+                        <widget class="InfoTextWidget" name="contiguityInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="0" column="2">
+                        <widget class="QDoubleSpinBox" name="zoomSpinBox">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="suffix">
+                                <string>%</string>
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="minimum">
+                                <double>5.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                                <double>500.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                                <double>5.000000000000000</double>
+                            </property>
+                            <property name="value">
+                                <double>100.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="3" column="1" colspan="2">
+                        <widget class="QPushButton" name="contiguityButton">
+                            <property name="text">
+                                <string>Determine contiguity</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="2" column="1" colspan="2">
+                        <widget class="QComboBox" name="coloursComboBox">
+                            <item>
+                                <property name="text">
+                                    <string>Random colours</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Uniform colour</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Colour by depth</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>BLAST hits (solid)</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>BLAST hits (rainbow)</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Colour by contiguity</string>
+                                </property>
+                            </item>
+                            <item>
+                                <property name="text">
+                                    <string>Custom colours</string>
+                                </property>
+                            </item>
+                        </widget>
+                    </item>
+                    <item row="0" column="1">
+                        <widget class="QLabel" name="label_13">
+                            <property name="text">
+                                <string>Zoom:</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignLeft</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="0">
+                        <widget class="InfoTextWidget" name="nodeWidthInfoText" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>16</width>
+                                    <height>16</height>
+                                </size>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="1">
+                        <widget class="QLabel" name="label_15">
+                            <property name="text">
+                                <string>Node width:</string>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignLeft</set>
+                            </property>
+                        </widget>
+                    </item>
+                    <item row="1" column="2">
+                        <widget class="QDoubleSpinBox" name="nodeWidthSpinBox">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="suffix">
+                                <string />
+                            </property>
+                            <property name="decimals">
+                                <number>1</number>
+                            </property>
+                            <property name="minimum">
+                                <double>0.500000000000000</double>
+                            </property>
+                            <property name="maximum">
+                                <double>1000.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                                <double>0.500000000000000</double>
+                            </property>
+                            <property name="value">
+                                <double>5.000000000000000</double>
+                            </property>
+                        </widget>
+                    </item>
+                </layout>
             </widget>
            </item>
           </layout>
@@ -1079,72 +1190,72 @@
               </item>
               <item row="0" column="1" colspan="2">
                <widget class="QWidget" name="widget_13" native="true">
-                <layout class="QGridLayout" name="gridLayout_3">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="verticalSpacing">
-                  <number>0</number>
-                 </property>
-                 <item row="0" column="0">
-                  <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
-                   <property name="text">
-                    <string>Custom</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QCheckBox" name="nodeNamesCheckBox">
-                   <property name="text">
-                    <string>Name</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QCheckBox" name="nodeLengthsCheckBox">
-                   <property name="text">
-                    <string>Length</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QCheckBox" name="nodeDepthCheckBox">
-                   <property name="text">
-                    <string>Depth</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QCheckBox" name="blastHitsCheckBox">
-                   <property name="text">
-                    <string>BLAST hits</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QComboBox" name="csvComboBox">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QCheckBox" name="csvCheckBox">
-                   <property name="text">
-                    <string>CSV data:</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                   <layout class="QGridLayout" name="gridLayout_3">
+                       <property name="leftMargin">
+                           <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                           <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                           <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                           <number>0</number>
+                       </property>
+                       <property name="verticalSpacing">
+                           <number>0</number>
+                       </property>
+                       <item row="0" column="0">
+                           <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
+                               <property name="text">
+                                   <string>Custom</string>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="0" column="1">
+                           <widget class="QCheckBox" name="nodeNamesCheckBox">
+                               <property name="text">
+                                   <string>Name</string>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="1" column="0">
+                           <widget class="QCheckBox" name="nodeLengthsCheckBox">
+                               <property name="text">
+                                   <string>Length</string>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="1" column="1">
+                           <widget class="QCheckBox" name="nodeDepthCheckBox">
+                               <property name="text">
+                                   <string>Depth</string>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="3" column="0">
+                           <widget class="QCheckBox" name="blastHitsCheckBox">
+                               <property name="text">
+                                   <string>BLAST hits</string>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="4" column="1">
+                           <widget class="QComboBox" name="csvComboBox">
+                               <property name="enabled">
+                                   <bool>false</bool>
+                               </property>
+                           </widget>
+                       </item>
+                       <item row="3" column="1">
+                           <widget class="QCheckBox" name="csvCheckBox">
+                               <property name="text">
+                                   <string>CSV data:</string>
+                               </property>
+                           </widget>
+                       </item>
+                   </layout>
                </widget>
               </item>
              </layout>
@@ -1355,8 +1466,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>249</width>
-         <height>899</height>
+         <width>239</width>
+         <height>871</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1775,7 +1886,7 @@
      <x>0</x>
      <y>0</y>
      <width>1465</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1789,6 +1900,8 @@
     <addaction name="actionSave_image_entire_scene"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_HiC_data"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -2226,6 +2339,15 @@
     <string>Change node depth</string>
    </property>
   </action>
+  <action name="actionLoad_HiC_data">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load HiC data</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -2254,6 +2376,7 @@
   <tabstop>drawGraphButton</tabstop>
   <tabstop>zoomSpinBox</tabstop>
   <tabstop>nodeWidthSpinBox</tabstop>
+  <tabstop>hiCWeightSpinBox</tabstop>
   <tabstop>coloursComboBox</tabstop>
   <tabstop>contiguityButton</tabstop>
   <tabstop>nodeCustomLabelsCheckBox</tabstop>

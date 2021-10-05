@@ -171,6 +171,8 @@ public:
     bool attemptToLoadSequencesFromFasta();
     long long getTotalLengthOrphanedNodes() const;
     bool useLinearLayout() const;
+    bool AssemblyGraph::loadHiC(QString filename, QString* errormsg);
+    void AssemblyGraph::loadHiCSettings();
 
 
 private:
@@ -210,8 +212,6 @@ private:
     double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
     bool allNodesStartWith(QString start) const;
     QString simplifyCanuNodeName(QString oldName) const;
-    QList<DeBruijnNode*> AssemblyGraph::findHiC(QByteArray hiC);
-    void AssemblyGraph::loadHiC();
     void AssemblyGraph::addHiCEdges(QList<DeBruijnNode*> biggestNodesList, QList<DeBruijnNode*> smallestNodesList);
     QList<DeBruijnNode*> AssemblyGraph::dfs(DeBruijnNode* curNode, QByteArray hiC);
     QList<int> AssemblyGraph::getNewStartIndexes(QByteArray wgs, QByteArray hiC);

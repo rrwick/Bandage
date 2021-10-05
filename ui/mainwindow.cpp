@@ -132,6 +132,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionLoad_CSV, SIGNAL(triggered(bool)), this, SLOT(loadCSV()));
+    connect(ui->actionLoad_HiC_data, SIGNAL(triggered(bool)), this, SLOT(loadHiC()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -262,6 +263,45 @@ void MainWindow::cleanUp()
     ui->csvComboBox->clear();
     ui->csvComboBox->setEnabled(false);
     g_settings->displayNodeCsvDataCol = 0;
+}
+
+void MainWindow::loadHiC(QString fullFileName) {
+    QString selectedFilter = "Comma separated value (*.txt)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load Hi-C", g_memory->rememberedPath,
+            "Comma separated value (*.txt)",
+            &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        MyProgressDialog progress(this, "Loading Hi-C...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        bool coloursLoaded = false;
+        bool success = g_assemblyGraph->loadHiC(fullFileName, &errormsg);
+
+        if (success)
+        {
+            setHiCWidgetVisibility(true);
+        }
+    } 
+    catch (...) 
+    {
+        QString errorTitle = "Error loading HiC";
+        QString errorMessage = "There was an error when attempting to load:\n"
+            + fullFileName + "\n\n"
+            "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
+
 }
 
 void MainWindow::loadCSV(QString fullFileName)
@@ -717,6 +757,14 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthSpinBox->setVisible(visible);
 }
 
+void MainWindow::setHiCWidgetVisibility(bool visible)
+{
+    ui->hicSeqLenInfoText->setVisible(visible);
+    ui->hicSeqLenSpinBox->setVisible(visible);
+    ui->hicWeightInfoText->setVisible(visible);
+    ui->hicWeightSpinBox->setVisible(visible);
+}
+
 
 void MainWindow::drawGraph()
 {
@@ -732,6 +780,9 @@ void MainWindow::drawGraph()
         QMessageBox::information(this, errorTitle, errorMessage);
         return;
     }
+
+    g_assemblyGraph->hiC.minWeight = ui->hicWeightSpinBox->value();
+    g_assemblyGraph->hiC.minLength = ui->hicSeqLenSpinBox->value();
 
     resetScene();
     g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
@@ -1772,6 +1823,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(false);
+        ui->actionLoad_HiC_data->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1781,6 +1833,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(true);
+        ui->actionLoad_HiC_data->setEnabled(true);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1791,6 +1844,7 @@ void MainWindow::setUiState(UiState uiState)
         ui->selectionScrollAreaWidgetContents->setEnabled(true);
         ui->actionZoom_to_selection->setEnabled(true);
         ui->actionLoad_CSV->setEnabled(true);
+        ui->actionLoad_HiC_data->setEnabled(true);
         break;
     }
 }

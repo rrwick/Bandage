@@ -92,6 +92,7 @@ private:
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
     void setDepthRangeWidgetVisibility(bool visible);
+    void MainWindow::setHiCWidgetVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
@@ -100,7 +101,8 @@ private:
 
 private slots:
     void loadGraph(QString fullFileName = "");
-    void loadCSV(QString fullFileNAme = "");
+    void loadCSV(QString fullFileName = "");
+    void loadHiC(QString fullFileName = "");
     void selectionChanged();
     void graphScopeChanged();
     void drawGraph();
