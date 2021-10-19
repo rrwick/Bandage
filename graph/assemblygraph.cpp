@@ -70,6 +70,7 @@ AssemblyGraph::~AssemblyGraph()
 
 void AssemblyGraph::cleanUp()
 {
+
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
