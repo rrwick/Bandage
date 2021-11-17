@@ -17,34 +17,37 @@
 
 
 #include "assemblygraph.h"
-#include <QMapIterator>
-#include "../program/globals.h"
-#include "../program/settings.h"
-#include <limits>
-#include <algorithm>
-#include "../graph/debruijnnode.h"
-#include "../graph/debruijnedge.h"
-#include "../graph/graphicsitemnode.h"
-#include <QFile>
-#include <QTextStream>
-#include <QApplication>
-#include "../graph/graphicsitemedge.h"
+#include "ogdfnode.h"
+#include "path.h"
+
 #include "../blast/blastsearch.h"
+#include "../command_line/commoncommandlinefunctions.h"
+#include "../graph/debruijnedge.h"
+#include "../graph/debruijnnode.h"
+#include "../graph/graphicsitemedge.h"
+#include "../graph/graphicsitemnode.h"
 #include "../ogdf/energybased/FMMMLayout.h"
+#include "../program/globals.h"
 #include "../program/graphlayoutworker.h"
 #include "../program/memory.h"
-#include "path.h"
+#include "../program/settings.h"
 #include "../ui/myprogressdialog.h"
-#include <limits>
-#include <QSet>
-#include <QQueue>
-#include <QList>
-#include <math.h>
+
+#include <QApplication>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QList>
+#include <QMapIterator>
+#include <QQueue>
 #include <QDir>
 #include <QRegularExpression>
-#include "ogdfnode.h"
-#include "../command_line/commoncommandlinefunctions.h"
+#include <QSet>
+#include <QTextStream>
+
+#include <algorithm>
+#include <limits>
+#include <cmath>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false),
@@ -954,7 +957,6 @@ int AssemblyGraph::getLengthFromCigar(QString cigar)
 int AssemblyGraph::getCigarCount(QString cigarCode, QString cigar)
 {
     QRegularExpression re("(\\d+)" + cigarCode);
-    QStringList list;
 
     auto it = re.globalMatch(cigar);
     int sum = 0;
