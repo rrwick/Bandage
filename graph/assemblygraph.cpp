@@ -42,6 +42,7 @@
 #include <math.h>
 #include <QFileInfo>
 #include <QDir>
+#include <QRegularExpression>
 #include "ogdfnode.h"
 #include "../command_line/commoncommandlinefunctions.h"
 
@@ -478,7 +479,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
             if (firstLine)
             {
-                QStringList firstLineParts = line.split(QRegExp("\\s+"));
+                QStringList firstLineParts = line.split(QRegularExpression("\\s+"));
                 if (firstLineParts.size() > 2)
                 m_kmer = firstLineParts[2].toInt();
                 firstLine = false;
@@ -486,7 +487,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
             if (line.startsWith("NODE"))
             {
-                QStringList nodeDetails = line.split(QRegExp("\\s+"));
+                QStringList nodeDetails = line.split(QRegularExpression("\\s+"));
 
                 if (nodeDetails.size() < 4)
                     throw "load error";
@@ -517,7 +518,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             //ARC lines contain edges.
             else if (line.startsWith("ARC"))
             {
-                QStringList arcDetails = line.split(QRegExp("\\s+"));
+                QStringList arcDetails = line.split(QRegularExpression("\\s+"));
 
                 if (arcDetails.size() < 3)
                     throw "load error";
@@ -585,7 +586,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             QApplication::processEvents();
             QString line = in.readLine();
 
-            QStringList lineParts = line.split(QRegExp("\t"));
+            QStringList lineParts = line.split(QRegularExpression("\t"));
 
             if (lineParts.size() < 1)
                 continue;
@@ -832,7 +833,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             while (!in.atEnd()) {
                 QApplication::processEvents();
                 QString line = in.readLine();
-                QStringList lineParts = line.split(QRegExp("\t"));
+                QStringList lineParts = line.split(QRegularExpression("\t"));
                 if (lineParts.length() >= 5) {
                     bool conversionOkay;
                     long long readStart = lineParts[3].toLongLong(&conversionOkay);
@@ -874,8 +875,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
 bool AssemblyGraph::cigarContainsOnlyM(QString cigar)
 {
-    QRegExp rx("\\d+M");
-    return (rx.indexIn(cigar) != -1);
+    QRegularExpression rx("\\d+M");
+    return rx.match(cigar).hasMatch();
 }
 
 
@@ -912,18 +913,15 @@ int AssemblyGraph::getLengthFromCigar(QString cigar)
 //This function totals up the numbers for any given CIGAR code.
 int AssemblyGraph::getCigarCount(QString cigarCode, QString cigar)
 {
-    QRegExp rx("(\\d+)" + cigarCode);
+    QRegularExpression re("(\\d+)" + cigarCode);
     QStringList list;
-    int pos = 0;
-    while ((pos = rx.indexIn(cigar, pos)) != -1)
-    {
-        list << rx.cap(1);
-        pos += rx.matchedLength();
-    }
 
+    auto it = re.globalMatch(cigar);
     int sum = 0;
-    for (int i = 0; i < list.size(); ++i)
-        sum += list.at(i).toInt();
+    while (it.hasNext()) {
+        auto match = it.next();
+        sum += match.captured(1).toInt();
+    }
 
     return sum;
 }
@@ -1144,7 +1142,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         if (name.length() < 4)
             throw "load error";
 
-        int componentStartIndex = name.indexOf(QRegExp("c\\d+_"));
+        int componentStartIndex = name.indexOf(QRegularExpression("c\\d+_"));
         int componentEndIndex = name.indexOf("_", componentStartIndex);
 
         if (componentStartIndex < 0 || componentEndIndex < 0)
@@ -1270,7 +1268,7 @@ int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
             QApplication::processEvents();
             QString line = in.readLine();
 
-            QStringList lineParts = line.split(QRegExp("\t"));
+            QStringList lineParts = line.split(QRegularExpression("\t"));
 
             if (lineParts.size() < 1)
                 continue;
@@ -1478,7 +1476,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 QString AssemblyGraph::cleanNodeName(QString name)
 {
     //Replace whitespace with underscores
-    name = name.replace(QRegExp("\\s"), "_");
+    name = name.replace(QRegularExpression("\\s"), "_");
 
     //Remove any commas.
     name = name.replace(",", "");
@@ -1554,9 +1552,9 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
         QTextStream in(&inputFile);
         if (in.atEnd())
             return false;
-        QRegExp rx(regExp);
+        QRegularExpression rx(regExp);
         QString line = in.readLine();
-        if (rx.indexIn(line) != -1)
+        if (rx.match(line).hasMatch())
             return true;
     }
     return false;
@@ -1573,18 +1571,19 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
  */
 QStringList AssemblyGraph::splitCsv(QString line, QString sep)
 {
+    QRegularExpression rx(R"(("(?:[^"]|"")*"|[^)" + sep + "]*)");
     QStringList list;
-    QRegExp rx("(\"(?:[^\"]|\"\")*\"|[^"+sep+"]*)");
-    int pos = 0;
 
-    while (rx.indexIn(line, pos) != -1)
-    {
-        QString field = rx.cap().replace("\"\"","\"");
-        if (field[0] == '"' && field[field.length()-1] == '"')
-            field=field.mid(1,field.length()-2);
+    auto it = rx.globalMatch(line);
+    while (it.hasNext()) {
+        auto match = it.next();
+        QString field = match.captured().replace("\"\"", "\"");
+        if (field[0] == '"' && field[field.length() - 1] == '"') {
+            field = field.mid(1, field.length() - 2);
+        }
         list << field;
-        pos += rx.matchedLength() +1;
     }
+
     return list;
 }
 
@@ -3783,7 +3782,7 @@ bool AssemblyGraph::attemptToLoadSequencesFromFasta()
     {
         QString name = names[i];
         name = simplifyCanuNodeName(name);
-        name = name.split(QRegExp("\\s+"))[0];
+        name = name.split(QRegularExpression("\\s+"))[0];
         if (m_deBruijnGraphNodes.contains(name + "+"))
         {
             DeBruijnNode * posNode = m_deBruijnGraphNodes[name + "+"];

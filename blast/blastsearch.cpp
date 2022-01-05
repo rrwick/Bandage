@@ -320,7 +320,7 @@ int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
 QString BlastSearch::cleanQueryName(QString queryName)
 {
     //Replace whitespace with underscores
-    queryName = queryName.replace(QRegExp("\\s"), "_");
+    queryName = queryName.replace(QRegularExpression("\\s"), "_");
 
     //Remove any dots from the end of the query name.  BLAST doesn't
     //include them in its results, so if we don't remove them, then

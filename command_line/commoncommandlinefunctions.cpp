@@ -21,6 +21,7 @@
 #include <QDir>
 #include "../blast/blastsearch.h"
 #include <QApplication>
+#include <QRegularExpression>
 #include "../program/memory.h"
 #include <limits>
 
@@ -1264,10 +1265,8 @@ bool isOption(QString text)
 {
     bool option = (text.length() > 2 && text[0] == '-' && text[1] == '-' && text[2] != '-');
 
-    QRegExp rx("^<[\\w_]+>");
-    bool positional = (rx.indexIn(text) != -1);
-
-    return option || positional;
+    QRegularExpression rx("^[\\w ]+:");
+    return option || text.contains(rx);
 }
 
 bool isSectionHeader(QString text)
@@ -1276,8 +1275,8 @@ bool isSectionHeader(QString text)
     if (text.startsWith("Node widths are determined"))
         return false;
 
-    QRegExp rx("^[\\w ]+:");
-    return (rx.indexIn(text) != -1);
+    QRegularExpression rx("^[\\w ]+:");
+    return text.contains(rx);
 }
 
 
