@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
-QT       += core gui svg core5compat widgets
+QT       += core gui svg widgets
 
 TARGET = Bandage
 TEMPLATE = app

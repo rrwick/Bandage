@@ -22,7 +22,6 @@
 #include <QLatin1String>
 #include <QTextStream>
 #include <QLocale>
-#include <QRegExp>
 #include "../ogdf/energybased/FMMMLayout.h"
 #include <math.h>
 #include "../program/settings.h"
@@ -40,7 +39,6 @@
 #include <QProgressDialog>
 #include <QThread>
 #include "../program/graphlayoutworker.h"
-#include <QRegExp>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QShortcut>
