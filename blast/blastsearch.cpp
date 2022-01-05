@@ -194,6 +194,7 @@ bool BlastSearch::findProgram(QString programName, QString * command)
                                                                    "/sbin:"
                                                                    "/opt/local/bin:"
                                                                    "/usr/local/bin:"
+                                                                   "/opt/homebrew/bin:"
                                                                    "$HOME/bin:"
                                                                    "$HOME/.local/bin:"
                                                                    "$HOME/miniconda3/bin:"
