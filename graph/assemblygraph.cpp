@@ -2401,7 +2401,7 @@ QString AssemblyGraph::getOppositeNodeName(QString nodeName)
 
 void AssemblyGraph::readFastaOrFastqFile(QString filename, std::vector<QString> * names,
                                          std::vector<QByteArray> * sequences) {
-    QChar firstChar = 0;
+    QChar firstChar = QChar(0);
     QFile inputFile(filename);
     if (inputFile.open(QIODevice::ReadOnly)) {
         QTextStream in(&inputFile);

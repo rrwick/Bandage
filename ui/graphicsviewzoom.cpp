@@ -87,9 +87,9 @@ bool GraphicsViewZoom::eventFilter(QObject *object, QEvent *event)
         QWheelEvent * wheelEvent = static_cast<QWheelEvent*>(event);
         if (QApplication::keyboardModifiers() == m_modifiers)
         {
-            if (wheelEvent->angleDelta().y() != 0)  // if it was a vertical scroll
+            double angle = wheelEvent->angleDelta().y();
+            if (angle != 0.0)  // if it was a vertical scroll
             {
-                double angle = wheelEvent->angleDelta().y();
                 double factor = qPow(m_zoomFactorBase, angle);
                 gentleZoom(factor, MOUSE_WHEEL);
                 return true;
