@@ -19,6 +19,8 @@ QT       += core gui svg core5compat widgets
 
 TARGET = Bandage
 TEMPLATE = app
+VERSION = 0.9.0
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 CONFIG += c++11
 

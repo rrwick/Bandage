@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
     #endif //Q_OS_WIN32
 
     QApplication::setApplicationName("Bandage");
-    QApplication::setApplicationVersion("0.8.1");
+    QApplication::setApplicationVersion(APP_VERSION);
 
     QTextStream out(stdout);
     QTextStream err(stderr);
