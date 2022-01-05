@@ -133,7 +133,7 @@ int bandageInfo(QStringList arguments)
         out << "Percentage dead ends:             " << percentageDeadEnds << "%\n";
         out << "Connected components:             " << componentCount << "\n";
         out << "Largest component (bp):           " << largestComponentLength << "\n";
-        out << "Total length orphaned nodes (bp): " << largestComponentLength << "\n";
+        out << "Total length orphaned nodes (bp): " << totalLengthOrphanedNodes << "\n";
         out << "N50 (bp):                         " << n50 << "\n";
         out << "Shortest node (bp):               " << shortestNode << "\n";
         out << "Lower quartile node (bp):         " << firstQuartile << "\n";
@@ -164,6 +164,7 @@ void printInfoUsage(QTextStream * out, bool all)
     text << "* Percentage dead ends: The proportion of possible dead ends. The maximum number of dead ends is twice the number of nodes (occurs when there are no edges), so this value is the number of dead ends divided by twice the node count.";
     text << "* Connected components: The number of regions of the graph which are disconnected from each other.";
     text << "* Largest component: The total number of base pairs in the largest connected component.";
+    text << "* Total length orphaned nodes: The total number of base pairs in orphan nodes (nodes with no edges).";
     text << "* N50: Nodes that are this length or greater will collectively add up to at least half of the total length.";
     text << "* Shortest node: The length of the shortest node in the graph.";
     text << "* Lower quartile node: The median node length for the shorter half of the nodes.";
