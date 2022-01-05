@@ -33,6 +33,7 @@ MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
     setDragMode(QGraphicsView::RubberBandDrag);
     setAntialiasing(g_settings->antialiasing);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setBackgroundBrush(QBrush(Qt::white));
 }
 
 
