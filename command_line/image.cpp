@@ -104,6 +104,10 @@ int bandageImage(QStringList arguments)
     //is no viewport.
     g_settings->positionTextNodeCentre = true;
 
+    //The zoom level needs to be set so rainbow-style BLAST hits are rendered
+    //properly.
+    g_absoluteZoom = 10.0;
+
     bool blastUsed = isOptionPresent("--query", &arguments);
 
     if (blastUsed)
