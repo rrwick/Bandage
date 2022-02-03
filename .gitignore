@@ -55,3 +55,6 @@ compile_commands.json
 
 # App itself
 Bandage.app
+
+# CLion
+.idea

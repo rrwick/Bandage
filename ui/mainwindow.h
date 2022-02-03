@@ -30,6 +30,8 @@
 #include <QThread>
 #include "../ogdf/energybased/FMMMLayout.h"
 
+Q_MOC_INCLUDE("../graph/debruijnnode.h")
+
 class GraphicsViewZoom;
 class MyGraphicsScene;
 class DeBruijnNode;
