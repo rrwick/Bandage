@@ -59,7 +59,6 @@ public:
     bool isOwnReverseComplement() const {return this == getReverseComplement();}
     static bool compareEdgePointers(DeBruijnEdge * a, DeBruijnEdge * b);
 
-
     //MODIFERS
     void setGraphicsItemEdge(GraphicsItemEdge * gie) {m_graphicsItemEdge = gie;}
     void setReverseComplement(DeBruijnEdge * rc) {m_reverseComplement = rc;}
@@ -70,8 +69,7 @@ public:
     void setDrawn(bool isDrawn) { m_drawn = isDrawn; }
     void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
     void autoDetermineExactOverlap();
-    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const;
-    void addHiCToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double>* edgeArray) const;
+    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray, int maxHiCweight) const;
     void setHiC(bool hiC, int weight) { m_HiC = hiC; m_weight = weight; }
 
 private:

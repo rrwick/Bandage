@@ -21,6 +21,15 @@
 #include "ogdf/basic/geometry.h"
 #include <QLineF>
 
+//#include <ogdf/orthogonal/OrthoLayout.h>
+//#include <ogdf/planarity/EmbedderMinDepthMaxFaceLayers.h>
+//#include <ogdf/planarity/PlanarSubgraphFast.h>
+//#include <ogdf/planarity/PlanarizationLayout.h>
+//#include <ogdf/planarity/SubgraphPlanarizer.h>
+//#include <ogdf/planarity/VariableEmbeddingInserter.h>
+
+using namespace ogdf;
+
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
                                      ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
                                      double graphLayoutComponentSeparation, double aspectRatio) :
@@ -30,13 +39,16 @@ GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttribu
 {
 }
 
-
 void GraphLayoutWorker::layoutGraph()
 {
     m_fmmm->randSeed(clock());
     m_fmmm->useHighLevelOptions(false);
     m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomRandIterNr);
-    m_fmmm->unitEdgeLength(1.0);
+    if (m_edgeArray != NULL)
+        m_fmmm->unitEdgeLength(1.0);
+    else {
+        m_fmmm->unitEdgeLength(15.0);
+    }
     m_fmmm->allowedPositions(ogdf::FMMMLayout::apAll);
     m_fmmm->pageRatio(m_aspectRatio);
     m_fmmm->minDistCC(m_graphLayoutComponentSeparation);
@@ -75,9 +87,8 @@ void GraphLayoutWorker::layoutGraph()
         m_fmmm->nmPrecision(8);
         break;
     }
-
+    
     m_fmmm->call(*m_graphAttributes, *m_edgeArray);
-    //m_fmmm->call(*m_graphAttributes);
 
     emit finishedLayout();
 }

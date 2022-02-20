@@ -68,6 +68,11 @@ private:
     void clearGraphDetails();
     void resetScene();
     void layoutGraph();
+    void layoutHiCGraph();
+    void layoutPlanarGraph();
+    void layoutGraphWithoutFinishing();
+    void layoutGraphWithKeepPosition();
+
     void addGraphicsItemsToScene();
     void zoomToFitRect(QRectF rect);
     void zoomToFitScene();

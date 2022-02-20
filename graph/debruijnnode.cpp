@@ -89,6 +89,54 @@ void DeBruijnNode::resetNode()
     m_highestDistanceInNeighbourSearch = 0;
 }
 
+//void DeBruijnNode::addToSimpleOgdfGraph(ogdf::Graph* ogdfGraph, ogdf::GraphAttributes* graphAttributes, double xPos, double yPos) {
+//    if (thisOrReverseComplementInOgdf())
+//        return;
+//    m_ogdfNode = new OgdfNode();
+//    ogdf::node newNode = ogdfGraph->newNode();
+//    m_ogdfNode->addOgdfNode(newNode);
+//}
+
+void DeBruijnNode::addToSimpleOgdfGraph(ogdf::Graph* ogdfGraph, ogdf::GraphAttributes* graphAttributes, double xPos, double yPos)
+{
+    //If this node or its reverse complement is already in OGDF, then
+    //it's not necessary to make the node.
+    if (thisOrReverseComplementInOgdf())
+        return;
+
+    //Create the OgdfNode object
+    m_ogdfNode = new OgdfNode();
+
+    //Each node in the Velvet sense is made up of multiple nodes in the
+    //OGDF sense.  This way, Velvet nodes appear as lines whose length
+    //corresponds to the sequence length.
+    double drawnNodeLength = g_settings->minimumNodeLength;
+    int numberOfGraphEdges = getNumberOfOgdfGraphEdges(drawnNodeLength);
+    int numberOfGraphNodes = numberOfGraphEdges + 1;
+    double drawnLengthPerEdge = drawnNodeLength / numberOfGraphEdges;
+
+    ogdf::node newNode = 0;
+    ogdf::node previousNode = 0;
+    for (int i = 0; i < numberOfGraphNodes; ++i)
+    {
+        newNode = ogdfGraph->newNode();
+        m_ogdfNode->addOgdfNode(newNode);
+
+        if (g_assemblyGraph->useLinearLayout()) {
+            graphAttributes->x(newNode) = xPos;
+            graphAttributes->y(newNode) = yPos;
+            xPos += g_settings->nodeSegmentLength;
+        }
+
+        if (i > 0)
+        {
+            ogdf::edge newEdge = ogdfGraph->newEdge(previousNode, newNode);
+            //(*edgeArray)[newEdge] = drawnLengthPerEdge;
+        }
+
+        previousNode = newNode;
+    }
+}
 
 void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
                                   ogdf::EdgeArray<double> * edgeArray, double xPos, double yPos)

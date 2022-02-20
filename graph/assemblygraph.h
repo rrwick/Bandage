@@ -72,7 +72,7 @@ public:
     QString m_filename;
     QString m_depthTag;
     SequencesLoadedFromFasta m_sequencesLoadedFromFasta;
-    HiCSettings hiC;
+    HiCSettings * m_hiC;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name,
@@ -172,7 +172,8 @@ public:
     long long getTotalLengthOrphanedNodes() const;
     bool useLinearLayout() const;
     bool AssemblyGraph::loadHiC(QString filename, QString* errormsg);
-    void AssemblyGraph::loadHiCSettings();
+    void AssemblyGraph::buildOgdfGraphFromNodesAndEdgesWithHiC(std::vector<DeBruijnNode*> startingNodes, int nodeDistance);
+    void setHiCFilter(int filterHiC) { m_hiC->filterHiC = filterHiC; }
 
 
 private:
@@ -216,6 +217,9 @@ private:
     QList<DeBruijnNode*> AssemblyGraph::dfs(DeBruijnNode* curNode, QByteArray hiC);
     QList<int> AssemblyGraph::getNewStartIndexes(QByteArray wgs, QByteArray hiC);
     bool AssemblyGraph::isBeginWith(QByteArray wgs, QByteArray hiC);
+    void AssemblyGraph::bfs(DeBruijnNode* node, int componentId);
+    void AssemblyGraph::findComponents();
+    void AssemblyGraph::addHiCEdges(std::vector<DeBruijnNode*> startingNodes);
 
 signals:
     void setMergeTotalCount(int totalCount);

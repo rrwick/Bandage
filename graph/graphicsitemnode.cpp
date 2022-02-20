@@ -52,6 +52,7 @@ GraphicsItemNode::GraphicsItemNode(DeBruijnNode * deBruijnNode,
 
 {
     setWidth();
+    //m_width = g_settings->averageNodeWidth;
 
     OgdfNode * pathOgdfNode = deBruijnNode->getOgdfNode();
     if (pathOgdfNode != 0)

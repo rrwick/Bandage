@@ -1,43 +1,50 @@
 #include "HiCSettings.h"
 #include "../graph/debruijnnode.h"
-#include "../graph/debruijnedge.h"
+#include <stdlib.h>
 
-HiCSettings::HiCSettings():numOfNodes(0), minWeight(0), minLength(1), minDist(1) {}
+HiCSettings::HiCSettings() : minWeight(0), minLength(1), minDist(1) {}
 HiCSettings::~HiCSettings() {}
 
 bool HiCSettings::isDrawn(DeBruijnEdge* edge) {
-    /*bool drawEdge = (edge->getStartingNode()->isDrawn() || edge->getStartingNode()->getReverseComplement()->isDrawn())
-        && (edge->getEndingNode()->isDrawn() || edge->getEndingNode()->getReverseComplement()->isDrawn());*/
     edge->determineIfDrawn();
     bool drawEdge = edge->isDrawn();
     if (!drawEdge)
         return false;
-    return (getEdgeWeight(edge) >= minWeight && 
-        edge -> getStartingNode() -> getLength() >= minLength &&
-        edge->getEndingNode()->getLength() >= minLength);
+    bool res(edge->getWeight() >= minWeight &&
+        edge->getStartingNode()->getLength() >= minLength &&
+        edge->getEndingNode()->getLength() >= minLength &&
+        (filterHiC == 0 ||
+            (filterHiC == 1 && edge->getStartingNode()->getComponentId() != edge->getEndingNode()->getComponentId()) ||
+            (filterHiC == 2 && contains(edge)))
+    );
+    return res;
+
 }
 
-int HiCSettings::getEdgeWeight(DeBruijnEdge* edge) {
-    QString startingNodeName = edge->getStartingNode()->getName();
-    QString endingNodeName = edge->getEndingNode()->getName();
-    int startingNodeInd = -1;
-    int endingNodeInd = -1;
-    for (int i = 0; i < numOfNodes; i++) {
-        if (kontigNames.at(i) == startingNodeName) {
-            startingNodeInd = i;
+bool HiCSettings::addEdgeIfNeeded(DeBruijnEdge* edge) {
+    if (edge->getStartingNode()->getComponentId() != edge->getEndingNode()->getComponentId() && edge->isPositiveEdge()) {
+        QPair<int, int> key = qMakePair(std::min(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()),
+            std::max(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()));
+        if (!componentEdgeMap.contains(key)) {
+            componentEdgeMap[key] = edge;
+            return true;
         }
-        if (kontigNames.at(i) == endingNodeName) {
-            endingNodeInd = i;
+        if (componentEdgeMap[key]->getStartingNode() == edge->getStartingNode()->getReverseComplement() &&
+            componentEdgeMap[key]->getEndingNode() == edge->getEndingNode()->getReverseComplement() ||
+            componentEdgeMap[key]->getStartingNode() == edge->getEndingNode()->getReverseComplement() &&
+            componentEdgeMap[key]->getEndingNode() == edge->getStartingNode()->getReverseComplement()) {
+            QPair<int, int> reverseKey = qMakePair(std::max(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()),
+                std::min(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()));
+            componentEdgeMap[reverseKey] = edge;
         }
     }
-    QFile logFile("C\:\\Users\\anastasia\\study\\maga\\Bandage\\my_test_data\\hic_1_1.log");
-    logFile.open(QIODevice::WriteOnly);
-    logFile.write("getEdgeWeight: " + startingNodeName.toUtf8() + " " + endingNodeName.toUtf8() + "\n");
-    logFile.write("getEdgeWeight: " + startingNodeInd + ' ' + endingNodeInd + '\n');
-    logFile.close();
-    if (startingNodeInd != -1 && endingNodeInd != -1) {
-        return weightMatrix.at(startingNodeInd).at(endingNodeInd);
-    }
-    return 0;
+    return false;
+}
+
+bool HiCSettings::contains(DeBruijnEdge* edge) {
+    QPair<int, int> key = qMakePair(std::min(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()),
+        std::max(edge->getStartingNode()->getComponentId(), edge->getEndingNode()->getComponentId()));
+    return componentEdgeMap.contains(key) &&
+        componentEdgeMap[key] == edge;
 }
 

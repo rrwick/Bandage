@@ -98,6 +98,7 @@ public:
     int getDeadEndCount() const;
     int getNumberOfOgdfGraphEdges(double drawnNodeLength) const;
     double getDrawnNodeLength() const;
+    int getComponentId() {return m_componentId;};
 
     //MODIFERS
     void setDepthRelativeToMeanDrawnDepth(double newVal) {m_depthRelativeToMeanDrawnDepth = newVal;}
@@ -118,6 +119,7 @@ public:
     void removeEdge(DeBruijnEdge * edge);
     void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
                         ogdf::EdgeArray<double> * edgeArray, double xPos, double yPos);
+    void addToSimpleOgdfGraph(ogdf::Graph* ogdfGraph, ogdf::GraphAttributes* graphAttributes, double xPos, double yPos);
     void determineContiguity();
     void clearBlastHits() {m_blastHits.clear();}
     void addBlastHit(BlastHit * newHit) {m_blastHits.push_back(newHit);}
@@ -126,6 +128,7 @@ public:
     void clearCsvData() {m_csvData.clear();}
     void setDepth(double newDepth) {m_depth = newDepth;}
     void setName(QString newName) {m_name = newName;}
+    void setComponentId(int componentId) {m_componentId = componentId;}
 
 private:
     QString m_name;
@@ -147,6 +150,7 @@ private:
     QStringList m_csvData;
     QString getNodeNameForFasta(bool sign) const;
     QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
+    int m_componentId = 0;
 
     double getNodeLengthPerMegabase() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,

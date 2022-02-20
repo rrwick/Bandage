@@ -768,12 +768,22 @@ void MainWindow::setHiCWidgetVisibility(bool visible)
 
 void MainWindow::drawGraph()
 {
+    /*
+    * 0 - HiC не влияет на укладку
+    * 1 - все HiC влияют на укладку, фиксированная длина ребер
+    */
+    int type = 1;
+    float percent = 0.9;
     QString errorTitle;
+    //0 - no filter
+    //1 - all edges between components
+    //2 - one edge between component
     QString errorMessage;
-    std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
-                                                                                  ui->doubleNodesRadioButton->isChecked(),
-                                                                                  ui->startingNodesLineEdit->text(),
-                                                                                  ui->blastQueryComboBox->currentText());
+    int filterHiC = 0;
+    std::vector<DeBruijnNode*> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
+        ui->doubleNodesRadioButton->isChecked(),
+        ui->startingNodesLineEdit->text(),
+        ui->blastQueryComboBox->currentText());
 
     if (errorMessage != "")
     {
@@ -781,12 +791,19 @@ void MainWindow::drawGraph()
         return;
     }
 
-    g_assemblyGraph->hiC.minWeight = ui->hicWeightSpinBox->value();
-    g_assemblyGraph->hiC.minLength = ui->hicSeqLenSpinBox->value();
+    g_assemblyGraph->m_hiC->minWeight = ui->hicWeightSpinBox->value();
+    g_assemblyGraph->m_hiC->minLength = ui->hicSeqLenSpinBox->value();
+    g_assemblyGraph->setHiCFilter(filterHiC);
 
     resetScene();
-    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
-    layoutGraph();
+    if (type == 0) {
+        g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+        layoutGraph();
+    }
+    if (type == 1) {
+        g_assemblyGraph->buildOgdfGraphFromNodesAndEdgesWithHiC(startingNodes, g_settings->nodeDistance);
+        layoutGraph();
+    }
 }
 
 
@@ -838,9 +855,6 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
     return g_assemblyGraph->getNodesFromString(lineEdit->text(), exactMatch, nodesNotInGraph);
 }
 
-
-
-
 void MainWindow::layoutGraph()
 {
     //The actual layout is done in a different thread so the UI will stay responsive.
@@ -878,9 +892,6 @@ void MainWindow::layoutGraph()
     connect(m_layoutThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
     m_layoutThread->start();
 }
-
-
-
 
 void MainWindow::zoomSpinBoxChanged()
 {

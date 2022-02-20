@@ -24,6 +24,7 @@
 #include "../ogdf/basic/GraphAttributes.h"
 
 
+
 class GraphLayoutWorker : public QObject
 {
     Q_OBJECT
