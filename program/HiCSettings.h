@@ -34,8 +34,6 @@ public:
 	HiCInclusionFilter inclusionFilter = ALL;
 	int componentNum = 0;
 	QMap<QPair<int, int>, DeBruijnEdge*> componentEdgeMap;
-	//QVector<DeBruijnNode*> componentToContigMap;
-	//QMap<QPair<int, int>, int> hicWeightBetweenComponent;
 	QVector<int> targetComponents;
 	QVector<int> componentSize;
 	QVector<int> averageSize;
@@ -56,7 +54,7 @@ public:
 		}
 		return sumWeightBetweenComponent / countOfEdgesBetweenComponent;
 	}
-	//void addToHicWeightBetweenComponentMap(DeBruijnEdge* edge);
+
 private:
 	QPair<int, int> getComponentKey(DeBruijnEdge* edge);
 	bool isValidContigLength(DeBruijnEdge* edge);
