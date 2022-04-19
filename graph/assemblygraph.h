@@ -24,10 +24,10 @@
 
 #include "../ogdf/basic/Graph.h"
 #include "../ogdf/basic/GraphAttributes.h"
-#include "HiCSettings.h"
 #include <QString>
 #include <QMap>
 #include "../program/globals.h"
+#include "../program/HiCSettings.h"
 #include "../ui/mygraphicsscene.h"
 #include "path.h"
 #include <QPair>
@@ -72,7 +72,6 @@ public:
     QString m_filename;
     QString m_depthTag;
     SequencesLoadedFromFasta m_sequencesLoadedFromFasta;
-    HiCSettings * m_hiC;
 
     void cleanUp();
     void createDeBruijnEdge(QString node1Name, QString node2Name,
@@ -111,6 +110,7 @@ public:
     bool loadGraphFromFile(QString filename);
     void buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> startingNodes,
                                          int nodeDistance);
+    void buildOgdfGraphWithAutoParameters(std::vector<DeBruijnNode*> startingNodes);
     void addGraphicsItemsToScene(MyGraphicsScene * scene);
 
     QStringList splitCsv(QString line, QString sep=",");
@@ -171,9 +171,9 @@ public:
     bool attemptToLoadSequencesFromFasta();
     long long getTotalLengthOrphanedNodes() const;
     bool useLinearLayout() const;
-    bool AssemblyGraph::loadHiC(QString filename, QString* errormsg);
-    void AssemblyGraph::buildOgdfGraphFromNodesAndEdgesWithHiC(std::vector<DeBruijnNode*> startingNodes, int nodeDistance);
-    void setHiCFilter(int filterHiC) { m_hiC->filterHiC = filterHiC; }
+    bool loadHiC(QString filename, QString* errormsg);
+    void buildOgdfGraphFromNodesAndEdgesWithHiC(std::vector<DeBruijnNode*> startingNodes, int nodeDistance);
+    void addOneHiCBetweenComponent(std::vector<DeBruijnNode*> startingNodes);
 
 
 private:
@@ -213,13 +213,10 @@ private:
     double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
     bool allNodesStartWith(QString start) const;
     QString simplifyCanuNodeName(QString oldName) const;
-    void AssemblyGraph::addHiCEdges(QList<DeBruijnNode*> biggestNodesList, QList<DeBruijnNode*> smallestNodesList);
-    QList<DeBruijnNode*> AssemblyGraph::dfs(DeBruijnNode* curNode, QByteArray hiC);
-    QList<int> AssemblyGraph::getNewStartIndexes(QByteArray wgs, QByteArray hiC);
-    bool AssemblyGraph::isBeginWith(QByteArray wgs, QByteArray hiC);
-    void AssemblyGraph::bfs(DeBruijnNode* node, int componentId);
-    void AssemblyGraph::findComponents();
-    void AssemblyGraph::addHiCEdges(std::vector<DeBruijnNode*> startingNodes);
+    QPair<unsigned int, unsigned long> dfs(DeBruijnNode* node, int componentId);
+    void findComponents();
+    void addHiCEdges(std::vector<DeBruijnNode*> startingNodes);
+    void AssemblyGraph::setInclusionFilterAuto();
 
 signals:
     void setMergeTotalCount(int totalCount);

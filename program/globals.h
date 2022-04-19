@@ -30,11 +30,14 @@ class Memory;
 class MyGraphicsView;
 class BlastSearch;
 class AssemblyGraph;
+class HiCSettings;
 
 enum NodeColourScheme {UNIFORM_COLOURS, RANDOM_COLOURS, DEPTH_COLOUR,
                        BLAST_HITS_RAINBOW_COLOUR, BLAST_HITS_SOLID_COLOUR,
-                       CONTIGUITY_COLOUR, CUSTOM_COLOURS};
+                       CONTIGUITY_COLOUR, CUSTOM_COLOURS, RANDOM_COMPONENT_COLOURS};
 enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS, DEPTH_RANGE};
+enum HiCDrawingType {ALL_EDGES, ONE_EDGE, NO_EDGE};
+enum HiCInclusionFilter {ALL, ALL_BETWEEN_GRAPH_COMPONENTS, ONE_BETWEEN_GRAPH_COMPONENT, ONE_FROM_TARGET_COMPONENT};
 enum ContiguityStatus {STARTING, CONTIGUOUS_STRAND_SPECIFIC,
                        CONTIGUOUS_EITHER_STRAND, MAYBE_CONTIGUOUS,
                        NOT_CONTIGUOUS};
@@ -62,6 +65,7 @@ enum SequencesLoadedFromFasta {NOT_READY, NOT_TRIED, TRIED};
 //Some of the program's common components are made global so they don't have
 //to be passed around as parameters.
 extern QSharedPointer<Settings> g_settings;
+extern QSharedPointer<HiCSettings> g_hicSettings;
 extern QSharedPointer<Memory> g_memory;
 extern MyGraphicsView * g_graphicsView;
 extern double g_absoluteZoom;

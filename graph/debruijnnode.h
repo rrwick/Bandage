@@ -130,6 +130,7 @@ public:
     void setName(QString newName) {m_name = newName;}
     void setComponentId(int componentId) {m_componentId = componentId;}
 
+
 private:
     QString m_name;
     double m_depth;
@@ -142,7 +143,7 @@ private:
     GraphicsItemNode * m_graphicsItemNode;
     std::vector<DeBruijnEdge *> m_edges;
     bool m_specialNode;
-    bool m_drawn;
+    bool m_drawn = false;
     int m_highestDistanceInNeighbourSearch;
     QColor m_customColour;
     QString m_customLabel;

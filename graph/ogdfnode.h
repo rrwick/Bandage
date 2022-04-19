@@ -37,10 +37,39 @@ public:
     ogdf::node getSecond() {if (m_ogdfNodes.size() < 2) return 0; else return m_ogdfNodes[1];}
     ogdf::node getLast() {if (m_ogdfNodes.size() == 0) return 0; else return m_ogdfNodes[m_ogdfNodes.size()-1];}
     ogdf::node getSecondLast() {if (m_ogdfNodes.size() < 2) return 0; else return m_ogdfNodes[m_ogdfNodes.size()-2];}
+    
     ogdf::node getMiddle() {
         if (m_ogdfNodes.size() == 0) return 0; else {
             return m_ogdfNodes[m_ogdfNodes.size() / 2];
         }
+    }
+    ogdf::node getPrevMiddle() {
+        if (m_ogdfNodes.size() == 0) return 0;
+        else
+        {
+            return (m_ogdfNodes.size() / 2 - 1) < 0 ? m_ogdfNodes[0] : m_ogdfNodes[m_ogdfNodes.size() / 2 - 1];
+        }
+        /*if (m_ogdfNodes.size() == 0) return 0; 
+        else if (m_ogdfNodes.size() <= 5) 
+        {
+            return (m_ogdfNodes.size() / 2 - 1) < 0 ? m_ogdfNodes[0] : m_ogdfNodes[m_ogdfNodes.size() / 2 - 1];
+        }
+        else {
+            return m_ogdfNodes[m_ogdfNodes.size() / 2 - 2];
+        }*/
+    }
+    ogdf::node getAfterMiddle() {
+        if (m_ogdfNodes.size() == 0) return 0;
+        else {
+            return (m_ogdfNodes.size() / 2 + 1) >= m_ogdfNodes.size() ? m_ogdfNodes[m_ogdfNodes.size() - 1] : m_ogdfNodes[m_ogdfNodes.size() / 2 + 1];
+        }
+        /*if (m_ogdfNodes.size() == 0) return 0; 
+        else if (m_ogdfNodes.size() <= 5) {
+            return (m_ogdfNodes.size() / 2 + 1) >= m_ogdfNodes.size() ? m_ogdfNodes[m_ogdfNodes.size() - 1] : m_ogdfNodes[m_ogdfNodes.size() / 2 + 1];
+        }
+        else {
+            return m_ogdfNodes[m_ogdfNodes.size() / 2 + 2];
+        }*/
     }
 };
 

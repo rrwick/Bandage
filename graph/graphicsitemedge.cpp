@@ -23,6 +23,7 @@
 #include <QPen>
 #include "../program/globals.h"
 #include "../program/settings.h"
+#include "../program/HiCSettings.h"
 #include "debruijnnode.h"
 #include "ogdfnode.h"
 #include <QLineF>
@@ -56,9 +57,10 @@ void GraphicsItemEdge::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         penColour = g_settings->edgeColour;
     Qt::PenStyle s = Qt::SolidLine;
     if (m_deBruijnEdge->isHiC()) {
-        //int dark = 255 - (m_deBruijnEdge->getWeight())*20;
-        penColour.setRgb(0, 0, 0);
+        int dark = 200 - 200 * (log(m_deBruijnEdge->getWeight()) / log(g_hicSettings->maxWeight));
+        penColour.setRgb(dark, dark, dark);
         s = Qt::DotLine;
+        edgeWidth = g_settings->hicEdgeWidth;
     }
     QPen edgePen(QBrush(penColour), edgeWidth, s, Qt::RoundCap);
     painter->setPen(edgePen);
@@ -145,7 +147,7 @@ void GraphicsItemEdge::setControlPointLocations()
     }
     else if (startingNode->getReverseComplement()->hasGraphicsItem())
     {
-        if (m_deBruijnEdge->isHiC() && startingNode->getReverseComplement()->getGraphicsItemNode() -> isBig()) {
+        if (m_deBruijnEdge->isHiC() && startingNode->getReverseComplement() -> getGraphicsItemNode()->isBig()) {
             m_startingLocation = startingNode->getReverseComplement() -> getGraphicsItemNode()->getMiddle();
             m_beforeStartingLocation = startingNode->getReverseComplement() -> getGraphicsItemNode()->getAfterMiddle();
         }
@@ -157,7 +159,7 @@ void GraphicsItemEdge::setControlPointLocations()
 
     if (endingNode->hasGraphicsItem())
     {
-        if (m_deBruijnEdge->isHiC() && endingNode->getGraphicsItemNode() -> isBig()) {
+        if (m_deBruijnEdge->isHiC() && endingNode->getGraphicsItemNode()->isBig()) {
             m_endingLocation = endingNode->getGraphicsItemNode()->getMiddle();
             m_afterEndingLocation = endingNode->getGraphicsItemNode()->getAfterMiddle();
         }
@@ -168,7 +170,7 @@ void GraphicsItemEdge::setControlPointLocations()
     }
     else if (endingNode->getReverseComplement()->hasGraphicsItem())
     {
-        if (m_deBruijnEdge->isHiC() && endingNode->getReverseComplement()->getGraphicsItemNode() -> isBig()) {
+        if (m_deBruijnEdge->isHiC() && endingNode->getReverseComplement()->getGraphicsItemNode()->isBig()) {
             m_endingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getMiddle();
             m_afterEndingLocation = endingNode->getReverseComplement()->getGraphicsItemNode()->getBeforeMiddle();
         }

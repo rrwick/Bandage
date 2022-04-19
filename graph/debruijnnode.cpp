@@ -27,6 +27,7 @@
 #include <set>
 #include <QApplication>
 #include <QSet>
+#include <QQueue>
 
 
 //The length parameter is optional.  If it is set, then the node will use that
@@ -592,9 +593,15 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
     DeBruijnNode * otherNode;
     for (size_t i = 0; i < m_edges.size(); ++i)
     {
+        if (m_edges[i]->isHiC() && !g_hicSettings->isDrawn(m_edges[i])) {
+            continue;
+        }
         otherNode = m_edges[i]->getOtherNode(this);
 
         if (otherNode == callingNode)
+            continue;
+
+        if ((otherNode->getComponentId() != 0) && (!g_hicSettings->isBigComponent(otherNode->getComponentId())))
             continue;
 
         if (g_settings->doubleMode)
@@ -609,7 +616,6 @@ void DeBruijnNode::labelNeighbouringNodesAsDrawn(int nodeDistance, DeBruijnNode 
         otherNode->labelNeighbouringNodesAsDrawn(nodeDistance-1, this);
     }
 }
-
 
 
 std::vector<BlastHitPart> DeBruijnNode::getBlastHitPartsForThisNode(double scaledNodeLength) const

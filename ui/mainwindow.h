@@ -68,19 +68,12 @@ private:
     void clearGraphDetails();
     void resetScene();
     void layoutGraph();
-    void layoutHiCGraph();
-    void layoutPlanarGraph();
-    void layoutGraphWithoutFinishing();
-    void layoutGraphWithKeepPosition();
-
-    void addGraphicsItemsToScene();
     void zoomToFitRect(QRectF rect);
     void zoomToFitScene();
     void setZoomSpinBoxStep();
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText, QString &selectedNodeDepthText);
     QString getSelectedEdgeListText();
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
-    void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);
     void setInfoTexts();
     void setUiState(UiState uiState);
@@ -102,7 +95,7 @@ private:
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement);
-    std::vector<DeBruijnNode *> addComplementaryNodes(std::vector<DeBruijnNode *> nodes);
+    std::vector<DeBruijnNode*> addComplementaryNodes(std::vector<DeBruijnNode*> nodes);
 
 private slots:
     void loadGraph(QString fullFileName = "");

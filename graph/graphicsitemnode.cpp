@@ -310,7 +310,65 @@ void GraphicsItemNode::setNodeColour()
         else
             m_colour = g_settings->uniformNegativeNodeColour;
         break;
+    case RANDOM_COMPONENT_COLOURS:
+    {
+        if (m_deBruijnNode->getNameWithoutSign().endsWith("_start")) {
+            QColor redColour;
+            redColour.setRgb(255, 0, 0);
+            m_colour = redColour;
+        }
+        else
+        {
+            if (g_hicSettings->isTargetComponent(m_deBruijnNode->getComponentId())) {
+                QColor orangeColour;
+                orangeColour.setRgb(255, 130, 5);
+                m_colour = orangeColour;
+                DeBruijnNode* revCompNode = m_deBruijnNode->getReverseComplement();
+                if (revCompNode != 0)
+                {
+                    GraphicsItemNode* revCompGraphNode = revCompNode->getGraphicsItemNode();
+                    if (revCompGraphNode != 0)
+                        revCompGraphNode->m_colour = orangeColour;
+                }
+                break;
+            }
+            std::srand(m_deBruijnNode->getComponentId());
+            int hue = rand() % 360;
+            QColor posColour;
+            posColour.setHsl(hue,
+                g_settings->randomColourPositiveSaturation,
+                g_settings->randomColourPositiveLightness);
+            posColour.setAlpha(g_settings->randomColourPositiveOpacity);
 
+            QColor negColour;
+            negColour.setHsl(hue,
+                g_settings->randomColourNegativeSaturation,
+                g_settings->randomColourNegativeLightness);
+            negColour.setAlpha(g_settings->randomColourNegativeOpacity);
+
+            QColor colour1, colour2;
+            if (m_deBruijnNode->isPositiveNode())
+            {
+                colour1 = posColour;
+                colour2 = negColour;
+            }
+            else
+            {
+                colour1 = negColour;
+                colour2 = posColour;
+            }
+
+            m_colour = colour1;
+            DeBruijnNode* revCompNode = m_deBruijnNode->getReverseComplement();
+            if (revCompNode != 0)
+            {
+                GraphicsItemNode* revCompGraphNode = revCompNode->getGraphicsItemNode();
+                if (revCompGraphNode != 0)
+                    revCompGraphNode->m_colour = colour2;
+            }
+        }
+        break;
+    }
     case RANDOM_COLOURS:
     {
         //Make a colour with a random hue.  Assign a colour to both this node and
@@ -591,8 +649,19 @@ void GraphicsItemNode::remakePath()
     QPainterPath path;
 
     path.moveTo(m_linePoints[0]);
-    for (size_t i = 1; i < m_linePoints.size(); ++i)
-        path.lineTo(m_linePoints[i]);
+    if (m_linePoints.size() <= 2) {
+        for (size_t i = 1; i < m_linePoints.size(); ++i)
+            path.lineTo(m_linePoints[i]);
+    }
+    else {
+        int middleInd = m_linePoints.size() / 2;
+        for (size_t i = 1; i < middleInd - 1; ++i)
+            path.lineTo(m_linePoints[i]);
+        path.quadTo(m_linePoints[middleInd], m_linePoints[middleInd + 1]);
+
+        for (size_t i = middleInd + 1; i < m_linePoints.size(); ++i)
+            path.lineTo(m_linePoints[i]);
+    }
 
     m_path = path;
 }

@@ -202,6 +202,14 @@ public:
     //These are used for the 'Depth range' graph scope.
     FloatSetting minDepthRange;
     FloatSetting maxDepthRange;
+
+    FloatSetting hicEdgeLength;
+    FloatSetting hicEdgeWidth;
+
+    HiCInclusionFilter hicInclusionFilter = ONE_FROM_TARGET_COMPONENT;
+    HiCDrawingType hicDrawingType = ALL_EDGES;
+
+    bool isAutoParameters = true;
 };
 
 #endif // SETTINGS_H

@@ -96,10 +96,23 @@ bool DeBruijnEdge::isPositiveEdge() const
 }
 
 
-void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray, int maxHiCweight) const
+void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const
 {
     ogdf::node firstEdgeOgdfNode;
     ogdf::node secondEdgeOgdfNode;
+    ogdf::node firstEdgeOgdfNode_1;
+    ogdf::node secondEdgeOgdfNode_1;
+    ogdf::node firstEdgeOgdfNode_2;
+    ogdf::node secondEdgeOgdfNode_2;
+
+    //If this in an edge connected a single-segment node to itself, then we
+    //don't want to put it in the OGDF graph, because it would be redundant
+    //with the node segment (and created conflict with the node/edge length).
+    if (m_startingNode == m_endingNode)
+    {
+        if (m_startingNode->getNumberOfOgdfGraphEdges(m_startingNode->getDrawnNodeLength()) == 1)
+            return;
+    }
 
     if (!isHiC()) {
         if (m_startingNode->inOgdf())
@@ -117,35 +130,35 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
             return; //Ending node or its reverse complement isn't in OGDF
     }
     else {
-        if (m_startingNode->inOgdf())
+        if (m_startingNode->inOgdf()) {
             firstEdgeOgdfNode = m_startingNode->getOgdfNode()->getMiddle();
-        else if (m_startingNode->getReverseComplement()->inOgdf())
+            firstEdgeOgdfNode_1 = m_startingNode->getOgdfNode()->getPrevMiddle();
+            firstEdgeOgdfNode_2 = m_startingNode->getOgdfNode()->getAfterMiddle();
+        }
+        else if (m_startingNode->getReverseComplement()->inOgdf()) {
             firstEdgeOgdfNode = m_startingNode->getReverseComplement()->getOgdfNode()->getMiddle();
+            firstEdgeOgdfNode_1 = m_startingNode->getReverseComplement()->getOgdfNode()->getPrevMiddle();
+            firstEdgeOgdfNode_2 = m_startingNode->getReverseComplement()->getOgdfNode()->getAfterMiddle();
+        }
         else
             return; //Ending node or its reverse complement isn't in OGDF
 
-        if (m_endingNode->inOgdf())
+        if (m_endingNode->inOgdf()) {
             secondEdgeOgdfNode = m_endingNode->getOgdfNode()->getMiddle();
-        else if (m_endingNode->getReverseComplement()->inOgdf())
+            secondEdgeOgdfNode_1 = m_endingNode->getOgdfNode()->getPrevMiddle();
+            secondEdgeOgdfNode_2 = m_endingNode->getOgdfNode()->getAfterMiddle();
+        } 
+        else if (m_endingNode->getReverseComplement()->inOgdf()) {
             secondEdgeOgdfNode = m_endingNode->getReverseComplement()->getOgdfNode()->getMiddle();
+            secondEdgeOgdfNode_1 = m_endingNode->getReverseComplement()->getOgdfNode()->getPrevMiddle();
+            secondEdgeOgdfNode_2 = m_endingNode->getReverseComplement()->getOgdfNode()->getAfterMiddle();
+        }
         else
             return; //Ending node or its reverse complement isn't in OGDF
     }
-    //If this in an edge connected a single-segment node to itself, then we
-    //don't want to put it in the OGDF graph, because it would be redundant
-    //with the node segment (and created conflict with the node/edge length).
-    if (m_startingNode == m_endingNode)
-    {
-        if (m_startingNode->getNumberOfOgdfGraphEdges(m_startingNode->getDrawnNodeLength()) == 1)
-            return;
-    }
-
-    ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
-    if (!isHiC()) {
-        (*edgeArray)[newEdge] = g_settings->edgeLength;
-    }
-    else {
-        (*edgeArray)[newEdge] = (g_settings->edgeLength) * 25;
+    if ((!isHiC()) || (m_startingNode->getComponentId() != m_endingNode->getComponentId())) {
+        ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
+        (*edgeArray)[newEdge] = isHiC() ? g_settings->hicEdgeLength : g_settings->edgeLength;
     }
 }
 

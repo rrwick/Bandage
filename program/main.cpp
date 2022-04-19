@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 
     //Create the important global objects.
     g_settings.reset(new Settings());
+    g_hicSettings.reset(new HiCSettings());
     g_memory.reset(new Memory());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());

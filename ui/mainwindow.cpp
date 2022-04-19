@@ -67,6 +67,8 @@
 #include "changenodedepthdialog.h"
 #include <limits>
 #include "graphinfodialog.h"
+#include<iostream>
+#include<dos.h>
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -430,6 +432,8 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
+        g_assemblyGraph->cleanUp();
+
         if (graphFileType == LAST_GRAPH)
             g_assemblyGraph->buildDeBruijnGraphFromLastGraph(fullFileName);
         else if (graphFileType == FASTG)
@@ -768,18 +772,10 @@ void MainWindow::setHiCWidgetVisibility(bool visible)
 
 void MainWindow::drawGraph()
 {
-    /*
-    * 0 - HiC не влияет на укладку
-    * 1 - все HiC влияют на укладку, фиксированная длина ребер
-    */
-    int type = 1;
-    float percent = 0.9;
+    HiCDrawingType type = g_settings->hicDrawingType;
     QString errorTitle;
-    //0 - no filter
-    //1 - all edges between components
-    //2 - one edge between component
     QString errorMessage;
-    int filterHiC = 0;
+    HiCInclusionFilter filterHiC = g_settings->hicInclusionFilter;
     std::vector<DeBruijnNode*> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
         ui->doubleNodesRadioButton->isChecked(),
         ui->startingNodesLineEdit->text(),
@@ -791,21 +787,37 @@ void MainWindow::drawGraph()
         return;
     }
 
-    g_assemblyGraph->m_hiC->minWeight = ui->hicWeightSpinBox->value();
-    g_assemblyGraph->m_hiC->minLength = ui->hicSeqLenSpinBox->value();
-    g_assemblyGraph->setHiCFilter(filterHiC);
+    g_hicSettings->minWeight = ui->hicWeightSpinBox->value();
+    g_hicSettings->minLength = ui->hicSeqLenSpinBox->value();
+    g_hicSettings->inclusionFilter = filterHiC;
 
     resetScene();
-    if (type == 0) {
-        g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+
+    if (g_settings->isAutoParameters) {
+        g_assemblyGraph->buildOgdfGraphWithAutoParameters(startingNodes);
         layoutGraph();
     }
-    if (type == 1) {
-        g_assemblyGraph->buildOgdfGraphFromNodesAndEdgesWithHiC(startingNodes, g_settings->nodeDistance);
-        layoutGraph();
+    else {
+        switch (type)
+        {
+        case ALL_EDGES:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdgesWithHiC(startingNodes, g_settings->nodeDistance);
+            layoutGraph();
+            break;
+        case ONE_EDGE:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+            g_assemblyGraph->addOneHiCBetweenComponent(startingNodes);
+            layoutGraph();
+            break;
+        case NO_EDGE:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+            layoutGraph();
+            break;
+        default:
+            break;
+        }
     }
 }
-
 
 void MainWindow::graphLayoutFinished()
 {
@@ -1148,6 +1160,10 @@ void MainWindow::switchColourScheme()
         ui->contiguityButton->setVisible(false);
         ui->contiguityInfoText->setVisible(false);
         break;
+    case 7:
+        g_settings->nodeColourScheme = RANDOM_COMPONENT_COLOURS;
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
     }
 
     g_assemblyGraph->resetAllNodeColours();

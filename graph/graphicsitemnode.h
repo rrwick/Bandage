@@ -89,10 +89,8 @@ public:
     {
         if (m_linePoints.size() >= 3)
             return m_linePoints[(m_linePoints.size() / 2) + 1];
-        else if (m_linePoints.size() > 1)
-            return m_linePoints[1];
         else
-            return m_linePoints[0];
+            return m_linePoints[m_linePoints.size() - 1];
     }
     std::vector<QPointF> getCentres() const;
     QPointF getCentre(std::vector<QPointF> linePoints) const;
@@ -119,6 +117,8 @@ public:
                                                                 std::vector<QPointF> * blastHitLocation);
     void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
     void fixEdgePaths(std::vector<GraphicsItemNode *> * nodes = 0);
+
+    void GraphicsItemNode::shiftAroundMiddle();
 
 private:
     void exactPathHighlightNode(QPainter * painter);

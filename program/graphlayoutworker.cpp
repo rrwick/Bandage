@@ -87,7 +87,6 @@ void GraphLayoutWorker::layoutGraph()
         m_fmmm->nmPrecision(8);
         break;
     }
-    
     m_fmmm->call(*m_graphAttributes, *m_edgeArray);
 
     emit finishedLayout();

@@ -141,4 +141,7 @@ Settings::Settings()
 
     minDepthRange = FloatSetting(10.0, 0.0, 1000000.0);
     maxDepthRange = FloatSetting(100.0, 0.0, 1000000.0);
+
+    hicEdgeLength = FloatSetting(200.0, 0.1, 1000.0);
+    hicEdgeWidth = FloatSetting(1.5, 0.1, 1000.0);
 }

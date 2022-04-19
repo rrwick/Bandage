@@ -27,6 +27,7 @@
 #include <math.h>
 
 QSharedPointer<Settings> g_settings;
+QSharedPointer<HiCSettings> g_hicSettings;
 QSharedPointer<Memory> g_memory;
 MyGraphicsView * g_graphicsView;
 double g_absoluteZoom;

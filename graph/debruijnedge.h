@@ -69,7 +69,7 @@ public:
     void setDrawn(bool isDrawn) { m_drawn = isDrawn; }
     void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
     void autoDetermineExactOverlap();
-    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray, int maxHiCweight) const;
+    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const;
     void setHiC(bool hiC, int weight) { m_HiC = hiC; m_weight = weight; }
 
 private:
