@@ -31,6 +31,8 @@
 #include "../ui/mygraphicsscene.h"
 #include "path.h"
 #include <QPair>
+#include "../taxonomy/TaxData.h"
+#include "../taxonomy/Tax.h"
 
 class DeBruijnNode;
 class DeBruijnEdge;
@@ -56,6 +58,7 @@ public:
     ogdf::EdgeArray<double> * m_edgeArray;
     ogdf::EdgeArray<double> * m_hiCEdgeArray;
     ogdf::GraphAttributes * m_graphAttributes;
+    TaxData* m_taxData;
 
     int m_kmer;
     int m_nodeCount;
@@ -137,7 +140,7 @@ public:
 
     int getDrawnNodeCount() const;
     void deleteNodes(std::vector<DeBruijnNode *> * nodes);
-    void deleteEdges(std::vector<DeBruijnEdge *> * edges);
+    void deleteEdges(const std::vector<DeBruijnEdge *> * edges);
     void duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * scene);
     bool mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
                     bool recalulateDepth);
@@ -172,9 +175,15 @@ public:
     long long getTotalLengthOrphanedNodes() const;
     bool useLinearLayout() const;
     bool loadHiC(QString filename, QString* errormsg);
+    bool loadTax(QString filename, QString* errormsg);
     void buildOgdfGraphFromNodesAndEdgesWithHiC(std::vector<DeBruijnNode*> startingNodes, int nodeDistance);
     void addOneHiCBetweenComponent(std::vector<DeBruijnNode*> startingNodes);
-
+    void buildOgdfGraphWithTaxFilter(unsigned int taxId, int distance = -1);
+    void AssemblyGraph::makeZipped(int minSize);
+    void AssemblyGraph::calcHiCLinkForTax();
+    std::vector<QPair<tax*, int>> getHiCConnectedTaxes(tax* currentTax);
+    void findComponents();
+    void unzipSelectedNodes(DeBruijnNode* unionNode);
 
 private:
     template<typename T> double getValueUsingFractionalIndex(std::vector<T> * v, double index) const;
@@ -213,10 +222,19 @@ private:
     double findDepthAtIndex(QList<DeBruijnNode *> * nodeList, long long targetIndex) const;
     bool allNodesStartWith(QString start) const;
     QString simplifyCanuNodeName(QString oldName) const;
-    QPair<unsigned int, unsigned long> dfs(DeBruijnNode* node, int componentId);
-    void findComponents();
+    QPair<unsigned int, unsigned long> dfsComponent(DeBruijnNode* node, int componentId, std::vector<DeBruijnNode*>* mergedNode);
+    void dfsTax(DeBruijnNode* node, unsigned int taxId, int rank, int distance);
     void addHiCEdges(std::vector<DeBruijnNode*> startingNodes);
-    void AssemblyGraph::setInclusionFilterAuto();
+    void setInclusionFilterAuto();
+    void deleteNode(DeBruijnNode* node);
+    bool deleteLeafIfNeeded(DeBruijnNode* node);
+    bool markChainIfNeeded(DeBruijnNode* node);
+    bool mergeMiddleNodeIfNeeded(DeBruijnNode* startingNode, DeBruijnNode* endingNode, DeBruijnNode* deletedNode);
+    void fixChainIfNeeded(std::vector<DeBruijnNode*>* mergedNode);
+    void bfsAroundNode(DeBruijnNode* startNode);
+    void dfsZipped(DeBruijnNode* curNode, int boundLen, QList<DeBruijnNode*>* mainNodes, QList<DeBruijnNode*>* zippedNodes);
+    void createNodesUnion(QList<DeBruijnNode*> mainNodes, QList<DeBruijnNode*> zippedNodes, QString unionName);
+    double AssemblyGraph::getHiCMinNormalizedWeightByTax();
 
 signals:
     void setMergeTotalCount(int totalCount);

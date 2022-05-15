@@ -147,6 +147,9 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     if ((!isHiC()) || (m_startingNode->getComponentId() != m_endingNode->getComponentId())) {
         ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
         (*edgeArray)[newEdge] = isHiC() ? g_settings->hicEdgeLength : g_settings->edgeLength;
+        if (m_startingNode->isNodeUnion() || m_endingNode->isNodeUnion()) {
+            (*edgeArray)[newEdge] += (g_settings->averageNodeWidth / 2.0);
+        }
     }
 }
 

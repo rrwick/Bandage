@@ -35,13 +35,23 @@ GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttribu
                                      double graphLayoutComponentSeparation, double aspectRatio) :
     m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray), m_graphLayoutQuality(graphLayoutQuality),
     m_linearLayout(linearLayout), m_graphLayoutComponentSeparation(graphLayoutComponentSeparation),
-    m_aspectRatio(aspectRatio)
+    m_randSeed(-1), m_aspectRatio(aspectRatio)
+{
+}
+
+GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout* fmmm, ogdf::GraphAttributes* graphAttributes,
+    ogdf::EdgeArray<double>* edgeArray, int graphLayoutQuality, bool linearLayout,
+    double graphLayoutComponentSeparation, int randSeed, double aspectRatio) :
+    m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray), m_graphLayoutQuality(graphLayoutQuality),
+    m_linearLayout(linearLayout), m_graphLayoutComponentSeparation(graphLayoutComponentSeparation),
+    m_randSeed(randSeed), m_aspectRatio(aspectRatio)
 {
 }
 
 void GraphLayoutWorker::layoutGraph()
 {
-    m_fmmm->randSeed(clock());
+    m_fmmm->randSeed(m_randSeed);
+    
     m_fmmm->useHighLevelOptions(false);
     m_fmmm->initialPlacementForces(ogdf::FMMMLayout::ipfRandomRandIterNr);
     if (m_edgeArray != NULL)

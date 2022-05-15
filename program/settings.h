@@ -123,6 +123,9 @@ public:
     bool displayNodeCsvData;
     int  displayNodeCsvDataCol;
     bool displayBlastHits;
+    bool displayTaxIdName;
+    bool displayTaxIdRank;
+    bool displayTaxNameRank;
     QFont labelFont;
     bool textOutline;
     bool antialiasing;
@@ -209,7 +212,20 @@ public:
     HiCInclusionFilter hicInclusionFilter = ONE_FROM_TARGET_COMPONENT;
     HiCDrawingType hicDrawingType = ALL_EDGES;
 
-    bool isAutoParameters = true;
+    bool isAutoParameters = false;
+    int taxRank;
+    int taxId;
+    bool makeZip = false;
+    bool wasZipped = false;
+    bool propagateTaxColour = false;
+    int taxDistance;
+    int displayAroundTaxWithHiC;
+    bool wasCalcHiCLinkForTax = false;
+    bool aroundTargetNodes = false;
+    bool onlyBigComponent = false;
+    bool wasComponentsFound = false;
+    int m_clock = -1;
+    bool addNewNodes = false;
 };
 
 #endif // SETTINGS_H

@@ -121,10 +121,34 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
 //    painter->setPen(QPen(Qt::black, 1.0));
 //    painter->drawRect(boundingRect());
 
+    if (m_deBruijnNode->isNodeUnion()) {
+        
+        int width = g_settings->averageNodeWidth;
+        int x = m_linePoints[0].x();
+        int y = m_linePoints[0].y();
+        //QPainter painter;
+        QColor fillColor = QColor(200, 200, 200);
+        QBrush brush;
+        //brush.setStyle(Qt::Sol);
+        //brush.setColor(fillColor);
+        painter->setBrush(fillColor);
+        painter->setPen(QPen(Qt::black, 1.0));
+        QRect r(x, y, width, width);
+        r.moveCenter(m_linePoints[0].toPoint());
+        painter->drawEllipse(r);
+        return;
+    }
+
     QPainterPath outlinePath = shape();
 
     //Fill the node's colour
     QBrush brush(m_colour);
+    if (g_settings->propagateTaxColour && m_deBruijnNode->getTax(g_settings->taxRank) == NULL && 
+        m_colour != QColor(200, 200, 200) && g_settings->nodeColourScheme == COLOUR_BY_TAX) {
+        brush.setStyle(Qt::Dense2Pattern);
+        painter->setBrush(brush);
+        painter->setPen(QPen(Qt::black, 1.0));
+    }
     painter->fillPath(outlinePath, brush);
 
     bool nodeHasBlastHits;
@@ -300,6 +324,10 @@ void GraphicsItemNode::drawTextPathAtLocation(QPainter * painter, QPainterPath t
 
 void GraphicsItemNode::setNodeColour()
 {
+    if (g_settings->addNewNodes && !m_deBruijnNode->m_isNew) {
+        m_colour = m_deBruijnNode->m_lastColor;
+        return;
+    }
     switch (g_settings->nodeColourScheme)
     {
     case UNIFORM_COLOURS:
@@ -366,6 +394,29 @@ void GraphicsItemNode::setNodeColour()
                 if (revCompGraphNode != 0)
                     revCompGraphNode->m_colour = colour2;
             }
+        }
+        break;
+    }
+    case COLOUR_BY_TAX:
+    {
+        QColor colour = QColor(200, 200, 200);
+        if (m_deBruijnNode->getTax() != NULL) {
+            int rank = g_settings->taxRank;
+            tax* curTax = m_deBruijnNode->getTax()->getTaxHierarchy(rank);
+            if (curTax != NULL) {
+                colour = curTax->getColor();
+            }
+        }
+        else if (g_settings->propagateTaxColour) {
+            colour = propagateColour();
+        }
+        m_colour = colour;
+        DeBruijnNode* revCompNode = m_deBruijnNode->getReverseComplement();
+        if (revCompNode != 0)
+        {
+            GraphicsItemNode* revCompGraphNode = revCompNode->getGraphicsItemNode();
+            if (revCompGraphNode != 0)
+                revCompGraphNode->m_colour = colour;
         }
         break;
     }
@@ -465,8 +516,56 @@ void GraphicsItemNode::setNodeColour()
         }
     }
     }
+    m_deBruijnNode->m_lastColor = m_colour;
 }
 
+QColor GraphicsItemNode::propagateColour() {
+    int rank = g_settings->taxRank;
+    QColor color = QColor(200, 200, 200);
+    if (m_deBruijnNode->getTax(rank) == NULL) {
+        tax* prevNodeTax = NULL;
+        bool flag = false;
+        for (DeBruijnEdge* edge : m_deBruijnNode->getEnteringEdges()) {
+            DeBruijnNode* prevNode = edge->getStartingNode();
+            tax* prevTax = prevNode->getTax(rank);
+            if (prevTax != NULL) {
+                if (!flag) {
+                    flag = true;
+                    prevNodeTax = prevTax;
+                }
+                else {
+                    if (prevNodeTax->getTaxId() != prevTax->getTaxId()) {
+                        flag = false;
+                        return color;
+                    }
+                }
+            }
+        }
+        flag = false;
+        tax* nextNodeTax = NULL;
+        for (DeBruijnEdge* edge : m_deBruijnNode->getLeavingEdges()) {
+            DeBruijnNode* nextNode = edge->getEndingNode();
+            tax* nextTax = nextNode->getTax(rank);
+            if (nextTax != NULL) {
+                if (!flag) {
+                    flag = true;
+                    nextNodeTax = nextTax;
+                }
+                else if (nextNodeTax->getTaxId() != nextTax->getTaxId()) {
+                    flag = false;
+                    return color;
+                }
+            }
+        }
+        if (flag && prevNodeTax!= NULL && nextNodeTax != NULL && prevNodeTax->getTaxId() == nextNodeTax->getTaxId()) {
+            return prevNodeTax->getColor();
+        }
+        return color;
+    }
+    else {
+        return m_deBruijnNode->getTax(rank)->getColor();
+    }
+}
 
 QPainterPath GraphicsItemNode::shape() const
 {
@@ -906,7 +1005,27 @@ QStringList GraphicsItemNode::getNodeText()
         nodeText << formatDepthForDisplay(m_deBruijnNode->getDepth());
     if (g_settings->displayNodeCsvData && m_deBruijnNode->hasCsvData())
         nodeText << m_deBruijnNode->getCsvLine(g_settings->displayNodeCsvDataCol);
-
+    if (g_settings->displayTaxIdName && m_deBruijnNode->getTax() != NULL) {
+        tax* curTax = m_deBruijnNode->getTax();
+        if (curTax != NULL) {
+            nodeText << curTax->getName() << QString::number(curTax->getTaxId());
+        }
+    }
+    else {
+        if (g_settings->displayTaxNameRank && m_deBruijnNode->getTax() != NULL) {
+            tax* curTax = m_deBruijnNode->getTax(g_settings->taxRank);
+            if (curTax != NULL) {
+                nodeText << curTax->getName();
+            }
+        }
+        if (g_settings->displayTaxIdRank && m_deBruijnNode->getTax() != NULL) {
+            tax* curTax = m_deBruijnNode->getTax(g_settings->taxRank);
+            if (curTax != NULL) {
+                nodeText << QString::number(curTax->getTaxId());
+            }
+        }
+    }
+        
     return nodeText;
 }
 
@@ -1214,5 +1333,8 @@ bool GraphicsItemNode::anyNodeDisplayText()
             g_settings->displayNodeNames ||
             g_settings->displayNodeLengths ||
             g_settings->displayNodeDepth ||
-            g_settings->displayNodeCsvData;
+            g_settings->displayNodeCsvData ||
+            g_settings->displayTaxIdName ||
+            g_settings->displayTaxIdRank ||
+            g_settings->displayTaxNameRank ;
 }

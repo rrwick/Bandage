@@ -76,6 +76,9 @@ Settings::Settings()
     textOutline = false;
     antialiasing = true;
     positionTextNodeCentre = false;
+    displayTaxIdName = false;
+    displayTaxIdRank = false;
+    displayTaxNameRank = false;
 
     nodeDragging = NEARBY_PIECES;
 
@@ -144,4 +147,8 @@ Settings::Settings()
 
     hicEdgeLength = FloatSetting(200.0, 0.1, 1000.0);
     hicEdgeWidth = FloatSetting(1.5, 0.1, 1000.0);
+
+    taxRank = IntSetting(1, 1, 8);
+    taxDistance = IntSetting(-1, 0, 1000);
+    displayAroundTaxWithHiC = false;
 }

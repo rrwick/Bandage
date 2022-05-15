@@ -40,6 +40,9 @@ GraphicsItemEdge::GraphicsItemEdge(DeBruijnEdge * deBruijnEdge, QGraphicsItem * 
 
 QPointF GraphicsItemEdge::extendLine(QPointF start, QPointF end, double extensionLength)
 {
+    if (QLineF(start, end).length() == 0) {
+        return end;
+    }
     double extensionRatio = extensionLength / QLineF(start, end).length();
     QPointF difference = end - start;
     difference *= extensionRatio;
@@ -125,6 +128,12 @@ void GraphicsItemEdge::calculateAndSetPath()
     QPainterPath path;
     path.moveTo(m_startingLocation);
     path.cubicTo(m_controlPoint1, m_controlPoint2, m_endingLocation);
+    /*if () {
+        path.lineTo(m_endingLocation);
+    }
+    else {
+        path.cubicTo(m_controlPoint1, m_controlPoint2, m_endingLocation);
+    }*/
 
     setPath(path);
 }

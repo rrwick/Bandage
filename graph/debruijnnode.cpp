@@ -101,6 +101,12 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes
     //Create the OgdfNode object
     m_ogdfNode = new OgdfNode();
 
+    if (m_isNodesUnion) {
+        ogdf::node newNode = ogdfGraph->newNode();
+        m_ogdfNode->addOgdfNode(newNode);
+        return;
+    }
+
     //Each node in the Velvet sense is made up of multiple nodes in the
     //OGDF sense.  This way, Velvet nodes appear as lines whose length
     //corresponds to the sequence length.
@@ -131,6 +137,47 @@ void DeBruijnNode::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes
         previousNode = newNode;
     }
 }
+
+void DeBruijnNode::addToOgdfGraph(ogdf::Graph* ogdfGraph, ogdf::GraphAttributes* graphAttributes,
+                                  ogdf::EdgeArray<double>* edgeArray, ogdf::GraphAttributes* oldGraphAttribute)
+{
+    //If this node or its reverse complement is already in OGDF, then
+    //it's not necessary to make the node.
+    if (thisOrReverseComplementInOgdf() || m_isNodesUnion)
+        return;
+
+    //Create the OgdfNode object
+
+    //m_ogdfNode = new OgdfNode();
+    //OgdfNode* oldOgdfNode = m_ogdfNode;
+
+    double drawnNodeLength = getDrawnNodeLength();
+    int numberOfGraphEdges = getNumberOfOgdfGraphEdges(drawnNodeLength);
+    int numberOfGraphNodes = numberOfGraphEdges + 1;
+    double drawnLengthPerEdge = drawnNodeLength / numberOfGraphEdges;
+
+    ogdf::node newNode = 0;
+    ogdf::node previousNode = 0;
+    for (int i = 0; i < numberOfGraphNodes; ++i)
+    {
+        newNode = ogdfGraph->newNode();
+        //m_ogdfNode->addOgdfNode(newNode);
+
+        if (g_assemblyGraph->useLinearLayout()) {
+            graphAttributes->x(newNode) = oldGraphAttribute->x(m_ogdfNode->m_ogdfNodes[i]);
+            graphAttributes->y(newNode) = oldGraphAttribute->y(m_ogdfNode->m_ogdfNodes[i]);
+        }
+
+        if (i > 0)
+        {
+            ogdf::edge newEdge = ogdfGraph->newEdge(previousNode, newNode);
+            (*edgeArray)[newEdge] = drawnLengthPerEdge;
+        }
+
+        previousNode = newNode;
+    }
+}
+
 
 
 
@@ -842,4 +889,26 @@ QColor DeBruijnNode::getCustomColourForDisplay() const
     if (!g_settings->doubleMode && m_reverseComplement->hasCustomColour())
         return m_reverseComplement->getCustomColour();
     return g_settings->defaultCustomNodeColour;
+}
+
+bool DeBruijnNode::hasTax(unsigned int taxId, int rank) {
+    if (getTax() == NULL) {
+        return false;
+    }
+    tax* foundTax = getTax()->getTaxHierarchy(rank);
+    return foundTax != NULL && foundTax->getTaxId() == taxId;
+}
+
+bool DeBruijnNode::hasTax(unsigned int taxId) {
+    if (getTax() == NULL) {
+        return false;
+    }
+    return getTax()->hasTax(taxId);
+}
+
+tax* DeBruijnNode::getTax(int rank) {
+    if (getTax() == NULL) {
+        return NULL;
+    }
+    return getTax()->getTaxHierarchy(rank);
 }

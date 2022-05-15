@@ -95,6 +95,7 @@ public:
     std::vector<QPointF> getCentres() const;
     QPointF getCentre(std::vector<QPointF> linePoints) const;
     void setNodeColour();
+    QColor propagateColour();
     QStringList getNodeText();
     QSize getNodeTextSize(QString text);
     QColor getDepthColour();

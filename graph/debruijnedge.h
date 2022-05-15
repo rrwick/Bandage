@@ -71,6 +71,9 @@ public:
     void autoDetermineExactOverlap();
     void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const;
     void setHiC(bool hiC, int weight) { m_HiC = hiC; m_weight = weight; }
+    //void setOgdfEdge(ogdf::edge ogdfEdge) { m_ogdfEdge = ogdfEdge; };
+    //ogdf::edge getOgdfEdge() { return m_ogdfEdge; };
+    //ogdf::edge m_ogdfEdge;
 
 private:
     DeBruijnNode * m_startingNode;
@@ -82,7 +85,7 @@ private:
     int m_overlap;
     bool m_HiC;
     int m_weight;
-
+    
     bool edgeIsVisible() const;
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path) const;
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,

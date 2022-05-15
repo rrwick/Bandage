@@ -72,6 +72,7 @@ private:
     void zoomToFitScene();
     void setZoomSpinBoxStep();
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText, QString &selectedNodeDepthText);
+    void MainWindow::getSelectedNodeTaxInfo(QString& selectedNodeListText);
     QString getSelectedEdgeListText();
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
     void loadGraph2(GraphFileType graphFileType, QString filename);
@@ -91,16 +92,19 @@ private:
     void setNodeDistanceWidgetVisibility(bool visible);
     void setDepthRangeWidgetVisibility(bool visible);
     void MainWindow::setHiCWidgetVisibility(bool visible);
+    void MainWindow::setTaxVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement);
     std::vector<DeBruijnNode*> addComplementaryNodes(std::vector<DeBruijnNode*> nodes);
+    void layoutGraphUnzip();
 
 private slots:
     void loadGraph(QString fullFileName = "");
     void loadCSV(QString fullFileName = "");
     void loadHiC(QString fullFileName = "");
+    void loadTax(QString fullFileName = "");
     void selectionChanged();
     void graphScopeChanged();
     void drawGraph();
@@ -159,6 +163,11 @@ private slots:
     void changeNodeName();
     void changeNodeDepth();
     void openGraphInfoDialog();
+    void switchTaxRank();
+    void setAroundTaxWidgetVisibility(bool visible);
+    void openTaxInfoDialog();
+    void openTaxInfoHiCDialog();
+    void unzipSelectedNodes();
 
 protected:
       void showEvent(QShowEvent *ev);
