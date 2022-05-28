@@ -1991,10 +1991,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
             if (deleteLeafIfNeeded(node)) {
                 return qMakePair(contigCount, size);
             }
-            if (markChainIfNeeded(node)) {
-                mergedNode->push_back(node);
-                return qMakePair(contigCount, size);
-            }
         }
         for (DeBruijnEdge* edge : node->getLeavingEdges()) {
             if (edge->getEndingNode()->getComponentId() == 0 && !edge->isHiC()) {

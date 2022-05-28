@@ -967,8 +967,8 @@ void MainWindow::graphLayoutFinished()
     m_layoutThread = 0;
     g_assemblyGraph->addGraphicsItemsToScene(m_scene);
     m_scene->setSceneRectangle();
-    if (!g_settings->addNewNodes)
-        zoomToFitScene();
+    
+    zoomToFitScene();
     selectionChanged();
 
     setUiState(GRAPH_DRAWN);
@@ -1032,8 +1032,15 @@ void MainWindow::layoutGraph()
 
     m_layoutThread = new QThread;
     double aspectRatio = double(g_graphicsView->width()) / g_graphicsView->height();
-    int m_clock = clock();
-    g_settings->m_clock = m_clock;
+    int m_clock;
+    if (g_settings->m_clock == -1) {
+        m_clock = clock();
+        g_settings->m_clock = m_clock;
+    }
+    else {
+        m_clock = g_settings->m_clock;
+    }
+    
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
                                                                   g_settings->graphLayoutQuality,

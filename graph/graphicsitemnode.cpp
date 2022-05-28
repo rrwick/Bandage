@@ -237,6 +237,7 @@ void GraphicsItemNode::paint(QPainter * painter, const QStyleOptionGraphicsItem 
         QStringList nodeText = getNodeText();
         QPainterPath textPath;
 
+        g_settings->labelFont.setPixelSize(20);
         QFontMetrics metrics(g_settings->labelFont);
         double fontHeight = metrics.ascent();
 
@@ -989,7 +990,6 @@ QPointF GraphicsItemNode::getCentre(std::vector<QPointF> linePoints) const
 QStringList GraphicsItemNode::getNodeText()
 {
     QStringList nodeText;
-
     if (g_settings->displayNodeCustomLabels)
         nodeText << m_deBruijnNode->getCustomLabelForDisplay();
     if (g_settings->displayNodeNames)
