@@ -15,12 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Bandage.  If not, see <http://www.gnu.org/licenses/>.
 
-QT       += core gui svg
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui svg widgets
 
 TARGET = Bandage
 TEMPLATE = app
+VERSION = 0.9.0
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 CONFIG += c++11
 
@@ -259,16 +259,12 @@ FORMS    += \
 RESOURCES += \
     images/images.qrc
 
-
-unix:INCLUDEPATH += /usr/include/
-unix:LIBS += -L/usr/lib
-
 # The following settings are compatible with OGDF being built in 64 bit release mode using Visual Studio 2013
 win32:LIBS += -lpsapi
 win32:RC_FILE = images/myapp.rc
 
 macx:ICON = images/application.icns
-macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
+macx:QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
 # Each target platform needs the native platform as well as Qt's minimal platform.
 win32: QTPLUGIN.platforms += qwindows qminimal

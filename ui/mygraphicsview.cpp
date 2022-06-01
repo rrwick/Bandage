@@ -33,6 +33,7 @@ MyGraphicsView::MyGraphicsView(QObject * /*parent*/) :
     setDragMode(QGraphicsView::RubberBandDrag);
     setAntialiasing(g_settings->antialiasing);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setBackgroundBrush(QBrush(Qt::white));
 }
 
 
@@ -240,13 +241,13 @@ QPointF MyGraphicsView::findIntersectionWithViewportBoundary(QLineF line)
 
     QPointF intersection;
 
-    if (line.intersect(boundary1, &intersection) == QLineF::BoundedIntersection)
+    if (line.intersects(boundary1, &intersection) == QLineF::BoundedIntersection)
         return intersection;
-    if (line.intersect(boundary2, &intersection) == QLineF::BoundedIntersection)
+    if (line.intersects(boundary2, &intersection) == QLineF::BoundedIntersection)
         return intersection;
-    if (line.intersect(boundary3, &intersection) == QLineF::BoundedIntersection)
+    if (line.intersects(boundary3, &intersection) == QLineF::BoundedIntersection)
         return intersection;
-    if (line.intersect(boundary4, &intersection) == QLineF::BoundedIntersection)
+    if (line.intersects(boundary4, &intersection) == QLineF::BoundedIntersection)
         return intersection;
 
     //The code should not get here, as the line should intersect with one of
@@ -274,18 +275,18 @@ QLineF MyGraphicsView::findVisiblePartOfLine(QLineF line, bool * success)
 
     *success = true;
 
-    bool b1Intersects = (line.intersect(boundary1, &intersection1) == QLineF::BoundedIntersection);
-    bool b2Intersects = (line.intersect(boundary2, &intersection2) == QLineF::BoundedIntersection);
+    bool b1Intersects = (line.intersects(boundary1, &intersection1) == QLineF::BoundedIntersection);
+    bool b2Intersects = (line.intersects(boundary2, &intersection2) == QLineF::BoundedIntersection);
     if (b1Intersects && b2Intersects)
         return QLineF(intersection1, intersection2);
 
-    bool b3Intersects = (line.intersect(boundary3, &intersection3) == QLineF::BoundedIntersection);
+    bool b3Intersects = (line.intersects(boundary3, &intersection3) == QLineF::BoundedIntersection);
     if (b1Intersects && b3Intersects)
         return QLineF(intersection1, intersection3);
     if (b2Intersects && b3Intersects)
         return QLineF(intersection2, intersection3);
 
-    bool b4Intersects = (line.intersect(boundary4, &intersection4) == QLineF::BoundedIntersection);
+    bool b4Intersects = (line.intersects(boundary4, &intersection4) == QLineF::BoundedIntersection);
     if (b1Intersects && b4Intersects)
         return QLineF(intersection1, intersection4);
     if (b2Intersects && b4Intersects)

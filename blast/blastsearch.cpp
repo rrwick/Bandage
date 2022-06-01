@@ -58,7 +58,7 @@ void BlastSearch::cleanUp()
 //defined thresholds.
 void BlastSearch::buildHitsFromBlastOutput()
 {
-    QStringList blastHitList = m_blastOutput.split("\n", QString::SkipEmptyParts);
+    QStringList blastHitList = m_blastOutput.split("\n", Qt::SkipEmptyParts);
 
     for (int i = 0; i < blastHitList.size(); ++i)
     {
@@ -167,9 +167,8 @@ QString BlastSearch::getNodeNameFromString(QString nodeString)
 //On Windows, we use the WHERE command to find a program.
 bool BlastSearch::findProgram(QString programName, QString * command)
 {
-    QString findCommand = "WHERE " + programName;
     QProcess find;
-    find.start(findCommand);
+    find.start("WHERE", QStringList(programName));
     find.waitForFinished();
     *command = programName;
     return (find.exitCode() == 0);
@@ -179,7 +178,6 @@ bool BlastSearch::findProgram(QString programName, QString * command)
 //On Mac/Linux we use the which command to find a program.
 bool BlastSearch::findProgram(QString programName, QString * command)
 {
-    QString findCommand = "which " + programName;
     QProcess find;
 
     //On Mac, it's necessary to adjust the PATH variable in order
@@ -196,13 +194,16 @@ bool BlastSearch::findProgram(QString programName, QString * command)
                                                                    "/sbin:"
                                                                    "/opt/local/bin:"
                                                                    "/usr/local/bin:"
+                                                                   "/opt/homebrew/bin:"
                                                                    "$HOME/bin:"
+                                                                   "$HOME/.local/bin:"
+                                                                   "$HOME/miniconda3/bin:"
                                                                    "/usr/local/ncbi/blast/bin:"
                                                                    "\\1");
     find.setEnvironment(envlist);
 #endif
 
-    find.start(findCommand);
+    find.start("which", QStringList(programName));
     find.waitForFinished();
 
     //On a Mac, we need to use the full path to the program.
@@ -296,7 +297,7 @@ int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
 
     std::vector<QString> queryNames;
     std::vector<QByteArray> querySequences;
-    AssemblyGraph::readFastaFile(fullFileName, &queryNames, &querySequences);
+    AssemblyGraph::readFastaOrFastqFile(fullFileName, &queryNames, &querySequences);
 
     for (size_t i = 0; i < queryNames.size(); ++i)
     {
@@ -320,7 +321,7 @@ int BlastSearch::loadBlastQueriesFromFastaFile(QString fullFileName)
 QString BlastSearch::cleanQueryName(QString queryName)
 {
     //Replace whitespace with underscores
-    queryName = queryName.replace(QRegExp("\\s"), "_");
+    queryName = queryName.replace(QRegularExpression("\\s"), "_");
 
     //Remove any dots from the end of the query name.  BLAST doesn't
     //include them in its results, so if we don't remove them, then

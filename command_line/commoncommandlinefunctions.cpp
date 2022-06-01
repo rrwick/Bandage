@@ -21,6 +21,7 @@
 #include <QDir>
 #include "../blast/blastsearch.h"
 #include <QApplication>
+#include <QRegularExpression>
 #include "../program/memory.h"
 #include <limits>
 
@@ -107,7 +108,7 @@ void getSettingsUsage(QStringList * text)
     *text << "";
     *text << "Node colours";
     *text << dashes;
-    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, depth, blastsolid, blastrainbow (default: random if --query option not used, blastsolid if --query option used)";
+    *text << "--colour <scheme>   Node colouring scheme, from one of the following options: random, uniform, depth, blastsolid, blastrainbow, custom (default: random if --query option not used, blastsolid if --query option used)";
     *text << "";
     *text << "Random colour scheme";
     *text << dashes;
@@ -198,11 +199,11 @@ void outputText(QStringList text, QTextStream * out)
             wrapped << wrapText(line, g_memory->terminalWidth, 10, 10);
     }
 
-    *out << endl;
+    *out << Qt::endl;
     for (int i = 0; i < wrapped.size(); ++i)
     {
         *out << wrapped[i];
-        *out << endl;
+        *out << Qt::endl;
     }
 }
 
@@ -268,7 +269,7 @@ QString checkForInvalidOrExcessSettings(QStringList * arguments)
     checkOptionWithoutValue("--noaa", arguments);
     checkOptionWithoutValue("--singlearr", arguments);
     QStringList validColourOptions;
-    validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow";
+    validColourOptions << "random" << "uniform" << "depth" << "blastsolid" << "blastrainbow" << "custom";
     error = checkOptionForString("--colour", arguments, validColourOptions); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatpos", arguments, g_settings->randomColourPositiveSaturation, false); if (error.length() > 0) return error;
     error = checkOptionForInt("--ransatneg", arguments, g_settings->randomColourNegativeSaturation, false); if (error.length() > 0) return error;
@@ -1048,6 +1049,8 @@ NodeColourScheme getColourSchemeOption(QString option, QStringList * arguments)
         return BLAST_HITS_SOLID_COLOUR;
     else if (colourString == "blastrainbow")
         return BLAST_HITS_RAINBOW_COLOUR;
+    else if (colourString == "custom")
+        return CUSTOM_COLOURS;
 
     //Random colours is the default
     return defaultScheme;
@@ -1262,10 +1265,8 @@ bool isOption(QString text)
 {
     bool option = (text.length() > 2 && text[0] == '-' && text[1] == '-' && text[2] != '-');
 
-    QRegExp rx("^<[\\w_]+>");
-    bool positional = (rx.indexIn(text) != -1);
-
-    return option || positional;
+    QRegularExpression rx("^[\\w ]+:");
+    return option || text.contains(rx);
 }
 
 bool isSectionHeader(QString text)
@@ -1274,8 +1275,8 @@ bool isSectionHeader(QString text)
     if (text.startsWith("Node widths are determined"))
         return false;
 
-    QRegExp rx("^[\\w ]+:");
-    return (rx.indexIn(text) != -1);
+    QRegularExpression rx("^[\\w ]+:");
+    return text.contains(rx);
 }
 
 

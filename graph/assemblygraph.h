@@ -135,7 +135,11 @@ public:
     void setAllEdgesExactOverlap(int overlap);
     void autoDetermineAllEdgesExactOverlap();
 
+    static void readFastaOrFastqFile(QString filename, std::vector<QString> * names,
+                                     std::vector<QByteArray> * sequences);
     static void readFastaFile(QString filename, std::vector<QString> * names,
+                              std::vector<QByteArray> * sequences);
+    static void readFastqFile(QString filename, std::vector<QString> * names,
                               std::vector<QByteArray> * sequences);
 
     int getDrawnNodeCount() const;
