@@ -20,6 +20,8 @@ Bandage is now about seven years old! Despite its popularity, I sadly don't have
 
 I'm not declaring Bandage completely abandoned, because I still think it's a useful tool, but don't expect a lot development or support on this repo. I will, however, strive to ensure that Bandage continues to run well on modern systems. E.g. I released [v0.9.0](https://github.com/rrwick/Bandage/releases/tag/v0.9.0) in January 2022, which compiles using modern versions of [Qt](https://www.qt.io/) and runs natively on Apple Silicon Macs.
 
+A number of enterprising users have [forked Bandage](https://techgaun.github.io/active-forks/index.html#rrwick/Bandage), so if you’re after a specific new feature, you might find it implemented in one of the forks, the most active of which is [BandageNG](https://github.com/asl/BandageNG).
+
 
 
 ## Intro
