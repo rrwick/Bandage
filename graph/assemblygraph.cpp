@@ -1978,28 +1978,6 @@ unsigned int getMaxChildLength(DeBruijnNode* node) {
     return maxChildLen;
 }
 
-bool AssemblyGraph::deleteLeafIfNeeded(DeBruijnNode* node) {
-    if (node->getLeavingEdges().size() == 0 && node->getEnteringEdges().size() != 0) {
-        unsigned int maxParentLen = getMaxParentLength(node);
-        unsigned int maxParentDepth = getMaxParentDepth(node);
-        if (node->getLength() < 1000/* && node->getLength() < maxParentLen*/ &&
-            node->getDepth() <= maxParentDepth / 2) {
-            deleteNode(node);
-            return true;
-        }
-    }
-    if (node->getEnteringEdges().size() == 0 && node->getLeavingEdges().size() != 0) {
-        unsigned int maxChildLen = getMaxChildLength(node);
-        unsigned int maxChildDepth = getMaxChildDepth(node);
-        if (node->getLength() < 1000/* && node->getLength() < maxChildLen*/ &&
-            node->getDepth() <= maxChildDepth / 2) {
-            deleteNode(node);
-            return true;
-        }
-    }
-    return false;
-}
-
 QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * node, int componentId, std::vector<DeBruijnNode *>* mergedNode) {
     unsigned long size = 0;
     unsigned int contigCount = 0;
@@ -2009,11 +1987,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
 
         if (node->getNameWithoutSign().endsWith("_start")) {
             g_hicSettings->addTargetComponentIfNeeded(componentId);
-        }
-        else {
-            if (deleteLeafIfNeeded(node)) {
-                return qMakePair(contigCount, size);
-            }
         }
         for (DeBruijnEdge* edge : node->getLeavingEdges()) {
             if (edge->getEndingNode()->getComponentId() == 0 && !edge->isHiC()) {
@@ -2027,11 +2000,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
                 QPair<unsigned int, unsigned long> res = dfsComponent(edge->getStartingNode(), componentId, mergedNode);
                 size += res.second;
                 contigCount += res.first;
-            }
-        }
-        if (!(node->getNameWithoutSign().endsWith("_start"))) {
-            if (deleteLeafIfNeeded(node)) {
-                return qMakePair(contigCount, size);
             }
         }
         size += node->getLength();
@@ -2078,9 +2046,11 @@ void AssemblyGraph::makeZipped(int minSize) {
             QList<DeBruijnNode*> mainNodes1;
             int boundLen = min(minSize, (i.value()->getLength()) / 4);
             for (DeBruijnEdge* edge : node->getEnteringEdges()) {
-                DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
-                    dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
+                    }
                 }
             }
              
@@ -2098,9 +2068,11 @@ void AssemblyGraph::makeZipped(int minSize) {
             QList<DeBruijnNode*> zippedNodes2;
             QList<DeBruijnNode*> mainNodes2;
             for (DeBruijnEdge* edge : node->getLeavingEdges()) {
-                DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
-                    dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
+                    }
                 }
             }
 
@@ -3277,14 +3249,6 @@ int AssemblyGraph::getDrawnNodeCount() const
     }
 
     return nodeCount;
-}
-
-void AssemblyGraph::deleteNode(DeBruijnNode* node) {
-    m_deBruijnGraphNodes.remove(node->getName());
-    m_deBruijnGraphNodes.remove(node->getReverseComplement()->getName());
-    deleteEdges(node->getEdgesPointer());
-    deleteEdges(node->getReverseComplement()->getEdgesPointer());
-    //delete node;
 }
 
 void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)

@@ -230,15 +230,8 @@ private:
     void dfsTax(DeBruijnNode* node, unsigned int taxId, int rank, int distance);
     void addHiCEdges(std::vector<DeBruijnNode*> startingNodes);
     void setInclusionFilterAuto();
-    void deleteNode(DeBruijnNode* node);
-    bool deleteLeafIfNeeded(DeBruijnNode* node);
-    bool markChainIfNeeded(DeBruijnNode* node);
-    bool mergeMiddleNodeIfNeeded(DeBruijnNode* startingNode, DeBruijnNode* endingNode, DeBruijnNode* deletedNode);
-    void fixChainIfNeeded(std::vector<DeBruijnNode*>* mergedNode);
-    void bfsAroundNode(DeBruijnNode* startNode);
     void dfsZipped(DeBruijnNode* curNode, int boundLen, QList<DeBruijnNode*>* mainNodes, QList<DeBruijnNode*>* zippedNodes);
     void createNodesUnion(QList<DeBruijnNode*> mainNodes, QList<DeBruijnNode*> zippedNodes, QString unionName);
-    double AssemblyGraph::getHiCMinNormalizedWeightByTax();
 
 signals:
     void setMergeTotalCount(int totalCount);
