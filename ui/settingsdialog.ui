@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>673</height>
+    <width>487</width>
+    <height>649</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1611,7 +1611,7 @@ single node style:</string>
            <widget class="QWidget" name="widget_15" native="true">
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <property name="spacing">
-              <number>-1</number>
+              <number>7</number>
              </property>
              <property name="leftMargin">
               <number>0</number>
@@ -4277,6 +4277,199 @@ discrepancy (bases):</string>
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Hi-C Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_13">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>These settings controle how Bandage visualize Hi-C metadatas.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget_12" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>150</height>
+          </size>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="hicEdgeLengthLaybel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Hi-C edge length:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="hicEdgeLengthSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>200.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="hicEdgeWidthLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Hi-C edge width:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="hicEdgeWidthSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.500000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="hicFilter1Laybel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Hi-C edge inclusion filter:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="hicInclusionFilterComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>One Hi-C edge between component</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>All Hi-C edges between component</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>All Hi-C edges</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>One Hi-C edge from target component</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="hicFilter2Laybel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Hi-C drawing type:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="hicDrawingTypeComboBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>Fixed size</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Fixed and not fixed size</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Not fixed size</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>

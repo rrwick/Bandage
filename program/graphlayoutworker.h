@@ -24,14 +24,18 @@
 #include "../ogdf/basic/GraphAttributes.h"
 
 
+
 class GraphLayoutWorker : public QObject
 {
     Q_OBJECT
 
 public:
     GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
-                      ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
+        ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
                       double graphLayoutComponentSeparation, double aspectRatio = 1.333333);
+    GraphLayoutWorker(ogdf::FMMMLayout* fmmm, ogdf::GraphAttributes* graphAttributes,
+        ogdf::EdgeArray<double>* edgeArray, int graphLayoutQuality, bool linearLayout,
+        double graphLayoutComponentSeparation, int randSeed, double aspectRatio = 1.333333);
 
     ogdf::FMMMLayout * m_fmmm;
     ogdf::GraphAttributes * m_graphAttributes;
@@ -40,6 +44,7 @@ public:
     bool m_linearLayout;
     double m_graphLayoutComponentSeparation;
     double m_aspectRatio;
+    int m_randSeed;
 
 public slots:
     void layoutGraph();

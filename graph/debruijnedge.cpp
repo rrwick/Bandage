@@ -27,7 +27,7 @@
 
 DeBruijnEdge::DeBruijnEdge(DeBruijnNode *startingNode, DeBruijnNode *endingNode) :
     m_startingNode(startingNode), m_endingNode(endingNode), m_graphicsItemEdge(0),
-    m_drawn(false), m_overlapType(UNKNOWN_OVERLAP), m_overlap(0)
+    m_drawn(false), m_overlapType(UNKNOWN_OVERLAP), m_overlap(0), m_HiC(false)
 {
 }
 
@@ -101,20 +101,6 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
     ogdf::node firstEdgeOgdfNode;
     ogdf::node secondEdgeOgdfNode;
 
-    if (m_startingNode->inOgdf())
-        firstEdgeOgdfNode = m_startingNode->getOgdfNode()->getLast();
-    else if (m_startingNode->getReverseComplement()->inOgdf())
-        firstEdgeOgdfNode = m_startingNode->getReverseComplement()->getOgdfNode()->getFirst();
-    else
-        return; //Ending node or its reverse complement isn't in OGDF
-
-    if (m_endingNode->inOgdf())
-        secondEdgeOgdfNode = m_endingNode->getOgdfNode()->getFirst();
-    else if (m_endingNode->getReverseComplement()->inOgdf())
-        secondEdgeOgdfNode = m_endingNode->getReverseComplement()->getOgdfNode()->getLast();
-    else
-        return; //Ending node or its reverse complement isn't in OGDF
-
     //If this in an edge connected a single-segment node to itself, then we
     //don't want to put it in the OGDF graph, because it would be redundant
     //with the node segment (and created conflict with the node/edge length).
@@ -124,16 +110,48 @@ void DeBruijnEdge::addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<doubl
             return;
     }
 
-    ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
-    (*edgeArray)[newEdge] = g_settings->edgeLength;
+    if (!isHiC()) {
+        if (m_startingNode->inOgdf())
+            firstEdgeOgdfNode = m_startingNode->getOgdfNode()->getLast();
+        else if (m_startingNode->getReverseComplement()->inOgdf())
+            firstEdgeOgdfNode = m_startingNode->getReverseComplement()->getOgdfNode()->getFirst();
+        else
+            return; //Ending node or its reverse complement isn't in OGDF
+
+        if (m_endingNode->inOgdf())
+            secondEdgeOgdfNode = m_endingNode->getOgdfNode()->getFirst();
+        else if (m_endingNode->getReverseComplement()->inOgdf())
+            secondEdgeOgdfNode = m_endingNode->getReverseComplement()->getOgdfNode()->getLast();
+        else
+            return; //Ending node or its reverse complement isn't in OGDF
+    }
+    else {
+        if (m_startingNode->inOgdf()) {
+            firstEdgeOgdfNode = m_startingNode->getOgdfNode()->getMiddle();
+        }
+        else if (m_startingNode->getReverseComplement()->inOgdf()) {
+            firstEdgeOgdfNode = m_startingNode->getReverseComplement()->getOgdfNode()->getMiddle();
+        }
+        else
+            return; //Ending node or its reverse complement isn't in OGDF
+
+        if (m_endingNode->inOgdf()) {
+            secondEdgeOgdfNode = m_endingNode->getOgdfNode()->getMiddle();
+        } 
+        else if (m_endingNode->getReverseComplement()->inOgdf()) {
+            secondEdgeOgdfNode = m_endingNode->getReverseComplement()->getOgdfNode()->getMiddle();
+        }
+        else
+            return; //Ending node or its reverse complement isn't in OGDF
+    }
+    if ((!isHiC()) || (m_startingNode->getComponentId() != m_endingNode->getComponentId())) {
+        ogdf::edge newEdge = ogdfGraph->newEdge(firstEdgeOgdfNode, secondEdgeOgdfNode);
+        (*edgeArray)[newEdge] = isHiC() ? g_settings->hicEdgeLength : g_settings->edgeLength;
+        if (m_startingNode->isNodeUnion() || m_endingNode->isNodeUnion()) {
+            (*edgeArray)[newEdge] += (g_settings->averageNodeWidth / 2.0);
+        }
+    }
 }
-
-
-
-
-
-
-
 
 //This function traces all possible paths from this edge.
 //It proceeds a number of steps, as determined by a setting.

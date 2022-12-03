@@ -45,6 +45,7 @@
 #include <QRegularExpression>
 #include "ogdfnode.h"
 #include "../command_line/commoncommandlinefunctions.h"
+#include <iostream>
 
 AssemblyGraph::AssemblyGraph() :
     m_kmer(0), m_contiguitySearchDone(false),
@@ -52,8 +53,11 @@ AssemblyGraph::AssemblyGraph() :
 {
     m_ogdfGraph = new ogdf::Graph();
     m_edgeArray = new ogdf::EdgeArray<double>(*m_ogdfGraph);
+    m_hiCEdgeArray = new ogdf::EdgeArray<double>(*m_ogdfGraph);
     m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
-                                                  ogdf::GraphAttributes::edgeGraphics);
+        ogdf::GraphAttributes::edgeGraphics);
+    tax* root = new tax(0, "root", 0, NULL);
+    m_taxData = new TaxData(root);
     clearGraphInfo();
 }
 
@@ -61,12 +65,16 @@ AssemblyGraph::~AssemblyGraph()
 {
     delete m_graphAttributes;
     delete m_edgeArray;
+    delete m_hiCEdgeArray;
     delete m_ogdfGraph;
+    delete m_taxData;
+    g_hicSettings.reset(new HiCSettings());
 }
 
 
 void AssemblyGraph::cleanUp()
 {
+
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
     {
@@ -83,42 +91,50 @@ void AssemblyGraph::cleanUp()
     }
     m_deBruijnGraphEdges.clear();
 
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        delete j_hiC.value();
+    }
+    m_hiCDeBruijnGraphEdges.clear();
+
     m_contiguitySearchDone = false;
+    g_hicSettings.reset(new HiCSettings());
+
+    tax* root = new tax(0, "root", 0, NULL);
+    m_taxData = new TaxData(root);
 
     clearGraphInfo();
 }
-
-
-
-
 
 //This function makes a double edge: in one direction for the given nodes
 //and the opposite direction for their reverse complements.  It adds the
 //new edges to the vector here and to the nodes themselves.
 void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name,
-                                       int overlap, EdgeOverlapType overlapType)
+    int overlap, EdgeOverlapType overlapType, bool isHiC, int weight)
 {
     QString node1Opposite = getOppositeNodeName(node1Name);
     QString node2Opposite = getOppositeNodeName(node2Name);
 
     //Quit if any of the nodes don't exist.
     if (!m_deBruijnGraphNodes.contains(node1Name) ||
-            !m_deBruijnGraphNodes.contains(node2Name) ||
-            !m_deBruijnGraphNodes.contains(node1Opposite) ||
-            !m_deBruijnGraphNodes.contains(node2Opposite))
+        !m_deBruijnGraphNodes.contains(node2Name) ||
+        !m_deBruijnGraphNodes.contains(node1Opposite) ||
+        !m_deBruijnGraphNodes.contains(node2Opposite))
         return;
 
-    DeBruijnNode * node1 = m_deBruijnGraphNodes[node1Name];
-    DeBruijnNode * node2 = m_deBruijnGraphNodes[node2Name];
-    DeBruijnNode * negNode1 = m_deBruijnGraphNodes[node1Opposite];
-    DeBruijnNode * negNode2 = m_deBruijnGraphNodes[node2Opposite];
+    DeBruijnNode* node1 = m_deBruijnGraphNodes[node1Name];
+    DeBruijnNode* node2 = m_deBruijnGraphNodes[node2Name];
+    DeBruijnNode* negNode1 = m_deBruijnGraphNodes[node1Opposite];
+    DeBruijnNode* negNode2 = m_deBruijnGraphNodes[node2Opposite];
 
     //Quit if the edge already exists
-    const std::vector<DeBruijnEdge *> * edges = node1->getEdgesPointer();
+    const std::vector<DeBruijnEdge*>* edges = node1->getEdgesPointer();
     for (size_t i = 0; i < edges->size(); ++i)
     {
         if ((*edges)[i]->getStartingNode() == node1 &&
-                (*edges)[i]->getEndingNode() == node2)
+            (*edges)[i]->getEndingNode() == node2)
             return;
     }
 
@@ -126,8 +142,8 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name,
     //for an edge to be its own pair.
     bool isOwnPair = (node1 == negNode2 && node2 == negNode1);
 
-    DeBruijnEdge * forwardEdge = new DeBruijnEdge(node1, node2);
-    DeBruijnEdge * backwardEdge;
+    DeBruijnEdge* forwardEdge = new DeBruijnEdge(node1, node2);
+    DeBruijnEdge* backwardEdge;
 
     if (isOwnPair)
         backwardEdge = forwardEdge;
@@ -142,10 +158,19 @@ void AssemblyGraph::createDeBruijnEdge(QString node1Name, QString node2Name,
     forwardEdge->setOverlapType(overlapType);
     backwardEdge->setOverlapType(overlapType);
 
-    m_deBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(forwardEdge->getStartingNode(), forwardEdge->getEndingNode()), forwardEdge);
-    if (!isOwnPair)
-        m_deBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(backwardEdge->getStartingNode(), backwardEdge->getEndingNode()), backwardEdge);
-
+    forwardEdge->setHiC(isHiC, weight);
+    backwardEdge->setHiC(isHiC, weight);
+    if (!isHiC) {
+        m_deBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(forwardEdge->getStartingNode(), forwardEdge->getEndingNode()), forwardEdge);
+        if (!isOwnPair)
+            m_deBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(backwardEdge->getStartingNode(), backwardEdge->getEndingNode()), backwardEdge);
+    }
+    else {
+        //g_hicSettings->addToHicWeightBetweenComponentMap(forwardEdge);
+        m_hiCDeBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(forwardEdge->getStartingNode(), forwardEdge->getEndingNode()), forwardEdge);
+        if (!isOwnPair)
+            m_hiCDeBruijnGraphEdges.insert(QPair<DeBruijnNode*, DeBruijnNode*>(backwardEdge->getStartingNode(), backwardEdge->getEndingNode()), backwardEdge);
+    }
     node1->addEdge(forwardEdge);
     node2->addEdge(forwardEdge);
     negNode1->addEdge(backwardEdge);
@@ -166,6 +191,7 @@ void AssemblyGraph::clearOgdfGraphAndResetNodes()
 
     m_ogdfGraph->clear();
     m_edgeArray->init(*m_ogdfGraph);
+    m_hiCEdgeArray->init(*m_ogdfGraph);
 }
 
 
@@ -225,8 +251,6 @@ QByteArray AssemblyGraph::getReverseComplement(QByteArray forwardSequence)
 }
 
 
-
-
 void AssemblyGraph::resetEdges()
 {
     QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> i(m_deBruijnGraphEdges);
@@ -234,6 +258,13 @@ void AssemblyGraph::resetEdges()
     {
         i.next();
         i.value()->reset();
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_hiCDeBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        j.value()->reset();
     }
 }
 
@@ -337,7 +368,7 @@ void AssemblyGraph::resetAllNodeColours()
     while (i.hasNext())
     {
         i.next();
-        if (i.value()->getGraphicsItemNode() != 0)
+        if (i.value()->isDrawn() && i.value()->getGraphicsItemNode() != 0)
             i.value()->getGraphicsItemNode()->setNodeColour();
     }
 }
@@ -412,7 +443,7 @@ void AssemblyGraph::determineGraphInfo()
     //target average node length. But if the graph is small, the value will be
     //increased (to avoid having an overly small and simple graph layout).
     double targetDrawnGraphLength = std::max(m_nodeCount * g_settings->meanNodeLength,
-                                             g_settings->minTotalGraphLength);
+        g_settings->minTotalGraphLength);
     double megabases = totalLength / 1000000.0;
     if (megabases > 0.0)
         g_settings->autoNodeLengthPerMegabase = targetDrawnGraphLength / megabases;
@@ -457,10 +488,6 @@ void AssemblyGraph::clearGraphInfo()
 }
 
 
-
-
-
-
 void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 {
     m_graphFileType = LAST_GRAPH;
@@ -481,7 +508,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             {
                 QStringList firstLineParts = line.split(QRegularExpression("\\s+"));
                 if (firstLineParts.size() > 2)
-                m_kmer = firstLineParts[2].toInt();
+                    m_kmer = firstLineParts[2].toInt();
                 firstLine = false;
             }
 
@@ -542,6 +569,93 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
         throw "load error";
 }
 
+bool AssemblyGraph::loadHiC(QString filename, QString* errormsg)
+{
+    findComponents();
+    QFile hiCMatrix(filename);
+    if (!hiCMatrix.open(QIODevice::ReadOnly))
+    {
+        *errormsg = "Unable to read from specified file.";
+        return false;
+    }
+
+    QTextStream in(&hiCMatrix);
+    QApplication::processEvents();
+    QString line = in.readLine();
+    int maxWeight = 0;
+
+    while ((line = in.readLine()) != "") {
+        QStringList data = line.split(QRegExp("\t"));
+        QString firstNodeName = (convertNormalNumberStringToBandageNodeName(data.at(0).right(data.at(0).length() - 2)));
+        QString secondNodeName = (convertNormalNumberStringToBandageNodeName(data.at(1).right(data.at(1).length() - 2)));
+        int weight = data.at(2).toInt();
+
+        if (weight > 0 && firstNodeName != secondNodeName) {
+            createDeBruijnEdge(firstNodeName, secondNodeName, 0, UNKNOWN_OVERLAP, true, weight);
+        }
+        if (weight > maxWeight) {
+            maxWeight = weight;
+        }
+    }
+    g_hicSettings->maxWeight = maxWeight;
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        g_hicSettings->addEdgeIfNeeded(edge);
+    }
+    return true;
+}
+
+
+bool AssemblyGraph::loadTax(QString filename, QString* errormsg)
+{
+    QFile taxFile(filename);
+    if (!taxFile.open(QIODevice::ReadOnly))
+    {
+        *errormsg = "Unable to read from specified file.";
+        return false;
+    }
+
+    QTextStream in(&taxFile);
+    QApplication::processEvents();
+    QString line;
+    int maxWeight = 0;
+
+    while ((line = in.readLine()) != "") {
+        QStringList data = line.split(QRegExp("\\|"));
+        if (data.size() < 2) {
+            break;
+        }
+        QString nodeName = data[0];
+        QString namePositive = convertNormalNumberStringToBandageNodeName(nodeName);
+        QString nameOpposite = getOppositeNodeName(namePositive);
+
+        if (!m_deBruijnGraphNodes.contains(namePositive) ||
+            !m_deBruijnGraphNodes.contains(nameOpposite))
+            continue;
+        DeBruijnNode* node = m_deBruijnGraphNodes[namePositive];
+        DeBruijnNode* negNode = m_deBruijnGraphNodes[nameOpposite];
+        QVector<QPair<QString, unsigned int>> curTaxData;
+        for (int i = 1; i < data.size(); i++) {
+            QStringList data1 = data[i].split(QRegExp(","));
+            if (data1.size() < 3) {
+                break;
+            }
+            unsigned int taxId = data1[0].toUInt();
+            QString taxName = data1[2];
+            QPair<QString, unsigned int> pair = qMakePair(taxName, taxId);
+            curTaxData.push_back(pair);
+        }
+        tax* curTax = m_taxData->addTax(&curTaxData);
+        m_taxData->addDeBruineNode(node, curTax);
+        node->setTax(curTax);
+        negNode->setTax(curTax);
+    }
+    m_taxData->calcStatistic();
+}
 
 //This function takes a normal number string like "5" or "-6" and changes
 //it to "5+" or "6-" - the format of Bandage node names.
@@ -562,7 +676,7 @@ QString AssemblyGraph::convertNormalNumberStringToBandageNodeName(QString number
 //encountered an unsupported CIGAR string, whether the GFA has custom labels
 //and whether it has custom colours.
 void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupportedCigar,
-                                              bool *customLabels, bool *customColours, QString *bandageOptionsError)
+    bool *customLabels, bool *customColours, QString *bandageOptionsError)
 {
     m_graphFileType = GFA;
     m_filename = fullFileName;
@@ -1077,8 +1191,8 @@ void AssemblyGraph::makeReverseComplementNodeIfNecessary(DeBruijnNode * node)
         else
             nodeSequence = node->getSequence();
         DeBruijnNode * newNode = new DeBruijnNode(reverseComplementName, node->getDepth(),
-                                                  getReverseComplement(nodeSequence),
-                                                  node->getLength());
+            getReverseComplement(nodeSequence),
+            node->getLength());
         m_deBruijnGraphNodes.insert(reverseComplementName, newNode);
     }
 }
@@ -1103,8 +1217,6 @@ void AssemblyGraph::pointEachNodeToItsReverseComplement()
         }
     }
 }
-
-
 
 
 void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
@@ -1799,6 +1911,348 @@ bool AssemblyGraph::loadGraphFromFile(QString filename)
     return true;
 }
 
+void AssemblyGraph::findComponents() {
+    g_settings->wasComponentsFound = true;
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    int componentId = 1;
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+        if (node->getComponentId() == 0) {
+            std::vector<DeBruijnNode*> mergedNode;
+            QPair<unsigned int, unsigned long> res = dfsComponent(node, componentId, &mergedNode);
+            if (res.first != 0) {
+                g_hicSettings->componentSize.append(res.second);
+                g_hicSettings->averageSize.append(res.second / (unsigned long)res.first);
+                componentId++;
+            }
+        }
+        
+    }
+    g_hicSettings->componentNum = componentId - 1;
+
+}
+
+unsigned int getMaxParentDepth(DeBruijnNode* node) {
+    unsigned int maxParentDepth = 0;
+    for (DeBruijnEdge* edge : node->getEnteringEdges()) {
+        DeBruijnNode* parent = edge->getStartingNode();
+        if (parent->getDepth() > maxParentDepth) {
+            maxParentDepth = parent->getDepth();
+        }
+    }
+    return maxParentDepth;
+}
+
+unsigned int getMaxParentLength(DeBruijnNode* node) {
+    unsigned int maxParentLen = 0;
+    for (DeBruijnEdge* edge : node->getEnteringEdges()) {
+        DeBruijnNode* parent = edge->getStartingNode();
+        if (parent->getLength() > maxParentLen) {
+            maxParentLen = parent->getLength();
+        }
+    }
+    return maxParentLen;
+}
+
+unsigned int getMaxChildDepth(DeBruijnNode* node) {
+    unsigned int maxChildDepth = 0;
+    for (DeBruijnEdge* edge : node->getLeavingEdges()) {
+        DeBruijnNode* child = edge->getEndingNode();
+        if (child->getDepth() > maxChildDepth) {
+            maxChildDepth = child->getDepth();
+        }
+    }
+    return maxChildDepth;
+}
+
+unsigned int getMaxChildLength(DeBruijnNode* node) {
+    unsigned int maxChildLen = 0;
+    for (DeBruijnEdge* edge : node->getLeavingEdges()) {
+        DeBruijnNode* child = edge->getEndingNode();
+        if (child->getLength() > maxChildLen) {
+            maxChildLen = child->getLength();
+        }
+    }
+    return maxChildLen;
+}
+
+QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * node, int componentId, std::vector<DeBruijnNode *>* mergedNode) {
+    unsigned long size = 0;
+    unsigned int contigCount = 0;
+    if (node->getComponentId() == 0) {
+        node->setComponentId(componentId);
+        node->getReverseComplement()->setComponentId(componentId);
+
+        if (node->getNameWithoutSign().endsWith("_start")) {
+            g_hicSettings->addTargetComponentIfNeeded(componentId);
+        }
+        for (DeBruijnEdge* edge : node->getLeavingEdges()) {
+            if (edge->getEndingNode()->getComponentId() == 0 && !edge->isHiC()) {
+                QPair<unsigned int, unsigned long> res = dfsComponent(edge->getEndingNode(), componentId, mergedNode);
+                size += res.second;
+                contigCount += res.first;
+            }
+        }
+        for (DeBruijnEdge* edge : node->getEnteringEdges()) {
+            if (edge->getStartingNode()->getComponentId() == 0 && !edge->isHiC()) {
+                QPair<unsigned int, unsigned long> res = dfsComponent(edge->getStartingNode(), componentId, mergedNode);
+                size += res.second;
+                contigCount += res.first;
+            }
+        }
+        size += node->getLength();
+        contigCount += 1;
+    }   
+    return qMakePair(contigCount, size);
+}
+
+void AssemblyGraph::dfsTax(DeBruijnNode* node, unsigned int taxId, int rank, int distance) {
+    tax* curTax = node->getTax(rank);
+    if ((!node->m_visited) && (curTax == NULL || curTax->getTaxId() == taxId)) {
+        node->m_visited = true;
+        node->getReverseComplement()->m_visited = true;
+        if (g_settings->taxDistance == -1 || distance <= g_settings->taxDistance) {
+            for (int i = 0; i < node->getEdgesPointer()->size(); i++) {
+                DeBruijnEdge* edge = (*node->getEdgesPointer())[i];
+                if (!edge->isHiC()) {
+                    dfsTax(edge->getEndingNode(), taxId, rank, distance + 1);
+                }
+                if (g_settings->displayAroundTaxWithHiC) {
+                    if (edge->isHiC() && g_hicSettings->isDrawn(edge) && curTax != NULL && curTax->getTaxId() == g_settings->taxId) {
+                        DeBruijnNode* otherNode = edge->getOtherNode(node);
+                        tax* otherNodeTax = otherNode->getTax(rank);
+                        if (!otherNode->m_visited && otherNodeTax != NULL && otherNodeTax->getTaxId() != taxId) {
+                            dfsTax(otherNode, otherNodeTax->getTaxId(), rank, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void AssemblyGraph::makeZipped(int minSize) {
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    int unionId = 0;
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode* node = i.value();
+
+        if (node->isPositiveNode() && !((node->getName()).endsWith("_start")) && !node->isNodeUnion() && !node->isZipped() && node->getLength() >= minSize) {
+            QList<DeBruijnNode*> zippedNodes1;
+            QList<DeBruijnNode*> mainNodes1;
+            int boundLen = min(minSize, (i.value()->getLength()) / 4);
+            for (DeBruijnEdge* edge : node->getEnteringEdges()) {
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
+                    }
+                }
+            }
+             
+            if (mainNodes1.size() > 0 && zippedNodes1.size() > 1) {
+                createNodesUnion(mainNodes1, zippedNodes1, "union" + QString::number(unionId));
+                unionId++;
+            }
+
+            if (mainNodes1.size() > 0 && zippedNodes1.size() == 1) {
+                zippedNodes1[0]->setAsDrawn();
+                zippedNodes1[0]->setZipped(false);
+                unionId++;
+            }
+
+            QList<DeBruijnNode*> zippedNodes2;
+            QList<DeBruijnNode*> mainNodes2;
+            for (DeBruijnEdge* edge : node->getLeavingEdges()) {
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
+                    }
+                }
+            }
+
+            if (mainNodes2.size() > 0 && zippedNodes2.size() > 1) {
+                createNodesUnion(mainNodes2, zippedNodes2, "union" + QString::number(unionId));
+                unionId++;
+            }
+
+            if (mainNodes2.size() > 0 && zippedNodes2.size() == 1) {
+                zippedNodes2[0]->setAsDrawn();
+                zippedNodes2[0]->setZipped(false);
+                unionId++;
+            }
+        }
+        if ((node->isPositiveNode() || g_settings->doubleMode) && (node->getLength() >= minSize || (node->getName()).endsWith("_start"))) {
+            node->setAsDrawn();
+        }
+    }
+}
+
+void AssemblyGraph::createNodesUnion(QList<DeBruijnNode*> mainNodes, QList<DeBruijnNode*> zippedNodes, QString unionName) {
+    double nodeDepth = getMeanDepth(zippedNodes);
+    int length = 0;
+    for (DeBruijnNode* node : zippedNodes) {
+        length += (node->getLength());
+    }
+    QString newPosNodeName = unionName + "+";
+    QString newNegNodeName = unionName + "-";
+    DeBruijnNode* posNode = new DeBruijnNode(newPosNodeName, nodeDepth, "", length);
+    DeBruijnNode* negNode = new DeBruijnNode(newNegNodeName, nodeDepth, "", length);
+    m_deBruijnGraphNodes.insert(newPosNodeName, posNode);
+    m_deBruijnGraphNodes.insert(newNegNodeName, negNode);
+    for (DeBruijnNode* node : mainNodes) {
+        for (DeBruijnEdge* edge : node->getEnteringEdges()) {
+            DeBruijnNode* otherNode = edge->getOtherNode(node);
+            if (otherNode->getPositiveNode()->isZipped() && zippedNodes.contains(otherNode->getPositiveNode())) {
+                createDeBruijnEdge(newPosNodeName, node->getName());
+                break;
+            }
+        }
+        for (DeBruijnEdge* edge : node->getLeavingEdges()) {
+            DeBruijnNode* otherNode = edge->getOtherNode(node);
+            if (otherNode->getPositiveNode()->isZipped() && zippedNodes.contains(otherNode->getPositiveNode())) {
+                createDeBruijnEdge(node->getName(), newPosNodeName);
+                break;
+            }
+        }
+    }
+    posNode->setNodeUnion(true);
+    negNode->setNodeUnion(true);
+    posNode->setReverseComplement(negNode);
+    negNode->setReverseComplement(posNode);
+    posNode->setAsDrawn();
+    if (g_settings->doubleMode)
+        negNode->setAsDrawn();
+    posNode->setZippedNodes(zippedNodes);
+    negNode->setZippedNodes(zippedNodes);
+}
+
+void AssemblyGraph::unzipSelectedNodes(DeBruijnNode* unionNode) {
+    QList<DeBruijnNode*>zippedNodes = unionNode->getZippedNodes();
+
+    ogdf::node ogdfUnionNode = unionNode->getOgdfNode()->getFirst();
+    double xPos = m_graphAttributes->x(ogdfUnionNode);
+    double yPos = m_graphAttributes->y(ogdfUnionNode);
+
+    bool isLinearLayout = g_settings->linearLayout;
+    g_settings->linearLayout = true;
+    for (int i = 0; i < zippedNodes.size(); i++) {
+        DeBruijnNode* node = zippedNodes[i];
+        node->setAsDrawn();
+        //node->setZipped(false);
+        node->m_isNew = true;
+        node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, xPos, yPos);
+    }
+    for (int i = 0; i < zippedNodes.size(); i++) {
+        const std::vector<DeBruijnEdge*>* nodeEdges = zippedNodes[i]->getEdgesPointer();
+        for (size_t i = 0; i < nodeEdges->size(); ++i) {
+            DeBruijnEdge* edge = (*nodeEdges)[i];
+            edge->determineIfDrawn();
+            if (!edge->isHiC() && edge->isDrawn())
+                edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+
+    unionNode->setAsNotDrawn();
+
+    g_settings->linearLayout = isLinearLayout;
+}
+
+void AssemblyGraph::dfsZipped(DeBruijnNode* curNode, int boundLen, QList<DeBruijnNode*>* mainNodes, QList<DeBruijnNode*>* zippedNodes) {
+    if (!curNode->isZipped()) {
+        curNode = curNode->getPositiveNode();
+        if (!curNode->isDrawn() && curNode->getLength() < boundLen) {
+            curNode->setZipped(true);
+            curNode->getReverseComplement()->setZipped(true);
+            zippedNodes->append(curNode);
+            for (DeBruijnEdge* edge : curNode->getLeavingEdges()) {
+                if (!(edge->getEndingNode()->isZipped()) && !edge->isHiC()) {
+                    dfsZipped(edge->getEndingNode(), boundLen, mainNodes, zippedNodes);
+                }
+            }
+            for (DeBruijnEdge* edge : curNode->getEnteringEdges()) {
+                if (!(edge->getStartingNode()->isZipped()) && !edge->isHiC()) {
+                    dfsZipped(edge->getStartingNode(), boundLen, mainNodes, zippedNodes);
+                }
+            }
+        }
+        else if (curNode->getLength() >= boundLen && !(mainNodes -> contains(curNode))) {
+            mainNodes -> append(curNode);
+            curNode->setAsDrawn();
+            if (g_settings->doubleMode) {
+                curNode->getReverseComplement()->setAsDrawn();
+            }
+        }
+    }
+}
+
+void AssemblyGraph::calcHiCLinkForTax() {
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode* node = i.value();
+        tax* currentTax = node->getTax();
+        if (currentTax != NULL) {
+            const std::vector<DeBruijnEdge*>* nodeEdges = node->getEdgesPointer();
+            for (size_t i = 0; i < nodeEdges->size(); ++i) {
+                DeBruijnEdge* edge = (*nodeEdges)[i];
+                if (edge->isHiC()) {
+                    currentTax = node->getTax();
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    tax* otherTax = otherNode->getTax();
+                    while (currentTax!= NULL && otherTax != NULL) {
+                        if (currentTax->getRank() == 0 || otherTax->getRank() == 0) {
+                            break;
+                        }
+                        while (currentTax->getRank() > otherTax->getRank()) {
+                            currentTax = currentTax->getPrevTax();
+                        }
+                        while (otherTax != NULL && otherTax->getRank() > currentTax->getRank()) {
+                            otherTax = otherTax->getPrevTax();
+                        }
+                        if (currentTax != NULL && otherTax != NULL && currentTax->getRank() == otherTax->getRank()) {
+                            if (currentTax->getTaxId() == otherTax->getTaxId()) {
+                                (currentTax->hicLinksToThemself) += edge->getWeight();
+                                currentTax->hicLinksWeight += edge->getWeight();
+                            }
+                            else {
+                                currentTax->hicLinksWeight += edge->getWeight();
+                                otherTax->hicLinksWeight += edge->getWeight();
+                                QPair<unsigned int, unsigned int> key = m_taxData->getHiCLinksWeightKey(currentTax->getTaxId(), otherTax->getTaxId());
+                                if (!(currentTax->addWeightInHicLinkedTaxes(otherTax, edge->getWeight()))) {
+                                    currentTax->m_hicLinkedTaxes.push_back(qMakePair(otherTax, edge->getWeight()));
+                                    otherTax->m_hicLinkedTaxes.push_back(qMakePair(currentTax, edge->getWeight()));
+                                }
+                            }
+                            currentTax = currentTax->getPrevTax();
+                            otherTax = otherTax->getPrevTax();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::vector<QPair<tax*, int>> AssemblyGraph::getHiCConnectedTaxes(tax* currentTax) {
+    std::vector<QPair<tax*, int>> res = currentTax->m_hicLinkedTaxes;
+    return res;
+}
+
+void AssemblyGraph::buildOgdfGraphFromNodesAndEdgesWithHiC(std::vector<DeBruijnNode *> startingNodes, int nodeDistance) {
+    m_ogdfGraph = new ogdf::Graph();
+    m_edgeArray = new ogdf::EdgeArray<double>(*m_ogdfGraph);
+    m_graphAttributes = new ogdf::GraphAttributes(*m_ogdfGraph, ogdf::GraphAttributes::nodeGraphics |
+        ogdf::GraphAttributes::edgeGraphics);
+    buildOgdfGraphFromNodesAndEdges(startingNodes, nodeDistance);
+    addHiCEdges(startingNodes);
+}
 
 
 //The startingNodes and nodeDistance parameters are only used if the graph scope
@@ -1814,8 +2268,21 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
 
             //If double mode is off, only positive nodes are drawn.  If it's
             //on, all nodes are drawn.
-            if (i.value()->isPositiveNode() || g_settings->doubleMode)
+            if (i.value()->isPositiveNode() || g_settings->doubleMode) {
                 i.value()->setAsDrawn();
+                int componentId = i.value()->getComponentId();
+                if (componentId != 0 && g_settings->aroundTargetNodes) {
+                    if (!(g_hicSettings->isTargetComponent(i.value()->getComponentId()) ||
+                        g_hicSettings->isConnectedWithTargetComponent(i.value()->getComponentId()))) {
+                        i.value()->setAsNotDrawn();
+                    }
+                }
+                if (componentId != 0 && g_settings->onlyBigComponent) {
+                    if (!g_hicSettings->isBigComponent(componentId)) {
+                        i.value()->setAsNotDrawn();
+                    }
+                }
+            }
         }
     }
     else //The scope is either around specified nodes, around nodes with BLAST hits or a depth range.
@@ -1875,7 +2342,7 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
                 i.next();
                 DeBruijnNode * node = i.value();
                 if (node->isDrawn())
-                sortedDrawnNodes.push_back(node);
+                    sortedDrawnNodes.push_back(node);
             }
             std::sort(sortedDrawnNodes.begin(), sortedDrawnNodes.end(),
                 [](DeBruijnNode * a, DeBruijnNode * b) {return QString::localeAwareCompare(a->getNameWithoutSign().toUpper(), b->getNameWithoutSign().toUpper()) < 0;});
@@ -1933,12 +2400,178 @@ void AssemblyGraph::buildOgdfGraphFromNodesAndEdges(std::vector<DeBruijnNode *> 
         j.next();
         DeBruijnEdge * edge = j.value();
         edge->determineIfDrawn();
-        if (edge->isDrawn())
+        if (!edge->isHiC() && edge->isDrawn())
             edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
     }
 }
 
+void AssemblyGraph::addHiCEdges(std::vector<DeBruijnNode *> startingNodes) {
+    //Then loop through each hic edge determining its drawn status and adding it to OGDF if it is drawn.
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+    j_hiC.next();
+    DeBruijnEdge* edge = j_hiC.value();
+        edge->setDrawn(g_hicSettings->isDrawnWithNode(edge));
+        if (g_hicSettings->isDrawnWithNode(edge)) {
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+}
 
+void AssemblyGraph::addOneHiCBetweenComponent(std::vector<DeBruijnNode*> startingNodes) {
+    //Then loop through each hic edge determining its drawn status and adding it to OGDF if it is drawn.
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        edge->setDrawn(g_hicSettings->isDrawnWithNode(edge));
+        if (g_hicSettings->isDrawnWithNode(edge, ONE_BETWEEN_GRAPH_COMPONENT)) {
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+}
+
+void AssemblyGraph::setInclusionFilterAuto() {
+    int connectedwithTatgercomponentAmount = 0;
+    for (int componentId = 1; componentId <= g_hicSettings->componentNum; componentId++) {
+        if (g_hicSettings->isConnectedWithTargetComponent(componentId)) {
+            connectedwithTatgercomponentAmount += 1;
+        }
+    }
+    g_settings->hicEdgeWidth = 5;
+    if (connectedwithTatgercomponentAmount <= 5) {
+        g_hicSettings->inclusionFilter = ALL_BETWEEN_GRAPH_COMPONENTS;
+    }
+    if (connectedwithTatgercomponentAmount > 5 && connectedwithTatgercomponentAmount <= 10) {
+        g_hicSettings->inclusionFilter = ONE_BETWEEN_GRAPH_COMPONENT;
+    }
+    if (connectedwithTatgercomponentAmount > 10) {
+        g_hicSettings->inclusionFilter = ONE_FROM_TARGET_COMPONENT;
+    }
+}
+
+void AssemblyGraph::buildOgdfGraphWithTaxFilter(unsigned int taxId, int distance) {
+    tax* curTax = m_taxData->m_taxMap[taxId];
+    if (curTax == NULL) {
+        return;
+    }
+    int rank = curTax->getRank();
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        if ((i.value()->isPositiveNode() || g_settings->doubleMode) && i.value()->getTax() != NULL && !(i.value()->isDrawn())) {
+            tax* tempTax = i.value()->getTax()->getTaxHierarchy(rank);
+            if (tempTax != NULL && tempTax->getTaxId() == taxId) {
+                dfsTax(i.value(), taxId, rank, 0);
+            }
+        }
+    }
+
+    QMapIterator<QString, DeBruijnNode*> ii(m_deBruijnGraphNodes);
+    while (ii.hasNext())
+    {
+        ii.next();
+        DeBruijnNode* node = ii.value();
+        if (node->m_visited) {
+            node->m_visited = false;
+            if ((node->isPositiveNode() || g_settings->doubleMode) && node->notInOgdf()) {
+                node->setAsDrawn();
+                node->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0, 0.0);
+            }
+        }
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnEdge* edge = j.value();
+        edge->determineIfDrawn();
+        if (!edge->isHiC() && edge->isDrawn()) {
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        edge->setDrawn(g_hicSettings->isDrawnWithNode(edge));
+        if (edge->isDrawn()) {
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+}
+
+void AssemblyGraph::buildOgdfGraphWithAutoParameters(std::vector<DeBruijnNode*> startingNodes)
+{
+    g_settings->hicDrawingType = ALL_EDGES;
+    g_settings->hicEdgeLength = 200;
+    g_settings->hicEdgeWidth = 7;
+    g_settings->averageNodeWidth = 12;
+    g_settings->nodeColourScheme = RANDOM_COMPONENT_COLOURS;
+
+    setInclusionFilterAuto();
+
+    QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+
+        //If double mode is off, only positive nodes are drawn.  If it's
+        //on, all nodes are drawn.
+        int nodesCount = 0;
+        if (i.value()->isPositiveNode() || g_settings->doubleMode) {
+            int componentId = i.value()->getComponentId();
+            if (componentId != 0) {
+                if (!i.value()->isDrawn() && (g_hicSettings->isTargetComponent(i.value()->getComponentId()) || 
+                    g_hicSettings->isConnectedWithTargetComponent(i.value() -> getComponentId()))) {
+                    i.value()->setAsDrawn();
+                }
+            }
+            else {
+                i.value()->setAsDrawn();
+            }
+            if (i.value()->isDrawn() && i.value()->thisOrReverseComplementNotInOgdf()) {
+                i.value()->addToOgdfGraph(m_ogdfGraph, m_graphAttributes, m_edgeArray, 0.0, 0.0);
+                nodesCount += 1;
+            }
+        }
+    }
+
+    int edgesCount = 0;
+    //Then loop through each edge determining its drawn status and adding it to OGDF if it is drawn.
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_deBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        DeBruijnEdge* edge = j.value();
+        edge->determineIfDrawn();
+        if (!edge->isHiC() && edge->isDrawn()) {
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+            edgesCount += 1;
+        }
+    }
+
+    int hicEdgesCount = 0;
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+
+        
+        edge->setDrawn(g_hicSettings->isDrawnWithNode(edge));
+        if (edge->isDrawn()) {
+            hicEdgesCount += 1;
+            edge->addToOgdfGraph(m_ogdfGraph, m_edgeArray);
+        }
+    }
+}
 
 void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 {
@@ -1952,7 +2585,6 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
     {
         i.next();
         DeBruijnNode * node = i.value();
-
         if (node->isDrawn())
         {
             if (meanDrawnDepth == 0)
@@ -1975,13 +2607,30 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
     {
         j.next();
         DeBruijnEdge * edge = j.value();
-
-        if (edge->isDrawn())
+        edge->determineIfDrawn();
+        if (edge->isDrawn() && !edge->isHiC())
         {
             GraphicsItemEdge * graphicsItemEdge = new GraphicsItemEdge(edge);
             edge->setGraphicsItemEdge(graphicsItemEdge);
             graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
             scene->addItem(graphicsItemEdge);
+        }
+    }
+
+    if (!m_hiCDeBruijnGraphEdges.empty()) {
+        QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+        while (j_hiC.hasNext())
+        {
+            j_hiC.next();
+            DeBruijnEdge* edge = j_hiC.value();
+            edge->setDrawn(g_hicSettings->isDrawnWithNode(edge));
+            if (edge->isDrawn())
+            {
+                GraphicsItemEdge* graphicsItemEdge = new GraphicsItemEdge(edge);
+                edge->setGraphicsItemEdge(graphicsItemEdge);
+                graphicsItemEdge->setFlag(QGraphicsItem::ItemIsSelectable);
+                scene->addItem(graphicsItemEdge);
+            }
         }
     }
 
@@ -1992,8 +2641,11 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
     {
         k.next();
         DeBruijnNode * node = k.value();
-        if (node->hasGraphicsItem())
+        if (node->isDrawn() && node->hasGraphicsItem())
             scene->addItem(node->getGraphicsItemNode());
+        if (!g_settings->addNewNodes && node->m_isNew) {
+            node->m_isNew = false;
+        }
     }
 }
 
@@ -2001,7 +2653,7 @@ void AssemblyGraph::addGraphicsItemsToScene(MyGraphicsScene * scene)
 
 
 std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle, QString * errorMessage, bool doubleMode,
-                                                            QString nodesList, QString blastQueryName)
+                                                           QString nodesList, QString blastQueryName)
 {
     std::vector<DeBruijnNode *> startingNodes;
 
@@ -2011,15 +2663,15 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         {
             *errorTitle = "No starting nodes";
             *errorMessage = "Please enter at least one node when drawing the graph using the 'Around node(s)' scope. "
-                            "Separate multiple nodes with commas.";
+                "Separate multiple nodes with commas.";
             return startingNodes;
         }
 
         //Make sure the nodes the user typed in are actually in the graph.
         std::vector<QString> nodesNotInGraph;
         std::vector<DeBruijnNode *> nodesInGraph = getNodesFromString(nodesList,
-                                                                      g_settings->startingNodesExactMatch,
-                                                                      &nodesNotInGraph);
+            g_settings->startingNodesExactMatch,
+            &nodesNotInGraph);
         if (nodesNotInGraph.size() > 0)
         {
             *errorTitle = "Nodes not found";
@@ -2051,7 +2703,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         }
 
         std::vector<DeBruijnNode *> startingNodes = getNodesInDepthRange(g_settings->minDepthRange,
-                                                                             g_settings->maxDepthRange);
+            g_settings->maxDepthRange);
 
         if (startingNodes.size() == 0)
         {
@@ -2070,7 +2722,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getStartingNodes(QString * errorTitle
         startingNodes = getNodesFromBlastHits(blastQueryName);
     else if (g_settings->graphScope == DEPTH_RANGE)
         startingNodes = getNodesInDepthRange(g_settings->minDepthRange,
-                                                 g_settings->maxDepthRange);
+            g_settings->maxDepthRange);
 
     return startingNodes;
 }
@@ -2121,7 +2773,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromString(QString nodeNamesS
 //those names exactly.  The last +/- on the end of the node name is optional - if missing
 //both + and - nodes will be returned.
 std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nodesList,
-                                                                 std::vector<QString> * nodesNotInGraph)
+    std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -2170,7 +2822,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListExact(QStringList nod
 }
 
 std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromListPartial(QStringList nodesList,
-                                                                   std::vector<QString> * nodesNotInGraph)
+    std::vector<QString> * nodesNotInGraph)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -2233,7 +2885,7 @@ std::vector<DeBruijnNode *> AssemblyGraph::getNodesFromBlastHits(QString queryNa
 }
 
 std::vector<DeBruijnNode *> AssemblyGraph::getNodesInDepthRange(double min,
-                                                                    double max)
+    double max)
 {
     std::vector<DeBruijnNode *> returnVector;
 
@@ -2269,9 +2921,9 @@ void AssemblyGraph::layoutGraph()
 {
     ogdf::FMMMLayout fmmm;
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(&fmmm, m_graphAttributes, m_edgeArray,
-                                                                  g_settings->graphLayoutQuality,
-                                                                  useLinearLayout(),
-                                                                  g_settings->componentSeparation);
+        g_settings->graphLayoutQuality,
+        useLinearLayout(),
+        g_settings->componentSeparation);
     graphLayoutWorker->layoutGraph();
 }
 
@@ -2284,13 +2936,20 @@ void AssemblyGraph::setAllEdgesExactOverlap(int overlap)
         i.next();
         i.value()->setExactOverlap(overlap);
     }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j(m_hiCDeBruijnGraphEdges);
+    while (j.hasNext())
+    {
+        j.next();
+        j.value()->setExactOverlap(overlap);
+    }
 }
 
 
 
 void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
 {
-    int edgeCount = int(m_deBruijnGraphEdges.size());
+    int edgeCount = int(m_deBruijnGraphEdges.size()) + int(m_hiCDeBruijnGraphEdges.size());
     if (edgeCount == 0)
         return;
 
@@ -2300,6 +2959,13 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
     {
         i.next();
         i.value()->autoDetermineExactOverlap();
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> i_hiC(m_hiCDeBruijnGraphEdges);
+    while (i_hiC.hasNext())
+    {
+        i_hiC.next();
+        i_hiC.value()->autoDetermineExactOverlap();
     }
 
     //The expectation here is that most overlaps will be
@@ -2357,6 +3023,23 @@ void AssemblyGraph::autoDetermineAllEdgesExactOverlap()
             }
         }
     }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        for (size_t k = 0; k < sortedOverlaps.size(); ++k)
+        {
+            if (edge->getOverlap() == sortedOverlaps[k])
+                break;
+            else if (edge->testExactOverlap(sortedOverlaps[k]))
+            {
+                edge->setOverlap(sortedOverlaps[k]);
+                break;
+            }
+        }
+    }
 }
 
 
@@ -2373,6 +3056,18 @@ std::vector<int> AssemblyGraph::makeOverlapCountVector()
     {
         i.next();
         int overlap = i.value()->getOverlap();
+
+        //Add the overlap to the count vector
+        if (int(overlapCounts.size()) < overlap + 1)
+            overlapCounts.resize(overlap + 1, 0);
+        ++overlapCounts[overlap];
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> i_hiC(m_hiCDeBruijnGraphEdges);
+    while (i_hiC.hasNext())
+    {
+        i_hiC.next();
+        int overlap = i_hiC.value()->getOverlap();
 
         //Add the overlap to the count vector
         if (int(overlapCounts.size()) < overlap + 1)
@@ -2556,7 +3251,6 @@ int AssemblyGraph::getDrawnNodeCount() const
     return nodeCount;
 }
 
-
 void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
 {
     //Build a list of nodes to delete.
@@ -2611,7 +3305,7 @@ void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
     }
 }
 
-void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
+void AssemblyGraph::deleteEdges(const std::vector<DeBruijnEdge *> * edges)
 {
     //Build a list of edges to delete.
     QList<DeBruijnEdge *> edgesToDelete;
@@ -2632,8 +3326,8 @@ void AssemblyGraph::deleteEdges(std::vector<DeBruijnEdge *> * edges)
         DeBruijnEdge * edge = edgesToDelete[i];
         DeBruijnNode * startingNode = edge->getStartingNode();
         DeBruijnNode * endingNode = edge->getEndingNode();
-
         m_deBruijnGraphEdges.remove(QPair<DeBruijnNode*, DeBruijnNode*>(startingNode, endingNode));
+        m_hiCDeBruijnGraphEdges.remove(QPair<DeBruijnNode*, DeBruijnNode*>(startingNode, endingNode));
         startingNode->removeEdge(edge);
         endingNode->removeEdge(edge);
 
@@ -2680,7 +3374,7 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
         DeBruijnEdge * edge = leavingEdges[i];
         DeBruijnNode * downstreamNode = edge->getEndingNode();
         createDeBruijnEdge(newPosNodeName, downstreamNode->getName(),
-                           edge->getOverlap(), edge->getOverlapType());
+            edge->getOverlap(), edge->getOverlapType());
     }
 
     std::vector<DeBruijnEdge *> enteringEdges = originalPosNode->getEnteringEdges();
@@ -2689,7 +3383,7 @@ void AssemblyGraph::duplicateNodePair(DeBruijnNode * node, MyGraphicsScene * sce
         DeBruijnEdge * edge = enteringEdges[i];
         DeBruijnNode * upstreamNode = edge->getStartingNode();
         createDeBruijnEdge(upstreamNode->getName(), newPosNodeName,
-                           edge->getOverlap(), edge->getOverlapType());
+            edge->getOverlap(), edge->getOverlapType());
     }
 
     originalPosNode->setDepth(newDepth);
@@ -2764,12 +3458,11 @@ void AssemblyGraph::duplicateGraphicsNode(DeBruijnNode * originalNode, DeBruijnN
     }
 }
 
-
 //This function will merge the given nodes, if possible.  Nodes can only be
 //merged if they are in a simple, unbranching path with no extra edges.  If the
 //merge is successful, it returns true, otherwise false.
 bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * scene,
-                               bool recalulateDepth)
+    bool recalulateDepth)
 {
     if (nodes.size() == 0)
         return true;
@@ -2859,9 +3552,26 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
 
     DeBruijnNode * newPosNode = new DeBruijnNode(newPosNodeName, mergedNodeDepth, mergedNodePosSequence);
     DeBruijnNode * newNegNode = new DeBruijnNode(newNegNodeName, mergedNodeDepth, mergedNodeNegSequence);
-
+    newPosNode->setComponentId(orderedList[0]->getComponentId());
+    newNegNode->setComponentId(orderedList[0]->getComponentId());
     newPosNode->setReverseComplement(newNegNode);
     newNegNode->setReverseComplement(newPosNode);
+
+    if (g_settings->isAutoParameters) {
+        bool isDrawn = true;
+        for (DeBruijnNode* node : orderedList) {
+            if (!node->isDrawn()) {
+                isDrawn = false;
+            }
+        }
+        if (g_settings->doubleMode && isDrawn) {
+            newPosNode->setAsDrawn();
+            newNegNode->setAsDrawn();
+        }
+        if (!g_settings->doubleMode && isDrawn) {
+            newPosNode->setAsDrawn();
+        }
+    }
 
     m_deBruijnGraphNodes.insert(newPosNodeName, newPosNode);
     m_deBruijnGraphNodes.insert(newNegNodeName, newNegNode);
@@ -2871,7 +3581,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     {
         DeBruijnEdge * leavingEdge = leavingEdges[i];
         createDeBruijnEdge(newPosNodeName, leavingEdge->getEndingNode()->getName(), leavingEdge->getOverlap(),
-                           leavingEdge->getOverlapType());
+            leavingEdge->getOverlapType());
     }
 
     std::vector<DeBruijnEdge *> enteringEdges = orderedList.front()->getEnteringEdges();
@@ -2879,7 +3589,7 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
     {
         DeBruijnEdge * enteringEdge = enteringEdges[i];
         createDeBruijnEdge(enteringEdge->getStartingNode()->getName(), newPosNodeName, enteringEdge->getOverlap(),
-                           enteringEdge->getOverlapType());
+            enteringEdge->getOverlapType());
     }
 
     if (recalulateDepth)
@@ -2899,8 +3609,8 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
         newPosNode->setDepthRelativeToMeanDrawnDepth(1.0);
         newNegNode->setDepthRelativeToMeanDrawnDepth(1.0);
     }
-
-    mergeGraphicsNodes(&orderedList, &revCompOrderedList, newPosNode, scene);
+    if (scene != NULL)
+        mergeGraphicsNodes(&orderedList, &revCompOrderedList, newPosNode, scene);
 
     std::vector<DeBruijnNode *> nodesToDelete;
     for (int i = 0; i < orderedList.size(); ++i)
@@ -2912,28 +3622,28 @@ bool AssemblyGraph::mergeNodes(QList<DeBruijnNode *> nodes, MyGraphicsScene * sc
 
 
 bool AssemblyGraph::canAddNodeToStartOfMergeList(QList<DeBruijnNode *> * mergeList,
-                                                 DeBruijnNode * potentialNode)
+    DeBruijnNode * potentialNode)
 {
     DeBruijnNode * firstNode = mergeList->front();
     std::vector<DeBruijnEdge *> edgesEnteringFirstNode = firstNode->getEnteringEdges();
     std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
     return (edgesEnteringFirstNode.size() == 1 &&
-            edgesLeavingPotentialNode.size() == 1 &&
-            edgesEnteringFirstNode[0]->getStartingNode() == potentialNode &&
-            edgesLeavingPotentialNode[0]->getEndingNode() == firstNode);
+        edgesLeavingPotentialNode.size() == 1 &&
+        edgesEnteringFirstNode[0]->getStartingNode() == potentialNode &&
+        edgesLeavingPotentialNode[0]->getEndingNode() == firstNode);
 }
 
 
 bool AssemblyGraph::canAddNodeToEndOfMergeList(QList<DeBruijnNode *> * mergeList,
-                                               DeBruijnNode * potentialNode)
+    DeBruijnNode * potentialNode)
 {
     DeBruijnNode * lastNode = mergeList->back();
     std::vector<DeBruijnEdge *> edgesLeavingLastNode = lastNode->getLeavingEdges();
     std::vector<DeBruijnEdge *> edgesEnteringPotentialNode = potentialNode->getEnteringEdges();
     return (edgesLeavingLastNode.size() == 1 &&
-            edgesEnteringPotentialNode.size() == 1 &&
-            edgesLeavingLastNode[0]->getEndingNode() == potentialNode &&
-            edgesEnteringPotentialNode[0]->getStartingNode() == lastNode);
+        edgesEnteringPotentialNode.size() == 1 &&
+        edgesLeavingLastNode[0]->getEndingNode() == potentialNode &&
+        edgesEnteringPotentialNode[0]->getStartingNode() == lastNode);
 }
 
 
@@ -2958,9 +3668,9 @@ QString AssemblyGraph::getUniqueNodeName(QString baseName)
 
 
 void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
-                                       QList<DeBruijnNode *> * revCompOriginalNodes,
-                                       DeBruijnNode * newNode,
-                                       MyGraphicsScene * scene)
+    QList<DeBruijnNode *> * revCompOriginalNodes,
+    DeBruijnNode * newNode,
+    MyGraphicsScene * scene)
 {
     bool success = mergeGraphicsNodes2(originalNodes, newNode, scene);
     if (success)
@@ -2981,8 +3691,8 @@ void AssemblyGraph::mergeGraphicsNodes(QList<DeBruijnNode *> * originalNodes,
 
 
 bool AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
-                                        DeBruijnNode * newNode,
-                                        MyGraphicsScene * scene)
+    DeBruijnNode * newNode,
+    MyGraphicsScene * scene)
 {
     bool success = true;
     std::vector<QPointF> linePoints;
@@ -3053,8 +3763,8 @@ bool AssemblyGraph::mergeGraphicsNodes2(QList<DeBruijnNode *> * originalNodes,
 
 //If reverseComplement is true, this function will also remove the graphics items for reverse complements of the nodes.
 void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes,
-                                            bool reverseComplement,
-                                            MyGraphicsScene * scene)
+    bool reverseComplement,
+    MyGraphicsScene * scene)
 {
     QSet<GraphicsItemNode *> graphicsItemNodesToDelete;
     for (size_t i = 0; i < nodes->size(); ++i)
@@ -3096,15 +3806,15 @@ void AssemblyGraph::removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * 
 
 
 void AssemblyGraph::removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement,
-                                                   MyGraphicsScene * scene)
+    MyGraphicsScene * scene)
 {
     const std::vector<DeBruijnEdge *> * edges = node->getEdgesPointer();
     removeGraphicsItemEdges(edges, reverseComplement, scene);
 }
 
 void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges,
-                                            bool reverseComplement,
-                                            MyGraphicsScene * scene)
+    bool reverseComplement,
+    MyGraphicsScene * scene)
 {
     QSet<GraphicsItemEdge *> graphicsItemEdgesToDelete;
     for (size_t i = 0; i < edges->size(); ++i)
@@ -3149,7 +3859,7 @@ void AssemblyGraph::removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * 
 //It gets a pointer to the progress dialog as well so it can check to see if the
 //user has cancelled the merge.
 int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
-                                    MyProgressDialog * progressDialog)
+    MyProgressDialog * progressDialog)
 {
     //Create a set of all nodes.
     QSet<DeBruijnNode *> uncheckedNodes;
@@ -3191,9 +3901,9 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
                     DeBruijnNode * potentialNode = potentialEdge->getEndingNode();
                     std::vector<DeBruijnEdge *> edgesEnteringPotentialNode = potentialNode->getEnteringEdges();
                     if (edgesEnteringPotentialNode.size() == 1 &&
-                            edgesEnteringPotentialNode[0] == potentialEdge &&
-                            !nodesToMerge.contains(potentialNode) &&
-                            uncheckedNodes.contains(potentialNode))
+                        edgesEnteringPotentialNode[0] == potentialEdge &&
+                        !nodesToMerge.contains(potentialNode) &&
+                        uncheckedNodes.contains(potentialNode))
                     {
                         nodesToMerge.push_back(potentialNode);
                         uncheckedNodes.remove(potentialNode);
@@ -3215,9 +3925,9 @@ int AssemblyGraph::mergeAllPossible(MyGraphicsScene * scene,
                     DeBruijnNode * potentialNode = potentialEdge->getStartingNode();
                     std::vector<DeBruijnEdge *> edgesLeavingPotentialNode = potentialNode->getLeavingEdges();
                     if (edgesLeavingPotentialNode.size() == 1 &&
-                            edgesLeavingPotentialNode[0] == potentialEdge &&
-                            !nodesToMerge.contains(potentialNode) &&
-                            uncheckedNodes.contains(potentialNode))
+                        edgesLeavingPotentialNode[0] == potentialEdge &&
+                        !nodesToMerge.contains(potentialNode) &&
+                        uncheckedNodes.contains(potentialNode))
                     {
                         nodesToMerge.push_front(potentialNode);
                         uncheckedNodes.remove(potentialNode);
@@ -3309,6 +4019,15 @@ bool AssemblyGraph::saveEntireGraphToGfa(QString filename)
             edgesToSave.push_back(edge);
     }
 
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        if (edge->isPositiveEdge())
+            edgesToSave.push_back(edge);
+    }
+
     std::sort(edgesToSave.begin(), edgesToSave.end(), DeBruijnEdge::compareEdgePointers);
 
     for (int i = 0; i < edgesToSave.size(); ++i)
@@ -3342,8 +4061,19 @@ bool AssemblyGraph::saveVisibleGraphToGfa(QString filename)
         j.next();
         DeBruijnEdge * edge = j.value();
         if (edge->getStartingNode()->thisNodeOrReverseComplementIsDrawn() &&
-                edge->getEndingNode()->thisNodeOrReverseComplementIsDrawn() &&
-                edge->isPositiveEdge())
+            edge->getEndingNode()->thisNodeOrReverseComplementIsDrawn() &&
+            edge->isPositiveEdge())
+            edgesToSave.push_back(edge);
+    }
+
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> j_hiC(m_hiCDeBruijnGraphEdges);
+    while (j_hiC.hasNext())
+    {
+        j_hiC.next();
+        DeBruijnEdge* edge = j_hiC.value();
+        if (edge->getStartingNode()->thisNodeOrReverseComplementIsDrawn() &&
+            edge->getEndingNode()->thisNodeOrReverseComplementIsDrawn() &&
+            edge->isPositiveEdge())
             edgesToSave.push_back(edge);
     }
 
@@ -3416,7 +4146,7 @@ NodeNameStatus AssemblyGraph::checkNodeNameValidity(QString nodeName)
 
 
 void AssemblyGraph::changeNodeDepth(std::vector<DeBruijnNode *> * nodes,
-                                        double newDepth)
+    double newDepth)
 {
     if (nodes->size() == 0)
         return;
@@ -3440,7 +4170,7 @@ void AssemblyGraph::changeNodeDepth(std::vector<DeBruijnNode *> * nodes,
 //uses.
 //The returned string always ends in a newline.
 QByteArray AssemblyGraph::addNewlinesToSequence(QByteArray sequence,
-                                                int interval)
+    int interval)
 {
     QByteArray output;
 
@@ -3517,7 +4247,7 @@ void AssemblyGraph::getNodeStats(int * n50, int * shortestNode, int * firstQuart
 
     double halfTotalLength = m_totalLength / 2.0;
     long long totalSoFar = 0;
-    for (int i = int(nodeLengths.size()) - 1; i >= 0 ; --i)
+    for (int i = int(nodeLengths.size()) - 1; i >= 0; --i)
     {
         totalSoFar += nodeLengths[i];
         if (totalSoFar >= halfTotalLength)
@@ -3538,7 +4268,7 @@ void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componen
 
     QSet<DeBruijnNode *> visitedNodes;
     QList< QList<DeBruijnNode *> > connectedComponents;
-    
+
     //Loop through all positive nodes.
     QMapIterator<QString, DeBruijnNode*> i(m_deBruijnGraphNodes);
     while (i.hasNext())
@@ -3547,12 +4277,12 @@ void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componen
         DeBruijnNode * v = i.value();
         if (v->isNegativeNode())
             continue;
-        
+
         //If the node has not yet been visited, then it must be the start of a new connected component.
         if (!visitedNodes.contains(v))
         {
             QList<DeBruijnNode *> connectedComponent;
-            
+
             QQueue<DeBruijnNode *> q;
             q.enqueue(v);
             visitedNodes.insert(v);
@@ -3575,9 +4305,9 @@ void AssemblyGraph::getGraphComponentCountAndLargestComponentSize(int * componen
             }
 
             connectedComponents.push_back(connectedComponent);
-        }  
+        }
     }
-    
+
     //Now that the list of connected components is built, we look for the
     //largest one (as measured by total node length).
     *componentCount = connectedComponents.size();
@@ -3736,6 +4466,16 @@ QPair<int, int> AssemblyGraph::getOverlapRange() const
         if (overlap > largestOverlap)
             largestOverlap = overlap;
     }
+    QMapIterator<QPair<DeBruijnNode*, DeBruijnNode*>, DeBruijnEdge*> i_hiC(m_hiCDeBruijnGraphEdges);
+    while (i_hiC.hasNext())
+    {
+        i_hiC.next();
+        int overlap = i_hiC.value()->getOverlap();
+        if (overlap < smallestOverlap)
+            smallestOverlap = overlap;
+        if (overlap > largestOverlap)
+            largestOverlap = overlap;
+    }
     if (smallestOverlap == std::numeric_limits<int>::max())
         smallestOverlap = 0;
     return QPair<int, int>(smallestOverlap, largestOverlap);
@@ -3813,7 +4553,6 @@ bool AssemblyGraph::allNodesStartWith(QString start) const
     return true;
 }
 
-
 QString AssemblyGraph::simplifyCanuNodeName(QString oldName) const
 {
     QString newName;
@@ -3850,7 +4589,6 @@ long long AssemblyGraph::getTotalLengthOrphanedNodes() const {
     return total;
 }
 
-
 bool AssemblyGraph::useLinearLayout() const {
     // If the graph has no edges, then we use a linear layout. Otherwise check the setting.
     if (m_edgeCount == 0)
@@ -3858,3 +4596,4 @@ bool AssemblyGraph::useLinearLayout() const {
     else
         return g_settings->linearLayout;
 }
+

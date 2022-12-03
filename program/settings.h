@@ -88,6 +88,7 @@ public:
     FloatSetting componentSeparation;
 
     FloatSetting averageNodeWidth;
+    FloatSetting averageFeatureNodeWidth;
     FloatSetting depthEffectOnWidth;
     FloatSetting depthPower;
 
@@ -123,10 +124,18 @@ public:
     bool displayNodeCsvData;
     int  displayNodeCsvDataCol;
     bool displayBlastHits;
+    bool displayTaxIdName;
+    bool displayTaxIdRank;
+    bool displayTaxNameRank;
     QFont labelFont;
     bool textOutline;
     bool antialiasing;
     bool positionTextNodeCentre;
+
+    bool displayFeatureIdLabels;
+    bool displayFeatureClassLabels;
+    bool displayFeatureCustomLabels;
+    bool displayFeatureClassLikeFigure;
 
     NodeDragging nodeDragging;
 
@@ -137,6 +146,7 @@ public:
     QColor textOutlineColour;
 
     NodeColourScheme nodeColourScheme;
+    NodeColourScheme featureColourScheme;
     QColor uniformPositiveNodeColour;
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
@@ -202,6 +212,30 @@ public:
     //These are used for the 'Depth range' graph scope.
     FloatSetting minDepthRange;
     FloatSetting maxDepthRange;
+
+    FloatSetting hicEdgeLength;
+    FloatSetting hicEdgeWidth;
+
+    HiCInclusionFilter hicInclusionFilter = ONE_FROM_TARGET_COMPONENT;
+    HiCDrawingType hicDrawingType = ALL_EDGES;
+
+    bool isAutoParameters = false;
+    int taxRank;
+    int taxId;
+    bool makeZip = false;
+    bool wasZipped = false;
+    bool propagateTaxColour = false;
+    int taxDistance;
+    int displayAroundTaxWithHiC;
+    bool wasCalcHiCLinkForTax = false;
+    bool aroundTargetNodes = false;
+    bool onlyBigComponent = false;
+    bool wasComponentsFound = false;
+    int m_clock = -1;
+    bool addNewNodes = false;
+    bool roundMode = true;
+
+    int featureForestEdgeLength = 10;
 };
 
 #endif // SETTINGS_H

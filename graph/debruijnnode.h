@@ -27,6 +27,7 @@
 #include <QColor>
 #include "../blast/blasthitpart.h"
 #include "../program/settings.h"
+#include "../taxonomy/tax.h"
 
 class OgdfNode;
 class DeBruijnEdge;
@@ -67,7 +68,13 @@ public:
     std::vector<DeBruijnNode *> getUpstreamNodes() const;
     std::vector<DeBruijnNode *> getAllConnectedPositiveNodes() const;
     bool isSpecialNode() const {return m_specialNode;}
-    bool isDrawn() const {return m_drawn;}
+    bool isDrawn() const {return m_drawn && !m_isNodesUnion && !(g_settings->makeZip) || 
+        m_drawn && g_settings->makeZip && (!m_zipped || m_isNew);}
+    bool getDrawn() { return m_drawn; };
+    bool isZipped() { return m_zipped; };
+    bool isNodeUnion() { return m_isNodesUnion; };
+    void setZipped(bool zipped) { m_zipped = zipped; };
+    void setNodeUnion(bool nodeUnion) { m_isNodesUnion = nodeUnion; };
     bool thisNodeOrReverseComplementIsDrawn() const {return isDrawn() || getReverseComplement()->isDrawn();}
     bool isNotDrawn() const {return !m_drawn;}
     QColor getCustomColour() const {return m_customColour;}
@@ -77,6 +84,9 @@ public:
     bool hasCustomColour() const {return m_customColour.isValid();}
     bool isPositiveNode() const;
     bool isNegativeNode() const;
+    DeBruijnNode* getPositiveNode() {
+        return (isPositiveNode() ? this : getReverseComplement());
+    }
     bool inOgdf() const {return m_ogdfNode != 0;}
     bool notInOgdf() const {return m_ogdfNode == 0;}
     bool thisOrReverseComplementInOgdf() const {return (inOgdf() || getReverseComplement()->inOgdf());}
@@ -98,6 +108,7 @@ public:
     int getDeadEndCount() const;
     int getNumberOfOgdfGraphEdges(double drawnNodeLength) const;
     double getDrawnNodeLength() const;
+    int getComponentId() {return m_componentId;};
 
     //MODIFERS
     void setDepthRelativeToMeanDrawnDepth(double newVal) {m_depthRelativeToMeanDrawnDepth = newVal;}
@@ -118,6 +129,8 @@ public:
     void removeEdge(DeBruijnEdge * edge);
     void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
                         ogdf::EdgeArray<double> * edgeArray, double xPos, double yPos);
+    void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::GraphAttributes * graphAttributes,
+                        ogdf::EdgeArray<double> * edgeArray, ogdf::GraphAttributes* oldGraphAttribute);
     void determineContiguity();
     void clearBlastHits() {m_blastHits.clear();}
     void addBlastHit(BlastHit * newHit) {m_blastHits.push_back(newHit);}
@@ -126,6 +139,23 @@ public:
     void clearCsvData() {m_csvData.clear();}
     void setDepth(double newDepth) {m_depth = newDepth;}
     void setName(QString newName) {m_name = newName;}
+    void setComponentId(int componentId) {m_componentId = componentId;}
+    void setDeleted(bool isDeleted) { m_deleted = isDeleted; }
+    bool isDeleted() { return m_deleted; }
+    void setTax(tax* taxInfo) { m_taxInfo = taxInfo; };
+    tax* getTax() { return m_taxInfo; };
+    bool hasTax(unsigned int taxId, int rank);
+    bool hasTax(unsigned int taxId);
+    tax* getTax(int rank);
+    QColor getTaxPropColor() { return m_taxPropagateColor; };
+    void setTaxPropColor(QColor color) { m_taxPropagateColor = color; };
+
+    bool m_visited = false;
+    QList<DeBruijnNode*> getZippedNodes() { return m_zippedNodes; };
+    void setZippedNodes(QList<DeBruijnNode*> zippedNodes) { m_zippedNodes = zippedNodes; };
+
+    bool m_isNew = false;
+    QColor m_lastColor;
 
 private:
     QString m_name;
@@ -139,7 +169,11 @@ private:
     GraphicsItemNode * m_graphicsItemNode;
     std::vector<DeBruijnEdge *> m_edges;
     bool m_specialNode;
-    bool m_drawn;
+    bool m_drawn = false;
+
+    bool m_zipped = false;
+    bool m_isNodesUnion = false;
+
     int m_highestDistanceInNeighbourSearch;
     QColor m_customColour;
     QString m_customLabel;
@@ -147,6 +181,11 @@ private:
     QStringList m_csvData;
     QString getNodeNameForFasta(bool sign) const;
     QByteArray getUpstreamSequence(int upstreamSequenceLength) const;
+    int m_componentId = 0;
+    bool m_deleted = false;
+    tax* m_taxInfo = NULL;
+    QColor m_taxPropagateColor = NAN;
+    QList<DeBruijnNode*> m_zippedNodes;
 
     double getNodeLengthPerMegabase() const;
     bool isOnlyPathInItsDirection(DeBruijnNode * connectedNode,
