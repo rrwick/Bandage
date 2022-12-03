@@ -15,10 +15,11 @@ public:
     explicit TaxInfoDialog(QWidget *parent = 0);
     TaxInfoDialog(QWidget *parent, int taxId);
     ~TaxInfoDialog();
+    QString getHiCTaxInfoInTxt(int taxId);
+    QString getCommonTaxInfoInTxt();
 
 private:
     Ui::TaxInfoDialog *ui;
-
     void setInfoTexts();
     void setSpecialTaxInfoTexts(int taxId);
     void setErrorText();

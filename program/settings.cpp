@@ -37,6 +37,7 @@ Settings::Settings()
     componentSeparation = FloatSetting(50.0, 0, 1000.0);
 
     averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
+    averageFeatureNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
     depthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
     depthPower = FloatSetting(0.5, 0.0, 1.0);
 
@@ -79,6 +80,11 @@ Settings::Settings()
     displayTaxIdName = false;
     displayTaxIdRank = false;
     displayTaxNameRank = false;
+
+    displayFeatureIdLabels = false;
+    displayFeatureClassLabels = false;
+    displayFeatureCustomLabels = false;
+    displayFeatureClassLikeFigure = false;
 
     nodeDragging = NEARBY_PIECES;
 

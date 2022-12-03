@@ -31,7 +31,7 @@ class GraphLayoutWorker : public QObject
 
 public:
     GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
-                      ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
+        ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
                       double graphLayoutComponentSeparation, double aspectRatio = 1.333333);
     GraphLayoutWorker(ogdf::FMMMLayout* fmmm, ogdf::GraphAttributes* graphAttributes,
         ogdf::EdgeArray<double>* edgeArray, int graphLayoutQuality, bool linearLayout,

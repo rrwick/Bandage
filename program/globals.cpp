@@ -30,10 +30,12 @@ QSharedPointer<Settings> g_settings;
 QSharedPointer<HiCSettings> g_hicSettings;
 QSharedPointer<Memory> g_memory;
 MyGraphicsView * g_graphicsView;
+MyGraphicsView * g_graphicsViewFeaturesForest;
 double g_absoluteZoom;
 QSharedPointer<BlastSearch> g_blastSearch;
 QString m_tempDirectory;
 QSharedPointer<AssemblyGraph> g_assemblyGraph;
+QSharedPointer<AssemblyForest> g_assemblyForest;
 
 
 QString formatIntForDisplay(int num)

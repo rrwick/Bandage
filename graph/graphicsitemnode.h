@@ -31,104 +31,57 @@
 #include <QStringList>
 #include <algorithm>
 #include <iostream>
+#include "../painting/CommonGraphicsItemNode.h"
 
 class DeBruijnNode;
-class Path;
 
-class GraphicsItemNode : public QGraphicsItem
+class GraphicsItemNode : public CommonGraphicsItemNode
 {
 public:
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
                      ogdf::GraphAttributes * graphAttributes,
-                     QGraphicsItem * parent = 0);
+                     CommonGraphicsItemNode* parent = 0);
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
                      GraphicsItemNode * toCopy,
-                     QGraphicsItem * parent = 0);
+                     CommonGraphicsItemNode* parent = 0);
     GraphicsItemNode(DeBruijnNode * deBruijnNode,
                      std::vector<QPointF> linePoints,
-                     QGraphicsItem * parent = 0);
+                     CommonGraphicsItemNode* parent = 0);
 
     DeBruijnNode * m_deBruijnNode;
-    double m_width;
-    bool m_hasArrow;
-    std::vector<QPointF> m_linePoints;
-    size_t m_grabIndex;
-    QColor m_colour;
-    QPainterPath m_path;
 
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
     void paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *);
     QPainterPath shape() const;
-    void shiftPoints(QPointF difference);
-    void remakePath();
-    double distance(QPointF p1, QPointF p2) const;
+
     bool usePositiveNodeColour();
-    QPointF getFirst() const {return m_linePoints[0];}
-    QPointF getSecond() const {
-        if (m_linePoints.size() > 1) return m_linePoints[1];
-        else return m_linePoints[0];
-    }
-    QPointF getLast() const {return m_linePoints[m_linePoints.size()-1];}
-    QPointF getSecondLast() const 
-    {
-        if (m_linePoints.size() > 1) return m_linePoints[m_linePoints.size() - 2];
-        else return m_linePoints[0];
-    }
-    bool isBig() const { return m_linePoints.size() >= 3; }
-    bool isOne() const { return m_linePoints.size() == 1; }
-    QPointF getMiddle() const { return m_linePoints[m_linePoints.size() / 2]; }
-    QPointF getBeforeMiddle() const 
-    { 
-        if (m_linePoints.size() >= 3)
-            return m_linePoints[(m_linePoints.size() / 2) - 1];
-        else
-            return m_linePoints[0];
-    }
-    QPointF getAfterMiddle() const 
-    {
-        if (m_linePoints.size() >= 3)
-            return m_linePoints[(m_linePoints.size() / 2) + 1];
-        else
-            return m_linePoints[m_linePoints.size() - 1];
-    }
-    std::vector<QPointF> getCentres() const;
-    QPointF getCentre(std::vector<QPointF> linePoints) const;
     void setNodeColour();
     QColor propagateColour();
     QStringList getNodeText();
     QSize getNodeTextSize(QString text);
     QColor getDepthColour();
     void setWidth();
-    QPainterPath makePartialPath(double startFraction, double endFraction);
-    double getNodePathLength();
-    QPointF findLocationOnPath(double fraction);
-    QPointF findIntermediatePoint(QPointF p1, QPointF p2, double p1Value,
-                                  double p2Value, double targetValue);
     QRectF boundingRect() const;
     static double getNodeWidth(double depthRelativeToMeanDrawnDepth,
                                double depthPower,
                                double depthEffectOnWidth,
                                double averageNodeWidth);
-    void shiftPointsLeft();
-    void shiftPointsRight();
     void getBlastHitsTextAndLocationThisNode(std::vector<QString> * blastHitText,
                                              std::vector<QPointF> * blastHitLocation);
     void getBlastHitsTextAndLocationThisNodeOrReverseComplement(std::vector<QString> * blastHitText,
                                                                 std::vector<QPointF> * blastHitLocation);
-    void drawTextPathAtLocation(QPainter *painter, QPainterPath textPath, QPointF centre);
     void fixEdgePaths(std::vector<GraphicsItemNode *> * nodes = 0);
-
-    void GraphicsItemNode::shiftAroundMiddle();
+    void mouseRoundEvent(QGraphicsSceneMouseEvent* event);
 
 private:
-    void exactPathHighlightNode(QPainter * painter);
-    void queryPathHighlightNode(QPainter * painter);
-    void pathHighlightNode2(QPainter * painter, DeBruijnNode * node, bool reverse, Path * path);
-    void pathHighlightNode3(QPainter * painter, QPainterPath highlightPath);
+    void exactPathHighlightNode(QPainter* painter);
+    void queryPathHighlightNode(QPainter* painter);
+    void pathHighlightNode2(QPainter* painter, DeBruijnNode* node, bool reverse, Path* path);
+    void pathHighlightNode3(QPainter* painter, QPainterPath highlightPath);
     QPainterPath buildPartialHighlightPath(double startFraction, double endFraction, bool reverse);
     bool anyNodeDisplayText();
-    void shiftPointSideways(bool left);
+    
 };
 
 #endif // GRAPHICSITEMNODE_H

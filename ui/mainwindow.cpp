@@ -70,6 +70,9 @@
 #include "taxinfodialog.h"
 #include<iostream>
 #include<dos.h>
+#include "../random_forest/assemblyforest.h"
+#include "../random_forest/GraphicsItemFeatureNode.h"
+#include <QtWidgets/QSplitter>
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -78,9 +81,10 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     m_uiState(NO_GRAPH_LOADED), m_blastSearchDialog(0), m_alreadyShown(false)
 {
     ui->setupUi(this);
-
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
-    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
+    ui->featureClassInfoText->setFixedHeight(87);
+    ui->featureClassInfoText->setEnabled(false);
+    ui->allViewsWidget->layout()->addWidget(g_graphicsView);
 
     srand(time(NULL));
 
@@ -106,12 +110,15 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->selectedEdgesTextEdit->setFixedHeight(ui->selectedEdgesTextEdit->sizeHint().height() / 2.5);
 
     setUiState(NO_GRAPH_LOADED);
+    setFeaturesUiState(NO_FEATURES_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
 
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
+
+    m_randomForestMainWindow = new RandomForestMainWindow();
 
     setInfoTexts();
 
@@ -125,6 +132,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     graphScopeChanged();
     switchColourScheme();
+    switchFeatureColourScheme();
     switchTaxRank();
 
     //If this is a Mac, change the 'Delete' shortcuts to 'Backspace' instead.
@@ -134,11 +142,13 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 #endif
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
+    connect(ui->drawFeaturesButton, SIGNAL(clicked()), this, SLOT(drawFeaturesForest()));
     connect(ui->unzipNodesPushButton, SIGNAL(clicked()), this, SLOT(unzipSelectedNodes()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionLoad_CSV, SIGNAL(triggered(bool)), this, SLOT(loadCSV()));
     connect(ui->actionLoad_HiC_data, SIGNAL(triggered(bool)), this, SLOT(loadHiC()));
     connect(ui->actionLoad_Taxonometry, SIGNAL(triggered(bool)), this, SLOT(loadTax()));
+    connect(ui->actionLoad_features_forest, SIGNAL(triggered(bool)), this, SLOT(loadFeaturesForest()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -148,9 +158,12 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionCopy_selected_node_path_to_clipboard, SIGNAL(triggered(bool)), this, SLOT(copySelectedPathToClipboard()));
     connect(ui->actionSave_selected_node_path_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveSelectedPathToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
+    connect(ui->featuresColoursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchFeatureColourScheme()));
     connect(ui->taxColourComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchTaxRank()));
-    connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
-    connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
+    connect(ui->actionSave_graph_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageGraphCurrentView()));
+    connect(ui->actionSave_graph_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageGraphEntireScene()));
+    connect(ui->actionSave_image_features_current_view, SIGNAL(triggered()), this, SLOT(saveImageFeaturesCurrentView()));
+    connect(ui->actionSave_image_features_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageFeaturesEntireScene()));
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
@@ -190,6 +203,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
+    connect(ui->featureNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(featureNodeWidthChanged()));
     connect(g_graphicsView, SIGNAL(copySelectedSequencesToClipboard()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
@@ -207,6 +221,13 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
     connect(ui->taxInfoButton, SIGNAL(clicked(bool)), this, SLOT(openTaxInfoDialog()));
     connect(ui->taxInfoHiCButton, SIGNAL(clicked(bool)), this, SLOT(openTaxInfoHiCDialog()));
+    connect(ui->actionSave_common_tax_information, SIGNAL(triggered()), this, SLOT(saveTaxInfo()));
+    connect(ui->actionSave_tax_info_with_Hi_C_links, SIGNAL(triggered()), this, SLOT(saveHiCTaxInfo()));
+    connect(ui->connectSelectedFeatureNodes, SIGNAL(clicked()), this, SLOT(matchSelectedFeatureNodes()));
+    connect(ui->featureIdCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureClassCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureCustomCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureClassLikeFigureCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -297,7 +318,6 @@ void MainWindow::loadHiC(QString fullFileName) {
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
-        bool coloursLoaded = false;
         bool success = g_assemblyGraph->loadHiC(fullFileName, &errormsg);
 
         if (success)
@@ -336,7 +356,6 @@ void MainWindow::loadTax(QString fullFileName) {
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
 
-        bool coloursLoaded = false;
         bool success = g_assemblyGraph->loadTax(fullFileName, &errormsg);
 
         if (success)
@@ -352,6 +371,40 @@ void MainWindow::loadTax(QString fullFileName) {
             "Please verify that this file has the correct format.";
         QMessageBox::warning(this, errorTitle, errorMessage);
     }
+}
+
+void MainWindow::loadFeaturesForest(QString fullFileName) {
+    QString selectedFilter = "Comma separated value (*.txt)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load Features forest", g_memory->rememberedPath,
+            "Comma separated value (*.txt)",
+            &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        bool success = g_assemblyForest->loadRandomForestFromFile(fullFileName, &errormsg);
+
+        if (success)
+        {
+            setFeaturesUiState(FEATURES_LOADED);
+        }
+    }
+    catch (...)
+    {
+        QString errorTitle = "Error loading features forest";
+        QString errorMessage = "There was an error when attempting to load:\n"
+            + fullFileName + "\n\n"
+            "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
+
 }
 
 void MainWindow::loadCSV(QString fullFileName)
@@ -584,6 +637,45 @@ void MainWindow::unzipSelectedNodes() {
         g_assemblyGraph->unzipSelectedNodes(selectNode);
         layoutGraphUnzip();
     }
+}
+
+void MainWindow::featureSelectionChanged() {
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+
+    if (selectedNodes.size() == 0)
+    {
+        ui->selectedNodesTextEdit->setPlainText("");
+        setSelectedNodesWidgetsVisibility(false);
+    }
+
+    else //One or more nodes selected
+    {
+        setSelectedNodesWidgetsVisibility(true);
+
+        int selectedNodeCount;
+        QString selectedFeatureNodeText;
+
+        m_randomForestMainWindow->getSelectedNodeInfo(selectedNodeCount, selectedFeatureNodeText);
+
+        if (selectedNodeCount == 1)
+        {
+            ui->selectedNodesTitleLabel->setText("Selected node");
+            ui->selectedNodesLengthLabel->setText("");
+            ui->selectedNodesDepthLabel->setText("");
+        }
+        else
+        {
+            ui->selectedNodesTitleLabel->setText("Selected nodes (" + formatIntForDisplay(selectedNodeCount) + ")");
+            ui->selectedNodesLengthLabel->setText("");
+            ui->selectedNodesDepthLabel->setText("");
+        }
+
+        ui->selectedNodesTextEdit->setPlainText(selectedFeatureNodeText);
+    }
+
+    ui->selectedEdgesTextEdit->setPlainText("");
+    setSelectedEdgesWidgetsVisibility(false);
+    setTaxVisibility(false);
 }
 
 void MainWindow::selectionChanged()
@@ -889,6 +981,10 @@ void MainWindow::setHiCWidgetVisibility(bool visible)
 
 void MainWindow::setTaxVisibility(bool visible)
 {
+    ui->labelTaxInfo->setVisible(visible);
+    ui->taxLine_4->setVisible(visible);
+    ui->taxInfoTextEdit->setVisible(visible);
+    ui->labelTaxInfo->setVisible(visible);
 
 }
 
@@ -961,14 +1057,33 @@ void MainWindow::drawGraph()
     }
 }
 
+void MainWindow::drawFeaturesForest() {
+    //ui->allViewsWidget->layout()->addWidget(g_graphicsViewFeaturesForest);
+    QSplitter* allViewsSplitter = new QSplitter;
+    allViewsSplitter->setOrientation(Qt::Horizontal);
+    allViewsSplitter->addWidget(g_graphicsView);
+    allViewsSplitter->addWidget(g_graphicsViewFeaturesForest);
+
+    ui->allViewsWidget->layout()->addWidget(allViewsSplitter);
+    //setUiState(GRAPH_LOADED);
+    m_randomForestMainWindow->drawGraph();
+    setFeaturesUiState(FEATURES_DRAWN);
+
+    zoomToFitFeatureScene();
+    connect(m_randomForestMainWindow->m_scene, SIGNAL(selectionChanged()), this, SLOT(featureSelectionChanged()));
+    featureSelectionChanged();
+    switchFeatureColourScheme();
+    //zoomToFitScene();
+}
+
 void MainWindow::graphLayoutFinished()
 {
     delete m_fmmm;
     m_layoutThread = 0;
     g_assemblyGraph->addGraphicsItemsToScene(m_scene);
     m_scene->setSceneRectangle();
-    if (!g_settings->addNewNodes)
-        zoomToFitScene();
+    
+    zoomToFitScene();
     selectionChanged();
 
     setUiState(GRAPH_DRAWN);
@@ -995,7 +1110,9 @@ void MainWindow::resetScene()
     g_assemblyGraph->m_contiguitySearchDone = false;
 
     g_graphicsView->setScene(0);
+    
     delete m_scene;
+    
     m_scene = new MyGraphicsScene(this);
 
     g_graphicsView->setScene(m_scene);
@@ -1032,8 +1149,15 @@ void MainWindow::layoutGraph()
 
     m_layoutThread = new QThread;
     double aspectRatio = double(g_graphicsView->width()) / g_graphicsView->height();
-    int m_clock = clock();
-    g_settings->m_clock = m_clock;
+    int m_clock;
+    if (g_settings->m_clock == -1) {
+        m_clock = clock();
+        g_settings->m_clock = m_clock;
+    }
+    else {
+        m_clock = g_settings->m_clock;
+    }
+    
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
                                                                   g_settings->graphLayoutQuality,
@@ -1127,15 +1251,19 @@ void MainWindow::zoomedWithMouseWheel()
 
 void MainWindow::zoomToFitScene()
 {
-    zoomToFitRect(m_scene->sceneRect());
+    zoomToFitRect(m_scene->sceneRect(), g_graphicsView);
 }
 
-
-void MainWindow::zoomToFitRect(QRectF rect)
+void MainWindow::zoomToFitFeatureScene()
 {
-    double startingZoom = g_graphicsView->transform().m11();
-    g_graphicsView->fitInView(rect, Qt::KeepAspectRatio);
-    double endingZoom = g_graphicsView->transform().m11();
+    zoomToFitRect(m_randomForestMainWindow->m_scene->sceneRect(), g_graphicsViewFeaturesForest);
+}
+
+void MainWindow::zoomToFitRect(QRectF rect, MyGraphicsView* graphicsView)
+{
+    double startingZoom = graphicsView->transform().m11();
+    graphicsView->fitInView(rect, Qt::KeepAspectRatio);
+    double endingZoom = graphicsView->transform().m11();
     double zoomFactor = endingZoom / startingZoom;
     g_absoluteZoom *= zoomFactor;
     double newSpinBoxValue = ui->zoomSpinBox->value() * zoomFactor;
@@ -1241,6 +1369,53 @@ void MainWindow::saveSelectedSequencesToFile()
     }
 }
 
+void MainWindow::saveTaxInfo() {
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/taxInfo.txt";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save all tax information", defaultFileNameAndPath, "TXT (*.txt)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream taxInfoOut(&file);
+        
+        TaxInfoDialog taxInfoDialog(this);
+
+        taxInfoOut << taxInfoDialog.getCommonTaxInfoInTxt();
+    }
+}
+
+void MainWindow::saveHiCTaxInfo() {
+    
+    if (ui->taxIdHiCStatLineEdit->text().size() > 0) {
+        int taxId = ui->taxIdHiCStatLineEdit->text().toInt();
+
+        QString defaultFileNameAndPath = g_memory->rememberedPath + "/" + QString::number(taxId) + "_taxInfo.txt";
+        QString fullFileName = QFileDialog::getSaveFileName(this, "Save all tax information", defaultFileNameAndPath, "TXT (*.txt)");
+
+        if (fullFileName != "") //User did not hit cancel
+        {
+            g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+            TaxInfoDialog taxInfoDialog(this, taxId);
+            QString text = taxInfoDialog.getHiCTaxInfoInTxt(taxId);
+            if (text == NULL) {
+                QMessageBox::information(this, "Save tax information for selected tax", "Cannot find tax with id: " + taxId);
+                return;
+            }
+
+            QFile file(fullFileName);
+            file.open(QIODevice::WriteOnly | QIODevice::Text);
+            QTextStream taxInfoOut(&file);
+            taxInfoOut << text;
+        }
+    }
+    else {
+        QMessageBox::information(this, "Save tax information for selected tax", "Tax id wasn't filled\n");
+    }
+}
+
 void MainWindow::copySelectedPathToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
@@ -1310,6 +1485,39 @@ void MainWindow::switchTaxRank() {
     g_graphicsView->viewport()->update();
 }
 
+void MainWindow::switchFeatureColourScheme()
+{
+    switch (ui->featuresColoursComboBox->currentIndex())
+    {
+    case 0:
+        g_settings->featureColourScheme = UNIFORM_COLOURS;
+        break;
+    case 1:
+        g_settings->featureColourScheme = CLASS_COLOURS;
+        break;
+    case 2:
+        g_settings->featureColourScheme = CUSTOM_COLOURS;
+        break;
+    case 3:
+        g_settings->featureColourScheme = BLAST_HITS_SOLID_COLOUR;
+        break;
+    case 4:
+        g_settings->featureColourScheme = BLAST_HITS_CLASS_COLOURS;
+        g_settings->nodeColourScheme = BLAST_HITS_CLASS_COLOURS;
+        break;
+    default:
+        g_settings->featureColourScheme = UNIFORM_COLOURS;
+        break;
+    }
+    g_assemblyForest->resetAllNodeColours();
+    g_graphicsViewFeaturesForest->viewport()->update();
+    if (g_settings->nodeColourScheme == BLAST_HITS_CLASS_COLOURS) {
+        g_assemblyGraph->resetAllNodeColours();
+        g_graphicsView->viewport()->update();
+    }
+}
+
+
 void MainWindow::switchColourScheme()
 {
     switch (ui->coloursComboBox->currentIndex())
@@ -1360,6 +1568,11 @@ void MainWindow::switchColourScheme()
         ui->contiguityInfoText->setVisible(false);
         ui->taxColourComboBox->setVisible(true);
         break;
+    case 9:
+        g_settings->nodeColourScheme = SAVE_COLOURS;
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
+        break;
     }
 
     g_assemblyGraph->resetAllNodeColours();
@@ -1390,7 +1603,7 @@ void MainWindow::determineContiguityFromSelectedNode()
 }
 
 
-QString MainWindow::getDefaultImageFileName()
+QString MainWindow::getDefaultGraphImageFileName()
 {
     QString fileNameAndPath = g_memory->rememberedPath + "/graph";
 
@@ -1406,14 +1619,39 @@ QString MainWindow::getDefaultImageFileName()
     return fileNameAndPath;
 }
 
-
-void MainWindow::saveImageCurrentView()
+QString MainWindow::getDefaultFeaturesImageFileName()
 {
-    if (!checkForImageSave())
+    QString fileNameAndPath = g_memory->rememberedPath + "/features";
+
+    if (m_imageFilter == "PNG (*.png)")
+        fileNameAndPath += ".png";
+    else if (m_imageFilter == "JPEG (*.jpg)")
+        fileNameAndPath += ".jpg";
+    else if (m_imageFilter == "SVG (*.svg)")
+        fileNameAndPath += ".svg";
+    else
+        fileNameAndPath += ".png";
+
+    return fileNameAndPath;
+}
+
+void MainWindow::saveImageGraphCurrentView() {
+    if (!checkForGraphImageSave())
         return;
+    QString defaultFileNameAndPath = getDefaultGraphImageFileName();
+    saveImageCurrentView(defaultFileNameAndPath, g_graphicsView);
+}
 
-    QString defaultFileNameAndPath = getDefaultImageFileName();
+void MainWindow::saveImageFeaturesCurrentView() {
+    if (!checkForFeaturesImageSave())
+        return;
+    QString defaultFileNameAndPath = getDefaultFeaturesImageFileName();
+    saveImageCurrentView(defaultFileNameAndPath, g_graphicsViewFeaturesForest);
+}
 
+void MainWindow::saveImageCurrentView(QString defaultFileNameAndPath, MyGraphicsView* graphicsView)
+{
+ 
     QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)",
                                                         defaultFileNameAndPath,
@@ -1433,12 +1671,12 @@ void MainWindow::saveImageCurrentView()
         QPainter painter;
         if (pixelImage)
         {
-            QImage image(g_graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
+            QImage image(graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
             image.fill(Qt::white);
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            g_graphicsView->render(&painter);
+            graphicsView->render(&painter);
             image.save(fullFileName);
             g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
@@ -1454,19 +1692,28 @@ void MainWindow::saveImageCurrentView()
             painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            g_graphicsView->render(&painter);
+            graphicsView->render(&painter);
             painter.end();
         }
     }
 }
 
-void MainWindow::saveImageEntireScene()
-{
-    if (!checkForImageSave())
+void MainWindow::saveImageGraphEntireScene() {
+    if (!checkForGraphImageSave())
         return;
+    QString defaultFileNameAndPath = getDefaultGraphImageFileName();
+    saveImageEntireScene(defaultFileNameAndPath, g_graphicsView, m_scene);
+}
 
-    QString defaultFileNameAndPath = getDefaultImageFileName();
+void MainWindow::saveImageFeaturesEntireScene() {
+    if (!checkForFeaturesImageSave())
+        return;
+    QString defaultFileNameAndPath = getDefaultFeaturesImageFileName();
+    saveImageEntireScene(defaultFileNameAndPath, g_graphicsViewFeaturesForest, m_randomForestMainWindow->m_scene);
+}
 
+void MainWindow::saveImageEntireScene(QString defaultFileNameAndPath, MyGraphicsView* graphicsView, MyGraphicsScene* scene)
+{
     QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this,
                                                         "Save graph image (entire scene)",
@@ -1488,15 +1735,15 @@ void MainWindow::saveImageEntireScene()
         g_settings->positionTextNodeCentre = true;
 
         //Temporarily undo any rotation so labels appear upright.
-        double rotationBefore = g_graphicsView->getRotation();
-        g_graphicsView->undoRotation();
+        double rotationBefore = graphicsView->getRotation();
+        graphicsView->undoRotation();
 
         m_imageFilter = selectedFilter;
 
         QPainter painter;
         if (pixelImage)
         {
-            QSize imageSize = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+            QSize imageSize = g_absoluteZoom * scene->sceneRect().size().toSize();
 
             if (imageSize.width() > 32767 || imageSize.height() > 32767)
             {
@@ -1526,8 +1773,8 @@ void MainWindow::saveImageEntireScene()
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            m_scene->setSceneRectangle();
-            m_scene->render(&painter);
+            scene->setSceneRectangle();
+            scene->render(&painter);
             image.save(fullFileName);
             g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
@@ -1536,29 +1783,27 @@ void MainWindow::saveImageEntireScene()
         {
             QSvgGenerator generator;
             generator.setFileName(fullFileName);
-            QSize size = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+            QSize size = g_absoluteZoom * scene->sceneRect().size().toSize();
             generator.setSize(size);
             generator.setViewBox(QRect(0, 0, size.width(), size.height()));
             painter.begin(&generator);
             painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            m_scene->setSceneRectangle();
-            m_scene->render(&painter);
+            scene->setSceneRectangle();
+            scene->render(&painter);
             painter.end();
         }
 
         g_settings->positionTextNodeCentre = positionTextNodeCentreSettingBefore;
-        g_graphicsView->setRotation(rotationBefore);
+        graphicsView->setRotation(rotationBefore);
     }
 }
-
-
 
 //This function makes sure that a graph is loaded and drawn so that an image can be saved.
 //It returns true if everything is fine.  If things aren't ready, it displays a message
 //to the user and returns false.
-bool MainWindow::checkForImageSave()
+bool MainWindow::checkForGraphImageSave()
 {
     if (m_uiState == NO_GRAPH_LOADED)
     {
@@ -1573,6 +1818,20 @@ bool MainWindow::checkForImageSave()
     return true;
 }
 
+bool MainWindow::checkForFeaturesImageSave()
+{
+    if (m_featuresUiState == NO_FEATURES_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first load and then draw a features forest before you can save an image to file.");
+        return false;
+    }
+    if (m_featuresUiState == FEATURES_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first draw the features forest before you can save an image to file.");
+        return false;
+    }
+    return true;
+}
 
 void MainWindow::setTextDisplaySettings()
 {
@@ -1591,6 +1850,22 @@ void MainWindow::setTextDisplaySettings()
     g_graphicsView->viewport()->update();
 }
 
+void MainWindow::setFeatureTextDisplaySettings()
+{
+    g_settings->displayFeatureIdLabels = ui->featureIdCheckBox->isChecked();
+    g_settings->displayFeatureClassLabels = ui->featureClassCheckBox->isChecked();
+    g_settings->displayFeatureCustomLabels = ui->featureCustomCheckBox->isChecked();
+    g_settings->displayFeatureClassLikeFigure = ui->featureClassLikeFigureCheckBox->isChecked();
+    if (g_settings->displayFeatureClassLikeFigure) {
+        QString classesInfo = g_assemblyForest->getClassFigureInfo();
+        ui->featureClassInfoText->setPlainText(classesInfo);
+        ui->featureClassInfoText->setEnabled(true);
+    }
+    else {
+        ui->featureClassInfoText->setEnabled(false);
+    }
+    g_graphicsViewFeaturesForest->viewport()->update();
+}
 
 void MainWindow::fontButtonPressed()
 {
@@ -1605,8 +1880,10 @@ void MainWindow::fontButtonPressed()
 void MainWindow::setNodeCustomColour()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    if (selectedNodes.size() == 0)
+    if (selectedNodes.size() == 0) {
+        setFeatureNodeCustomColour();
         return;
+    }
 
     QString dialogTitle = "Select custom colour for selected node";
     if (selectedNodes.size() > 1)
@@ -1635,9 +1912,66 @@ void MainWindow::setNodeCustomColour()
     }
 }
 
+void MainWindow::setFeatureNodeCustomColour()
+{
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+    if (selectedNodes.size() == 0)
+        return;
+
+    QString dialogTitle = "Select custom colour for selected node";
+    if (selectedNodes.size() > 1)
+        dialogTitle += "s";
+
+    QColor newColour = QColorDialog::getColor(selectedNodes[0]->getCustomColour(), this, dialogTitle);
+    if (newColour.isValid())
+    {
+
+        //If the colouring scheme is not currently custom, change it to custom now
+        if (g_settings->nodeColourScheme != CUSTOM_COLOURS)
+            setNodeColourSchemeComboBox(CUSTOM_COLOURS);
+
+        for (size_t i = 0; i < selectedNodes.size(); ++i)
+        {
+            selectedNodes[i]->setCustomColour(newColour);
+            if (selectedNodes[i]->getGraphicsItemFeatureNode() != 0) {
+                selectedNodes[i]->getGraphicsItemFeatureNode()->setColour();
+            }
+
+        }
+        g_graphicsViewFeaturesForest->viewport()->update();
+    }
+}
+
 void MainWindow::setNodeCustomLabel()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0) {
+        setFeatureNodeCustomLabel();
+        return;
+    }
+
+    QString dialogMessage = "Type a custom label for selected node";
+    if (selectedNodes.size() > 1)
+        dialogMessage += "s";
+    dialogMessage += ":";
+
+    bool ok;
+    QString newLabel = QInputDialog::getText(this, "Custom label", dialogMessage, QLineEdit::Normal,
+                                             selectedNodes[0]->getCustomLabel(), &ok);
+
+    if (ok)
+    {
+        //If the custom label option isn't currently on, turn it on now.
+        ui->nodeCustomLabelsCheckBox->setChecked(true);
+
+        for (size_t i = 0; i < selectedNodes.size(); ++i)
+            selectedNodes[i]->setCustomLabel(newLabel);
+    }
+}
+
+void MainWindow::setFeatureNodeCustomLabel()
+{
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
     if (selectedNodes.size() == 0)
         return;
 
@@ -1648,7 +1982,7 @@ void MainWindow::setNodeCustomLabel()
 
     bool ok;
     QString newLabel = QInputDialog::getText(this, "Custom label", dialogMessage, QLineEdit::Normal,
-                                             selectedNodes[0]->getCustomLabel(), &ok);
+        selectedNodes[0]->getCustomLabel(), &ok);
 
     if (ok)
     {
@@ -2076,7 +2410,23 @@ void MainWindow::setUiState(UiState uiState)
     }
 }
 
-
+void MainWindow::setFeaturesUiState(UiState uiState) {
+    m_featuresUiState = uiState;
+    switch (uiState)
+    {
+    case NO_FEATURES_LOADED:
+        ui->featureForestWidget->setEnabled(false);
+        break;
+    case FEATURES_LOADED:
+        ui->featureForestWidget->setEnabled(true);
+        break;
+    case FEATURES_DRAWN:
+        ui->featureForestWidget->setEnabled(true);
+        ui->selectionScrollAreaWidgetContents->setEnabled(true);
+        ui->actionZoom_to_selection->setEnabled(true);
+        break;
+    }
+}
 void MainWindow::showHidePanels()
 {
     ui->controlsScrollArea->setVisible(ui->actionControls_panel->isChecked());
@@ -2240,7 +2590,7 @@ void MainWindow::zoomToSelection()
         boundingBox = boundingBox | selectedItem->boundingRect();
     }
 
-    zoomToFitRect(boundingBox);
+    zoomToFitRect(boundingBox, g_graphicsView);
 }
 
 
@@ -2370,6 +2720,7 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
     case RANDOM_COMPONENT_COLOURS: ui->coloursComboBox->setCurrentIndex(7); break;
     case COLOUR_BY_TAX: ui->coloursComboBox->setCurrentIndex(8); break;
+    case SAVE_COLOURS: ui->coloursComboBox->setCurrentIndex(9); break;
     }
 }
 
@@ -2471,6 +2822,12 @@ void MainWindow::nodeWidthChanged()
     g_graphicsView->viewport()->update();
 }
 
+void MainWindow::featureNodeWidthChanged()
+{
+    g_settings->averageFeatureNodeWidth = ui->featureNodeWidthSpinBox->value();
+    g_assemblyForest->recalculateAllNodeWidths();
+    g_graphicsView->viewport()->update();
+}
 
 void MainWindow::saveEntireGraphToFasta()
 {
@@ -2813,4 +3170,26 @@ void MainWindow::openTaxInfoHiCDialog()
         taxInfoDialog.exec();
     }
     
+}
+
+void MainWindow::matchSelectedFeatureNodes() {
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+
+    if (selectedNodes.size() == 0)
+    {
+        return;
+    }
+    if (m_blastFeaturesNodesMatcher == NULL) {
+        m_blastFeaturesNodesMatcher = new BlastFeaturesNodesMatcher();
+    }
+    for (RandomForestNode* node : selectedNodes) {
+        
+        m_blastFeaturesNodesMatcher->matchFeaturesNode(node);
+    }
+    ui->coloursComboBox->setCurrentIndex(3);
+    switchColourScheme();
+    ui->featuresColoursComboBox->setCurrentIndex(3
+    );
+    switchFeatureColourScheme();
+    blastChanged();
 }

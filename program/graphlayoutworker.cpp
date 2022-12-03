@@ -31,8 +31,9 @@
 using namespace ogdf;
 
 GraphLayoutWorker::GraphLayoutWorker(ogdf::FMMMLayout * fmmm, ogdf::GraphAttributes * graphAttributes,
-                                     ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
-                                     double graphLayoutComponentSeparation, double aspectRatio) :
+    ogdf::EdgeArray<double> * edgeArray, int graphLayoutQuality, bool linearLayout,
+    double graphLayoutComponentSeparation, double aspectRatio) :
+    
     m_fmmm(fmmm), m_graphAttributes(graphAttributes), m_edgeArray(edgeArray), m_graphLayoutQuality(graphLayoutQuality),
     m_linearLayout(linearLayout), m_graphLayoutComponentSeparation(graphLayoutComponentSeparation),
     m_randSeed(-1), m_aspectRatio(aspectRatio)

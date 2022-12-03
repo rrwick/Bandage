@@ -30,11 +30,15 @@ class Memory;
 class MyGraphicsView;
 class BlastSearch;
 class AssemblyGraph;
+class AssemblyForest;
 class HiCSettings;
+class RandomForestMainWindow;
+class MainWindow;
 
 enum NodeColourScheme {UNIFORM_COLOURS, RANDOM_COLOURS, DEPTH_COLOUR,
                        BLAST_HITS_RAINBOW_COLOUR, BLAST_HITS_SOLID_COLOUR,
-                       CONTIGUITY_COLOUR, CUSTOM_COLOURS, RANDOM_COMPONENT_COLOURS, COLOUR_BY_TAX};
+                       CONTIGUITY_COLOUR, CUSTOM_COLOURS, RANDOM_COMPONENT_COLOURS, 
+                       COLOUR_BY_TAX, SAVE_COLOURS, CLASS_COLOURS, BLAST_HITS_CLASS_COLOURS};
 enum GraphScope {WHOLE_GRAPH, AROUND_NODE, AROUND_BLAST_HITS, DEPTH_RANGE, AROUND_TAX};
 enum HiCDrawingType {ALL_EDGES, ONE_EDGE, NO_EDGE};
 enum HiCInclusionFilter {ALL, ALL_BETWEEN_GRAPH_COMPONENTS, ONE_BETWEEN_GRAPH_COMPONENT, ONE_FROM_TARGET_COMPONENT};
@@ -43,7 +47,7 @@ enum ContiguityStatus {STARTING, CONTIGUOUS_STRAND_SPECIFIC,
                        NOT_CONTIGUOUS};
 enum NodeDragging {ONE_PIECE, NEARBY_PIECES, ALL_PIECES, NO_DRAGGING};
 enum ZoomSource {MOUSE_WHEEL, SPIN_BOX, KEYBOARD, GESTURE};
-enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN};
+enum UiState {NO_GRAPH_LOADED, GRAPH_LOADED, GRAPH_DRAWN, NO_FEATURES_LOADED, FEATURES_LOADED, FEATURES_DRAWN};
 enum NodeLengthMode {AUTO_NODE_LENGTH, MANUAL_NODE_LENGTH};
 enum GraphFileType {LAST_GRAPH, FASTG, GFA, TRINITY, ASQG, PLAIN_FASTA, ANY_FILE_TYPE,
                     UNKNOWN_FILE_TYPE};
@@ -61,16 +65,17 @@ enum NodeNameStatus {NODE_NAME_OKAY, NODE_NAME_TAKEN, NODE_NAME_CONTAINS_TAB,
                      NODE_NAME_CONTAINS_SPACE};
 enum SequencesLoadedFromFasta {NOT_READY, NOT_TRIED, TRIED};
 
-
 //Some of the program's common components are made global so they don't have
 //to be passed around as parameters.
 extern QSharedPointer<Settings> g_settings;
 extern QSharedPointer<HiCSettings> g_hicSettings;
 extern QSharedPointer<Memory> g_memory;
 extern MyGraphicsView * g_graphicsView;
+extern MyGraphicsView * g_graphicsViewFeaturesForest;
 extern double g_absoluteZoom;
 extern QSharedPointer<BlastSearch> g_blastSearch;
 extern QSharedPointer<AssemblyGraph> g_assemblyGraph;
+extern QSharedPointer<AssemblyForest> g_assemblyForest;
 
 
 //Functions for formatting numbers are used in many places, and are made global.

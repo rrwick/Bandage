@@ -34,6 +34,8 @@
 #include "../blast/blastsearch.h"
 #include "../graph/assemblygraph.h"
 #include "../ui/mygraphicsview.h"
+#include "../random_forest/assemblyforest.h"
+#include "../ui/randomforestmainwindow.h"
 
 #ifndef Q_OS_WIN32
 #include <sys/ioctl.h>
@@ -102,7 +104,10 @@ int main(int argc, char *argv[])
     g_memory.reset(new Memory());
     g_blastSearch.reset(new BlastSearch());
     g_assemblyGraph.reset(new AssemblyGraph());
+    g_assemblyForest.reset(new AssemblyForest());
     g_graphicsView = new MyGraphicsView();
+    g_graphicsViewFeaturesForest = new MyGraphicsView();
+    //g_randomForestMainWindow.reset(new RandomForestMainWindow());
 
     //Save the terminal width (useful for displaying help text neatly).
     #ifndef Q_OS_WIN32

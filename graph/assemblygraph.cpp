@@ -1991,10 +1991,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
             if (deleteLeafIfNeeded(node)) {
                 return qMakePair(contigCount, size);
             }
-            if (markChainIfNeeded(node)) {
-                mergedNode->push_back(node);
-                return qMakePair(contigCount, size);
-            }
         }
         for (DeBruijnEdge* edge : node->getLeavingEdges()) {
             if (edge->getEndingNode()->getComponentId() == 0 && !edge->isHiC()) {
@@ -2060,7 +2056,7 @@ void AssemblyGraph::makeZipped(int minSize) {
             int boundLen = min(minSize, (i.value()->getLength()) / 4);
             for (DeBruijnEdge* edge : node->getEnteringEdges()) {
                 DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                if (!edge->isHiC() && !otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
                     dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
                 }
             }
@@ -2080,7 +2076,7 @@ void AssemblyGraph::makeZipped(int minSize) {
             QList<DeBruijnNode*> mainNodes2;
             for (DeBruijnEdge* edge : node->getLeavingEdges()) {
                 DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                if (!edge->isHiC() && !otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
                     dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
                 }
             }

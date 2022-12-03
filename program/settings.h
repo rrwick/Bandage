@@ -88,6 +88,7 @@ public:
     FloatSetting componentSeparation;
 
     FloatSetting averageNodeWidth;
+    FloatSetting averageFeatureNodeWidth;
     FloatSetting depthEffectOnWidth;
     FloatSetting depthPower;
 
@@ -131,6 +132,11 @@ public:
     bool antialiasing;
     bool positionTextNodeCentre;
 
+    bool displayFeatureIdLabels;
+    bool displayFeatureClassLabels;
+    bool displayFeatureCustomLabels;
+    bool displayFeatureClassLikeFigure;
+
     NodeDragging nodeDragging;
 
     QColor edgeColour;
@@ -140,6 +146,7 @@ public:
     QColor textOutlineColour;
 
     NodeColourScheme nodeColourScheme;
+    NodeColourScheme featureColourScheme;
     QColor uniformPositiveNodeColour;
     QColor uniformNegativeNodeColour;
     QColor uniformNodeSpecialColour;
@@ -226,6 +233,9 @@ public:
     bool wasComponentsFound = false;
     int m_clock = -1;
     bool addNewNodes = false;
+    bool roundMode = true;
+
+    int featureForestEdgeLength = 10;
 };
 
 #endif // SETTINGS_H
