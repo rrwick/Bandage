@@ -152,6 +152,7 @@ private slots:
     void graphLayoutCancelled();
     void bringSelectedNodesToFront();
     void selectNodesWithBlastHits();
+    void selectNodesWithDeadEnds();
     void selectAll();
     void selectNone();
     void invertSelection();

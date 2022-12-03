@@ -87,7 +87,7 @@ int bandageReduce(QStringList arguments)
     {
         if (!createBlastTempDirectory())
         {
-            err << "Error creating temporary directory for BLAST files" << endl;
+            err << "Error creating temporary directory for BLAST files" << Qt::endl;
             return 1;
         }
 
@@ -95,7 +95,7 @@ int bandageReduce(QStringList arguments)
 
         if (blastError != "")
         {
-            err << blastError << endl;
+            err << blastError << Qt::endl;
             return 1;
         }
     }
@@ -109,7 +109,7 @@ int bandageReduce(QStringList arguments)
 
     if (errorMessage != "")
     {
-        err << errorMessage << endl;
+        err << errorMessage << Qt::endl;
         return 1;
     }
 
@@ -118,7 +118,7 @@ int bandageReduce(QStringList arguments)
     bool success = g_assemblyGraph->saveVisibleGraphToGfa(outputFilename);
     if (!success)
     {
-        err << "Bandage was unable to save the graph file." << endl;
+        err << "Bandage was unable to save the graph file." << Qt::endl;
         return 1;
     }
 

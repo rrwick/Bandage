@@ -42,6 +42,7 @@
 #include <math.h>
 #include <QFileInfo>
 #include <QDir>
+#include <QRegularExpression>
 #include "ogdfnode.h"
 #include "../command_line/commoncommandlinefunctions.h"
 #include <iostream>
@@ -505,7 +506,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
             if (firstLine)
             {
-                QStringList firstLineParts = line.split(QRegExp("\\s+"));
+                QStringList firstLineParts = line.split(QRegularExpression("\\s+"));
                 if (firstLineParts.size() > 2)
                     m_kmer = firstLineParts[2].toInt();
                 firstLine = false;
@@ -513,7 +514,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
 
             if (line.startsWith("NODE"))
             {
-                QStringList nodeDetails = line.split(QRegExp("\\s+"));
+                QStringList nodeDetails = line.split(QRegularExpression("\\s+"));
 
                 if (nodeDetails.size() < 4)
                     throw "load error";
@@ -544,7 +545,7 @@ void AssemblyGraph::buildDeBruijnGraphFromLastGraph(QString fullFileName)
             //ARC lines contain edges.
             else if (line.startsWith("ARC"))
             {
-                QStringList arcDetails = line.split(QRegExp("\\s+"));
+                QStringList arcDetails = line.split(QRegularExpression("\\s+"));
 
                 if (arcDetails.size() < 3)
                     throw "load error";
@@ -699,7 +700,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             QApplication::processEvents();
             QString line = in.readLine();
 
-            QStringList lineParts = line.split(QRegExp("\t"));
+            QStringList lineParts = line.split(QRegularExpression("\t"));
 
             if (lineParts.size() < 1)
                 continue;
@@ -715,7 +716,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
                     if (part.left(5) != "bn:Z:")
                         continue;
                     QString bandageOptionsString = part.right(part.length() - 5);
-                    QStringList bandageOptions = bandageOptionsString.split(' ', QString::SkipEmptyParts);
+                    QStringList bandageOptions = bandageOptionsString.split(' ', Qt::SkipEmptyParts);
                     QStringList bandageOptionsCopy = bandageOptions;
                     *bandageOptionsError = checkForInvalidOrExcessSettings(&bandageOptionsCopy);
                     if (bandageOptionsError->length() == 0)
@@ -730,7 +731,9 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
                 QString nodeName = lineParts.at(1);
                 if (nodeName.isEmpty())
-                    nodeName = "node";
+                    nodeName = getUniqueNodeName("node");
+                if (m_deBruijnGraphNodes.contains(nodeName + "+"))
+                    throw "load error";
 
                 QByteArray sequence = lineParts.at(2).toLocal8Bit();
 
@@ -944,7 +947,7 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
             while (!in.atEnd()) {
                 QApplication::processEvents();
                 QString line = in.readLine();
-                QStringList lineParts = line.split(QRegExp("\t"));
+                QStringList lineParts = line.split(QRegularExpression("\t"));
                 if (lineParts.length() >= 5) {
                     bool conversionOkay;
                     long long readStart = lineParts[3].toLongLong(&conversionOkay);
@@ -986,8 +989,8 @@ void AssemblyGraph::buildDeBruijnGraphFromGfa(QString fullFileName, bool *unsupp
 
 bool AssemblyGraph::cigarContainsOnlyM(QString cigar)
 {
-    QRegExp rx("\\d+M");
-    return (rx.indexIn(cigar) != -1);
+    QRegularExpression rx("\\d+M");
+    return rx.match(cigar).hasMatch();
 }
 
 
@@ -1024,18 +1027,15 @@ int AssemblyGraph::getLengthFromCigar(QString cigar)
 //This function totals up the numbers for any given CIGAR code.
 int AssemblyGraph::getCigarCount(QString cigarCode, QString cigar)
 {
-    QRegExp rx("(\\d+)" + cigarCode);
+    QRegularExpression re("(\\d+)" + cigarCode);
     QStringList list;
-    int pos = 0;
-    while ((pos = rx.indexIn(cigar, pos)) != -1)
-    {
-        list << rx.cap(1);
-        pos += rx.matchedLength();
-    }
 
+    auto it = re.globalMatch(cigar);
     int sum = 0;
-    for (int i = 0; i < list.size(); ++i)
-        sum += list.at(i).toInt();
+    while (it.hasNext()) {
+        auto match = it.next();
+        sum += match.captured(1).toInt();
+    }
 
     return sum;
 }
@@ -1086,6 +1086,8 @@ void AssemblyGraph::buildDeBruijnGraphFromFastg(QString fullFileName)
                     nodeName += "-";
                 else
                     nodeName += "+";
+                if (m_deBruijnGraphNodes.contains(nodeName))
+                    throw "load error";
 
                 QString nodeDepthString = thisNodeDetails.at(5);
                 if (negativeNode)
@@ -1252,7 +1254,7 @@ void AssemblyGraph::buildDeBruijnGraphFromTrinityFasta(QString fullFileName)
         if (name.length() < 4)
             throw "load error";
 
-        int componentStartIndex = name.indexOf(QRegExp("c\\d+_"));
+        int componentStartIndex = name.indexOf(QRegularExpression("c\\d+_"));
         int componentEndIndex = name.indexOf("_", componentStartIndex);
 
         if (componentStartIndex < 0 || componentEndIndex < 0)
@@ -1378,7 +1380,7 @@ int AssemblyGraph::buildDeBruijnGraphFromAsqg(QString fullFileName)
             QApplication::processEvents();
             QString line = in.readLine();
 
-            QStringList lineParts = line.split(QRegExp("\t"));
+            QStringList lineParts = line.split(QRegularExpression("\t"));
 
             if (lineParts.size() < 1)
                 continue;
@@ -1526,6 +1528,16 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
             m_depthTag = "KC";
         }
 
+        // Check to see if the name matches SKESA format, in which case we can get the depth and node number.
+        else if (thisNodeDetails.size() >= 3 && thisNodeDetails[0] == "Contig" && thisNodeDetails[1].toInt() > 0) {
+            name = thisNodeDetails[1];
+            bool ok;
+            double convertedDepth = thisNodeDetails[2].toDouble(&ok);
+            if (ok)
+                depth = convertedDepth;
+            m_depthTag = "KC";
+        }
+
         // If it doesn't match, then we will use the sequence name up to the first space.
         else {
             QStringList nameParts = name.split(" ");
@@ -1551,6 +1563,10 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
         if (lowerName.contains("circular=true"))
             circularNodeNames.push_back(name);
 
+        // SKESA circularity
+        if (thisNodeDetails.size() == 4 and thisNodeDetails[3] == "Circ")
+            circularNodeNames.push_back(name);
+
         if (name.length() < 1)
             throw "load error";
 
@@ -1572,7 +1588,7 @@ void AssemblyGraph::buildDeBruijnGraphFromPlainFasta(QString fullFileName)
 QString AssemblyGraph::cleanNodeName(QString name)
 {
     //Replace whitespace with underscores
-    name = name.replace(QRegExp("\\s"), "_");
+    name = name.replace(QRegularExpression("\\s"), "_");
 
     //Remove any commas.
     name = name.replace(",", "");
@@ -1648,9 +1664,9 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
         QTextStream in(&inputFile);
         if (in.atEnd())
             return false;
-        QRegExp rx(regExp);
+        QRegularExpression rx(regExp);
         QString line = in.readLine();
-        if (rx.indexIn(line) != -1)
+        if (rx.match(line).hasMatch())
             return true;
     }
     return false;
@@ -1667,18 +1683,19 @@ bool AssemblyGraph::checkFirstLineOfFile(QString fullFileName, QString regExp)
  */
 QStringList AssemblyGraph::splitCsv(QString line, QString sep)
 {
+    QRegularExpression rx(R"(("(?:[^"]|"")*"|[^)" + sep + "]*)");
     QStringList list;
-    QRegExp rx("(\"(?:[^\"]|\"\")*\"|[^"+sep+"]*)");
-    int pos = 0;
 
-    while (rx.indexIn(line, pos) != -1)
-    {
-        QString field = rx.cap().replace("\"\"","\"");
-        if (field[0] == '"' && field[field.length()-1] == '"')
-            field=field.mid(1,field.length()-2);
+    auto it = rx.globalMatch(line);
+    while (it.hasNext()) {
+        auto match = it.next();
+        QString field = match.captured().replace("\"\"", "\"");
+        if (field[0] == '"' && field[field.length() - 1] == '"') {
+            field = field.mid(1, field.length() - 2);
+        }
         list << field;
-        pos += rx.matchedLength() +1;
     }
+
     return list;
 }
 
@@ -1804,6 +1821,12 @@ bool AssemblyGraph::loadCSV(QString filename, QStringList * columns, QString * e
 //If the node name it finds does not end in a '+' or '-', it will add '+'.
 QString AssemblyGraph::getNodeNameFromString(QString string)
 {
+    // First check for the most obvious case, where the string is already a node name.
+    if (m_deBruijnGraphNodes.contains(string))
+        return string;
+    if (m_deBruijnGraphNodes.contains(string + "+"))
+        return string + "+";
+
     QStringList parts = string.split("_");
     if (parts.size() == 0)
         return "";
@@ -1955,28 +1978,6 @@ unsigned int getMaxChildLength(DeBruijnNode* node) {
     return maxChildLen;
 }
 
-bool AssemblyGraph::deleteLeafIfNeeded(DeBruijnNode* node) {
-    if (node->getLeavingEdges().size() == 0 && node->getEnteringEdges().size() != 0) {
-        unsigned int maxParentLen = getMaxParentLength(node);
-        unsigned int maxParentDepth = getMaxParentDepth(node);
-        if (node->getLength() < 1000/* && node->getLength() < maxParentLen*/ &&
-            node->getDepth() <= maxParentDepth / 2) {
-            deleteNode(node);
-            return true;
-        }
-    }
-    if (node->getEnteringEdges().size() == 0 && node->getLeavingEdges().size() != 0) {
-        unsigned int maxChildLen = getMaxChildLength(node);
-        unsigned int maxChildDepth = getMaxChildDepth(node);
-        if (node->getLength() < 1000/* && node->getLength() < maxChildLen*/ &&
-            node->getDepth() <= maxChildDepth / 2) {
-            deleteNode(node);
-            return true;
-        }
-    }
-    return false;
-}
-
 QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * node, int componentId, std::vector<DeBruijnNode *>* mergedNode) {
     unsigned long size = 0;
     unsigned int contigCount = 0;
@@ -1986,11 +1987,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
 
         if (node->getNameWithoutSign().endsWith("_start")) {
             g_hicSettings->addTargetComponentIfNeeded(componentId);
-        }
-        else {
-            if (deleteLeafIfNeeded(node)) {
-                return qMakePair(contigCount, size);
-            }
         }
         for (DeBruijnEdge* edge : node->getLeavingEdges()) {
             if (edge->getEndingNode()->getComponentId() == 0 && !edge->isHiC()) {
@@ -2004,11 +2000,6 @@ QPair<unsigned int, unsigned long> AssemblyGraph::dfsComponent(DeBruijnNode * no
                 QPair<unsigned int, unsigned long> res = dfsComponent(edge->getStartingNode(), componentId, mergedNode);
                 size += res.second;
                 contigCount += res.first;
-            }
-        }
-        if (!(node->getNameWithoutSign().endsWith("_start"))) {
-            if (deleteLeafIfNeeded(node)) {
-                return qMakePair(contigCount, size);
             }
         }
         size += node->getLength();
@@ -2055,9 +2046,11 @@ void AssemblyGraph::makeZipped(int minSize) {
             QList<DeBruijnNode*> mainNodes1;
             int boundLen = min(minSize, (i.value()->getLength()) / 4);
             for (DeBruijnEdge* edge : node->getEnteringEdges()) {
-                DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!edge->isHiC() && !otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
-                    dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes1, &zippedNodes1);
+                    }
                 }
             }
              
@@ -2075,9 +2068,11 @@ void AssemblyGraph::makeZipped(int minSize) {
             QList<DeBruijnNode*> zippedNodes2;
             QList<DeBruijnNode*> mainNodes2;
             for (DeBruijnEdge* edge : node->getLeavingEdges()) {
-                DeBruijnNode* otherNode = edge->getOtherNode(node);
-                if (!edge->isHiC() && !otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
-                    dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
+                if (!edge->isHiC()) {
+                    DeBruijnNode* otherNode = edge->getOtherNode(node);
+                    if (!otherNode->isDrawn() && !(otherNode->isNodeUnion()) && !otherNode->isZipped() && otherNode->getLength() < boundLen) {
+                        dfsZipped(otherNode, boundLen, &mainNodes2, &zippedNodes2);
+                    }
                 }
             }
 
@@ -3098,7 +3093,25 @@ QString AssemblyGraph::getOppositeNodeName(QString nodeName)
 }
 
 
-void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> *sequences)
+void AssemblyGraph::readFastaOrFastqFile(QString filename, std::vector<QString> * names,
+                                         std::vector<QByteArray> * sequences) {
+    QChar firstChar = QChar(0);
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly)) {
+        QTextStream in(&inputFile);
+        QString firstLine = in.readLine();
+        firstChar = firstLine.at(0);
+        inputFile.close();
+    }
+    if (firstChar == '>')
+        readFastaFile(filename, names, sequences);
+    else if (firstChar == '@')
+        readFastqFile(filename, names, sequences);
+}
+
+
+
+void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> * sequences)
 {
     QFile inputFile(filename);
     if (inputFile.open(QIODevice::ReadOnly))
@@ -3131,7 +3144,7 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
             }
 
             else //It's a sequence line
-                sequence += line.simplified();
+                sequence += line.simplified().toUtf8();
         }
 
         //Add the last target to the results now.
@@ -3141,6 +3154,36 @@ void AssemblyGraph::readFastaFile(QString filename, std::vector<QString> * names
             sequences->push_back(sequence);
         }
 
+        inputFile.close();
+    }
+}
+
+
+void AssemblyGraph::readFastqFile(QString filename, std::vector<QString> * names, std::vector<QByteArray> * sequences)
+{
+    QFile inputFile(filename);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QApplication::processEvents();
+
+            QString name = in.readLine().simplified();
+            QByteArray sequence = in.readLine().simplified().toLocal8Bit();
+            in.readLine();  // separator
+            in.readLine();  // qualities
+
+            if (name.length() == 0)
+                continue;
+            if (sequence.length() == 0)
+                continue;
+            if (name.at(0) != '@')
+                continue;
+            name.remove(0, 1); //Remove '@' from start
+            names->push_back(name);
+            sequences->push_back(sequence);
+        }
         inputFile.close();
     }
 }
@@ -3206,14 +3249,6 @@ int AssemblyGraph::getDrawnNodeCount() const
     }
 
     return nodeCount;
-}
-
-void AssemblyGraph::deleteNode(DeBruijnNode* node) {
-    m_deBruijnGraphNodes.remove(node->getName());
-    m_deBruijnGraphNodes.remove(node->getReverseComplement()->getName());
-    deleteEdges(node->getEdgesPointer());
-    deleteEdges(node->getReverseComplement()->getEdgesPointer());
-    //delete node;
 }
 
 void AssemblyGraph::deleteNodes(std::vector<DeBruijnNode *> * nodes)
@@ -4487,7 +4522,7 @@ bool AssemblyGraph::attemptToLoadSequencesFromFasta()
     {
         QString name = names[i];
         name = simplifyCanuNodeName(name);
-        name = name.split(QRegExp("\\s+"))[0];
+        name = name.split(QRegularExpression("\\s+"))[0];
         if (m_deBruijnGraphNodes.contains(name + "+"))
         {
             DeBruijnNode * posNode = m_deBruijnGraphNodes[name + "+"];

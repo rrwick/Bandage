@@ -813,6 +813,9 @@
               </item>
               <item row="15" column="1" colspan="2">
                <widget class="QPushButton" name="drawGraphButton">
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
                 <property name="text">
                  <string>Draw graph</string>
                 </property>
@@ -869,6 +872,34 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <item>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+                 <property name="text">
+                  <string>Entire graph</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around nodes</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around BLAST hits</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Depth range</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around tax</string>
+                 </property>
+                </item>
                 <item>
                  <property name="text">
                   <string>Entire graph</string>
@@ -961,6 +992,9 @@
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>Single</string>
                    </property>
@@ -976,6 +1010,9 @@
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
                    </property>
                    <property name="text">
                     <string>Double</string>
@@ -1160,6 +1197,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
@@ -1248,6 +1288,9 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
                 </property>
                 <property name="text">
                  <string>Min:</string>
@@ -1847,6 +1890,9 @@
                  </property>
                  <item row="0" column="0">
                   <widget class="QCheckBox" name="nodeCustomLabelsCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>Custom</string>
                    </property>
@@ -1854,6 +1900,9 @@
                  </item>
                  <item row="0" column="1">
                   <widget class="QCheckBox" name="nodeNamesCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>Name</string>
                    </property>
@@ -1861,6 +1910,9 @@
                  </item>
                  <item row="1" column="0">
                   <widget class="QCheckBox" name="nodeLengthsCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>Length</string>
                    </property>
@@ -1868,6 +1920,9 @@
                  </item>
                  <item row="1" column="1">
                   <widget class="QCheckBox" name="nodeDepthCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>Depth</string>
                    </property>
@@ -1875,6 +1930,9 @@
                  </item>
                  <item row="3" column="0">
                   <widget class="QCheckBox" name="blastHitsCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>BLAST hits</string>
                    </property>
@@ -1885,10 +1943,16 @@
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                   </widget>
                  </item>
                  <item row="3" column="1">
                   <widget class="QCheckBox" name="csvCheckBox">
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="text">
                     <string>CSV data:</string>
                    </property>
@@ -2029,6 +2093,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
                 <item>
                  <property name="text">
                   <string>none</string>
@@ -2038,6 +2105,9 @@
               </item>
               <item row="0" column="1" colspan="2">
                <widget class="QPushButton" name="blastSearchButton">
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
                 <property name="text">
                  <string>Create/view BLAST search</string>
                 </property>

@@ -68,18 +68,22 @@ void RunBlastSearchWorker::runBlastSearch()
 
 QString RunBlastSearchWorker::runOneBlastSearch(SequenceType sequenceType, bool * success)
 {
-    QString fullBlastCommand;
-    if (sequenceType == NUCLEOTIDE)
-        fullBlastCommand = m_blastnCommand + " -query " +g_blastSearch-> m_tempDirectory + "nucl_queries.fasta ";
-    else
-        fullBlastCommand = m_tblastnCommand + " -query " + g_blastSearch->m_tempDirectory + "prot_queries.fasta ";
-    fullBlastCommand += "-db " + g_blastSearch->m_tempDirectory + "all_nodes.fasta -outfmt 6";
-
-    QString extraCommandLineOptions = m_parameters;
-    fullBlastCommand += " " + extraCommandLineOptions;
+    QString blastCommand;
+    QStringList blastCommandArguments = { "-query" };
+    if (sequenceType == NUCLEOTIDE) {
+        blastCommand = m_blastnCommand;
+        blastCommandArguments << g_blastSearch-> m_tempDirectory + "nucl_queries.fasta";
+    }
+    else {
+        blastCommand = m_tblastnCommand;
+        blastCommandArguments << g_blastSearch-> m_tempDirectory + "prot_queries.fasta";
+    }
+    blastCommandArguments << "-db" << (g_blastSearch->m_tempDirectory + "all_nodes.fasta");
+    blastCommandArguments << "-outfmt" << "6";
+    blastCommandArguments += m_parameters.split(" ", Qt::SkipEmptyParts);
 
     g_blastSearch->m_blast = new QProcess();
-    g_blastSearch->m_blast->start(fullBlastCommand);
+    g_blastSearch->m_blast->start(blastCommand, blastCommandArguments);
 
     bool finished = g_blastSearch->m_blast->waitForFinished(-1);
 

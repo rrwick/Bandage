@@ -22,7 +22,6 @@
 #include <QLatin1String>
 #include <QTextStream>
 #include <QLocale>
-#include <QRegExp>
 #include "../ogdf/energybased/FMMMLayout.h"
 #include <math.h>
 #include "../program/settings.h"
@@ -40,7 +39,6 @@
 #include <QProgressDialog>
 #include <QThread>
 #include "../program/graphlayoutworker.h"
-#include <QRegExp>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QShortcut>
@@ -189,6 +187,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->contiguityButton, SIGNAL(clicked()), this, SLOT(determineContiguityFromSelectedNode()));
     connect(ui->actionBring_selected_nodes_to_front, SIGNAL(triggered()), this, SLOT(bringSelectedNodesToFront()));
     connect(ui->actionSelect_nodes_with_BLAST_hits, SIGNAL(triggered()), this, SLOT(selectNodesWithBlastHits()));
+    connect(ui->actionSelect_nodes_with_dead_ends, SIGNAL(triggered()), this, SLOT(selectNodesWithDeadEnds()));
     connect(ui->actionSelect_all, SIGNAL(triggered()), this, SLOT(selectAll()));
     connect(ui->actionSelect_none, SIGNAL(triggered()), this, SLOT(selectNone()));
     connect(ui->actionInvert_selection, SIGNAL(triggered()), this, SLOT(invertSelection()));
@@ -2523,6 +2522,54 @@ void MainWindow::selectNodesWithBlastHits()
         QMessageBox::information(this, "No BLAST hits in visible nodes",
                                        "No nodes with BLAST hits are currently visible, so there is nothing to select. "
                                        "Adjust the graph scope to make the nodes with BLAST hits visible.");
+    else
+        zoomToSelection();
+}
+
+
+void MainWindow::selectNodesWithDeadEnds()
+{
+    m_scene->blockSignals(true);
+    m_scene->clearSelection();
+
+    bool atLeastOneNodeHasDeadEnd = false;
+    bool atLeastOneNodeSelected = false;
+
+    QMapIterator<QString, DeBruijnNode*> i(g_assemblyGraph->m_deBruijnGraphNodes);
+    while (i.hasNext())
+    {
+        i.next();
+        DeBruijnNode * node = i.value();
+
+        bool nodeHasDeadEnd = node->getDeadEndCount() > 0;
+        if (nodeHasDeadEnd)
+            atLeastOneNodeHasDeadEnd = true;
+
+        GraphicsItemNode * graphicsItemNode = node->getGraphicsItemNode();
+
+        if (graphicsItemNode == 0)
+            continue;
+
+        if (nodeHasDeadEnd)
+        {
+            graphicsItemNode->setSelected(true);
+            atLeastOneNodeSelected = true;
+        }
+    }
+    m_scene->blockSignals(false);
+    g_graphicsView->viewport()->update();
+    selectionChanged();
+
+    if (!atLeastOneNodeHasDeadEnd)
+    {
+        QMessageBox::information(this, "No dead ends", "Nothing was selected because this graph has no dead ends.");
+        return;
+    }
+
+    if (!atLeastOneNodeSelected)
+        QMessageBox::information(this, "No dead ends in visible nodes",
+                                       "Nothing was selected because no dead ends are currently visible. "
+                                       "Adjust the graph scope to make the nodes with dead ends hits visible.");
     else
         zoomToSelection();
 }
