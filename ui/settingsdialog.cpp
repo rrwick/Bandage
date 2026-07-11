@@ -223,6 +223,8 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
     intFunctionPointer(&settings->minLengthBaseDiscrepancy, ui->minLengthBaseDiscrepancySpinBox);
     checkBoxFunctionPointer(&settings->maxLengthBaseDiscrepancy.on, ui->maxLengthBaseDiscrepancyCheckBox);
     intFunctionPointer(&settings->maxLengthBaseDiscrepancy, ui->maxLengthBaseDiscrepancySpinBox);
+    doubleFunctionPointer(&settings->hicEdgeLength, ui->hicEdgeLengthSpinBox, false);
+    doubleFunctionPointer(&settings->hicEdgeWidth, ui->hicEdgeWidthSpinBox, false);
 
     //A couple of settings are not in a spin box, check box or colour button, so
     //they have to be done manually, not with those function pointers.
@@ -246,6 +248,34 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         ui->nodeLengthPerMegabaseManualRadioButton->setChecked(settings->nodeLengthMode != AUTO_NODE_LENGTH);
         ui->positionVisibleRadioButton->setChecked(!settings->positionTextNodeCentre);
         ui->positionCentreRadioButton->setChecked(settings->positionTextNodeCentre);
+        switch (settings->hicInclusionFilter) {
+        case ONE_BETWEEN_GRAPH_COMPONENT:
+            ui->hicInclusionFilterComboBox->setCurrentIndex(0);
+            break;
+        case ALL_BETWEEN_GRAPH_COMPONENTS:
+            ui->hicInclusionFilterComboBox->setCurrentIndex(1);
+            break;
+        case ALL:
+            ui->hicInclusionFilterComboBox->setCurrentIndex(2);
+            break;
+        case ONE_FROM_TARGET_COMPONENT:
+            ui->hicInclusionFilterComboBox->setCurrentIndex(3);
+            break;
+        }
+        
+        switch (settings->hicDrawingType)
+        {
+        case ALL_EDGES:
+            ui->hicDrawingTypeComboBox->setCurrentIndex(0);
+            break;
+        case ONE_EDGE:
+            ui->hicDrawingTypeComboBox->setCurrentIndex(1);
+            break;
+        case NO_EDGE:
+            ui->hicDrawingTypeComboBox->setCurrentIndex(2);
+            break;
+        }
+        
     }
     else
     {
@@ -259,6 +289,34 @@ void SettingsDialog::loadOrSaveSettingsToOrFromWidgets(bool setWidgets, Settings
         else
             settings->nodeLengthMode = MANUAL_NODE_LENGTH;
         settings->positionTextNodeCentre = ui->positionCentreRadioButton->isChecked();
+        switch (ui->hicInclusionFilterComboBox->currentIndex())
+        {
+        case 0:
+            settings->hicInclusionFilter = ONE_BETWEEN_GRAPH_COMPONENT;
+            break;
+        case 1:
+            settings->hicInclusionFilter = ALL_BETWEEN_GRAPH_COMPONENTS;
+            break;
+        case 2:
+            settings->hicInclusionFilter = ALL; 
+            break;
+        case 3:
+            settings->hicInclusionFilter = ONE_FROM_TARGET_COMPONENT;
+            break;
+        }
+
+        switch (ui->hicDrawingTypeComboBox->currentIndex())
+        {
+        case 0:
+            settings->hicDrawingType = ALL_EDGES;
+            break;
+        case 1:
+            settings->hicDrawingType = ONE_EDGE;
+            break;
+        case 2:
+            settings->hicDrawingType = NO_EDGE;
+            break;
+        }
     }
 }
 

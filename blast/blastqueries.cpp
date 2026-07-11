@@ -66,6 +66,28 @@ void BlastQueries::addQuery(BlastQuery * newQuery)
     updateTempFiles();
 }
 
+void BlastQueries::addQuery(BlastQuery* newQuery, int colourIndex)
+{
+    newQuery->setName(getUniqueName(newQuery->getName()));
+
+    colourIndex %= m_presetColours.size();
+    newQuery->setColour(m_presetColours[colourIndex]);
+    m_queries.push_back(newQuery);
+    updateTempFiles();
+}
+
+void BlastQueries::addQuery(BlastQuery* newQuery, int colourIndex, int featureClassColour)
+{
+    newQuery->setName(getUniqueName(newQuery->getName()));
+
+    colourIndex %= m_presetColours.size();
+    newQuery->setColour(m_presetColours[colourIndex]);
+    featureClassColour %= m_presetColours.size();
+    newQuery->setFeatureClassColour(m_presetColours[featureClassColour]);
+    m_queries.push_back(newQuery);
+    updateTempFiles();
+}
+
 
 //This function renames the query.  It returns the name given, because that
 //might not be exactly the same as the name passed to the function if it

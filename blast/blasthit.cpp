@@ -86,7 +86,12 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse, double scaled
             queryFraction += querySpacing;
         }
     }
-
+    else if (g_settings->nodeColourScheme == BLAST_HITS_CLASS_COLOURS) {
+        if (reverse)
+            returnVector.push_back(BlastHitPart(m_query->getFeatureClassColour(), 1.0 - m_nodeStartFraction, 1.0 - m_nodeEndFraction));
+        else
+            returnVector.push_back(BlastHitPart(m_query->getFeatureClassColour(), m_nodeStartFraction, m_nodeEndFraction));
+    }
     //If the colour scheme is Blast solid, then this function generates only one
     //BlastHitPart with a colour dependent on the Blast query.
     else
@@ -96,7 +101,6 @@ std::vector<BlastHitPart> BlastHit::getBlastHitParts(bool reverse, double scaled
         else
             returnVector.push_back(BlastHitPart(m_query->getColour(), m_nodeStartFraction, m_nodeEndFraction));
     }
-
     return returnVector;
 }
 

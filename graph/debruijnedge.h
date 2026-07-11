@@ -37,6 +37,8 @@ public:
     GraphicsItemEdge * getGraphicsItemEdge() const {return m_graphicsItemEdge;}
     DeBruijnEdge * getReverseComplement() const {return m_reverseComplement;}
     bool isDrawn() const {return m_drawn;}
+    bool isHiC() const {return m_HiC;}
+    int getWeight() const { return m_weight; }
     int getOverlap() const {return m_overlap;}
     EdgeOverlapType getOverlapType() const {return m_overlapType;}
     DeBruijnNode * getOtherNode(const DeBruijnNode * node) const;
@@ -64,9 +66,14 @@ public:
     void setOverlapType(EdgeOverlapType olt) {m_overlapType = olt;}
     void reset() {m_graphicsItemEdge = 0; m_drawn = false;}
     void determineIfDrawn() {m_drawn = edgeIsVisible();}
+    void setDrawn(bool isDrawn) { m_drawn = isDrawn; }
     void setExactOverlap(int overlap) {m_overlap = overlap; m_overlapType = EXACT_OVERLAP;}
     void autoDetermineExactOverlap();
     void addToOgdfGraph(ogdf::Graph * ogdfGraph, ogdf::EdgeArray<double> * edgeArray) const;
+    void setHiC(bool hiC, int weight) { m_HiC = hiC; m_weight = weight; }
+    //void setOgdfEdge(ogdf::edge ogdfEdge) { m_ogdfEdge = ogdfEdge; };
+    //ogdf::edge getOgdfEdge() { return m_ogdfEdge; };
+    //ogdf::edge m_ogdfEdge;
 
 private:
     DeBruijnNode * m_startingNode;
@@ -76,7 +83,9 @@ private:
     bool m_drawn;
     EdgeOverlapType m_overlapType;
     int m_overlap;
-
+    bool m_HiC;
+    int m_weight;
+    
     bool edgeIsVisible() const;
     int timesNodeInPath(DeBruijnNode * node, std::vector<DeBruijnNode *> * path) const;
     std::vector<DeBruijnEdge *> findNextEdgesInPath(DeBruijnNode * nextNode,

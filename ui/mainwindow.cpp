@@ -65,6 +65,12 @@
 #include "changenodedepthdialog.h"
 #include <limits>
 #include "graphinfodialog.h"
+#include "taxinfodialog.h"
+#include<iostream>
+#include<dos.h>
+#include "../random_forest/assemblyforest.h"
+#include "../random_forest/GraphicsItemFeatureNode.h"
+#include <QtWidgets/QSplitter>
 
 MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     QMainWindow(0),
@@ -73,9 +79,10 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     m_uiState(NO_GRAPH_LOADED), m_blastSearchDialog(0), m_alreadyShown(false)
 {
     ui->setupUi(this);
-
     QApplication::setWindowIcon(QIcon(QPixmap(":/icons/icon.png")));
-    ui->graphicsViewWidget->layout()->addWidget(g_graphicsView);
+    ui->featureClassInfoText->setFixedHeight(87);
+    ui->featureClassInfoText->setEnabled(false);
+    ui->allViewsWidget->layout()->addWidget(g_graphicsView);
 
     srand(time(NULL));
 
@@ -101,12 +108,15 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     ui->selectedEdgesTextEdit->setFixedHeight(ui->selectedEdgesTextEdit->sizeHint().height() / 2.5);
 
     setUiState(NO_GRAPH_LOADED);
+    setFeaturesUiState(NO_FEATURES_LOADED);
 
     m_graphicsViewZoom = new GraphicsViewZoom(g_graphicsView);
     g_graphicsView->m_zoom = m_graphicsViewZoom;
 
     m_scene = new MyGraphicsScene(this);
     g_graphicsView->setScene(m_scene);
+
+    m_randomForestMainWindow = new RandomForestMainWindow();
 
     setInfoTexts();
 
@@ -120,6 +130,8 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 
     graphScopeChanged();
     switchColourScheme();
+    switchFeatureColourScheme();
+    switchTaxRank();
 
     //If this is a Mac, change the 'Delete' shortcuts to 'Backspace' instead.
 #ifdef Q_OS_MAC
@@ -128,8 +140,13 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
 #endif
 
     connect(ui->drawGraphButton, SIGNAL(clicked()), this, SLOT(drawGraph()));
+    connect(ui->drawFeaturesButton, SIGNAL(clicked()), this, SLOT(drawFeaturesForest()));
+    connect(ui->unzipNodesPushButton, SIGNAL(clicked()), this, SLOT(unzipSelectedNodes()));
     connect(ui->actionLoad_graph, SIGNAL(triggered()), this, SLOT(loadGraph()));
     connect(ui->actionLoad_CSV, SIGNAL(triggered(bool)), this, SLOT(loadCSV()));
+    connect(ui->actionLoad_HiC_data, SIGNAL(triggered(bool)), this, SLOT(loadHiC()));
+    connect(ui->actionLoad_Taxonometry, SIGNAL(triggered(bool)), this, SLOT(loadTax()));
+    connect(ui->actionLoad_features_forest, SIGNAL(triggered(bool)), this, SLOT(loadFeaturesForest()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->graphScopeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(graphScopeChanged()));
     connect(ui->zoomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(zoomSpinBoxChanged()));
@@ -139,8 +156,12 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionCopy_selected_node_path_to_clipboard, SIGNAL(triggered(bool)), this, SLOT(copySelectedPathToClipboard()));
     connect(ui->actionSave_selected_node_path_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveSelectedPathToFile()));
     connect(ui->coloursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchColourScheme()));
-    connect(ui->actionSave_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageCurrentView()));
-    connect(ui->actionSave_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageEntireScene()));
+    connect(ui->featuresColoursComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchFeatureColourScheme()));
+    connect(ui->taxColourComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(switchTaxRank()));
+    connect(ui->actionSave_graph_image_current_view, SIGNAL(triggered()), this, SLOT(saveImageGraphCurrentView()));
+    connect(ui->actionSave_graph_image_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageGraphEntireScene()));
+    connect(ui->actionSave_image_features_current_view, SIGNAL(triggered()), this, SLOT(saveImageFeaturesCurrentView()));
+    connect(ui->actionSave_image_features_entire_scene, SIGNAL(triggered()), this, SLOT(saveImageFeaturesEntireScene()));
     connect(ui->nodeCustomLabelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeNamesCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->nodeLengthsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
@@ -149,6 +170,9 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->csvComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setTextDisplaySettings()));
     connect(ui->blastHitsCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->textOutlineCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->taxIdCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->taxIdRankCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
+    connect(ui->taxNameRankCheckBox, SIGNAL(toggled(bool)), this, SLOT(setTextDisplaySettings()));
     connect(ui->fontButton, SIGNAL(clicked()), this, SLOT(fontButtonPressed()));
     connect(ui->setNodeCustomColourButton, SIGNAL(clicked()), this, SLOT(setNodeCustomColour()));
     connect(ui->setNodeCustomLabelButton, SIGNAL(clicked()), this, SLOT(setNodeCustomLabel()));
@@ -178,6 +202,7 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->startingNodesExactMatchRadioButton, SIGNAL(toggled(bool)), this, SLOT(startingNodesExactMatchChanged()));
     connect(ui->actionSpecify_exact_path_for_copy_save, SIGNAL(triggered()), this, SLOT(openPathSpecifyDialog()));
     connect(ui->nodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(nodeWidthChanged()));
+    connect(ui->featureNodeWidthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(featureNodeWidthChanged()));
     connect(g_graphicsView, SIGNAL(copySelectedSequencesToClipboard()), this, SLOT(copySelectedSequencesToClipboard()));
     connect(g_graphicsView, SIGNAL(saveSelectedSequencesToFile()), this, SLOT(saveSelectedSequencesToFile()));
     connect(ui->actionSave_entire_graph_to_FASTA, SIGNAL(triggered(bool)), this, SLOT(saveEntireGraphToFasta()));
@@ -193,6 +218,15 @@ MainWindow::MainWindow(QString fileToLoadOnStartup, bool drawGraphAfterLoad) :
     connect(ui->actionChange_node_name, SIGNAL(triggered(bool)), this, SLOT(changeNodeName()));
     connect(ui->actionChange_node_depth, SIGNAL(triggered(bool)), this, SLOT(changeNodeDepth()));
     connect(ui->moreInfoButton, SIGNAL(clicked(bool)), this, SLOT(openGraphInfoDialog()));
+    connect(ui->taxInfoButton, SIGNAL(clicked(bool)), this, SLOT(openTaxInfoDialog()));
+    connect(ui->taxInfoHiCButton, SIGNAL(clicked(bool)), this, SLOT(openTaxInfoHiCDialog()));
+    connect(ui->actionSave_common_tax_information, SIGNAL(triggered()), this, SLOT(saveTaxInfo()));
+    connect(ui->actionSave_tax_info_with_Hi_C_links, SIGNAL(triggered()), this, SLOT(saveHiCTaxInfo()));
+    connect(ui->connectSelectedFeatureNodes, SIGNAL(clicked()), this, SLOT(matchSelectedFeatureNodes()));
+    connect(ui->featureIdCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureClassCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureCustomCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
+    connect(ui->featureClassLikeFigureCheckBox, SIGNAL(toggled(bool)), this, SLOT(setFeatureTextDisplaySettings()));
 
     connect(this, SIGNAL(windowLoaded()), this, SLOT(afterMainWindowShow()), Qt::ConnectionType(Qt::QueuedConnection | Qt::UniqueConnection));
 }
@@ -263,6 +297,115 @@ void MainWindow::cleanUp()
     g_settings->displayNodeCsvDataCol = 0;
 }
 
+void MainWindow::loadHiC(QString fullFileName) {
+    QString selectedFilter = "Comma separated value (*.txt)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load Hi-C", g_memory->rememberedPath,
+            "Comma separated value (*.txt)",
+            &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        MyProgressDialog progress(this, "Loading Hi-C...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        bool success = g_assemblyGraph->loadHiC(fullFileName, &errormsg);
+
+        if (success)
+        {
+            setHiCWidgetVisibility(true);
+        }
+    } 
+    catch (...) 
+    {
+        QString errorTitle = "Error loading HiC";
+        QString errorMessage = "There was an error when attempting to load:\n"
+            + fullFileName + "\n\n"
+            "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
+
+}
+
+void MainWindow::loadTax(QString fullFileName) {
+    QString selectedFilter = "Comma separated value (*.txt)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load Hi-C", g_memory->rememberedPath,
+            "Comma separated value (*.txt)",
+            &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        MyProgressDialog progress(this, "Loading Tax...", false);
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+
+        bool success = g_assemblyGraph->loadTax(fullFileName, &errormsg);
+
+        if (success)
+        {
+            setTaxVisibility(true);
+        }
+    }
+    catch (...)
+    {
+        QString errorTitle = "Error loading Tax";
+        QString errorMessage = "There was an error when attempting to load:\n"
+            + fullFileName + "\n\n"
+            "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
+}
+
+void MainWindow::loadFeaturesForest(QString fullFileName) {
+    QString selectedFilter = "Comma separated value (*.txt)";
+    if (fullFileName == "")
+    {
+        fullFileName = QFileDialog::getOpenFileName(this, "Load Features forest", g_memory->rememberedPath,
+            "Comma separated value (*.txt)",
+            &selectedFilter);
+    }
+
+    if (fullFileName == "")
+        return; // user clicked on cancel
+    QString errormsg;
+    QStringList columns;
+
+    try
+    {
+        bool success = g_assemblyForest->loadRandomForestFromFile(fullFileName, &errormsg);
+
+        if (success)
+        {
+            setFeaturesUiState(FEATURES_LOADED);
+        }
+    }
+    catch (...)
+    {
+        QString errorTitle = "Error loading features forest";
+        QString errorMessage = "There was an error when attempting to load:\n"
+            + fullFileName + "\n\n"
+            "Please verify that this file has the correct format.";
+        QMessageBox::warning(this, errorTitle, errorMessage);
+    }
+
+}
+
 void MainWindow::loadCSV(QString fullFileName)
 {
     QString selectedFilter = "Comma separated value (*.csv)";
@@ -326,6 +469,11 @@ void MainWindow::loadGraph(QString fullFileName)
 
     if (fullFileName != "") //User did not hit cancel
     {
+        g_settings->wasCalcHiCLinkForTax = false;
+        g_settings->wasZipped = false;
+        g_settings->wasComponentsFound = false;
+        g_settings->m_clock = -1;
+
         GraphFileType detectedFileType = g_assemblyGraph->getGraphFileTypeFromFile(fullFileName);
 
         GraphFileType selectedFileType = ANY_FILE_TYPE;
@@ -388,6 +536,8 @@ void MainWindow::loadGraph2(GraphFileType graphFileType, QString fullFileName)
         MyProgressDialog progress(this, "Loading " + convertGraphFileTypeToString(graphFileType) + " file...", false);
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
+
+        g_assemblyGraph->cleanUp();
 
         if (graphFileType == LAST_GRAPH)
             g_assemblyGraph->buildDeBruijnGraphFromLastGraph(fullFileName);
@@ -477,6 +627,55 @@ void MainWindow::clearGraphDetails()
     ui->totalLengthLabel->setText("0");
 }
 
+void MainWindow::unzipSelectedNodes() {
+    std::vector<DeBruijnNode*> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 1 && selectedNodes[0]->isNodeUnion()) {
+        resetScene();
+        g_settings->addNewNodes = true;
+        DeBruijnNode* selectNode = selectedNodes[0];
+        g_assemblyGraph->unzipSelectedNodes(selectNode);
+        layoutGraphUnzip();
+    }
+}
+
+void MainWindow::featureSelectionChanged() {
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+
+    if (selectedNodes.size() == 0)
+    {
+        ui->selectedNodesTextEdit->setPlainText("");
+        setSelectedNodesWidgetsVisibility(false);
+    }
+
+    else //One or more nodes selected
+    {
+        setSelectedNodesWidgetsVisibility(true);
+
+        int selectedNodeCount;
+        QString selectedFeatureNodeText;
+
+        m_randomForestMainWindow->getSelectedNodeInfo(selectedNodeCount, selectedFeatureNodeText);
+
+        if (selectedNodeCount == 1)
+        {
+            ui->selectedNodesTitleLabel->setText("Selected node");
+            ui->selectedNodesLengthLabel->setText("");
+            ui->selectedNodesDepthLabel->setText("");
+        }
+        else
+        {
+            ui->selectedNodesTitleLabel->setText("Selected nodes (" + formatIntForDisplay(selectedNodeCount) + ")");
+            ui->selectedNodesLengthLabel->setText("");
+            ui->selectedNodesDepthLabel->setText("");
+        }
+
+        ui->selectedNodesTextEdit->setPlainText(selectedFeatureNodeText);
+    }
+
+    ui->selectedEdgesTextEdit->setPlainText("");
+    setSelectedEdgesWidgetsVisibility(false);
+    setTaxVisibility(false);
+}
 
 void MainWindow::selectionChanged()
 {
@@ -515,6 +714,9 @@ void MainWindow::selectionChanged()
         }
 
         ui->selectedNodesTextEdit->setPlainText(selectedNodeListText);
+        QString selectedNodeTaxListText;
+        getSelectedNodeTaxInfo(selectedNodeTaxListText);
+        ui->taxInfoTextEdit->setPlainText(selectedNodeTaxListText);
     }
 
 
@@ -565,6 +767,34 @@ void MainWindow::getSelectedNodeInfo(int & selectedNodeCount, QString & selected
     selectedNodeDepthText = formatDepthForDisplay(g_assemblyGraph->getMeanDepth(selectedNodes));
 }
 
+void MainWindow::getSelectedNodeTaxInfo(QString& selectedNodeListText) {
+    std::vector<DeBruijnNode*> selectedNodes = m_scene->getSelectedNodes();
+
+    int selectedNodeCount = int(selectedNodes.size());
+
+    for (int i = 0; i < selectedNodeCount; ++i)
+    {
+        QString nodeName = selectedNodes[i]->getName();
+        if (!g_settings->doubleMode)
+            nodeName.chop(1);
+        if (selectedNodes[i]->getTax() != NULL) {
+            selectedNodeListText += nodeName;
+            selectedNodeListText += "\n";
+            std::vector<tax*> taxes = selectedNodes[i]->getTax()->getTaxHierarchy();
+            for (std::vector<tax*>::iterator it = taxes.begin(); it != taxes.end(); ++it) {
+                tax* curTax = *it;
+                selectedNodeListText += (g_assemblyGraph->m_taxData->getLevelByRank(curTax->getRank()));
+                selectedNodeListText += ": ";
+                selectedNodeListText += curTax->getName();
+                selectedNodeListText += "\n";
+            }
+        }
+        else {
+            selectedNodeListText += nodeName;
+            selectedNodeListText += ": unspecified tax";
+        }
+    }
+}
 
 
 
@@ -603,6 +833,7 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(false);
         setNodeDistanceWidgetVisibility(false);
         setDepthRangeWidgetVisibility(false);
+        setAroundTaxWidgetVisibility(false);
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeStyleLabel, 1, 1, 1, 1);
@@ -618,12 +849,13 @@ void MainWindow::graphScopeChanged()
         setStartingNodesWidgetVisibility(true);
         setNodeDistanceWidgetVisibility(true);
         setDepthRangeWidgetVisibility(false);
+        setAroundTaxWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they are specified in the above list or are "
-                                              "within this many steps of those nodes.<br><br>"
-                                              "A value of 0 will result in only the specified nodes being drawn. "
-                                              "A large value will result in large sections of the graph around "
-                                              "the specified nodes being drawn.");
+            "within this many steps of those nodes.<br><br>"
+            "A value of 0 will result in only the specified nodes being drawn. "
+            "A large value will result in large sections of the graph around "
+            "the specified nodes being drawn.");
 
         ui->graphDrawingGridLayout->addWidget(ui->startingNodesInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->startingNodesLabel, 1, 1, 1, 1);
@@ -650,10 +882,10 @@ void MainWindow::graphScopeChanged()
         setDepthRangeWidgetVisibility(false);
 
         ui->nodeDistanceInfoText->setInfoText("Nodes will be drawn if they contain a BLAST hit or are within this "
-                                              "many steps of nodes with a BLAST hit.<br><br>"
-                                              "A value of 0 will result in only nodes with BLAST hits being drawn. "
-                                              "A large value will result in large sections of the graph around "
-                                              "nodes with BLAST hits being drawn.");
+            "many steps of nodes with a BLAST hit.<br><br>"
+            "A value of 0 will result in only nodes with BLAST hits being drawn. "
+            "A large value will result in large sections of the graph around "
+            "nodes with BLAST hits being drawn.");
 
         ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceInfoText, 1, 0, 1, 1);
         ui->graphDrawingGridLayout->addWidget(ui->nodeDistanceLabel, 1, 1, 1, 1);
@@ -686,7 +918,21 @@ void MainWindow::graphScopeChanged()
         ui->graphDrawingGridLayout->addWidget(ui->drawGraphButton, 4, 1, 1, 2);
 
         break;
+    case 4:
+        g_settings->graphScope = AROUND_TAX;
+
+        setStartingNodesWidgetVisibility(false);
+        setNodeDistanceWidgetVisibility(false);
+        setDepthRangeWidgetVisibility(false);
+        setAroundTaxWidgetVisibility(true);
+
+        ui->graphDrawingGridLayout->addWidget(ui->taxFilterLabel, 6, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->taxFilterLineEdit, 6, 2, 1, 1);  
+        ui->graphDrawingGridLayout->addWidget(ui->aroundTaxHiCCheckBox, 7, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->aroundTaxDistanceCheckBox, 8, 1, 1, 1);
+        ui->graphDrawingGridLayout->addWidget(ui->aroundTaxDistanceSpinBox, 8, 2, 1, 1);
     }
+
 }
 
 
@@ -715,28 +961,119 @@ void MainWindow::setDepthRangeWidgetVisibility(bool visible)
     ui->maxDepthLabel->setVisible(visible);
     ui->maxDepthSpinBox->setVisible(visible);
 }
+void MainWindow::setAroundTaxWidgetVisibility(bool visible)
+{
+    ui->taxFilterLabel->setVisible(visible);
+    ui->taxFilterLineEdit->setVisible(visible);
+    ui->aroundTaxHiCCheckBox->setVisible(visible);
+    ui->aroundTaxDistanceCheckBox->setVisible(visible);
+    ui->aroundTaxDistanceSpinBox->setVisible(visible);
+}
 
+void MainWindow::setHiCWidgetVisibility(bool visible)
+{
+    ui->hicSeqLenInfoText->setVisible(visible);
+    ui->hicSeqLenSpinBox->setVisible(visible);
+    ui->hicWeightInfoText->setVisible(visible);
+    ui->hicWeightSpinBox->setVisible(visible);
+}
+
+void MainWindow::setTaxVisibility(bool visible)
+{
+    ui->labelTaxInfo->setVisible(visible);
+    ui->taxLine_4->setVisible(visible);
+    ui->taxInfoTextEdit->setVisible(visible);
+    ui->labelTaxInfo->setVisible(visible);
+
+}
 
 void MainWindow::drawGraph()
 {
+    HiCDrawingType type = g_settings->hicDrawingType;
     QString errorTitle;
     QString errorMessage;
-    std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
-                                                                                  ui->doubleNodesRadioButton->isChecked(),
-                                                                                  ui->startingNodesLineEdit->text(),
-                                                                                  ui->blastQueryComboBox->currentText());
+    HiCInclusionFilter filterHiC = g_settings->hicInclusionFilter;
+    std::vector<DeBruijnNode*> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
+        ui->doubleNodesRadioButton->isChecked(),
+        ui->startingNodesLineEdit->text(),
+        ui->blastQueryComboBox->currentText());
 
     if (errorMessage != "")
     {
         QMessageBox::information(this, errorTitle, errorMessage);
         return;
     }
-
+    g_settings->addNewNodes = false;
+    g_hicSettings->minWeight = ui->hicWeightSpinBox->value();
+    g_hicSettings->minLength = ui->hicSeqLenSpinBox->value();
+    g_hicSettings->inclusionFilter = filterHiC;
+    g_settings->makeZip = ui->zipGraphCheckBox->isChecked();
+    g_settings->aroundTargetNodes = ui->aroundTargetNodesCheckBox->isChecked();
+    g_settings->onlyBigComponent = ui->onlyBigComponentCheckBox->isChecked();
     resetScene();
-    g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
-    layoutGraph();
+
+    if ((g_settings->aroundTargetNodes || g_settings->onlyBigComponent) && (!g_settings->wasComponentsFound)) {
+        g_assemblyGraph->findComponents();
+    }
+    if (g_settings->makeZip && !g_settings->wasZipped) {
+        g_settings->wasZipped = true;
+        g_assemblyGraph->makeZipped(1000);
+    }
+    if (g_settings->graphScope == AROUND_TAX) {
+        unsigned int taxId = ui->taxFilterLineEdit->text().toUInt();
+        g_settings->taxId = taxId;
+        g_settings->displayAroundTaxWithHiC = ui->aroundTaxHiCCheckBox->isChecked();
+        if (ui->aroundTaxDistanceCheckBox->isChecked())
+            g_settings->taxDistance = ui->aroundTaxDistanceSpinBox->value();
+        else
+            g_settings->taxDistance = -1;
+        g_assemblyGraph->buildOgdfGraphWithTaxFilter(taxId);
+        layoutGraph();
+    }
+    else if (g_settings->isAutoParameters) {
+        g_assemblyGraph->buildOgdfGraphWithAutoParameters(startingNodes);
+        layoutGraph();
+    }
+    else {
+        switch (type)
+        {
+        case ALL_EDGES:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdgesWithHiC(startingNodes, g_settings->nodeDistance);
+            layoutGraph();
+            break;
+        case ONE_EDGE:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+            g_assemblyGraph->addOneHiCBetweenComponent(startingNodes);
+            layoutGraph();
+            break;
+        case NO_EDGE:
+            g_assemblyGraph->buildOgdfGraphFromNodesAndEdges(startingNodes, g_settings->nodeDistance);
+            layoutGraph();
+            break;
+        default:
+            break;
+        }
+    }
 }
 
+void MainWindow::drawFeaturesForest() {
+    //ui->allViewsWidget->layout()->addWidget(g_graphicsViewFeaturesForest);
+    QSplitter* allViewsSplitter = new QSplitter;
+    allViewsSplitter->setOrientation(Qt::Horizontal);
+    allViewsSplitter->addWidget(g_graphicsView);
+    allViewsSplitter->addWidget(g_graphicsViewFeaturesForest);
+
+    ui->allViewsWidget->layout()->addWidget(allViewsSplitter);
+    //setUiState(GRAPH_LOADED);
+    m_randomForestMainWindow->drawGraph();
+    setFeaturesUiState(FEATURES_DRAWN);
+
+    zoomToFitFeatureScene();
+    connect(m_randomForestMainWindow->m_scene, SIGNAL(selectionChanged()), this, SLOT(featureSelectionChanged()));
+    featureSelectionChanged();
+    switchFeatureColourScheme();
+    //zoomToFitScene();
+}
 
 void MainWindow::graphLayoutFinished()
 {
@@ -744,6 +1081,7 @@ void MainWindow::graphLayoutFinished()
     m_layoutThread = 0;
     g_assemblyGraph->addGraphicsItemsToScene(m_scene);
     m_scene->setSceneRectangle();
+    
     zoomToFitScene();
     selectionChanged();
 
@@ -751,6 +1089,7 @@ void MainWindow::graphLayoutFinished()
 
     //Move the focus to the view so the user can use keyboard controls to navigate.
     g_graphicsView->setFocus();
+    g_settings->addNewNodes = false;
 }
 
 
@@ -770,7 +1109,9 @@ void MainWindow::resetScene()
     g_assemblyGraph->m_contiguitySearchDone = false;
 
     g_graphicsView->setScene(0);
+    
     delete m_scene;
+    
     m_scene = new MyGraphicsScene(this);
 
     g_graphicsView->setScene(m_scene);
@@ -785,9 +1126,6 @@ std::vector<DeBruijnNode *> MainWindow::getNodesFromLineEdit(QLineEdit * lineEdi
 {
     return g_assemblyGraph->getNodesFromString(lineEdit->text(), exactMatch, nodesNotInGraph);
 }
-
-
-
 
 void MainWindow::layoutGraph()
 {
@@ -810,11 +1148,21 @@ void MainWindow::layoutGraph()
 
     m_layoutThread = new QThread;
     double aspectRatio = double(g_graphicsView->width()) / g_graphicsView->height();
+    int m_clock;
+    if (g_settings->m_clock == -1) {
+        m_clock = clock();
+        g_settings->m_clock = m_clock;
+    }
+    else {
+        m_clock = g_settings->m_clock;
+    }
+    
     GraphLayoutWorker * graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
                                                                   g_assemblyGraph->m_edgeArray,
                                                                   g_settings->graphLayoutQuality,
                                                                   g_assemblyGraph->useLinearLayout(),
-                                                                  g_settings->componentSeparation, aspectRatio);
+                                                                  g_settings->componentSeparation,
+                                                                  m_clock, aspectRatio);
     graphLayoutWorker->moveToThread(m_layoutThread);
 
     connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));
@@ -827,8 +1175,44 @@ void MainWindow::layoutGraph()
     m_layoutThread->start();
 }
 
+void MainWindow::layoutGraphUnzip()
+{
+    //The actual layout is done in a different thread so the UI will stay responsive.
+    MyProgressDialog* progress = new MyProgressDialog(this, "Laying out graph...", true, "Cancel layout", "Cancelling layout...",
+        "Clicking this button will halt the graph layout and display "
+        "the graph in its current, incomplete state.<br><br>"
+        "Layout can take a long time for very large graphs.  There are "
+        "three strategies to reduce the amount of time required:<ul>"
+        "<li>Change the scope of the graph from 'Entire graph' to either "
+        "'Around nodes' or 'Around BLAST hits'.  This will reduce the "
+        "number of nodes that are drawn to the screen.</li>"
+        "<li>Increase the 'Base pairs per segment' setting.  This will "
+        "result in shorter contigs which take less time to lay out.</li>"
+        "<li>Reduce the 'Graph layout iterations' setting.</li></ul>");
+    progress->setWindowModality(Qt::WindowModal);
+    progress->show();
 
+    m_fmmm = new ogdf::FMMMLayout();
 
+    m_layoutThread = new QThread;
+    double aspectRatio = double(g_graphicsView->width()) / g_graphicsView->height();
+    int m_clock = g_settings->m_clock;
+    GraphLayoutWorker* graphLayoutWorker = new GraphLayoutWorker(m_fmmm, g_assemblyGraph->m_graphAttributes,
+        g_assemblyGraph->m_edgeArray,
+        0,
+        true,
+        g_settings->componentSeparation, m_clock, aspectRatio);
+    graphLayoutWorker->moveToThread(m_layoutThread);
+
+    connect(progress, SIGNAL(halt()), this, SLOT(graphLayoutCancelled()));
+    connect(m_layoutThread, SIGNAL(started()), graphLayoutWorker, SLOT(layoutGraph()));
+    connect(graphLayoutWorker, SIGNAL(finishedLayout()), m_layoutThread, SLOT(quit()));
+    connect(graphLayoutWorker, SIGNAL(finishedLayout()), graphLayoutWorker, SLOT(deleteLater()));
+    connect(graphLayoutWorker, SIGNAL(finishedLayout()), this, SLOT(graphLayoutFinished()));
+    connect(m_layoutThread, SIGNAL(finished()), m_layoutThread, SLOT(deleteLater()));
+    connect(m_layoutThread, SIGNAL(finished()), progress, SLOT(deleteLater()));
+    m_layoutThread->start();
+}
 
 void MainWindow::zoomSpinBoxChanged()
 {
@@ -866,15 +1250,19 @@ void MainWindow::zoomedWithMouseWheel()
 
 void MainWindow::zoomToFitScene()
 {
-    zoomToFitRect(m_scene->sceneRect());
+    zoomToFitRect(m_scene->sceneRect(), g_graphicsView);
 }
 
-
-void MainWindow::zoomToFitRect(QRectF rect)
+void MainWindow::zoomToFitFeatureScene()
 {
-    double startingZoom = g_graphicsView->transform().m11();
-    g_graphicsView->fitInView(rect, Qt::KeepAspectRatio);
-    double endingZoom = g_graphicsView->transform().m11();
+    zoomToFitRect(m_randomForestMainWindow->m_scene->sceneRect(), g_graphicsViewFeaturesForest);
+}
+
+void MainWindow::zoomToFitRect(QRectF rect, MyGraphicsView* graphicsView)
+{
+    double startingZoom = graphicsView->transform().m11();
+    graphicsView->fitInView(rect, Qt::KeepAspectRatio);
+    double endingZoom = graphicsView->transform().m11();
     double zoomFactor = endingZoom / startingZoom;
     g_absoluteZoom *= zoomFactor;
     double newSpinBoxValue = ui->zoomSpinBox->value() * zoomFactor;
@@ -980,6 +1368,53 @@ void MainWindow::saveSelectedSequencesToFile()
     }
 }
 
+void MainWindow::saveTaxInfo() {
+    QString defaultFileNameAndPath = g_memory->rememberedPath + "/taxInfo.txt";
+    QString fullFileName = QFileDialog::getSaveFileName(this, "Save all tax information", defaultFileNameAndPath, "TXT (*.txt)");
+
+    if (fullFileName != "") //User did not hit cancel
+    {
+        g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+        QFile file(fullFileName);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        QTextStream taxInfoOut(&file);
+        
+        TaxInfoDialog taxInfoDialog(this);
+
+        taxInfoOut << taxInfoDialog.getCommonTaxInfoInTxt();
+    }
+}
+
+void MainWindow::saveHiCTaxInfo() {
+    
+    if (ui->taxIdHiCStatLineEdit->text().size() > 0) {
+        int taxId = ui->taxIdHiCStatLineEdit->text().toInt();
+
+        QString defaultFileNameAndPath = g_memory->rememberedPath + "/" + QString::number(taxId) + "_taxInfo.txt";
+        QString fullFileName = QFileDialog::getSaveFileName(this, "Save all tax information", defaultFileNameAndPath, "TXT (*.txt)");
+
+        if (fullFileName != "") //User did not hit cancel
+        {
+            g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
+
+            TaxInfoDialog taxInfoDialog(this, taxId);
+            QString text = taxInfoDialog.getHiCTaxInfoInTxt(taxId);
+            if (text == NULL) {
+                QMessageBox::information(this, "Save tax information for selected tax", "Cannot find tax with id: " + taxId);
+                return;
+            }
+
+            QFile file(fullFileName);
+            file.open(QIODevice::WriteOnly | QIODevice::Text);
+            QTextStream taxInfoOut(&file);
+            taxInfoOut << text;
+        }
+    }
+    else {
+        QMessageBox::information(this, "Save tax information for selected tax", "Tax id wasn't filled\n");
+    }
+}
+
 void MainWindow::copySelectedPathToClipboard()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
@@ -1043,7 +1478,43 @@ void MainWindow::saveSelectedPathToFile()
     }
 }
 
+void MainWindow::switchTaxRank() {
+    g_settings->taxRank = ui->taxColourComboBox->currentIndex() + 1;
+    g_assemblyGraph->resetAllNodeColours();
+    g_graphicsView->viewport()->update();
+}
 
+void MainWindow::switchFeatureColourScheme()
+{
+    switch (ui->featuresColoursComboBox->currentIndex())
+    {
+    case 0:
+        g_settings->featureColourScheme = UNIFORM_COLOURS;
+        break;
+    case 1:
+        g_settings->featureColourScheme = CLASS_COLOURS;
+        break;
+    case 2:
+        g_settings->featureColourScheme = CUSTOM_COLOURS;
+        break;
+    case 3:
+        g_settings->featureColourScheme = BLAST_HITS_SOLID_COLOUR;
+        break;
+    case 4:
+        g_settings->featureColourScheme = BLAST_HITS_CLASS_COLOURS;
+        g_settings->nodeColourScheme = BLAST_HITS_CLASS_COLOURS;
+        break;
+    default:
+        g_settings->featureColourScheme = UNIFORM_COLOURS;
+        break;
+    }
+    g_assemblyForest->resetAllNodeColours();
+    g_graphicsViewFeaturesForest->viewport()->update();
+    if (g_settings->nodeColourScheme == BLAST_HITS_CLASS_COLOURS) {
+        g_assemblyGraph->resetAllNodeColours();
+        g_graphicsView->viewport()->update();
+    }
+}
 
 
 void MainWindow::switchColourScheme()
@@ -1085,13 +1556,27 @@ void MainWindow::switchColourScheme()
         ui->contiguityButton->setVisible(false);
         ui->contiguityInfoText->setVisible(false);
         break;
+    case 7:
+        g_settings->nodeColourScheme = RANDOM_COMPONENT_COLOURS;
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
+        break;
+    case 8:
+        g_settings->nodeColourScheme = COLOUR_BY_TAX;
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
+        ui->taxColourComboBox->setVisible(true);
+        break;
+    case 9:
+        g_settings->nodeColourScheme = SAVE_COLOURS;
+        ui->contiguityButton->setVisible(false);
+        ui->contiguityInfoText->setVisible(false);
+        break;
     }
 
     g_assemblyGraph->resetAllNodeColours();
     g_graphicsView->viewport()->update();
 }
-
-
 
 void MainWindow::determineContiguityFromSelectedNode()
 {
@@ -1117,7 +1602,7 @@ void MainWindow::determineContiguityFromSelectedNode()
 }
 
 
-QString MainWindow::getDefaultImageFileName()
+QString MainWindow::getDefaultGraphImageFileName()
 {
     QString fileNameAndPath = g_memory->rememberedPath + "/graph";
 
@@ -1133,14 +1618,39 @@ QString MainWindow::getDefaultImageFileName()
     return fileNameAndPath;
 }
 
-
-void MainWindow::saveImageCurrentView()
+QString MainWindow::getDefaultFeaturesImageFileName()
 {
-    if (!checkForImageSave())
+    QString fileNameAndPath = g_memory->rememberedPath + "/features";
+
+    if (m_imageFilter == "PNG (*.png)")
+        fileNameAndPath += ".png";
+    else if (m_imageFilter == "JPEG (*.jpg)")
+        fileNameAndPath += ".jpg";
+    else if (m_imageFilter == "SVG (*.svg)")
+        fileNameAndPath += ".svg";
+    else
+        fileNameAndPath += ".png";
+
+    return fileNameAndPath;
+}
+
+void MainWindow::saveImageGraphCurrentView() {
+    if (!checkForGraphImageSave())
         return;
+    QString defaultFileNameAndPath = getDefaultGraphImageFileName();
+    saveImageCurrentView(defaultFileNameAndPath, g_graphicsView);
+}
 
-    QString defaultFileNameAndPath = getDefaultImageFileName();
+void MainWindow::saveImageFeaturesCurrentView() {
+    if (!checkForFeaturesImageSave())
+        return;
+    QString defaultFileNameAndPath = getDefaultFeaturesImageFileName();
+    saveImageCurrentView(defaultFileNameAndPath, g_graphicsViewFeaturesForest);
+}
 
+void MainWindow::saveImageCurrentView(QString defaultFileNameAndPath, MyGraphicsView* graphicsView)
+{
+ 
     QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this, "Save graph image (current view)",
                                                         defaultFileNameAndPath,
@@ -1160,12 +1670,12 @@ void MainWindow::saveImageCurrentView()
         QPainter painter;
         if (pixelImage)
         {
-            QImage image(g_graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
+            QImage image(graphicsView->viewport()->rect().size(), QImage::Format_ARGB32);
             image.fill(Qt::white);
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            g_graphicsView->render(&painter);
+            graphicsView->render(&painter);
             image.save(fullFileName);
             g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
@@ -1181,19 +1691,28 @@ void MainWindow::saveImageCurrentView()
             painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            g_graphicsView->render(&painter);
+            graphicsView->render(&painter);
             painter.end();
         }
     }
 }
 
-void MainWindow::saveImageEntireScene()
-{
-    if (!checkForImageSave())
+void MainWindow::saveImageGraphEntireScene() {
+    if (!checkForGraphImageSave())
         return;
+    QString defaultFileNameAndPath = getDefaultGraphImageFileName();
+    saveImageEntireScene(defaultFileNameAndPath, g_graphicsView, m_scene);
+}
 
-    QString defaultFileNameAndPath = getDefaultImageFileName();
+void MainWindow::saveImageFeaturesEntireScene() {
+    if (!checkForFeaturesImageSave())
+        return;
+    QString defaultFileNameAndPath = getDefaultFeaturesImageFileName();
+    saveImageEntireScene(defaultFileNameAndPath, g_graphicsViewFeaturesForest, m_randomForestMainWindow->m_scene);
+}
 
+void MainWindow::saveImageEntireScene(QString defaultFileNameAndPath, MyGraphicsView* graphicsView, MyGraphicsScene* scene)
+{
     QString selectedFilter = m_imageFilter;
     QString fullFileName = QFileDialog::getSaveFileName(this,
                                                         "Save graph image (entire scene)",
@@ -1215,15 +1734,15 @@ void MainWindow::saveImageEntireScene()
         g_settings->positionTextNodeCentre = true;
 
         //Temporarily undo any rotation so labels appear upright.
-        double rotationBefore = g_graphicsView->getRotation();
-        g_graphicsView->undoRotation();
+        double rotationBefore = graphicsView->getRotation();
+        graphicsView->undoRotation();
 
         m_imageFilter = selectedFilter;
 
         QPainter painter;
         if (pixelImage)
         {
-            QSize imageSize = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+            QSize imageSize = g_absoluteZoom * scene->sceneRect().size().toSize();
 
             if (imageSize.width() > 32767 || imageSize.height() > 32767)
             {
@@ -1253,8 +1772,8 @@ void MainWindow::saveImageEntireScene()
             painter.begin(&image);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            m_scene->setSceneRectangle();
-            m_scene->render(&painter);
+            scene->setSceneRectangle();
+            scene->render(&painter);
             image.save(fullFileName);
             g_memory->rememberedPath = QFileInfo(fullFileName).absolutePath();
             painter.end();
@@ -1263,29 +1782,27 @@ void MainWindow::saveImageEntireScene()
         {
             QSvgGenerator generator;
             generator.setFileName(fullFileName);
-            QSize size = g_absoluteZoom * m_scene->sceneRect().size().toSize();
+            QSize size = g_absoluteZoom * scene->sceneRect().size().toSize();
             generator.setSize(size);
             generator.setViewBox(QRect(0, 0, size.width(), size.height()));
             painter.begin(&generator);
             painter.fillRect(0, 0, size.width(), size.height(), Qt::white);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.setRenderHint(QPainter::TextAntialiasing);
-            m_scene->setSceneRectangle();
-            m_scene->render(&painter);
+            scene->setSceneRectangle();
+            scene->render(&painter);
             painter.end();
         }
 
         g_settings->positionTextNodeCentre = positionTextNodeCentreSettingBefore;
-        g_graphicsView->setRotation(rotationBefore);
+        graphicsView->setRotation(rotationBefore);
     }
 }
-
-
 
 //This function makes sure that a graph is loaded and drawn so that an image can be saved.
 //It returns true if everything is fine.  If things aren't ready, it displays a message
 //to the user and returns false.
-bool MainWindow::checkForImageSave()
+bool MainWindow::checkForGraphImageSave()
 {
     if (m_uiState == NO_GRAPH_LOADED)
     {
@@ -1300,6 +1817,20 @@ bool MainWindow::checkForImageSave()
     return true;
 }
 
+bool MainWindow::checkForFeaturesImageSave()
+{
+    if (m_featuresUiState == NO_FEATURES_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first load and then draw a features forest before you can save an image to file.");
+        return false;
+    }
+    if (m_featuresUiState == FEATURES_LOADED)
+    {
+        QMessageBox::information(this, "No image to save", "You must first draw the features forest before you can save an image to file.");
+        return false;
+    }
+    return true;
+}
 
 void MainWindow::setTextDisplaySettings()
 {
@@ -1311,10 +1842,29 @@ void MainWindow::setTextDisplaySettings()
     g_settings->displayNodeCsvData = ui->csvCheckBox->isChecked();
     g_settings->displayNodeCsvDataCol = ui->csvComboBox->currentIndex();
     g_settings->textOutline = ui->textOutlineCheckBox->isChecked();
+    g_settings->displayTaxIdName = ui->taxIdCheckBox->isChecked();
+    g_settings->displayTaxIdRank = ui->taxIdRankCheckBox->isChecked();
+    g_settings->displayTaxNameRank = ui->taxNameRankCheckBox->isChecked();
 
     g_graphicsView->viewport()->update();
 }
 
+void MainWindow::setFeatureTextDisplaySettings()
+{
+    g_settings->displayFeatureIdLabels = ui->featureIdCheckBox->isChecked();
+    g_settings->displayFeatureClassLabels = ui->featureClassCheckBox->isChecked();
+    g_settings->displayFeatureCustomLabels = ui->featureCustomCheckBox->isChecked();
+    g_settings->displayFeatureClassLikeFigure = ui->featureClassLikeFigureCheckBox->isChecked();
+    if (g_settings->displayFeatureClassLikeFigure) {
+        QString classesInfo = g_assemblyForest->getClassFigureInfo();
+        ui->featureClassInfoText->setPlainText(classesInfo);
+        ui->featureClassInfoText->setEnabled(true);
+    }
+    else {
+        ui->featureClassInfoText->setEnabled(false);
+    }
+    g_graphicsViewFeaturesForest->viewport()->update();
+}
 
 void MainWindow::fontButtonPressed()
 {
@@ -1329,8 +1879,10 @@ void MainWindow::fontButtonPressed()
 void MainWindow::setNodeCustomColour()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
-    if (selectedNodes.size() == 0)
+    if (selectedNodes.size() == 0) {
+        setFeatureNodeCustomColour();
         return;
+    }
 
     QString dialogTitle = "Select custom colour for selected node";
     if (selectedNodes.size() > 1)
@@ -1359,9 +1911,66 @@ void MainWindow::setNodeCustomColour()
     }
 }
 
+void MainWindow::setFeatureNodeCustomColour()
+{
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+    if (selectedNodes.size() == 0)
+        return;
+
+    QString dialogTitle = "Select custom colour for selected node";
+    if (selectedNodes.size() > 1)
+        dialogTitle += "s";
+
+    QColor newColour = QColorDialog::getColor(selectedNodes[0]->getCustomColour(), this, dialogTitle);
+    if (newColour.isValid())
+    {
+
+        //If the colouring scheme is not currently custom, change it to custom now
+        if (g_settings->nodeColourScheme != CUSTOM_COLOURS)
+            setNodeColourSchemeComboBox(CUSTOM_COLOURS);
+
+        for (size_t i = 0; i < selectedNodes.size(); ++i)
+        {
+            selectedNodes[i]->setCustomColour(newColour);
+            if (selectedNodes[i]->getGraphicsItemFeatureNode() != 0) {
+                selectedNodes[i]->getGraphicsItemFeatureNode()->setColour();
+            }
+
+        }
+        g_graphicsViewFeaturesForest->viewport()->update();
+    }
+}
+
 void MainWindow::setNodeCustomLabel()
 {
     std::vector<DeBruijnNode *> selectedNodes = m_scene->getSelectedNodes();
+    if (selectedNodes.size() == 0) {
+        setFeatureNodeCustomLabel();
+        return;
+    }
+
+    QString dialogMessage = "Type a custom label for selected node";
+    if (selectedNodes.size() > 1)
+        dialogMessage += "s";
+    dialogMessage += ":";
+
+    bool ok;
+    QString newLabel = QInputDialog::getText(this, "Custom label", dialogMessage, QLineEdit::Normal,
+                                             selectedNodes[0]->getCustomLabel(), &ok);
+
+    if (ok)
+    {
+        //If the custom label option isn't currently on, turn it on now.
+        ui->nodeCustomLabelsCheckBox->setChecked(true);
+
+        for (size_t i = 0; i < selectedNodes.size(); ++i)
+            selectedNodes[i]->setCustomLabel(newLabel);
+    }
+}
+
+void MainWindow::setFeatureNodeCustomLabel()
+{
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
     if (selectedNodes.size() == 0)
         return;
 
@@ -1372,7 +1981,7 @@ void MainWindow::setNodeCustomLabel()
 
     bool ok;
     QString newLabel = QInputDialog::getText(this, "Custom label", dialogMessage, QLineEdit::Normal,
-                                             selectedNodes[0]->getCustomLabel(), &ok);
+        selectedNodes[0]->getCustomLabel(), &ok);
 
     if (ok)
     {
@@ -1771,6 +2380,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->blastSearchWidget->setEnabled(false);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(false);
+        ui->actionLoad_HiC_data->setEnabled(false);
+        ui->actionLoad_Taxonometry->setEnabled(false);
         break;
     case GRAPH_LOADED:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1780,6 +2391,8 @@ void MainWindow::setUiState(UiState uiState)
         ui->blastSearchWidget->setEnabled(true);
         ui->selectionScrollAreaWidgetContents->setEnabled(false);
         ui->actionLoad_CSV->setEnabled(true);
+        ui->actionLoad_HiC_data->setEnabled(true);
+        ui->actionLoad_Taxonometry->setEnabled(true);
         break;
     case GRAPH_DRAWN:
         ui->graphDetailsWidget->setEnabled(true);
@@ -1790,11 +2403,29 @@ void MainWindow::setUiState(UiState uiState)
         ui->selectionScrollAreaWidgetContents->setEnabled(true);
         ui->actionZoom_to_selection->setEnabled(true);
         ui->actionLoad_CSV->setEnabled(true);
+        ui->actionLoad_HiC_data->setEnabled(true);
+        ui->actionLoad_Taxonometry->setEnabled(true);
         break;
     }
 }
 
-
+void MainWindow::setFeaturesUiState(UiState uiState) {
+    m_featuresUiState = uiState;
+    switch (uiState)
+    {
+    case NO_FEATURES_LOADED:
+        ui->featureForestWidget->setEnabled(false);
+        break;
+    case FEATURES_LOADED:
+        ui->featureForestWidget->setEnabled(true);
+        break;
+    case FEATURES_DRAWN:
+        ui->featureForestWidget->setEnabled(true);
+        ui->selectionScrollAreaWidgetContents->setEnabled(true);
+        ui->actionZoom_to_selection->setEnabled(true);
+        break;
+    }
+}
 void MainWindow::showHidePanels()
 {
     ui->controlsScrollArea->setVisible(ui->actionControls_panel->isChecked());
@@ -2006,7 +2637,7 @@ void MainWindow::zoomToSelection()
         boundingBox = boundingBox | selectedItem->boundingRect();
     }
 
-    zoomToFitRect(boundingBox);
+    zoomToFitRect(boundingBox, g_graphicsView);
 }
 
 
@@ -2104,6 +2735,9 @@ void MainWindow::setWidgetsFromSettings()
     ui->nodeDepthCheckBox->setChecked(g_settings->displayNodeDepth);
     ui->blastHitsCheckBox->setChecked(g_settings->displayBlastHits);
     ui->textOutlineCheckBox->setChecked(g_settings->textOutline);
+    ui->taxIdCheckBox->setChecked(g_settings->displayTaxIdName);
+    ui->taxIdCheckBox->setChecked(g_settings->displayTaxIdRank);
+    ui->taxIdCheckBox->setChecked(g_settings->displayTaxNameRank);
 
     ui->startingNodesExactMatchRadioButton->setChecked(g_settings->startingNodesExactMatch);
     ui->startingNodesPartialMatchRadioButton->setChecked(!g_settings->startingNodesExactMatch);
@@ -2131,6 +2765,9 @@ void MainWindow::setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme)
     case BLAST_HITS_RAINBOW_COLOUR: ui->coloursComboBox->setCurrentIndex(4); break;
     case CONTIGUITY_COLOUR: ui->coloursComboBox->setCurrentIndex(5); break;
     case CUSTOM_COLOURS: ui->coloursComboBox->setCurrentIndex(6); break;
+    case RANDOM_COMPONENT_COLOURS: ui->coloursComboBox->setCurrentIndex(7); break;
+    case COLOUR_BY_TAX: ui->coloursComboBox->setCurrentIndex(8); break;
+    case SAVE_COLOURS: ui->coloursComboBox->setCurrentIndex(9); break;
     }
 }
 
@@ -2142,6 +2779,7 @@ void MainWindow::setGraphScopeComboBox(GraphScope graphScope)
     case AROUND_NODE: ui->graphScopeComboBox->setCurrentIndex(1); break;
     case AROUND_BLAST_HITS: ui->graphScopeComboBox->setCurrentIndex(2); break;
     case DEPTH_RANGE: ui->graphScopeComboBox->setCurrentIndex(3); break;
+    case AROUND_TAX: ui->graphScopeComboBox->setCurrentIndex(4); break;
     }
 }
 
@@ -2209,6 +2847,10 @@ void MainWindow::setSelectedNodesWidgetsVisibility(bool visible)
     ui->selectedNodesLengthLabel->setVisible(visible);
     ui->selectedNodesDepthLabel->setVisible(visible);
     ui->selectedNodesSpacerWidget->setVisible(visible);
+    ui->taxInfoTextEdit->setVisible(visible);
+    ui->labelTaxInfo->setVisible(visible);
+    ui->taxLine_4->setVisible(visible);
+    ui->unzipNodesPushButton->setVisible(visible);
 }
 
 void MainWindow::setSelectedEdgesWidgetsVisibility(bool visible)
@@ -2227,6 +2869,12 @@ void MainWindow::nodeWidthChanged()
     g_graphicsView->viewport()->update();
 }
 
+void MainWindow::featureNodeWidthChanged()
+{
+    g_settings->averageFeatureNodeWidth = ui->featureNodeWidthSpinBox->value();
+    g_assemblyForest->recalculateAllNodeWidths();
+    g_graphicsView->viewport()->update();
+}
 
 void MainWindow::saveEntireGraphToFasta()
 {
@@ -2546,4 +3194,49 @@ void MainWindow::openGraphInfoDialog()
 {
     GraphInfoDialog graphInfoDialog(this);
     graphInfoDialog.exec();
+}
+void MainWindow::openTaxInfoDialog()
+{
+    TaxInfoDialog taxInfoDialog(this);
+    taxInfoDialog.exec();
+}
+
+void MainWindow::openTaxInfoHiCDialog()
+{
+    if (!g_settings->wasCalcHiCLinkForTax) {
+        g_settings->wasCalcHiCLinkForTax = true;
+        g_assemblyGraph->calcHiCLinkForTax();
+    }
+    if (ui->taxIdHiCStatLineEdit->text().size() > 0) {
+        int taxId = ui->taxIdHiCStatLineEdit->text().toInt();
+        TaxInfoDialog taxInfoDialog(this, taxId);
+        taxInfoDialog.exec();
+    }
+    else {
+        TaxInfoDialog taxInfoDialog(this, 0);
+        taxInfoDialog.exec();
+    }
+    
+}
+
+void MainWindow::matchSelectedFeatureNodes() {
+    std::vector<RandomForestNode*> selectedNodes = m_randomForestMainWindow->m_scene->getSelectedFeatureNodes();
+
+    if (selectedNodes.size() == 0)
+    {
+        return;
+    }
+    if (m_blastFeaturesNodesMatcher == NULL) {
+        m_blastFeaturesNodesMatcher = new BlastFeaturesNodesMatcher();
+    }
+    for (RandomForestNode* node : selectedNodes) {
+        
+        m_blastFeaturesNodesMatcher->matchFeaturesNode(node);
+    }
+    ui->coloursComboBox->setCurrentIndex(3);
+    switchColourScheme();
+    ui->featuresColoursComboBox->setCurrentIndex(3
+    );
+    switchFeatureColourScheme();
+    blastChanged();
 }

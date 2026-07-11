@@ -22,6 +22,9 @@
 #include "../graph/graphicsitemnode.h"
 #include "../graph/graphicsitemedge.h"
 #include "../graph/debruijnnode.h"
+#include "../random_forest/RandomForestNode.h"
+#include "../random_forest/GraphicsItemFeatureNode.h"
+#include "../painting/CommonGraphicsItemNode.h"
 
 MyGraphicsScene::MyGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
@@ -66,6 +69,25 @@ std::vector<DeBruijnNode *> MyGraphicsScene::getSelectedNodes()
     }
 
     std::sort(returnVector.begin(), returnVector.end(), compareNodePointers);
+
+    return returnVector;
+}
+
+//This function returns all of the selected nodes, sorted by their node number.
+std::vector<RandomForestNode *> MyGraphicsScene::getSelectedFeatureNodes()
+{
+    std::vector<RandomForestNode*> returnVector;
+
+    QList<QGraphicsItem*> selection = selectedItems();
+    for (int i = 0; i < selection.size(); ++i)
+    {
+        QGraphicsItem* selectedItem = selection[i];
+        GraphicsItemFeatureNode* selectedNodeItem = dynamic_cast<GraphicsItemFeatureNode *>(selectedItem);
+        if (selectedNodeItem != 0)
+            returnVector.push_back(selectedNodeItem->m_featureNode);
+    }
+
+    //std::sort(returnVector.begin(), returnVector.end(), compareNodePointers);
 
     return returnVector;
 }
@@ -122,6 +144,23 @@ std::vector<GraphicsItemNode *> MyGraphicsScene::getSelectedGraphicsItemNodes()
     return returnVector;
 }
 
+
+//This function returns all of the selected nodes, sorted by their node number.
+std::vector<GraphicsItemFeatureNode*> MyGraphicsScene::getSelectedGraphicsItemFeatureNode()
+{
+    std::vector<GraphicsItemFeatureNode*> returnVector;
+
+    QList<QGraphicsItem*> selection = selectedItems();
+    for (int i = 0; i < selection.size(); ++i)
+    {
+        QGraphicsItem* selectedItem = selection[i];
+        GraphicsItemFeatureNode* selectedNodeItem = dynamic_cast<GraphicsItemFeatureNode*>(selectedItem);
+        if (selectedNodeItem != 0)
+            returnVector.push_back(selectedNodeItem);
+    }
+
+    return returnVector;
+}
 
 std::vector<DeBruijnEdge *> MyGraphicsScene::getSelectedEdges()
 {
@@ -235,14 +274,14 @@ void MyGraphicsScene::setSceneRectangle()
 
 //After the user drags nodes, it may be necessary to expand the scene rectangle
 //if the nodes were moved out of the existing rectangle.
-void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes)
+void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemNode*> * movedNodes)
 {
     QRectF currentSceneRect = sceneRect();
     QRectF newSceneRect = currentSceneRect;
 
     for (size_t i = 0; i < movedNodes->size(); ++i)
     {
-        GraphicsItemNode * node = (*movedNodes)[i];
+        GraphicsItemNode* node = (*movedNodes)[i];
         QRectF nodeRect = node->boundingRect();
         newSceneRect = newSceneRect.united(nodeRect);
     }
@@ -251,3 +290,20 @@ void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemNode 
         setSceneRect(newSceneRect);
 }
 
+//After the user drags nodes, it may be necessary to expand the scene rectangle
+//if the nodes were moved out of the existing rectangle.
+void MyGraphicsScene::possiblyExpandSceneRectangle(std::vector<GraphicsItemFeatureNode*>* movedNodes)
+{
+    QRectF currentSceneRect = sceneRect();
+    QRectF newSceneRect = currentSceneRect;
+
+    for (size_t i = 0; i < movedNodes->size(); ++i)
+    {
+        GraphicsItemFeatureNode* node = (*movedNodes)[i];
+        QRectF nodeRect = node->boundingRect();
+        newSceneRect = newSceneRect.united(nodeRect);
+    }
+
+    if (newSceneRect != currentSceneRect)
+        setSceneRect(newSceneRect);
+}

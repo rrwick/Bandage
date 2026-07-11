@@ -23,8 +23,11 @@
 #include <vector>
 
 class DeBruijnNode;
+class RandomForestNode;
 class DeBruijnEdge;
 class GraphicsItemNode;
+class GraphicsItemFeatureNode;
+class CommonGraphicsItemNode;
 
 class MyGraphicsScene : public QGraphicsScene
 {
@@ -32,6 +35,7 @@ class MyGraphicsScene : public QGraphicsScene
 public:
     explicit MyGraphicsScene(QObject *parent = 0);
     std::vector<DeBruijnNode *> getSelectedNodes();
+    std::vector<RandomForestNode*> getSelectedFeatureNodes();
     std::vector<DeBruijnNode *> getSelectedPositiveNodes();
     std::vector<GraphicsItemNode *> getSelectedGraphicsItemNodes();
     std::vector<DeBruijnEdge *> getSelectedEdges();
@@ -40,7 +44,9 @@ public:
     DeBruijnNode * getOnePositiveSelectedNode();
     double getTopZValue();
     void setSceneRectangle();
-    void possiblyExpandSceneRectangle(std::vector<GraphicsItemNode *> * movedNodes);
+    void possiblyExpandSceneRectangle(std::vector<GraphicsItemFeatureNode*> * movedNodes);
+    void possiblyExpandSceneRectangle(std::vector<GraphicsItemNode*> * movedNodes);
+    std::vector<GraphicsItemFeatureNode*> getSelectedGraphicsItemFeatureNode();
 
 };
 

@@ -37,6 +37,7 @@ Settings::Settings()
     componentSeparation = FloatSetting(50.0, 0, 1000.0);
 
     averageNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
+    averageFeatureNodeWidth = FloatSetting(5.0, 0.5, 1000.0);
     depthEffectOnWidth = FloatSetting(0.5, 0.0, 1.0);
     depthPower = FloatSetting(0.5, 0.0, 1.0);
 
@@ -76,6 +77,14 @@ Settings::Settings()
     textOutline = false;
     antialiasing = true;
     positionTextNodeCentre = false;
+    displayTaxIdName = false;
+    displayTaxIdRank = false;
+    displayTaxNameRank = false;
+
+    displayFeatureIdLabels = false;
+    displayFeatureClassLabels = false;
+    displayFeatureCustomLabels = false;
+    displayFeatureClassLikeFigure = false;
 
     nodeDragging = NEARBY_PIECES;
 
@@ -141,4 +150,11 @@ Settings::Settings()
 
     minDepthRange = FloatSetting(10.0, 0.0, 1000000.0);
     maxDepthRange = FloatSetting(100.0, 0.0, 1000000.0);
+
+    hicEdgeLength = FloatSetting(200.0, 0.1, 1000.0);
+    hicEdgeWidth = FloatSetting(1.5, 0.1, 1000.0);
+
+    taxRank = IntSetting(1, 1, 8);
+    taxDistance = IntSetting(-1, 0, 1000);
+    displayAroundTaxWithHiC = false;
 }

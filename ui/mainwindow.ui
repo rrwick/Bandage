@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1465</width>
-    <height>924</height>
+    <height>843</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,10 +18,7 @@
     <normaloff>:/icons/icon.png</normaloff>:/icons/icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
+   <layout class="QGridLayout" name="gridLayout_9">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -34,7 +31,489 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
+    <item row="0" column="4">
+     <widget class="VerticalScrollArea" name="selectionScrollArea">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="selectionScrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>461</width>
+         <height>1034</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_14">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Find nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="nodeSelectionWidget" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="1" column="0">
+            <widget class="InfoTextWidget" name="selectionSearchNodesMatchTypeInfoText" native="true">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QRadioButton" name="selectionSearchNodesExactMatchRadioButton">
+             <property name="text">
+              <string>Exact</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_12">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Node(s):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="InfoTextWidget" name="selectionSearchInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="label_16">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="text">
+              <string>Match:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QRadioButton" name="selectionSearchNodesPartialMatchRadioButton">
+             <property name="text">
+              <string>Partial</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2" colspan="2">
+            <widget class="QLineEdit" name="selectionSearchNodesLineEdit">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectNodesButton">
+          <property name="text">
+           <string>Find node(s)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="selectedNodesSpacerWidget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="selectedNodesSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>60</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="selectedNodesTitleLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Selected nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="selectedNodesLine1">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="selectedNodesTextEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="selectedNodesLengthLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Total length:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="selectedNodesDepthLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Mean depth:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="selectedNodesLine2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="selectedNodesModificationWidget" native="true">
+          <layout class="QGridLayout" name="gridLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="InfoTextWidget" name="setColourAndLabelInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="setNodeCustomLabelButton">
+             <property name="toolTip">
+              <string>Ctrl+L</string>
+             </property>
+             <property name="text">
+              <string>Set label</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="setNodeCustomColourButton">
+             <property name="toolTip">
+              <string>Ctrl+O</string>
+             </property>
+             <property name="text">
+              <string>Set colour</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="selectedEdgesSpacerWidget" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="selectedEdgesSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>60</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="selectedEdgesTitleLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Selected edges</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="selectedEdgesLine">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="selectedEdgesTextEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTaxInfo">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Taxonometry for selected nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="taxLine_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="taxInfoTextEdit"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="unzipNodesPushButton">
+          <property name="text">
+           <string>Unzip selected nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="connectSelectedFeatureNodes">
+          <property name="text">
+           <string>Connect fetaure node(s) with de bruijn nodes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QWidget" name="allViewsWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>87</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
+     </widget>
+    </item>
+    <item row="0" column="0">
      <widget class="VerticalScrollArea" name="controlsScrollArea">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -58,9 +537,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-194</y>
-         <width>289</width>
-         <height>1058</height>
+         <y>-1032</y>
+         <width>461</width>
+         <height>1822</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -85,6 +564,53 @@
            <property name="rightMargin">
             <number>0</number>
            </property>
+           <item row="5" column="0" colspan="2">
+            <widget class="QPushButton" name="taxInfoButton">
+             <property name="text">
+              <string>Tax info</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="Line" name="taxIdHiCStatLineEdit_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Tax Id</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="InfoTextWidget" name="graphInformationInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLineEdit" name="taxIdHiCStatLineEdit"/>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QPushButton" name="moreInfoButton">
+             <property name="text">
+              <string>More info</string>
+             </property>
+            </widget>
+           </item>
            <item row="2" column="1">
             <widget class="QWidget" name="widget_14" native="true">
              <layout class="QGridLayout" name="gridLayout_4">
@@ -157,29 +683,6 @@
              </layout>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="InfoTextWidget" name="graphInformationInfoText" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="label_7">
              <property name="font">
@@ -193,13 +696,10 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QPushButton" name="moreInfoButton">
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
+           <item row="7" column="0" colspan="2">
+            <widget class="QPushButton" name="taxInfoHiCButton">
              <property name="text">
-              <string>More info</string>
+              <string>Tax info (with Hi-C links)</string>
              </property>
             </widget>
            </item>
@@ -272,114 +772,17 @@
               <property name="rightMargin">
                <number>0</number>
               </property>
-              <item row="2" column="0">
-               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
+              <item row="5" column="2">
+               <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+                <property name="decimals">
+                 <number>1</number>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+                <property name="maximum">
+                 <double>1000000.000000000000000</double>
                 </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="InfoTextWidget" name="graphScopeInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QWidget" name="startingNodesMatchTypeWidget" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::StrongFocus</enum>
-                   </property>
-                   <property name="text">
-                    <string>Exact</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::StrongFocus</enum>
-                   </property>
-                   <property name="text">
-                    <string>Partial</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </widget>
               </item>
               <item row="3" column="0">
@@ -401,7 +804,51 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="12" column="1">
+               <widget class="QCheckBox" name="aroundTargetNodesCheckBox">
+                <property name="text">
+                 <string>Around target nodes</string>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="1" colspan="2">
+               <widget class="QPushButton" name="drawGraphButton">
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+                <property name="text">
+                 <string>Draw graph</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLineEdit" name="startingNodesLineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QCheckBox" name="onlyBigComponentCheckBox">
+                <property name="text">
+                 <string>Only big component</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <widget class="QCheckBox" name="zipGraphCheckBox">
+                <property name="text">
+                 <string>Zip graph</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
                <widget class="InfoTextWidget" name="nodeStyleInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -417,7 +864,109 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="2">
+              <item row="0" column="2">
+               <widget class="QComboBox" name="graphScopeComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+                 <property name="text">
+                  <string>Entire graph</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around nodes</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around BLAST hits</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Depth range</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around tax</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Entire graph</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around nodes</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around BLAST hits</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Depth range</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Around tax</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="15" column="0">
+               <widget class="InfoTextWidget" name="drawGraphInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>HiC min weight:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading</set>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QDoubleSpinBox" name="minDepthSpinBox">
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1000000.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="2">
                <widget class="QWidget" name="nodeStyleWidget" native="true">
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <property name="spacing">
@@ -473,136 +1022,76 @@
                 </layout>
                </widget>
               </item>
-              <item row="9" column="1" colspan="2">
-               <widget class="QPushButton" name="drawGraphButton">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
+              <item row="0" column="0">
+               <widget class="InfoTextWidget" name="graphScopeInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="text">
-                 <string>Draw graph</string>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
                 </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QWidget" name="startingNodesMatchTypeWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QRadioButton" name="startingNodesExactMatchRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Exact</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="startingNodesPartialMatchRadioButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Partial</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
               <item row="6" column="1">
-               <widget class="QLabel" name="nodeStyleLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
+               <widget class="QLabel" name="taxFilterLabel">
                 <property name="text">
-                 <string>Style:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2">
-               <widget class="QSpinBox" name="nodeDistanceSpinBox">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="maximum">
-                 <number>10000</number>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="startingNodesLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Node(s):</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLineEdit" name="startingNodesLineEdit">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QComboBox" name="graphScopeComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>Entire graph</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Around nodes</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Around BLAST hits</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Depth range</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="graphScopeLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>Scope:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="nodeDistanceLabel">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="text">
-                 <string>Distance:</string>
+                 <string>Tax id:</string>
                 </property>
                </widget>
               </item>
@@ -622,24 +1111,136 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="2">
-               <widget class="QDoubleSpinBox" name="minDepthSpinBox">
+              <item row="0" column="1">
+               <widget class="QLabel" name="graphScopeLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Scope:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QSpinBox" name="nodeDistanceSpinBox">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QCheckBox" name="aroundTaxDistanceCheckBox">
+                <property name="text">
+                 <string>With Distance</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="startingNodesLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Node(s):</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="InfoTextWidget" name="hicSeqLenInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QCheckBox" name="aroundTaxHiCCheckBox">
+                <property name="text">
+                 <string>With Hi-C</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QDoubleSpinBox" name="hicWeightSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="focusPolicy">
                  <enum>Qt::StrongFocus</enum>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
+                <property name="suffix">
+                 <string/>
+                </property>
                 <property name="decimals">
                  <number>1</number>
                 </property>
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
                 <property name="maximum">
-                 <double>1000000.000000000000000</double>
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
+              <item row="3" column="1">
+               <widget class="QLabel" name="nodeDistanceLabel">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>Distance:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QLineEdit" name="taxFilterLineEdit"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="InfoTextWidget" name="startingNodesMatchTypeInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -654,8 +1255,8 @@
                 </property>
                </widget>
               </item>
-              <item row="9" column="0">
-               <widget class="InfoTextWidget" name="drawGraphInfoText" native="true">
+              <item row="10" column="0">
+               <widget class="InfoTextWidget" name="hicWeightInfoText" native="true">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -667,6 +1268,16 @@
                   <width>16</width>
                   <height>16</height>
                  </size>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="2">
+               <widget class="QSpinBox" name="aroundTaxDistanceSpinBox">
+                <property name="maximum">
+                 <number>1000</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -678,8 +1289,24 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
                 <property name="text">
                  <string>Min:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QLabel" name="nodeStyleLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Style:</string>
                 </property>
                </widget>
               </item>
@@ -712,19 +1339,79 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="2">
-               <widget class="QDoubleSpinBox" name="maxDepthSpinBox">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
+              <item row="11" column="1">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>HiC min sequence length:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading</set>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="2">
+               <widget class="QDoubleSpinBox" name="hicSeqLenSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
+                <property name="suffix">
+                 <string/>
+                </property>
                 <property name="decimals">
                  <number>1</number>
                 </property>
+                <property name="minimum">
+                 <double>0.000000000000000</double>
+                </property>
                 <property name="maximum">
                  <double>1000000.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>10.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>100.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="InfoTextWidget" name="minDepthInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="InfoTextWidget" name="startingNodesInfoText" native="true">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -800,103 +1487,53 @@
               <property name="rightMargin">
                <number>0</number>
               </property>
-              <item row="2" column="0">
-               <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+              <item row="5" column="1">
+               <widget class="QCheckBox" name="taxNameRankCheckBox">
+                <property name="text">
+                 <string>Tax Name (with rank)</string>
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="InfoTextWidget" name="zoomInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
+              <item row="6" column="1" colspan="2">
+               <widget class="QPushButton" name="contiguityButton">
+                <property name="text">
+                 <string>Determine contiguity</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
-               <widget class="InfoTextWidget" name="contiguityInfoText" native="true">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QDoubleSpinBox" name="zoomSpinBox">
+              <item row="1" column="2">
+               <widget class="QDoubleSpinBox" name="nodeWidthSpinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
                 <property name="suffix">
-                 <string>%</string>
+                 <string/>
                 </property>
                 <property name="decimals">
                  <number>1</number>
                 </property>
                 <property name="minimum">
-                 <double>5.000000000000000</double>
+                 <double>0.500000000000000</double>
                 </property>
                 <property name="maximum">
-                 <double>500.000000000000000</double>
+                 <double>1000.000000000000000</double>
                 </property>
                 <property name="singleStep">
-                 <double>5.000000000000000</double>
+                 <double>0.500000000000000</double>
                 </property>
                 <property name="value">
-                 <double>100.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1" colspan="2">
-               <widget class="QPushButton" name="contiguityButton">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
-                <property name="text">
-                 <string>Determine contiguity</string>
+                 <double>5.000000000000000</double>
                 </property>
                </widget>
               </item>
               <item row="2" column="1" colspan="2">
                <widget class="QComboBox" name="coloursComboBox">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <item>
                  <property name="text">
                   <string>Random colours</string>
@@ -932,16 +1569,21 @@
                   <string>Custom colours</string>
                  </property>
                 </item>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_13">
-                <property name="text">
-                 <string>Zoom:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
+                <item>
+                 <property name="text">
+                  <string>Random component colours</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Colour by tax</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Save colours</string>
+                 </property>
+                </item>
                </widget>
               </item>
               <item row="1" column="0">
@@ -966,41 +1608,147 @@
                  <string>Node width:</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 <set>Qt::AlignLeading</set>
                 </property>
                </widget>
               </item>
-              <item row="1" column="2">
-               <widget class="QDoubleSpinBox" name="nodeWidthSpinBox">
+              <item row="4" column="1">
+               <widget class="QCheckBox" name="taxIdRankCheckBox">
+                <property name="text">
+                 <string>Tax Id (with rank)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="InfoTextWidget" name="nodeColourInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="2">
+               <widget class="QComboBox" name="taxColourComboBox">
+                <item>
+                 <property name="text">
+                  <string>Domain</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Kingdom</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Phylum</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Class</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Order</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Family</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Genus</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Species</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="InfoTextWidget" name="contiguityInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QDoubleSpinBox" name="zoomSpinBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
                 </property>
                 <property name="suffix">
-                 <string/>
+                 <string>%</string>
                 </property>
                 <property name="decimals">
                  <number>1</number>
                 </property>
                 <property name="minimum">
-                 <double>0.500000000000000</double>
+                 <double>5.000000000000000</double>
                 </property>
                 <property name="maximum">
-                 <double>1000.000000000000000</double>
+                 <double>500.000000000000000</double>
                 </property>
                 <property name="singleStep">
-                 <double>0.500000000000000</double>
+                 <double>5.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>5.000000000000000</double>
+                 <double>100.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Zoom:</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="InfoTextWidget" name="zoomInfoText" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -1110,9 +1858,6 @@
               </item>
               <item row="1" column="1">
                <widget class="QPushButton" name="fontButton">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="text">
                  <string>Font</string>
                 </property>
@@ -1120,9 +1865,6 @@
               </item>
               <item row="1" column="2">
                <widget class="QCheckBox" name="textOutlineCheckBox">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="text">
                  <string>Text outline</string>
                 </property>
@@ -1213,6 +1955,13 @@
                    </property>
                    <property name="text">
                     <string>CSV data:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QCheckBox" name="taxIdCheckBox">
+                   <property name="text">
+                    <string>Tax Name (id)</string>
                    </property>
                   </widget>
                  </item>
@@ -1371,6 +2120,261 @@
          </widget>
         </item>
         <item>
+         <widget class="QWidget" name="featureForestWidget" native="true">
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>Zoom:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QDoubleSpinBox" name="zoomFeaturesSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="suffix">
+              <string>%</string>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="minimum">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>500.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>5.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>100.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1" colspan="4">
+            <widget class="QComboBox" name="featuresColoursComboBox">
+             <item>
+              <property name="text">
+               <string>Uniform colour</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Class colours</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Custom colours</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BLAST hits (solid)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>BLAST hits (class colours)</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>Node width:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="5">
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="3">
+            <widget class="QCheckBox" name="featureCustomCheckBox">
+             <property name="text">
+              <string>Custom</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="InfoTextWidget" name="featureNodeColourInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1" colspan="4">
+            <widget class="QPushButton" name="drawFeaturesButton">
+             <property name="text">
+              <string>Draw features</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="4">
+            <widget class="QCheckBox" name="featureClassLikeFigureCheckBox">
+             <property name="text">
+              <string>Class like figure</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QCheckBox" name="featureIdCheckBox">
+             <property name="text">
+              <string>Feature Id</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="InfoTextWidget" name="featureNodeWidthInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QCheckBox" name="featureClassCheckBox">
+             <property name="text">
+              <string>Class</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QLabel" name="featuresForestLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <property name="text">
+              <string>Features display</string>
+             </property>
+             <property name="wordWrap">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QDoubleSpinBox" name="featureNodeWidthSpinBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="minimum">
+              <double>0.500000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>1000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.500000000000000</double>
+             </property>
+             <property name="value">
+              <double>5.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Feature labels</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="InfoTextWidget" name="zooFeaturesmInfoText" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1" colspan="4">
+            <widget class="QPlainTextEdit" name="featureClassInfoText">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>394</width>
+               <height>45</height>
+              </size>
+             </property>
+             <property name="baseSize">
+              <size>
+               <width>394</width>
+               <height>45</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -1387,482 +2391,6 @@
       </widget>
      </widget>
     </item>
-    <item>
-     <widget class="QWidget" name="graphicsViewWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QWidget" name="widget_15" native="true"/>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="VerticalScrollArea" name="selectionScrollArea">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="selectionScrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>249</width>
-         <height>899</height>
-        </rect>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QLabel" name="label_14">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Find nodes</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="line_10">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="nodeSelectionWidget" native="true">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="1" column="0">
-            <widget class="InfoTextWidget" name="selectionSearchNodesMatchTypeInfoText" native="true">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QRadioButton" name="selectionSearchNodesExactMatchRadioButton">
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
-             <property name="text">
-              <string>Exact</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_12">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Node(s):</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="InfoTextWidget" name="selectionSearchInfoText" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="label_16">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>Match:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QRadioButton" name="selectionSearchNodesPartialMatchRadioButton">
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
-             <property name="text">
-              <string>Partial</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2" colspan="2">
-            <widget class="QLineEdit" name="selectionSearchNodesLineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="selectNodesButton">
-          <property name="focusPolicy">
-           <enum>Qt::StrongFocus</enum>
-          </property>
-          <property name="text">
-           <string>Find node(s)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="selectedNodesSpacerWidget" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer name="selectedNodesSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>60</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="selectedNodesTitleLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Selected nodes</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="selectedNodesLine1">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="selectedNodesTextEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="selectedNodesLengthLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Total length:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="selectedNodesDepthLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Mean depth:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="selectedNodesLine2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="selectedNodesModificationWidget" native="true">
-          <layout class="QGridLayout" name="gridLayout">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="InfoTextWidget" name="setColourAndLabelInfoText" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>16</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QPushButton" name="setNodeCustomLabelButton">
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
-             <property name="toolTip">
-              <string>Ctrl+L</string>
-             </property>
-             <property name="text">
-              <string>Set label</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="setNodeCustomColourButton">
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
-             </property>
-             <property name="toolTip">
-              <string>Ctrl+O</string>
-             </property>
-             <property name="text">
-              <string>Set colour</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="selectedEdgesSpacerWidget" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer name="selectedEdgesSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>60</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="selectedEdgesTitleLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Selected edges</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="Line" name="selectedEdgesLine">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="selectedEdgesTextEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -1871,7 +2399,7 @@
      <x>0</x>
      <y>0</y>
      <width>1465</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1881,10 +2409,16 @@
     <addaction name="actionLoad_graph"/>
     <addaction name="actionLoad_CSV"/>
     <addaction name="separator"/>
-    <addaction name="actionSave_image_current_view"/>
-    <addaction name="actionSave_image_entire_scene"/>
+    <addaction name="actionSave_graph_image_current_view"/>
+    <addaction name="actionSave_graph_image_entire_scene"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_HiC_data"/>
+    <addaction name="actionLoad_Taxonometry"/>
+    <addaction name="actionLoad_features_forest"/>
+    <addaction name="actionSave_image_features_current_view"/>
+    <addaction name="actionSave_image_features_entire_scene"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -1924,7 +2458,6 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_nodes_with_BLAST_hits"/>
     <addaction name="menuSelect_nodes_based_on_contiguity"/>
-    <addaction name="actionSelect_nodes_with_dead_ends"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1951,6 +2484,9 @@
     <addaction name="actionSave_entire_graph_to_FASTA_only_positive_nodes"/>
     <addaction name="separator"/>
     <addaction name="actionWeb_BLAST_selected_nodes"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_common_tax_information"/>
+    <addaction name="actionSave_tax_info_with_Hi_C_links"/>
    </widget>
    <widget class="QMenu" name="menuManipulate">
     <property name="title">
@@ -1987,7 +2523,7 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionSave_image_current_view">
+  <action name="actionSave_graph_image_current_view">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -1996,7 +2532,7 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save image (current view)</string>
+    <string>Save image (graph current view)</string>
    </property>
   </action>
   <action name="actionExit">
@@ -2026,7 +2562,7 @@
     <string>About</string>
    </property>
   </action>
-  <action name="actionSave_image_entire_scene">
+  <action name="actionSave_graph_image_entire_scene">
    <property name="enabled">
     <bool>true</bool>
    </property>
@@ -2035,7 +2571,7 @@
      <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
    </property>
    <property name="text">
-    <string>Save image (entire scene)</string>
+    <string>Save image (graph entire scene)</string>
    </property>
   </action>
   <action name="actionControls_panel">
@@ -2323,9 +2859,67 @@
     <string>Change node depth</string>
    </property>
   </action>
-  <action name="actionSelect_nodes_with_dead_ends">
+  <action name="actionLoad_HiC_data">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
    <property name="text">
-    <string>Select nodes with dead ends</string>
+    <string>Load HiC data</string>
+   </property>
+  </action>
+  <action name="actionLoad_Taxonometry">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Taxonometry</string>
+   </property>
+  </action>
+  <action name="actionSave_common_tax_information">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save common tax information</string>
+   </property>
+  </action>
+  <action name="actionSave_tax_info_with_Hi_C_links">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save tax info with Hi-C links for selected tax id</string>
+   </property>
+  </action>
+  <action name="actionLoad_features_forest">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/load-256.png</normaloff>:/icons/load-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load features forest</string>
+   </property>
+  </action>
+  <action name="actionSave_image_features_current_view">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save image (features current view)</string>
+   </property>
+  </action>
+  <action name="actionSave_image_features_entire_scene">
+   <property name="icon">
+    <iconset resource="../images/images.qrc">
+     <normaloff>:/icons/save-256.png</normaloff>:/icons/save-256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save image (features entire scene)</string>
    </property>
   </action>
  </widget>
@@ -2346,14 +2940,11 @@
  </customwidgets>
  <tabstops>
   <tabstop>controlsScrollArea</tabstop>
-  <tabstop>moreInfoButton</tabstop>
   <tabstop>graphScopeComboBox</tabstop>
   <tabstop>startingNodesLineEdit</tabstop>
   <tabstop>startingNodesExactMatchRadioButton</tabstop>
   <tabstop>startingNodesPartialMatchRadioButton</tabstop>
   <tabstop>nodeDistanceSpinBox</tabstop>
-  <tabstop>minDepthSpinBox</tabstop>
-  <tabstop>maxDepthSpinBox</tabstop>
   <tabstop>singleNodesRadioButton</tabstop>
   <tabstop>doubleNodesRadioButton</tabstop>
   <tabstop>drawGraphButton</tabstop>
@@ -2366,9 +2957,6 @@
   <tabstop>nodeLengthsCheckBox</tabstop>
   <tabstop>nodeDepthCheckBox</tabstop>
   <tabstop>blastHitsCheckBox</tabstop>
-  <tabstop>setNodeCustomLabelButton</tabstop>
-  <tabstop>csvCheckBox</tabstop>
-  <tabstop>csvComboBox</tabstop>
   <tabstop>fontButton</tabstop>
   <tabstop>textOutlineCheckBox</tabstop>
   <tabstop>blastSearchButton</tabstop>
@@ -2378,12 +2966,10 @@
   <tabstop>selectionSearchNodesExactMatchRadioButton</tabstop>
   <tabstop>selectionSearchNodesPartialMatchRadioButton</tabstop>
   <tabstop>selectNodesButton</tabstop>
-  <tabstop>kmerSizeInput</tabstop>
-  <tabstop>drawDotplotButton</tabstop>
-  <tabstop>dotplotGraphicsView</tabstop>
   <tabstop>selectedNodesTextEdit</tabstop>
-  <tabstop>selectedEdgesTextEdit</tabstop>
   <tabstop>setNodeCustomColourButton</tabstop>
+  <tabstop>setNodeCustomLabelButton</tabstop>
+  <tabstop>selectedEdgesTextEdit</tabstop>
  </tabstops>
  <resources>
   <include location="../images/images.qrc"/>

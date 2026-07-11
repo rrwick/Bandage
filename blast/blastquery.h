@@ -46,6 +46,7 @@ public:
     QList< QSharedPointer<BlastHit> > getHits() const {return m_hits;}
     bool wasSearchedFor() const {return m_searchedFor;}
     QColor getColour() const {return m_colour;}
+    QColor getFeatureClassColour() const {return m_featureClassColour;}
     SequenceType getSequenceType() const {return m_sequenceType;}
     QList<BlastQueryPath> getPaths() const {return m_paths;}
     int getPathCount() const {return m_paths.size();}
@@ -63,6 +64,7 @@ public:
 
 public slots:
     void setColour(QColor newColour) {m_colour = newColour;}
+    void setFeatureClassColour(QColor  newColour) { m_featureClassColour = newColour; }
     void setShown(bool newShown) {m_shown = newShown;}
 
 private:
@@ -71,6 +73,7 @@ private:
     QList< QSharedPointer<BlastHit> > m_hits;
     bool m_searchedFor;
     QColor m_colour;
+    QColor m_featureClassColour;
     SequenceType m_sequenceType;
     QList<BlastQueryPath> m_paths;
     bool m_shown;

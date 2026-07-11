@@ -29,6 +29,8 @@
 #include "../program/globals.h"
 #include <QThread>
 #include "../ogdf/energybased/FMMMLayout.h"
+#include "../ui/randomforestmainwindow.h"
+#include "../blast/BlastFeaturesNodesMatcher.h"
 
 class GraphicsViewZoom;
 class MyGraphicsScene;
@@ -51,8 +53,10 @@ public:
 private:
     Ui::MainWindow *ui;
     MyGraphicsScene * m_scene;
+    MyGraphicsScene * m_featureForestScene;
 
     GraphicsViewZoom * m_graphicsViewZoom;
+    GraphicsViewZoom * m_featuresForestViewZoom;
     double m_previousZoomSpinBoxValue;
     QThread * m_layoutThread;
     ogdf::FMMMLayout * m_fmmm;
@@ -60,47 +64,59 @@ private:
     QString m_fileToLoadOnStartup;
     bool m_drawGraphAfterLoad;
     UiState m_uiState;
+    UiState m_featuresUiState;
     BlastSearchDialog * m_blastSearchDialog;
     bool m_alreadyShown;
+    RandomForestMainWindow* m_randomForestMainWindow;
+    BlastFeaturesNodesMatcher* m_blastFeaturesNodesMatcher = NULL;
 
     void cleanUp();
     void displayGraphDetails();
     void clearGraphDetails();
     void resetScene();
     void layoutGraph();
-    void addGraphicsItemsToScene();
-    void zoomToFitRect(QRectF rect);
+    void zoomToFitRect(QRectF rect, MyGraphicsView* graphicsView);
     void zoomToFitScene();
+    void zoomToFitFeatureScene();
     void setZoomSpinBoxStep();
     void getSelectedNodeInfo(int & selectedNodeCount, QString & selectedNodeCountText, QString & selectedNodeListText, QString & selectedNodeLengthText, QString &selectedNodeDepthText);
+    void MainWindow::getSelectedNodeTaxInfo(QString& selectedNodeListText);
     QString getSelectedEdgeListText();
     std::vector<DeBruijnNode *> getNodesFromLineEdit(QLineEdit * lineEdit, bool exactMatch, std::vector<QString> * nodesNotInGraph = 0);
-    void setSceneRectangle();
     void loadGraph2(GraphFileType graphFileType, QString filename);
     void setInfoTexts();
     void setUiState(UiState uiState);
+    void setFeaturesUiState(UiState uiState);
     void selectBasedOnContiguity(ContiguityStatus contiguityStatus);
     void setWidgetsFromSettings();
-    QString getDefaultImageFileName();
+    QString getDefaultGraphImageFileName();
+    QString getDefaultFeaturesImageFileName();
     void setNodeColourSchemeComboBox(NodeColourScheme nodeColourScheme);
     void setGraphScopeComboBox(GraphScope graphScope);
     void setupBlastQueryComboBox();
-    bool checkForImageSave();
+    bool checkForGraphImageSave();
+    bool checkForFeaturesImageSave();
     QString convertGraphFileTypeToString(GraphFileType graphFileType);
     void setSelectedNodesWidgetsVisibility(bool visible);
     void setSelectedEdgesWidgetsVisibility(bool visible);
     void setStartingNodesWidgetVisibility(bool visible);
     void setNodeDistanceWidgetVisibility(bool visible);
     void setDepthRangeWidgetVisibility(bool visible);
+    void MainWindow::setHiCWidgetVisibility(bool visible);
+    void MainWindow::setTaxVisibility(bool visible);
     static QByteArray makeStringUrlSafe(QByteArray s);
     void removeGraphicsItemNodes(const std::vector<DeBruijnNode *> * nodes, bool reverseComplement);
     void removeGraphicsItemEdges(const std::vector<DeBruijnEdge *> * edges, bool reverseComplement);
     void removeAllGraphicsEdgesFromNode(DeBruijnNode * node, bool reverseComplement);
-    std::vector<DeBruijnNode *> addComplementaryNodes(std::vector<DeBruijnNode *> nodes);
+    std::vector<DeBruijnNode*> addComplementaryNodes(std::vector<DeBruijnNode*> nodes);
+    void layoutGraphUnzip();
 
 private slots:
     void loadGraph(QString fullFileName = "");
-    void loadCSV(QString fullFileNAme = "");
+    void loadCSV(QString fullFileName = "");
+    void loadHiC(QString fullFileName = "");
+    void loadTax(QString fullFileName = "");
+    void loadFeaturesForest(QString fullFileName = "");
     void selectionChanged();
     void graphScopeChanged();
     void drawGraph();
@@ -114,8 +130,12 @@ private slots:
     void saveSelectedPathToFile();
     void switchColourScheme();
     void determineContiguityFromSelectedNode();
-    void saveImageCurrentView();
-    void saveImageEntireScene();
+    void saveImageCurrentView(QString defaultFileNameAndPath, MyGraphicsView* graphicsView);
+    void saveImageGraphCurrentView();
+    void saveImageFeaturesCurrentView();
+    void saveImageEntireScene(QString defaultFileNameAndPath, MyGraphicsView* graphicsView, MyGraphicsScene* scene);
+    void saveImageGraphEntireScene();
+    void saveImageFeaturesEntireScene();
     void setTextDisplaySettings();
     void fontButtonPressed();
     void setNodeCustomColour();
@@ -147,6 +167,7 @@ private slots:
     void startingNodesExactMatchChanged();
     void openPathSpecifyDialog();
     void nodeWidthChanged();
+    void featureNodeWidthChanged();
     void saveEntireGraphToFasta();
     void saveEntireGraphToFastaOnlyPositiveNodes();
     void saveEntireGraphToGfa();
@@ -160,6 +181,20 @@ private slots:
     void changeNodeName();
     void changeNodeDepth();
     void openGraphInfoDialog();
+    void switchTaxRank();
+    void setAroundTaxWidgetVisibility(bool visible);
+    void openTaxInfoDialog();
+    void openTaxInfoHiCDialog();
+    void unzipSelectedNodes();
+    void saveTaxInfo();
+    void saveHiCTaxInfo();
+    void drawFeaturesForest();
+    void featureSelectionChanged();
+    void matchSelectedFeatureNodes();
+    void switchFeatureColourScheme();
+    void setFeatureNodeCustomColour();
+    void setFeatureNodeCustomLabel();
+    void setFeatureTextDisplaySettings();
 
 protected:
       void showEvent(QShowEvent *ev);
