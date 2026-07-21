@@ -132,7 +132,7 @@ int bandageImage(QStringList arguments)
     std::vector<DeBruijnNode *> startingNodes = g_assemblyGraph->getStartingNodes(&errorTitle, &errorMessage,
                                                                                   g_settings->doubleMode,
                                                                                   g_settings->startingNodes,
-                                                                                  "all");
+                                                                                  "all", "");
 
     QString errormsg;
     QStringList columns;
